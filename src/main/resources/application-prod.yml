@@ -1,0 +1,14 @@
+### configuration for production
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/quanzi
+    username: quanzi_admin
+    password: quanzi@bu
+
+# email service configuration
+sendcloud:
+  email:
+    api-user: ccyzhope_test_u1jCHY
+    api-key: CqI5QkoXFgIKdATU
+    domain: 9FxtC4peFpLuxKZPt2XaoHXuwkyiV3tP.sendcloud.org
