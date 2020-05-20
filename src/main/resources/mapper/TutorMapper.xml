@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.quanzi.bu.repository.dao.TutorMapper">
-  <resultMap id="BaseResultMap" type="com.quanzi.bu.repository.model.Tutor">
+<mapper namespace="com.wequan.bu.repository.dao.TutorMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.Tutor">
     <id column="id" jdbcType="INTEGER" property="id" />
   </resultMap>
 
   <select id="selectAll" resultMap="BaseResultMap">
     select *
-    from user
+    from ${schema}.wq_tutor
   </select>
 
 </mapper>
