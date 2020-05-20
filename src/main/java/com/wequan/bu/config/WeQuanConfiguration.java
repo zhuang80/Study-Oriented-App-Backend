@@ -6,9 +6,11 @@ import org.apache.catalina.connector.Connector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -18,6 +20,8 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
+import javax.servlet.MultipartConfigElement;
+
 /**
  * @author ChrisChen
  */
@@ -26,6 +30,8 @@ public class WeQuanConfiguration implements WebMvcConfigurer {
 
     @Value("${http.port}")
     private Integer port;
+    @Value("${app.user.profile-location}")
+    private String profileLocation;
     @Autowired
     private SwaggerProperties swaggerProperties;
 
@@ -71,6 +77,15 @@ public class WeQuanConfiguration implements WebMvcConfigurer {
                 .termsOfServiceUrl(swaggerProperties.getTermsOfServiceUrl())
                 .version(swaggerProperties.getVersion())
                 .build();
+    }
+
+    @Bean
+    public MultipartConfigElement multipartConfigElement() {
+        MultipartConfigFactory factory = new MultipartConfigFactory();
+        factory.setLocation(profileLocation);
+        factory.setMaxFileSize(DataSize.ofMegabytes(10));
+        factory.setMaxRequestSize(DataSize.ofMegabytes(10));
+        return factory.createMultipartConfig();
     }
 
 }

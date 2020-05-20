@@ -36,8 +36,20 @@ mybatis:
   type-aliases-package: com.wequan.bu.repository.dao
   configuration:
     map-underscore-to-camel-case: true
+    lazy-loading-enabled: true
+    aggressive-lazy-loading: false
+    cache-enabled: true
+#    interceptors:
+#      -
+  lazy-initialization: true
   configuration-properties:
     schema: bu
+
+pagehelper:
+  helperDialect: postgresql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
 
 logging:
   level:
@@ -45,3 +57,7 @@ logging:
 
 log:
   path: log
+
+app:
+  user:
+    profile-location: profile
