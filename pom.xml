@@ -18,10 +18,9 @@
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<mybatis.starter.version>2.1.1</mybatis.starter.version>
+		<mybatis.spring.starter.version>2.1.1</mybatis.spring.starter.version>
 		<mybatis.generator.version>1.4.0</mybatis.generator.version>
-		<mybatis.general-mapper.version>4.1.5</mybatis.general-mapper.version>
-		<mybatis.pagehelper.version>5.1.11</mybatis.pagehelper.version>
+		<pagehelper.spring.starter.version>1.2.13</pagehelper.spring.starter.version>
 		<auth0.jwt.version>3.10.0</auth0.jwt.version>
 		<guava.version>28.2-jre</guava.version>
 		<swagger.version>2.9.2</swagger.version>
@@ -47,7 +46,12 @@
 		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>
 			<artifactId>mybatis-spring-boot-starter</artifactId>
-			<version>${mybatis.starter.version}</version>
+			<version>${mybatis.spring.starter.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.pagehelper</groupId>
+			<artifactId>pagehelper-spring-boot-starter</artifactId>
+			<version>${pagehelper.spring.starter.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.springfox</groupId>
@@ -85,11 +89,6 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>${guava.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.pagehelper</groupId>
-			<artifactId>pagehelper</artifactId>
-			<version>${mybatis.pagehelper.version}</version>
 		</dependency>
 
 		<dependency>
