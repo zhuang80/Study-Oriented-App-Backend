@@ -18,10 +18,11 @@
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<mybatis.version>2.1.1</mybatis.version>
+		<mybatis.starter.version>2.1.1</mybatis.starter.version>
 		<mybatis.generator.version>1.4.0</mybatis.generator.version>
+		<mybatis.general-mapper.version>4.1.5</mybatis.general-mapper.version>
 		<mybatis.pagehelper.version>5.1.11</mybatis.pagehelper.version>
-		<jwt.version>3.10.0</jwt.version>
+		<auth0.jwt.version>3.10.0</auth0.jwt.version>
 		<guava.version>28.2-jre</guava.version>
 		<swagger.version>2.9.2</swagger.version>
 	</properties>
@@ -46,7 +47,7 @@
 		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>
 			<artifactId>mybatis-spring-boot-starter</artifactId>
-			<version>${mybatis.version}</version>
+			<version>${mybatis.starter.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.springfox</groupId>
@@ -78,7 +79,7 @@
 		<dependency>
 			<groupId>com.auth0</groupId>
 			<artifactId>java-jwt</artifactId>
-			<version>${jwt.version}</version>
+			<version>${auth0.jwt.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -102,7 +103,12 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>

@@ -1,30 +1,22 @@
 package com.quanzi.bu.service;
 
-import com.quanzi.bu.repository.dao.UserMapper;
 import com.quanzi.bu.repository.model.User;
-import com.quanzi.bu.vendor.EmailService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * @author ChrisChen
  */
-@Service
-public class UserService {
+public interface UserService extends Service<User> {
 
-    @Autowired
-    private UserMapper userMapper;
-    @Autowired
-    private EmailService emailService;
+    /** 检查email是否已被注册
+     * @param email email
+     * @return 已被注册 -> true; 未被注册 -> false
+     */
+    boolean checkEmailRegistered(String email);
 
-    public boolean checkEmailRegistered(String email) {
-        User user = userMapper.selectByEmail(email);
-        return user != null;
-    }
-
-    public void sendConfirmEmail(String receiver, String nickname) {
-        emailService.sendTemplate(receiver, nickname);
-    }
-
+    /** 发送验证email
+     * @param receiver email地址
+     * @param nickname 用户昵称
+     */
+    void sendConfirmEmail(String receiver, String nickname);
 
 }
