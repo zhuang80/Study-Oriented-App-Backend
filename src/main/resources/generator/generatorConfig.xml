@@ -5,7 +5,7 @@
 <generatorConfiguration>
     <properties resource="generator/generator.properties"/>
 
-    <context id="quanzi" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+    <context id="wequan" targetRuntime="MyBatis3Simple" defaultModelType="flat">
         <property name="javaFileEncoding" value="UTF-8"/>
 
         <commentGenerator>

@@ -2,9 +2,9 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/quanzi
-    username: quanzi_admin
-    password: quanzi@bu
+    url: jdbc:postgresql://localhost:5432/wequan
+    username: wequan_admin
+    password: wequan@bu
 
 # email service configuration
 sendcloud:

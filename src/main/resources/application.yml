@@ -16,7 +16,7 @@ spring:
   profiles:
     active: dev
   application:
-    name: Quan_Zi
+    name: We_Quan
   transaction:
     rollback-on-commit-failure: true
   messages:
@@ -33,7 +33,7 @@ spring:
 mybatis:
   mapper-locations:
     - classpath:mapper/*.xml
-  type-aliases-package: com.quanzi.bu.repository.dao
+  type-aliases-package: com.wequan.bu.repository.dao
   configuration:
     map-underscore-to-camel-case: true
   configuration-properties:

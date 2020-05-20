@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.quanzi.bu.repository.dao.UserMapper">
-  <resultMap id="BaseResultMap" type="com.quanzi.bu.repository.model.User">
+<mapper namespace="com.wequan.bu.repository.dao.UserMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.User">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="nickname" jdbcType="VARCHAR" property="nickname" />
@@ -14,43 +14,47 @@
 
   <sql id="columns">id, name, nickname, email, phone, address, zip_code, credential</sql>
 
-<!--  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">-->
-<!--    delete from user-->
-<!--    where id = #{id,jdbcType=INTEGER}-->
-<!--  </delete>-->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ${schema}.wq_user_profile
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
 
-<!--  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.quanzi.bu.repository.model.User" useGeneratedKeys="true">-->
-<!--    insert into user (name, nickname, email, phone, address, zip_code, credential)-->
-<!--    values (#{name,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},-->
-<!--            #{address,jdbcType=VARCHAR}, #{zipCode,jdbcType=VARCHAR}, #{credential,jdbcType=VARCHAR})-->
-<!--  </insert>-->
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.User" useGeneratedKeys="true">
+    insert into ${schema}.wq_user_profile (name, nickname, email, phone, address, zip_code, credential)
+    values (#{name,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},
+            #{address,jdbcType=VARCHAR}, #{zipCode,jdbcType=VARCHAR}, #{credential,jdbcType=VARCHAR})
+  </insert>
 
-<!--  <update id="updateByPrimaryKey" parameterType="com.quanzi.bu.repository.model.User">-->
-<!--    update user-->
-<!--    set name = #{name,jdbcType=VARCHAR},-->
-<!--      nickname = #{nickname,jdbcType=VARCHAR},-->
-<!--      email = #{email,jdbcType=VARCHAR},-->
-<!--      phone = #{phone,jdbcType=VARCHAR},-->
-<!--      address = #{address,jdbcType=VARCHAR},-->
-<!--      zip_code = #{zipCode,jdbcType=VARCHAR},-->
-<!--      credential = #{credential,jdbcType=VARCHAR}-->
-<!--    where id = #{id,jdbcType=INTEGER}-->
-<!--  </update>-->
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.User" useGeneratedKeys="true">
 
-<!--  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">-->
-<!--    select <include refid="columns" />-->
-<!--    from user-->
-<!--    where id = #{id,jdbcType=INTEGER}-->
-<!--  </select>-->
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.wequan.bu.repository.model.User">
+    update ${schema}.wq_user_profile
+    set name = #{name,jdbcType=VARCHAR},
+      nickname = #{nickname,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      zip_code = #{zipCode,jdbcType=VARCHAR},
+      credential = #{credential,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select <include refid="columns" />
+    from ${schema}.wq_user_profile
+    where id = #{id,jdbcType=INTEGER}
+  </select>
 
   <select id="selectAll" resultMap="BaseResultMap">
     select <include refid="columns" />
-    from user
+    from ${schema}.wq_user_profile
   </select>
 
   <select id="selectByEmail" resultMap="BaseResultMap">
     select <include refid="columns" />
-    from ${schema}.qz_user_profile
+    from ${schema}.wq_user_profile
     where email = #{email}
   </select>
 </mapper>

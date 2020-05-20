@@ -2,14 +2,14 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/quanzi
-    username: quanzi_admin
-    password: quanzi@bu
+    url: jdbc:postgresql://localhost:5432/wequan
+    username: wequan_admin
+    password: wequan@bu
 
 logging:
   level:
 #    root: debug
-    com.quanzi.bu.repository.dao: DEBUG
+    com.wequan.bu.repository.dao: DEBUG
 
 # email service configuration
 sendcloud:
@@ -28,4 +28,4 @@ swagger:
     url: https://github.com/yonhenli
     email: yli241@binghamton.edu
   version: 1.0
-  base-package: com.quanzi.bu.controller
+  base-package: com.wequan.bu.controller
