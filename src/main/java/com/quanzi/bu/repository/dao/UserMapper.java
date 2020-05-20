@@ -3,18 +3,16 @@ package com.quanzi.bu.repository.dao;
 import com.quanzi.bu.repository.model.User;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
 /**
  * @author ChrisChen
  */
 @Mapper
-public interface UserMapper {
+public interface UserMapper extends GeneralMapper<User> {
 
-    int deleteByPrimaryKey(Integer id);
-    int insert(User record);
-    User selectByPrimaryKey(Integer id);
-    List<User> selectAll();
-    int updateByPrimaryKey(User record);
+    /** 根据email查询User
+     * @param email email
+     * @return User实体
+     */
     User selectByEmail(String email);
+
 }

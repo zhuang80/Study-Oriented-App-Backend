@@ -14,34 +14,34 @@
 
   <sql id="columns">id, name, nickname, email, phone, address, zip_code, credential</sql>
 
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from user
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
+<!--  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">-->
+<!--    delete from user-->
+<!--    where id = #{id,jdbcType=INTEGER}-->
+<!--  </delete>-->
 
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.quanzi.bu.repository.model.User" useGeneratedKeys="true">
-    insert into user (name, nickname, email, phone, address, zip_code, credential)
-    values (#{name,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},
-            #{address,jdbcType=VARCHAR}, #{zipCode,jdbcType=VARCHAR}, #{credential,jdbcType=VARCHAR})
-  </insert>
+<!--  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.quanzi.bu.repository.model.User" useGeneratedKeys="true">-->
+<!--    insert into user (name, nickname, email, phone, address, zip_code, credential)-->
+<!--    values (#{name,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},-->
+<!--            #{address,jdbcType=VARCHAR}, #{zipCode,jdbcType=VARCHAR}, #{credential,jdbcType=VARCHAR})-->
+<!--  </insert>-->
 
-  <update id="updateByPrimaryKey" parameterType="com.quanzi.bu.repository.model.User">
-    update user
-    set name = #{name,jdbcType=VARCHAR},
-      nickname = #{nickname,jdbcType=VARCHAR},
-      email = #{email,jdbcType=VARCHAR},
-      phone = #{phone,jdbcType=VARCHAR},
-      address = #{address,jdbcType=VARCHAR},
-      zip_code = #{zipCode,jdbcType=VARCHAR},
-      credential = #{credential,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
+<!--  <update id="updateByPrimaryKey" parameterType="com.quanzi.bu.repository.model.User">-->
+<!--    update user-->
+<!--    set name = #{name,jdbcType=VARCHAR},-->
+<!--      nickname = #{nickname,jdbcType=VARCHAR},-->
+<!--      email = #{email,jdbcType=VARCHAR},-->
+<!--      phone = #{phone,jdbcType=VARCHAR},-->
+<!--      address = #{address,jdbcType=VARCHAR},-->
+<!--      zip_code = #{zipCode,jdbcType=VARCHAR},-->
+<!--      credential = #{credential,jdbcType=VARCHAR}-->
+<!--    where id = #{id,jdbcType=INTEGER}-->
+<!--  </update>-->
 
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select <include refid="columns" />
-    from user
-    where id = #{id,jdbcType=INTEGER}
-  </select>
+<!--  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">-->
+<!--    select <include refid="columns" />-->
+<!--    from user-->
+<!--    where id = #{id,jdbcType=INTEGER}-->
+<!--  </select>-->
 
   <select id="selectAll" resultMap="BaseResultMap">
     select <include refid="columns" />

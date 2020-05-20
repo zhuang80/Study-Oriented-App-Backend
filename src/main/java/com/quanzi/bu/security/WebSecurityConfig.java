@@ -5,6 +5,7 @@ import com.quanzi.bu.security.component.JwtAuthenticationEntryPoint;
 import com.quanzi.bu.security.component.UserDetailsServiceImpl;
 import com.quanzi.bu.security.filter.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -32,6 +33,10 @@ import java.util.Collections;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private static final String DEV_PROFILE_NAME = "dev";
+
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
     @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     @Autowired
@@ -46,12 +51,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .cors().and()
-                .csrf().disable()
-                .exceptionHandling()
+        if (!DEV_PROFILE_NAME.equals(activeProfile)) {
+            http
+                    .cors().and()
+                    .csrf().disable()
+                    .exceptionHandling()
                     .authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
-                .authorizeRequests()
+                    .authorizeRequests()
                     .antMatchers("/",
                             "/favicon.ico",
                             "/**/*.png",
@@ -61,21 +67,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                             "/**/*.html",
                             "/**/*.css",
                             "/**/*.js").permitAll()
-                .antMatchers(HttpMethod.POST, QuanZiConstants.REGISTER_URL, QuanZiConstants.LOGIN_URL).permitAll()
-                .antMatchers("/swagger-ui.html",
-                        "/swagger-ui.html/**/*",
-                        "/null/**/*",
-                        "/swagger-resources",
-                        "/swagger-resources/**/*",
-                        "/v2",
-                        "/v2/**/*",
-                        "/webjars",
-                        "/webjars/**/*",
-                        "/csrf",
-                        "/csrf/**/*").permitAll()
-                .anyRequest().authenticated().and()
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                    .antMatchers(HttpMethod.POST, QuanZiConstants.REGISTER_URL, QuanZiConstants.LOGIN_URL).permitAll()
+                    .anyRequest().authenticated().and()
+                    .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        } else {
+            http
+                    .cors().and()
+                    .csrf().disable()
+                    .authorizeRequests()
+                    .anyRequest().permitAll().and()
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        }
     }
 
     @Bean
