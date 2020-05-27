@@ -18,6 +18,7 @@ import java.util.Map;
 public class MessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageHandler.class);
+    private static final String DEFAULT_SUCCESS_MESSAGE = "success";
 
     @Autowired
     private HttpServletRequest request;
@@ -28,18 +29,18 @@ public class MessageHandler {
 
     /**
      * message from messages.properties
-     * @param code
-     * @param params
-     * @return
+     * @param code code from messages.properties
+     * @param params escape for "
+     * @return message
      */
-    public String getMessage(String code, Object... params) {
+    private String getMessage(String code, Object... params) {
         return messageSource.getMessage(code, params, RequestContextUtils.getLocale(request));
     }
 
     /**
      * convert object to json response
-     * @param resp
-     * @return
+     * @param resp response object
+     * @return json string
      */
     public String getResponseMessage(Object resp) {
         String msg = "";
@@ -53,39 +54,38 @@ public class MessageHandler {
     }
 
     /**
-     * generate standard json response
-     * @param result
-     * @param statusCode
-     * @param message
-     * @param info
-     * @return
+     * generate standard successful json response with data
+     * @return successful json string
      */
-    public String getResponseMessage(boolean result, int statusCode, String message, Object info) {
-        Map<String, Object> resp = new HashMap<>(4);
-        resp.put("result", result);
-        resp.put("statusCode", statusCode);
-        resp.put("message", message);
-        resp.put("info", info);
+    public String getSuccessResponseMessage(Object data) {
+        Map<String, Object> resp = new HashMap<>(3);
+        resp.put("statusCode", "200");
+        resp.put("message", DEFAULT_SUCCESS_MESSAGE);
+        resp.put("data", data);
         return getResponseMessage(resp);
     }
 
     /**
-     * generate standard json response with result=true and info=""
-     * @param statusCode
-     * @param message
-     * @return
+     * generate standard successful json response without data
+     * @return successful json string
      */
-    public String getResponseMessage(int statusCode, String message) {
-        return getResponseMessage(true, statusCode, message, "");
+    public String getSuccessResponseMessage() {
+        Map<String, Object> resp = new HashMap<>(2);
+        resp.put("statusCode", "200");
+        resp.put("message", DEFAULT_SUCCESS_MESSAGE);
+        return getResponseMessage(resp);
     }
 
     /**
-     * generate standard json response with result=true, info="" and message from {@code getMessage(String, Object...)}
-     * @param statusCode
-     * @param params
-     * @return
+     * generate standard fail json response with message from {@code getMessage(String, Object...)}
+     * @param statusCode statusCode from messages.properties
+     * @param params escape for "
+     * @return fail json string
      */
-    public String getResponseMessage(String statusCode, Object... params) {
-        return getResponseMessage(Integer.parseInt(statusCode), getMessage(statusCode, params));
+    public String getFailResponseMessage(String statusCode, Object... params) {
+        Map<String, Object> resp = new HashMap<>(2);
+        resp.put("statusCode", statusCode);
+        resp.put("message", getMessage(statusCode, params));
+        return getResponseMessage(resp);
     }
 }
