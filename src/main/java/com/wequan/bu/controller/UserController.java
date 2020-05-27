@@ -8,6 +8,9 @@ import com.wequan.bu.controller.vo.User;
 import com.wequan.bu.security.component.AppUserDetails;
 import com.wequan.bu.service.UserService;
 import com.wequan.bu.util.GeneralTool;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,7 @@ import java.util.Date;
  */
 @RestController
 @RequestMapping("/user")
+@Api(value = "对用户的操作", tags = "用户相关Rest Api")
 public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -38,29 +42,32 @@ public class UserController {
     private AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
+    @ApiOperation(value = "用户注册", notes = "返回注册信息")
+    @ApiModelProperty(value = "user", notes = "用户信息的json串")
     public String register(User user) {
         String nickname = user.getNickname();
         String email = user.getEmail();
         String password = user.getPassword();
         //check parameters
         if (!GeneralTool.checkNickname(nickname)) {
-            return messageHandler.getResponseMessage("40001", "Nickname");
+            return messageHandler.getFailResponseMessage("40001", "Nickname");
         }
         if (!GeneralTool.checkEmail(email)) {
-            return messageHandler.getResponseMessage("40001", "Email");
+            return messageHandler.getFailResponseMessage("40001", "Email");
         }
         if (!GeneralTool.checkPassword(password)) {
-            return messageHandler.getResponseMessage("40001", "Password");
+            return messageHandler.getFailResponseMessage("40001", "Password");
         }
         //check email registered
         if (userService.checkEmailRegistered(email)) {
-            return messageHandler.getResponseMessage("40002", email);
+            return messageHandler.getFailResponseMessage("40002", email);
         }
         userService.sendConfirmEmail("ccyzhope@gmail.com", "Chris");
         return "";
     }
 
     @PostMapping("/login")
+    @ApiOperation(value = "用户登录", notes = "返回注册信息")
     public ResponseEntity<String> login(User user) {
         String email = user.getEmail();
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -95,4 +102,6 @@ public class UserController {
         userService.findAll().stream().map(user -> user.getEmail()).forEach(e -> result.append(e));
         return result.toString();
     }
+
+
 }
