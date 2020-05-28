@@ -165,16 +165,90 @@ ALTER SEQUENCE bu.wq_appointment_id_seq OWNED BY bu.wq_appointment.id;
 
 
 --
+-- Name: wq_appointment_rate; Type: TABLE; Schema: bu; Owner: quanzi_admin
+--
+
+CREATE TABLE bu.wq_appointment_rate (
+    id integer NOT NULL,
+    appointment_id integer NOT NULL,
+    user_id integer NOT NULL,
+    score real NOT NULL,
+    evaluation character varying(300) NOT NULL
+);
+
+
+ALTER TABLE bu.wq_appointment_rate OWNER TO quanzi_admin;
+
+--
+-- Name: wq_appointment_rate_id_seq; Type: SEQUENCE; Schema: bu; Owner: quanzi_admin
+--
+
+CREATE SEQUENCE bu.wq_appointment_rate_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE bu.wq_appointment_rate_id_seq OWNER TO quanzi_admin;
+
+--
+-- Name: wq_appointment_rate_id_seq; Type: SEQUENCE OWNED BY; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER SEQUENCE bu.wq_appointment_rate_id_seq OWNED BY bu.wq_appointment_rate.id;
+
+
+--
+-- Name: wq_cancellation_policy; Type: TABLE; Schema: bu; Owner: quanzi_admin
+--
+
+CREATE TABLE bu.wq_cancellation_policy (
+    id smallint NOT NULL,
+    label character varying(20) NOT NULL,
+    description character varying(300),
+    refund_ratio real DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE bu.wq_cancellation_policy OWNER TO quanzi_admin;
+
+--
+-- Name: wq_cancellation_policy_id_seq; Type: SEQUENCE; Schema: bu; Owner: quanzi_admin
+--
+
+CREATE SEQUENCE bu.wq_cancellation_policy_id_seq
+    AS smallint
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE bu.wq_cancellation_policy_id_seq OWNER TO quanzi_admin;
+
+--
+-- Name: wq_cancellation_policy_id_seq; Type: SEQUENCE OWNED BY; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER SEQUENCE bu.wq_cancellation_policy_id_seq OWNED BY bu.wq_cancellation_policy.id;
+
+
+--
 -- Name: wq_course; Type: TABLE; Schema: bu; Owner: quanzi_admin
 --
 
 CREATE TABLE bu.wq_course (
     id integer NOT NULL,
-    name character varying(100) NOT NULL,
-    code character varying(50) NOT NULL,
-    brief_description text NOT NULL,
-    department character varying(100) NOT NULL,
-    school_id smallint NOT NULL
+    name character varying(50) NOT NULL,
+    brief_description character varying(500) NOT NULL,
+    school_id smallint NOT NULL,
+    department_id integer NOT NULL,
+    code_first character varying(5) NOT NULL,
+    code_second character varying(10) NOT NULL
 );
 
 
@@ -212,11 +286,14 @@ CREATE TABLE bu.wq_course_material (
     store_directory character varying(200) NOT NULL,
     file_name character varying(100) NOT NULL,
     source_from text NOT NULL,
-    major_id smallint NOT NULL,
+    subject_id integer NOT NULL,
     course_id integer NOT NULL,
     professor_id integer NOT NULL,
-    term smallint NOT NULL,
-    study_points_required smallint DEFAULT 0 NOT NULL
+    study_points_required smallint DEFAULT 0 NOT NULL,
+    term character varying(30) NOT NULL,
+    file_type character varying(10) NOT NULL,
+    upload_by integer NOT NULL,
+    upload_time timestamp without time zone NOT NULL
 );
 
 
@@ -227,13 +304,6 @@ ALTER TABLE bu.wq_course_material OWNER TO quanzi_admin;
 --
 
 COMMENT ON COLUMN bu.wq_course_material.type IS '1, homework; 2, quiz; 3, exam; 4, notes; 5, syllabus; 6, others';
-
-
---
--- Name: COLUMN wq_course_material.term; Type: COMMENT; Schema: bu; Owner: quanzi_admin
---
-
-COMMENT ON COLUMN bu.wq_course_material.term IS '1, year; 2, semester';
 
 
 --
@@ -259,19 +329,19 @@ ALTER SEQUENCE bu.wq_course_material_id_seq OWNED BY bu.wq_course_material.id;
 
 
 --
--- Name: wq_course_material_purchase_record; Type: TABLE; Schema: bu; Owner: quanzi_admin
+-- Name: wq_course_material_unlock_record; Type: TABLE; Schema: bu; Owner: quanzi_admin
 --
 
-CREATE TABLE bu.wq_course_material_purchase_record (
+CREATE TABLE bu.wq_course_material_unlock_record (
     id integer NOT NULL,
     course_material_id integer NOT NULL,
     user_id integer NOT NULL,
-    purchase_time timestamp without time zone NOT NULL,
+    unlock_time timestamp without time zone NOT NULL,
     study_points_cost smallint DEFAULT 0 NOT NULL
 );
 
 
-ALTER TABLE bu.wq_course_material_purchase_record OWNER TO quanzi_admin;
+ALTER TABLE bu.wq_course_material_unlock_record OWNER TO quanzi_admin;
 
 --
 -- Name: wq_course_material_purchase_record_id_seq; Type: SEQUENCE; Schema: bu; Owner: quanzi_admin
@@ -292,7 +362,41 @@ ALTER TABLE bu.wq_course_material_purchase_record_id_seq OWNER TO quanzi_admin;
 -- Name: wq_course_material_purchase_record_id_seq; Type: SEQUENCE OWNED BY; Schema: bu; Owner: quanzi_admin
 --
 
-ALTER SEQUENCE bu.wq_course_material_purchase_record_id_seq OWNED BY bu.wq_course_material_purchase_record.id;
+ALTER SEQUENCE bu.wq_course_material_purchase_record_id_seq OWNED BY bu.wq_course_material_unlock_record.id;
+
+
+--
+-- Name: wq_course_material_type; Type: TABLE; Schema: bu; Owner: quanzi_admin
+--
+
+CREATE TABLE bu.wq_course_material_type (
+    id smallint NOT NULL,
+    name character varying(20) NOT NULL
+);
+
+
+ALTER TABLE bu.wq_course_material_type OWNER TO quanzi_admin;
+
+--
+-- Name: wq_course_material_type_id_seq; Type: SEQUENCE; Schema: bu; Owner: quanzi_admin
+--
+
+CREATE SEQUENCE bu.wq_course_material_type_id_seq
+    AS smallint
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE bu.wq_course_material_type_id_seq OWNER TO quanzi_admin;
+
+--
+-- Name: wq_course_material_type_id_seq; Type: SEQUENCE OWNED BY; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER SEQUENCE bu.wq_course_material_type_id_seq OWNED BY bu.wq_course_material_type.id;
 
 
 --
@@ -409,6 +513,41 @@ ALTER SEQUENCE bu.wq_degree_id_seq OWNED BY bu.wq_degree.id;
 
 
 --
+-- Name: wq_department; Type: TABLE; Schema: bu; Owner: quanzi_admin
+--
+
+CREATE TABLE bu.wq_department (
+    id integer NOT NULL,
+    name character varying(100) NOT NULL,
+    school_id smallint NOT NULL
+);
+
+
+ALTER TABLE bu.wq_department OWNER TO quanzi_admin;
+
+--
+-- Name: wq_department_id_seq; Type: SEQUENCE; Schema: bu; Owner: quanzi_admin
+--
+
+CREATE SEQUENCE bu.wq_department_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE bu.wq_department_id_seq OWNER TO quanzi_admin;
+
+--
+-- Name: wq_department_id_seq; Type: SEQUENCE OWNED BY; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER SEQUENCE bu.wq_department_id_seq OWNED BY bu.wq_department.id;
+
+
+--
 -- Name: wq_discussion_channel; Type: TABLE; Schema: bu; Owner: quanzi_admin
 --
 
@@ -468,6 +607,18 @@ CREATE TABLE bu.wq_favorite_course (
 
 
 ALTER TABLE bu.wq_favorite_course OWNER TO quanzi_admin;
+
+--
+-- Name: wq_favorite_course_material; Type: TABLE; Schema: bu; Owner: quanzi_admin
+--
+
+CREATE TABLE bu.wq_favorite_course_material (
+    user_id integer NOT NULL,
+    course_material_id integer NOT NULL
+);
+
+
+ALTER TABLE bu.wq_favorite_course_material OWNER TO quanzi_admin;
 
 --
 -- Name: wq_favorite_professor; Type: TABLE; Schema: bu; Owner: quanzi_admin
@@ -615,30 +766,25 @@ ALTER SEQUENCE bu.wq_invite_friend_record_id_seq OWNED BY bu.wq_invite_friend_re
 
 
 --
--- Name: wq_major; Type: TABLE; Schema: bu; Owner: quanzi_admin
+-- Name: wq_late_policy; Type: TABLE; Schema: bu; Owner: quanzi_admin
 --
 
-CREATE TABLE bu.wq_major (
+CREATE TABLE bu.wq_late_policy (
     id smallint NOT NULL,
-    name character varying(50) NOT NULL
+    label character varying(20) NOT NULL,
+    description character varying(300),
+    overdue_allowed smallint DEFAULT 0 NOT NULL
 );
 
 
-ALTER TABLE bu.wq_major OWNER TO quanzi_admin;
+ALTER TABLE bu.wq_late_policy OWNER TO quanzi_admin;
 
 --
--- Name: TABLE wq_major; Type: COMMENT; Schema: bu; Owner: quanzi_admin
+-- Name: wq_late_policy_id_seq; Type: SEQUENCE; Schema: bu; Owner: quanzi_admin
 --
 
-COMMENT ON TABLE bu.wq_major IS 'this is the basic table for majors';
-
-
---
--- Name: wq_major_id_seq; Type: SEQUENCE; Schema: bu; Owner: quanzi_admin
---
-
-CREATE SEQUENCE bu.wq_major_id_seq
-    AS integer
+CREATE SEQUENCE bu.wq_late_policy_id_seq
+    AS smallint
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -646,13 +792,13 @@ CREATE SEQUENCE bu.wq_major_id_seq
     CACHE 1;
 
 
-ALTER TABLE bu.wq_major_id_seq OWNER TO quanzi_admin;
+ALTER TABLE bu.wq_late_policy_id_seq OWNER TO quanzi_admin;
 
 --
--- Name: wq_major_id_seq; Type: SEQUENCE OWNED BY; Schema: bu; Owner: quanzi_admin
+-- Name: wq_late_policy_id_seq; Type: SEQUENCE OWNED BY; Schema: bu; Owner: quanzi_admin
 --
 
-ALTER SEQUENCE bu.wq_major_id_seq OWNED BY bu.wq_major.id;
+ALTER SEQUENCE bu.wq_late_policy_id_seq OWNED BY bu.wq_late_policy.id;
 
 
 --
@@ -689,10 +835,8 @@ CREATE TABLE bu.wq_professor_course_rate (
     professor_id integer NOT NULL,
     course_id integer NOT NULL,
     user_id integer NOT NULL,
-    rate_score real NOT NULL,
-    difficulty_level smallint NOT NULL,
-    using_textbook character varying(100),
-    attendance_amount smallint DEFAULT 0 NOT NULL,
+    quality_score real NOT NULL,
+    difficult_score real NOT NULL,
     number_of_exams smallint DEFAULT 0 NOT NULL,
     number_of_quizzes smallint DEFAULT 0 NOT NULL,
     number_of_homeworks smallint DEFAULT 0 NOT NULL,
@@ -700,12 +844,21 @@ CREATE TABLE bu.wq_professor_course_rate (
     number_of_papers smallint DEFAULT 0 NOT NULL,
     grade_received real,
     tags smallint NOT NULL,
-    comment character varying(500) NOT NULL,
-    anonymous boolean DEFAULT false NOT NULL
+    comment character varying(300) NOT NULL,
+    anonymous boolean DEFAULT false NOT NULL,
+    using_textbook boolean NOT NULL,
+    attendance boolean NOT NULL
 );
 
 
 ALTER TABLE bu.wq_professor_course_rate OWNER TO quanzi_admin;
+
+--
+-- Name: COLUMN wq_professor_course_rate.tags; Type: COMMENT; Schema: bu; Owner: quanzi_admin
+--
+
+COMMENT ON COLUMN bu.wq_professor_course_rate.tags IS 'refer to basic table';
+
 
 --
 -- Name: wq_professor_course_rate_id_seq; Type: SEQUENCE; Schema: bu; Owner: quanzi_admin
@@ -737,11 +890,11 @@ CREATE TABLE bu.wq_professor_profile (
     id integer NOT NULL,
     first_name character varying(20) NOT NULL,
     last_name character varying(20) NOT NULL,
-    department character varying(100) NOT NULL,
     school_id smallint NOT NULL,
     overall_score real DEFAULT 0 NOT NULL,
     create_time timestamp without time zone NOT NULL,
-    create_by integer NOT NULL
+    create_by integer NOT NULL,
+    department_id integer NOT NULL
 );
 
 
@@ -930,6 +1083,39 @@ ALTER SEQUENCE bu.wq_school_id_seq OWNED BY bu.wq_school.id;
 
 
 --
+-- Name: wq_subject_id_seq; Type: SEQUENCE; Schema: bu; Owner: quanzi_admin
+--
+
+CREATE SEQUENCE bu.wq_subject_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    MAXVALUE 2147483647
+    CACHE 1;
+
+
+ALTER TABLE bu.wq_subject_id_seq OWNER TO quanzi_admin;
+
+--
+-- Name: wq_subject; Type: TABLE; Schema: bu; Owner: quanzi_admin
+--
+
+CREATE TABLE bu.wq_subject (
+    id integer DEFAULT nextval('bu.wq_subject_id_seq'::regclass) NOT NULL,
+    name character varying(50) NOT NULL
+);
+
+
+ALTER TABLE bu.wq_subject OWNER TO quanzi_admin;
+
+--
+-- Name: TABLE wq_subject; Type: COMMENT; Schema: bu; Owner: quanzi_admin
+--
+
+COMMENT ON TABLE bu.wq_subject IS 'this is the basic table for subjects';
+
+
+--
 -- Name: wq_thread; Type: TABLE; Schema: bu; Owner: quanzi_admin
 --
 
@@ -1092,7 +1278,7 @@ ALTER SEQUENCE bu.wq_tutor_course_id_seq OWNED BY bu.wq_tutor_course.id;
 CREATE TABLE bu.wq_tutor_inquiry (
     id integer NOT NULL,
     user_id integer NOT NULL,
-    major_id smallint NOT NULL,
+    subject_id integer NOT NULL,
     course_id integer NOT NULL,
     brief_description text NOT NULL,
     online boolean DEFAULT true NOT NULL,
@@ -1149,10 +1335,10 @@ CREATE TABLE bu.wq_tutor_profile (
     current_location character varying(100) NOT NULL,
     create_time timestamp without time zone NOT NULL,
     update_time timestamp without time zone,
-    late_policy_agree boolean NOT NULL,
-    cancellation_policy_agree boolean NOT NULL,
     pay_rate real NOT NULL,
-    status smallint DEFAULT 1 NOT NULL
+    status smallint DEFAULT 1 NOT NULL,
+    late_policy_id smallint NOT NULL,
+    cancellation_policy_id smallint NOT NULL
 );
 
 
@@ -1188,16 +1374,28 @@ ALTER SEQUENCE bu.wq_tutor_profile_id_seq OWNED BY bu.wq_tutor_profile.id;
 
 
 --
--- Name: wq_user_followers; Type: TABLE; Schema: bu; Owner: quanzi_admin
+-- Name: wq_tutor_subject; Type: TABLE; Schema: bu; Owner: quanzi_admin
 --
 
-CREATE TABLE bu.wq_user_followers (
+CREATE TABLE bu.wq_tutor_subject (
+    tutor_id integer NOT NULL,
+    subject_id integer NOT NULL
+);
+
+
+ALTER TABLE bu.wq_tutor_subject OWNER TO quanzi_admin;
+
+--
+-- Name: wq_user_follower; Type: TABLE; Schema: bu; Owner: quanzi_admin
+--
+
+CREATE TABLE bu.wq_user_follower (
     user_id integer NOT NULL,
     follower_id integer NOT NULL
 );
 
 
-ALTER TABLE bu.wq_user_followers OWNER TO quanzi_admin;
+ALTER TABLE bu.wq_user_follower OWNER TO quanzi_admin;
 
 --
 -- Name: wq_user_profile_id_seq; Type: SEQUENCE; Schema: bu; Owner: quanzi_admin
@@ -1219,7 +1417,6 @@ ALTER TABLE bu.wq_user_profile_id_seq OWNER TO quanzi_admin;
 
 CREATE TABLE bu.wq_user_profile (
     id integer DEFAULT nextval('bu.wq_user_profile_id_seq'::regclass) NOT NULL,
-    name character varying(20),
     nickname character varying(20) NOT NULL,
     avatar character varying(200),
     email character varying(50) NOT NULL,
@@ -1228,13 +1425,33 @@ CREATE TABLE bu.wq_user_profile (
     zip_code character varying(10),
     credential character varying(50) NOT NULL,
     school_id smallint NOT NULL,
-    major_id smallint NOT NULL,
     study_points smallint NOT NULL,
-    access_token character varying(500)
+    access_token character varying(500),
+    first_name character varying(20) NOT NULL,
+    last_name character varying(20) NOT NULL
 );
 
 
 ALTER TABLE bu.wq_user_profile OWNER TO quanzi_admin;
+
+--
+-- Name: wq_user_subject; Type: TABLE; Schema: bu; Owner: quanzi_admin
+--
+
+CREATE TABLE bu.wq_user_subject (
+    user_id integer NOT NULL,
+    subject_id integer NOT NULL
+);
+
+
+ALTER TABLE bu.wq_user_subject OWNER TO quanzi_admin;
+
+--
+-- Name: TABLE wq_user_subject; Type: COMMENT; Schema: bu; Owner: quanzi_admin
+--
+
+COMMENT ON TABLE bu.wq_user_subject IS 'one user has multiple majors/topics';
+
 
 --
 -- Name: wq_apply_tutor_record id; Type: DEFAULT; Schema: bu; Owner: quanzi_admin
@@ -1248,6 +1465,20 @@ ALTER TABLE ONLY bu.wq_apply_tutor_record ALTER COLUMN id SET DEFAULT nextval('b
 --
 
 ALTER TABLE ONLY bu.wq_appointment ALTER COLUMN id SET DEFAULT nextval('bu.wq_appointment_id_seq'::regclass);
+
+
+--
+-- Name: wq_appointment_rate id; Type: DEFAULT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_appointment_rate ALTER COLUMN id SET DEFAULT nextval('bu.wq_appointment_rate_id_seq'::regclass);
+
+
+--
+-- Name: wq_cancellation_policy id; Type: DEFAULT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_cancellation_policy ALTER COLUMN id SET DEFAULT nextval('bu.wq_cancellation_policy_id_seq'::regclass);
 
 
 --
@@ -1265,10 +1496,17 @@ ALTER TABLE ONLY bu.wq_course_material ALTER COLUMN id SET DEFAULT nextval('bu.w
 
 
 --
--- Name: wq_course_material_purchase_record id; Type: DEFAULT; Schema: bu; Owner: quanzi_admin
+-- Name: wq_course_material_type id; Type: DEFAULT; Schema: bu; Owner: quanzi_admin
 --
 
-ALTER TABLE ONLY bu.wq_course_material_purchase_record ALTER COLUMN id SET DEFAULT nextval('bu.wq_course_material_purchase_record_id_seq'::regclass);
+ALTER TABLE ONLY bu.wq_course_material_type ALTER COLUMN id SET DEFAULT nextval('bu.wq_course_material_type_id_seq'::regclass);
+
+
+--
+-- Name: wq_course_material_unlock_record id; Type: DEFAULT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_course_material_unlock_record ALTER COLUMN id SET DEFAULT nextval('bu.wq_course_material_purchase_record_id_seq'::regclass);
 
 
 --
@@ -1293,6 +1531,13 @@ ALTER TABLE ONLY bu.wq_degree ALTER COLUMN id SET DEFAULT nextval('bu.wq_degree_
 
 
 --
+-- Name: wq_department id; Type: DEFAULT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_department ALTER COLUMN id SET DEFAULT nextval('bu.wq_department_id_seq'::regclass);
+
+
+--
 -- Name: wq_discussion_channel id; Type: DEFAULT; Schema: bu; Owner: quanzi_admin
 --
 
@@ -1314,10 +1559,10 @@ ALTER TABLE ONLY bu.wq_invite_friend_record ALTER COLUMN id SET DEFAULT nextval(
 
 
 --
--- Name: wq_major id; Type: DEFAULT; Schema: bu; Owner: quanzi_admin
+-- Name: wq_late_policy id; Type: DEFAULT; Schema: bu; Owner: quanzi_admin
 --
 
-ALTER TABLE ONLY bu.wq_major ALTER COLUMN id SET DEFAULT nextval('bu.wq_major_id_seq'::regclass);
+ALTER TABLE ONLY bu.wq_late_policy ALTER COLUMN id SET DEFAULT nextval('bu.wq_late_policy_id_seq'::regclass);
 
 
 --
@@ -1414,10 +1659,26 @@ COPY bu.wq_appointment (id, organizer, subject, participant, create_time, update
 
 
 --
+-- Data for Name: wq_appointment_rate; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
+--
+
+COPY bu.wq_appointment_rate (id, appointment_id, user_id, score, evaluation) FROM stdin;
+\.
+
+
+--
+-- Data for Name: wq_cancellation_policy; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
+--
+
+COPY bu.wq_cancellation_policy (id, label, description, refund_ratio) FROM stdin;
+\.
+
+
+--
 -- Data for Name: wq_course; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
 --
 
-COPY bu.wq_course (id, name, code, brief_description, department, school_id) FROM stdin;
+COPY bu.wq_course (id, name, brief_description, school_id, department_id, code_first, code_second) FROM stdin;
 \.
 
 
@@ -1425,15 +1686,23 @@ COPY bu.wq_course (id, name, code, brief_description, department, school_id) FRO
 -- Data for Name: wq_course_material; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
 --
 
-COPY bu.wq_course_material (id, type, store_directory, file_name, source_from, major_id, course_id, professor_id, term, study_points_required) FROM stdin;
+COPY bu.wq_course_material (id, type, store_directory, file_name, source_from, subject_id, course_id, professor_id, study_points_required, term, file_type, upload_by, upload_time) FROM stdin;
 \.
 
 
 --
--- Data for Name: wq_course_material_purchase_record; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
+-- Data for Name: wq_course_material_type; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
 --
 
-COPY bu.wq_course_material_purchase_record (id, course_material_id, user_id, purchase_time, study_points_cost) FROM stdin;
+COPY bu.wq_course_material_type (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: wq_course_material_unlock_record; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
+--
+
+COPY bu.wq_course_material_unlock_record (id, course_material_id, user_id, unlock_time, study_points_cost) FROM stdin;
 \.
 
 
@@ -1462,6 +1731,14 @@ COPY bu.wq_degree (id, name) FROM stdin;
 
 
 --
+-- Data for Name: wq_department; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
+--
+
+COPY bu.wq_department (id, name, school_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: wq_discussion_channel; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
 --
 
@@ -1474,6 +1751,14 @@ COPY bu.wq_discussion_channel (id, name, user_id, group_manager_id, brief_introd
 --
 
 COPY bu.wq_favorite_course (user_id, course_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: wq_favorite_course_material; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
+--
+
+COPY bu.wq_favorite_course_material (user_id, course_material_id) FROM stdin;
 \.
 
 
@@ -1518,10 +1803,10 @@ COPY bu.wq_invite_friend_record (id, user_id, friend_email, invite_time, status,
 
 
 --
--- Data for Name: wq_major; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
+-- Data for Name: wq_late_policy; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
 --
 
-COPY bu.wq_major (id, name) FROM stdin;
+COPY bu.wq_late_policy (id, label, description, overdue_allowed) FROM stdin;
 \.
 
 
@@ -1545,7 +1830,7 @@ COPY bu.wq_professor_course (professor_id, course_id) FROM stdin;
 -- Data for Name: wq_professor_course_rate; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
 --
 
-COPY bu.wq_professor_course_rate (id, professor_id, course_id, user_id, rate_score, difficulty_level, using_textbook, attendance_amount, number_of_exams, number_of_quizzes, number_of_homeworks, number_of_projects, number_of_papers, grade_received, tags, comment, anonymous) FROM stdin;
+COPY bu.wq_professor_course_rate (id, professor_id, course_id, user_id, quality_score, difficult_score, number_of_exams, number_of_quizzes, number_of_homeworks, number_of_projects, number_of_papers, grade_received, tags, comment, anonymous, using_textbook, attendance) FROM stdin;
 \.
 
 
@@ -1553,7 +1838,7 @@ COPY bu.wq_professor_course_rate (id, professor_id, course_id, user_id, rate_sco
 -- Data for Name: wq_professor_profile; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
 --
 
-COPY bu.wq_professor_profile (id, first_name, last_name, department, school_id, overall_score, create_time, create_by) FROM stdin;
+COPY bu.wq_professor_profile (id, first_name, last_name, school_id, overall_score, create_time, create_by, department_id) FROM stdin;
 \.
 
 
@@ -1586,6 +1871,14 @@ COPY bu.wq_realtime_class_group_member (realtime_class_id, user_id) FROM stdin;
 --
 
 COPY bu.wq_school (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: wq_subject; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
+--
+
+COPY bu.wq_subject (id, name) FROM stdin;
 \.
 
 
@@ -1625,7 +1918,7 @@ COPY bu.wq_tutor_course (id, tutor_id, course_id, online, create_time, update_ti
 -- Data for Name: wq_tutor_inquiry; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
 --
 
-COPY bu.wq_tutor_inquiry (id, user_id, major_id, course_id, brief_description, online, create_time, update_time, status) FROM stdin;
+COPY bu.wq_tutor_inquiry (id, user_id, subject_id, course_id, brief_description, online, create_time, update_time, status) FROM stdin;
 \.
 
 
@@ -1633,15 +1926,23 @@ COPY bu.wq_tutor_inquiry (id, user_id, major_id, course_id, brief_description, o
 -- Data for Name: wq_tutor_profile; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
 --
 
-COPY bu.wq_tutor_profile (id, user_id, brief_introduction, resume_path, transcript_path, other_proof_path, current_school_id, current_degree_id, current_location, create_time, update_time, late_policy_agree, cancellation_policy_agree, pay_rate, status) FROM stdin;
+COPY bu.wq_tutor_profile (id, user_id, brief_introduction, resume_path, transcript_path, other_proof_path, current_school_id, current_degree_id, current_location, create_time, update_time, pay_rate, status, late_policy_id, cancellation_policy_id) FROM stdin;
 \.
 
 
 --
--- Data for Name: wq_user_followers; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
+-- Data for Name: wq_tutor_subject; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
 --
 
-COPY bu.wq_user_followers (user_id, follower_id) FROM stdin;
+COPY bu.wq_tutor_subject (tutor_id, subject_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: wq_user_follower; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
+--
+
+COPY bu.wq_user_follower (user_id, follower_id) FROM stdin;
 \.
 
 
@@ -1649,7 +1950,15 @@ COPY bu.wq_user_followers (user_id, follower_id) FROM stdin;
 -- Data for Name: wq_user_profile; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
 --
 
-COPY bu.wq_user_profile (id, name, nickname, avatar, email, phone, address, zip_code, credential, school_id, major_id, study_points, access_token) FROM stdin;
+COPY bu.wq_user_profile (id, nickname, avatar, email, phone, address, zip_code, credential, school_id, study_points, access_token, first_name, last_name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: wq_user_subject; Type: TABLE DATA; Schema: bu; Owner: quanzi_admin
+--
+
+COPY bu.wq_user_subject (user_id, subject_id) FROM stdin;
 \.
 
 
@@ -1665,6 +1974,20 @@ SELECT pg_catalog.setval('bu.wq_apply_tutor_record_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('bu.wq_appointment_id_seq', 1, false);
+
+
+--
+-- Name: wq_appointment_rate_id_seq; Type: SEQUENCE SET; Schema: bu; Owner: quanzi_admin
+--
+
+SELECT pg_catalog.setval('bu.wq_appointment_rate_id_seq', 1, false);
+
+
+--
+-- Name: wq_cancellation_policy_id_seq; Type: SEQUENCE SET; Schema: bu; Owner: quanzi_admin
+--
+
+SELECT pg_catalog.setval('bu.wq_cancellation_policy_id_seq', 1, false);
 
 
 --
@@ -1689,6 +2012,13 @@ SELECT pg_catalog.setval('bu.wq_course_material_purchase_record_id_seq', 1, fals
 
 
 --
+-- Name: wq_course_material_type_id_seq; Type: SEQUENCE SET; Schema: bu; Owner: quanzi_admin
+--
+
+SELECT pg_catalog.setval('bu.wq_course_material_type_id_seq', 1, false);
+
+
+--
 -- Name: wq_course_material_view_history_id_seq; Type: SEQUENCE SET; Schema: bu; Owner: quanzi_admin
 --
 
@@ -1707,6 +2037,13 @@ SELECT pg_catalog.setval('bu.wq_course_view_history_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('bu.wq_degree_id_seq', 1, false);
+
+
+--
+-- Name: wq_department_id_seq; Type: SEQUENCE SET; Schema: bu; Owner: quanzi_admin
+--
+
+SELECT pg_catalog.setval('bu.wq_department_id_seq', 1, false);
 
 
 --
@@ -1731,10 +2068,10 @@ SELECT pg_catalog.setval('bu.wq_invite_friend_record_id_seq', 1, false);
 
 
 --
--- Name: wq_major_id_seq; Type: SEQUENCE SET; Schema: bu; Owner: quanzi_admin
+-- Name: wq_late_policy_id_seq; Type: SEQUENCE SET; Schema: bu; Owner: quanzi_admin
 --
 
-SELECT pg_catalog.setval('bu.wq_major_id_seq', 1, false);
+SELECT pg_catalog.setval('bu.wq_late_policy_id_seq', 1, false);
 
 
 --
@@ -1770,6 +2107,13 @@ SELECT pg_catalog.setval('bu.wq_realtime_class_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('bu.wq_school_id_seq', 1, false);
+
+
+--
+-- Name: wq_subject_id_seq; Type: SEQUENCE SET; Schema: bu; Owner: quanzi_admin
+--
+
+SELECT pg_catalog.setval('bu.wq_subject_id_seq', 1, false);
 
 
 --
@@ -1838,6 +2182,22 @@ ALTER TABLE ONLY bu.wq_appointment
 
 
 --
+-- Name: wq_appointment_rate appointment_rate_pk_id; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_appointment_rate
+    ADD CONSTRAINT appointment_rate_pk_id PRIMARY KEY (id);
+
+
+--
+-- Name: wq_cancellation_policy cancellation_policy_pk_id; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_cancellation_policy
+    ADD CONSTRAINT cancellation_policy_pk_id PRIMARY KEY (id);
+
+
+--
 -- Name: wq_course_material course_material_pk_id; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
 --
 
@@ -1846,11 +2206,19 @@ ALTER TABLE ONLY bu.wq_course_material
 
 
 --
--- Name: wq_course_material_purchase_record course_material_purchase_record_pk_id; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
+-- Name: wq_course_material_unlock_record course_material_purchase_record_pk_id; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
 --
 
-ALTER TABLE ONLY bu.wq_course_material_purchase_record
+ALTER TABLE ONLY bu.wq_course_material_unlock_record
     ADD CONSTRAINT course_material_purchase_record_pk_id PRIMARY KEY (id);
+
+
+--
+-- Name: wq_course_material_type course_material_type_pk_id; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_course_material_type
+    ADD CONSTRAINT course_material_type_pk_id PRIMARY KEY (id);
 
 
 --
@@ -1886,11 +2254,27 @@ ALTER TABLE ONLY bu.wq_degree
 
 
 --
+-- Name: wq_department department_pk_id; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_department
+    ADD CONSTRAINT department_pk_id PRIMARY KEY (id);
+
+
+--
 -- Name: wq_discussion_channel discussion_channel_pk_id; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
 --
 
 ALTER TABLE ONLY bu.wq_discussion_channel
     ADD CONSTRAINT discussion_channel_pk_id PRIMARY KEY (id);
+
+
+--
+-- Name: wq_favorite_course_material favorite_course_material_pk_id; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_favorite_course_material
+    ADD CONSTRAINT favorite_course_material_pk_id PRIMARY KEY (user_id, course_material_id);
 
 
 --
@@ -1942,11 +2326,11 @@ ALTER TABLE ONLY bu.wq_invite_friend_record
 
 
 --
--- Name: wq_major major_pk_id; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
+-- Name: wq_late_policy late_policy_pk_id; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
 --
 
-ALTER TABLE ONLY bu.wq_major
-    ADD CONSTRAINT major_pk_id PRIMARY KEY (id);
+ALTER TABLE ONLY bu.wq_late_policy
+    ADD CONSTRAINT late_policy_pk_id PRIMARY KEY (id);
 
 
 --
@@ -2014,6 +2398,14 @@ ALTER TABLE ONLY bu.wq_school
 
 
 --
+-- Name: wq_subject subject_pk_id; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_subject
+    ADD CONSTRAINT subject_pk_id PRIMARY KEY (id);
+
+
+--
 -- Name: wq_thread thread_pk_id; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
 --
 
@@ -2062,6 +2454,14 @@ ALTER TABLE ONLY bu.wq_tutor_profile
 
 
 --
+-- Name: wq_tutor_subject tutor_subject_pk_id; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_tutor_subject
+    ADD CONSTRAINT tutor_subject_pk_id PRIMARY KEY (tutor_id, subject_id);
+
+
+--
 -- Name: wq_degree unique_degree_name; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
 --
 
@@ -2070,10 +2470,10 @@ ALTER TABLE ONLY bu.wq_degree
 
 
 --
--- Name: wq_major unique_major_name; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
+-- Name: wq_subject unique_major_name; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
 --
 
-ALTER TABLE ONLY bu.wq_major
+ALTER TABLE ONLY bu.wq_subject
     ADD CONSTRAINT unique_major_name UNIQUE (name);
 
 
@@ -2086,10 +2486,10 @@ ALTER TABLE ONLY bu.wq_school
 
 
 --
--- Name: wq_user_followers unique_user_follower_id; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
+-- Name: wq_user_follower unique_user_follower_id; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
 --
 
-ALTER TABLE ONLY bu.wq_user_followers
+ALTER TABLE ONLY bu.wq_user_follower
     ADD CONSTRAINT unique_user_follower_id UNIQUE (user_id, follower_id);
 
 
@@ -2107,6 +2507,14 @@ ALTER TABLE ONLY bu.wq_user_profile
 
 ALTER TABLE ONLY bu.wq_user_profile
     ADD CONSTRAINT user_profile_pk_id PRIMARY KEY (id);
+
+
+--
+-- Name: wq_user_subject user_subject_pk_user_subject_id; Type: CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_user_subject
+    ADD CONSTRAINT user_subject_pk_user_subject_id PRIMARY KEY (user_id, subject_id);
 
 
 --
@@ -2150,6 +2558,30 @@ ALTER TABLE ONLY bu.wq_appointment
 
 
 --
+-- Name: wq_appointment_rate appointment_rate_fk_appointment_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_appointment_rate
+    ADD CONSTRAINT appointment_rate_fk_appointment_id FOREIGN KEY (appointment_id) REFERENCES bu.wq_appointment(id);
+
+
+--
+-- Name: wq_appointment_rate appointment_rate_fk_user_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_appointment_rate
+    ADD CONSTRAINT appointment_rate_fk_user_id FOREIGN KEY (user_id) REFERENCES bu.wq_user_profile(id);
+
+
+--
+-- Name: wq_course course_fk_department_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_course
+    ADD CONSTRAINT course_fk_department_id FOREIGN KEY (department_id) REFERENCES bu.wq_department(id) NOT VALID;
+
+
+--
 -- Name: wq_course course_fk_school_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
 --
 
@@ -2166,11 +2598,11 @@ ALTER TABLE ONLY bu.wq_course_material
 
 
 --
--- Name: wq_course_material course_material_fk_major_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+-- Name: wq_course_material course_material_fk_course_material_type_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
 --
 
 ALTER TABLE ONLY bu.wq_course_material
-    ADD CONSTRAINT course_material_fk_major_id FOREIGN KEY (major_id) REFERENCES bu.wq_major(id);
+    ADD CONSTRAINT course_material_fk_course_material_type_id FOREIGN KEY (type) REFERENCES bu.wq_course_material_type(id) NOT VALID;
 
 
 --
@@ -2182,18 +2614,26 @@ ALTER TABLE ONLY bu.wq_course_material
 
 
 --
--- Name: wq_course_material_purchase_record course_material_purchase_record_fk_course_material_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+-- Name: wq_course_material course_material_fk_subject_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
 --
 
-ALTER TABLE ONLY bu.wq_course_material_purchase_record
+ALTER TABLE ONLY bu.wq_course_material
+    ADD CONSTRAINT course_material_fk_subject_id FOREIGN KEY (subject_id) REFERENCES bu.wq_subject(id);
+
+
+--
+-- Name: wq_course_material_unlock_record course_material_purchase_record_fk_course_material_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_course_material_unlock_record
     ADD CONSTRAINT course_material_purchase_record_fk_course_material_id FOREIGN KEY (course_material_id) REFERENCES bu.wq_course_material(id);
 
 
 --
--- Name: wq_course_material_purchase_record course_material_purchase_record_fk_user_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+-- Name: wq_course_material_unlock_record course_material_purchase_record_fk_user_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
 --
 
-ALTER TABLE ONLY bu.wq_course_material_purchase_record
+ALTER TABLE ONLY bu.wq_course_material_unlock_record
     ADD CONSTRAINT course_material_purchase_record_fk_user_id FOREIGN KEY (user_id) REFERENCES bu.wq_user_profile(id);
 
 
@@ -2230,6 +2670,14 @@ ALTER TABLE ONLY bu.wq_course_view_history
 
 
 --
+-- Name: wq_department department_fk_school_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_department
+    ADD CONSTRAINT department_fk_school_id FOREIGN KEY (school_id) REFERENCES bu.wq_school(id);
+
+
+--
 -- Name: wq_discussion_channel discussion_channel_group_manager_fk_user_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
 --
 
@@ -2259,6 +2707,22 @@ ALTER TABLE ONLY bu.wq_favorite_course
 
 ALTER TABLE ONLY bu.wq_favorite_course
     ADD CONSTRAINT favorite_course_fk_user_id FOREIGN KEY (user_id) REFERENCES bu.wq_user_profile(id);
+
+
+--
+-- Name: wq_favorite_course_material favorite_course_material_fk_course_material_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_favorite_course_material
+    ADD CONSTRAINT favorite_course_material_fk_course_material_id FOREIGN KEY (course_material_id) REFERENCES bu.wq_course_material(id);
+
+
+--
+-- Name: wq_favorite_course_material favorite_course_material_fk_user_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_favorite_course_material
+    ADD CONSTRAINT favorite_course_material_fk_user_id FOREIGN KEY (user_id) REFERENCES bu.wq_user_profile(id);
 
 
 --
@@ -2486,11 +2950,27 @@ ALTER TABLE ONLY bu.wq_tutor_course
 
 
 --
+-- Name: wq_tutor_profile tutor_fk_cancellation_policy_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_tutor_profile
+    ADD CONSTRAINT tutor_fk_cancellation_policy_id FOREIGN KEY (cancellation_policy_id) REFERENCES bu.wq_cancellation_policy(id) NOT VALID;
+
+
+--
 -- Name: wq_tutor_profile tutor_fk_degree_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
 --
 
 ALTER TABLE ONLY bu.wq_tutor_profile
     ADD CONSTRAINT tutor_fk_degree_id FOREIGN KEY (current_degree_id) REFERENCES bu.wq_degree(id) NOT VALID;
+
+
+--
+-- Name: wq_tutor_profile tutor_fk_late_policy_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_tutor_profile
+    ADD CONSTRAINT tutor_fk_late_policy_id FOREIGN KEY (late_policy_id) REFERENCES bu.wq_late_policy(id) NOT VALID;
 
 
 --
@@ -2518,11 +2998,11 @@ ALTER TABLE ONLY bu.wq_tutor_inquiry
 
 
 --
--- Name: wq_tutor_inquiry tutor_inquiry_fk_major_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+-- Name: wq_tutor_inquiry tutor_inquiry_fk_subject_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
 --
 
 ALTER TABLE ONLY bu.wq_tutor_inquiry
-    ADD CONSTRAINT tutor_inquiry_fk_major_id FOREIGN KEY (major_id) REFERENCES bu.wq_major(id);
+    ADD CONSTRAINT tutor_inquiry_fk_subject_id FOREIGN KEY (subject_id) REFERENCES bu.wq_subject(id);
 
 
 --
@@ -2534,19 +3014,59 @@ ALTER TABLE ONLY bu.wq_tutor_inquiry
 
 
 --
--- Name: wq_user_followers user_followers_fk_follower_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+-- Name: wq_tutor_subject tutor_subject_fk_subject_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
 --
 
-ALTER TABLE ONLY bu.wq_user_followers
+ALTER TABLE ONLY bu.wq_tutor_subject
+    ADD CONSTRAINT tutor_subject_fk_subject_id FOREIGN KEY (subject_id) REFERENCES bu.wq_subject(id);
+
+
+--
+-- Name: wq_tutor_subject tutor_subject_fk_tutor_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_tutor_subject
+    ADD CONSTRAINT tutor_subject_fk_tutor_id FOREIGN KEY (tutor_id) REFERENCES bu.wq_tutor_profile(id);
+
+
+--
+-- Name: wq_user_follower user_followers_fk_follower_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_user_follower
     ADD CONSTRAINT user_followers_fk_follower_id FOREIGN KEY (follower_id) REFERENCES bu.wq_user_profile(id);
 
 
 --
--- Name: wq_user_followers user_followers_fk_user_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+-- Name: wq_user_follower user_followers_fk_user_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
 --
 
-ALTER TABLE ONLY bu.wq_user_followers
+ALTER TABLE ONLY bu.wq_user_follower
     ADD CONSTRAINT user_followers_fk_user_id FOREIGN KEY (user_id) REFERENCES bu.wq_user_profile(id);
+
+
+--
+-- Name: wq_user_profile user_profile_fk_school_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_user_profile
+    ADD CONSTRAINT user_profile_fk_school_id FOREIGN KEY (id) REFERENCES bu.wq_school(id) NOT VALID;
+
+
+--
+-- Name: wq_user_subject user_subject_fk_subject_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_user_subject
+    ADD CONSTRAINT user_subject_fk_subject_id FOREIGN KEY (subject_id) REFERENCES bu.wq_subject(id);
+
+
+--
+-- Name: wq_user_subject user_subject_fk_user_id; Type: FK CONSTRAINT; Schema: bu; Owner: quanzi_admin
+--
+
+ALTER TABLE ONLY bu.wq_user_subject
+    ADD CONSTRAINT user_subject_fk_user_id FOREIGN KEY (user_id) REFERENCES bu.wq_user_profile(id);
 
 
 --
