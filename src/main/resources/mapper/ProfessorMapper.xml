@@ -56,6 +56,7 @@
         ${alias}.code_first,
         ${alias}.code_second
     </sql>
+
     <select id="selectAll" resultMap="professorResultMap">
         SELECT
             <include refid="professorColumns">
@@ -77,5 +78,26 @@
         LEFT JOIN ${schema}.wq_course c on pc.course_id = c.id
     </select>
 
-  
+    <select id="selectByPrimaryKey" resultMap="professorResultMap">
+        SELECT
+        <include refid="professorColumns">
+            <property name="alias" value="p"/>
+        </include>,
+        <include refid="schoolColumns">
+            <property name="alias" value="s"/>
+        </include>,
+        <include refid="departmentColumns">
+            <property name="alias" value="d"/>
+        </include>,
+        <include refid="courseColumns">
+            <property name="alias" value="c"/>
+        </include>
+        FROM ${schema}.wq_professor_profile p
+        LEFT JOIN ${schema}.wq_school s on p.school_id = s.id
+        LEFT JOIN ${schema}.wq_department d on p.department_id = d.id
+        LEFT JOIN ${schema}.wq_professor_course pc on p.id = pc.professor_id
+        LEFT JOIN ${schema}.wq_course c on pc.course_id = c.id
+        WHERE p.id = #{id, jdbcType=INTEGER}
+    </select>
+
 </mapper>
