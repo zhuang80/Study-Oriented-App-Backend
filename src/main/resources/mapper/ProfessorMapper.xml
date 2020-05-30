@@ -5,7 +5,7 @@
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="first_name" jdbcType="VARCHAR" property="firstName" />
         <result column="last_name" jdbcType="VARCHAR" property="lastName" />
-        <result column="department" jdbcType="VARCHAR" property="department" />
+        <result column="department_id" jdbcType="INTEGER" property="departmentId" />
         <result column="school_id" jdbcType="INTEGER" property="schoolId" />
         <result column="overall_score" jdbcType="INTEGER" property="overallScore" />
         <result column="create_time" jdbcType="DATE" property="createTime" />
