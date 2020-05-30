@@ -5,13 +5,17 @@
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="first_name" jdbcType="VARCHAR" property="firstName" />
         <result column="last_name" jdbcType="VARCHAR" property="lastName" />
-        <result column="department_id" jdbcType="INTEGER" property="departmentId" />
         <result column="overall_score" jdbcType="REAL" property="overallScore" />
         <result column="create_time" jdbcType="DATE" property="createTime" />
         <result column="create_by" jdbcType="INTEGER" property="createBy" />
-        <association property="school" column="school_id" javaType="com.wequan.bu.repository.model.School">
-            <id column="id" jdbcType="INTEGER" property="id" />
-            <result column="name" jdbcType="VARCHAR" property="name" />
+        <association column="school_id" property="school"  javaType="com.wequan.bu.repository.model.School">
+            <id column="school_id" jdbcType="INTEGER" property="id" />
+            <result column="school_name" jdbcType="VARCHAR" property="name" />
+        </association>
+        <association column="department_id" property="department"  javaType="com.wequan.bu.repository.model.Department">
+            <id column="department_id" jdbcType="INTEGER" property="id"/>
+            <result column="department_name" jdbcType="VARCHAR" property="name"/>
+            <result column="department_school_id" jdbcType="INTEGER" property="school_id"/>
         </association>
     </resultMap>
 
@@ -25,8 +29,12 @@
             p.create_time,
             p.create_by,
             p.school_id,
-            s.name
+            s.name school_name,
+            d.id department_id,
+            d.name department_name,
+            d.school_id department_school_id
         FROM ${schema}.wq_professor_profile p
         LEFT JOIN ${schema}.wq_school s on p.school_id = s.id
+        LEFT JOIN ${schema}.wq_department d on p.school_id = d.id
     </select>
 </mapper>

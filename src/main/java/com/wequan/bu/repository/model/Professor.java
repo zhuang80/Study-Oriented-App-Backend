@@ -13,7 +13,7 @@ public class Professor {
     private Double overallScore;
     private LocalDate createTime;
     private Integer createBy;
-    private Integer departmentId;
+    private Department department;
 
 
     public Integer getId() {
@@ -72,11 +72,11 @@ public class Professor {
         this.createBy = createBy;
     }
 
-    public Integer getDepartmentId() {
-        return departmentId;
+    public Department getDepartmentId() {
+        return department;
     }
 
-    public void setDepartmentId(Integer departmentId) {
-        this.departmentId = departmentId;
+    public void setDepartmentId(Department departmentId) {
+        this.department = departmentId;
     }
 }
