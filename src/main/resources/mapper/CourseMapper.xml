@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.CourseMapper">
+    <resultMap id="courseResultMap" type="com.wequan.bu.repository.model.Course">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="code" jdbcType="VARCHAR" property="code" />
+        <result column="brief_description" jdbcType="LONGVARCHAR" property="briefDescription" />
+        <result column="department" jdbcType="VARCHAR" property="department" />
+        <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+    </resultMap>
+
+    <select id="selectAll" resultMap="courseResultMap">
+        SELECT *
+        FROM ${schema}.wq_course
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="courseResultMap">
+        SELECT *
+        FROM ${schema}.wq_course
+        WHERE id = #{id, jdbcType=INTEGER}
+    </select>
+
+</mapper>
