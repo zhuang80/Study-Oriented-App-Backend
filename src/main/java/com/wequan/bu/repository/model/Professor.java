@@ -9,10 +9,12 @@ public class Professor {
     private Integer id;
     private String firstName;
     private String lastName;
-    private String department;
     private Integer schoolId;
     private Integer overallScore;
     private LocalDate createTime;
+    private Integer createBy;
+    private Integer departmentId;
+
 
     public Integer getId() {
         return id;
@@ -36,14 +38,6 @@ public class Professor {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public String getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
     }
 
     public Integer getSchoolId() {
@@ -78,7 +72,11 @@ public class Professor {
         this.createBy = createBy;
     }
 
-    private Integer createBy;
+    public Integer getDepartmentId() {
+        return departmentId;
+    }
 
-
+    public void setDepartmentId(Integer departmentId) {
+        this.departmentId = departmentId;
+    }
 }
