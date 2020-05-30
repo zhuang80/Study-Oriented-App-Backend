@@ -10,7 +10,7 @@ public class Professor {
     private String firstName;
     private String lastName;
     private Integer schoolId;
-    private Integer overallScore;
+    private Double overallScore;
     private LocalDate createTime;
     private Integer createBy;
     private Integer departmentId;
@@ -48,11 +48,11 @@ public class Professor {
         this.schoolId = schoolId;
     }
 
-    public Integer getOverallScore() {
+    public Double getOverallScore() {
         return overallScore;
     }
 
-    public void setOverallScore(Integer overallScore) {
+    public void setOverallScore(Double overallScore) {
         this.overallScore = overallScore;
     }
 
