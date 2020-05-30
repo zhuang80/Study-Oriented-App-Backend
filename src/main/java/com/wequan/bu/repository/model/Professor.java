@@ -9,7 +9,7 @@ public class Professor {
     private Integer id;
     private String firstName;
     private String lastName;
-    private Integer schoolId;
+    private School school;
     private Double overallScore;
     private LocalDate createTime;
     private Integer createBy;
@@ -40,12 +40,12 @@ public class Professor {
         this.lastName = lastName;
     }
 
-    public Integer getSchoolId() {
-        return schoolId;
+    public School getSchool() {
+        return school;
     }
 
-    public void setSchoolId(Integer schoolId) {
-        this.schoolId = schoolId;
+    public void setSchool(School school) {
+        this.school = school;
     }
 
     public Double getOverallScore() {
