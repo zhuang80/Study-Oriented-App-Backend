@@ -6,13 +6,27 @@
         <result column="first_name" jdbcType="VARCHAR" property="firstName" />
         <result column="last_name" jdbcType="VARCHAR" property="lastName" />
         <result column="department_id" jdbcType="INTEGER" property="departmentId" />
-        <result column="school_id" jdbcType="INTEGER" property="schoolId" />
         <result column="overall_score" jdbcType="REAL" property="overallScore" />
         <result column="create_time" jdbcType="DATE" property="createTime" />
         <result column="create_by" jdbcType="INTEGER" property="createBy" />
+        <association property="school" column="school_id" javaType="com.wequan.bu.repository.model.School">
+            <id column="id" jdbcType="INTEGER" property="id" />
+            <result column="name" jdbcType="VARCHAR" property="name" />
+        </association>
     </resultMap>
 
     <select id="selectAll" resultMap="professorResultMap">
-        SELECT * FROM ${schema}.wq_professor_profile
+        SELECT
+            p.id,
+            p.first_name,
+            p.last_name,
+            p.department_id,
+            p.overall_score,
+            p.create_time,
+            p.create_by,
+            p.school_id,
+            s.name
+        FROM ${schema}.wq_professor_profile p
+        LEFT JOIN ${schema}.wq_school s on p.school_id = s.id
     </select>
 </mapper>
