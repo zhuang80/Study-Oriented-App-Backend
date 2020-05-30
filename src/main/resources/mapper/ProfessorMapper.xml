@@ -7,12 +7,12 @@
         <result column="last_name" jdbcType="VARCHAR" property="lastName" />
         <result column="department_id" jdbcType="INTEGER" property="departmentId" />
         <result column="school_id" jdbcType="INTEGER" property="schoolId" />
-        <result column="overall_score" jdbcType="INTEGER" property="overallScore" />
+        <result column="overall_score" jdbcType="REAL" property="overallScore" />
         <result column="create_time" jdbcType="DATE" property="createTime" />
         <result column="create_by" jdbcType="INTEGER" property="createBy" />
     </resultMap>
 
-    <select id="findAll" resultMap="professorResultMap">
+    <select id="selectAll" resultMap="professorResultMap">
         SELECT * FROM ${schema}.wq_professor_profile
     </select>
 </mapper>
