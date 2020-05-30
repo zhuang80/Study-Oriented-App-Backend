@@ -15,26 +15,67 @@
         <association column="department_id" property="department"  javaType="com.wequan.bu.repository.model.Department">
             <id column="department_id" jdbcType="INTEGER" property="id"/>
             <result column="department_name" jdbcType="VARCHAR" property="name"/>
-            <result column="department_school_id" jdbcType="INTEGER" property="school_id"/>
+            <result column="department_school_id" jdbcType="INTEGER" property="schoolId"/>
         </association>
+        <collection column="course_id" property="courses" ofType="com.wequan.bu.repository.model.Course">
+            <id column="course_id" jdbcType="INTEGER" property="id"/>
+            <result column="course_name" jdbcType="VARCHAR" property="name"/>
+            <result column="brief_description" jdbcType="LONGVARCHAR" property="briefDescription"/>
+            <result column="course_school_id" jdbcType="INTEGER" property="schoolId"/>
+            <result column="course_department_id" jdbcType="INTEGER" property="departmentId"/>
+            <result column="code_first" jdbcType="VARCHAR" property="codeFirst"/>
+            <result column="code_second" jdbcType="VARCHAR" property="codeSecond"/>
+        </collection>
     </resultMap>
 
+    <sql id="professorColumns">
+        ${alias}.id,
+        ${alias}.first_name,
+        ${alias}.last_name,
+        ${alias}.department_id,
+        ${alias}.overall_score,
+        ${alias}.create_time,
+        ${alias}.create_by,
+        ${alias}.school_id department_school_id
+    </sql>
+    <sql id="schoolColumns">
+        ${alias}.id school_id,
+        ${alias}.name school_name
+    </sql>
+    <sql id="departmentColumns">
+        ${alias}.id department_id,
+        ${alias}.name department_name,
+        ${alias}.school_id
+    </sql>
+    <sql id="courseColumns">
+        ${alias}.id course_id,
+        ${alias}.name course_name,
+        ${alias}.brief_description,
+        ${alias}.school_id course_school_id,
+        ${alias}.department_id course_department_id,
+        ${alias}.code_first,
+        ${alias}.code_second
+    </sql>
     <select id="selectAll" resultMap="professorResultMap">
         SELECT
-            p.id,
-            p.first_name,
-            p.last_name,
-            p.department_id,
-            p.overall_score,
-            p.create_time,
-            p.create_by,
-            p.school_id,
-            s.name school_name,
-            d.id department_id,
-            d.name department_name,
-            d.school_id department_school_id
+            <include refid="professorColumns">
+                <property name="alias" value="p"/>
+            </include>,
+            <include refid="schoolColumns">
+                <property name="alias" value="s"/>
+            </include>,
+            <include refid="departmentColumns">
+                <property name="alias" value="d"/>
+            </include>,
+            <include refid="courseColumns">
+                <property name="alias" value="c"/>
+            </include>
         FROM ${schema}.wq_professor_profile p
         LEFT JOIN ${schema}.wq_school s on p.school_id = s.id
-        LEFT JOIN ${schema}.wq_department d on p.school_id = d.id
+        LEFT JOIN ${schema}.wq_department d on p.department_id = d.id
+        LEFT JOIN ${schema}.wq_professor_course pc on p.id = pc.professor_id
+        LEFT JOIN ${schema}.wq_course c on pc.course_id = c.id
     </select>
+
+  
 </mapper>

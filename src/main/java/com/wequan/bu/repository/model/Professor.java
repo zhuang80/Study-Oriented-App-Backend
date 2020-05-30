@@ -1,6 +1,7 @@
 package com.wequan.bu.repository.model;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * @author Zhaochao Huang
@@ -14,7 +15,15 @@ public class Professor {
     private LocalDate createTime;
     private Integer createBy;
     private Department department;
+    private List<Course> courses;
 
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
+    }
 
     public Integer getId() {
         return id;
@@ -72,11 +81,11 @@ public class Professor {
         this.createBy = createBy;
     }
 
-    public Department getDepartmentId() {
+       public Department getDepartment() {
         return department;
     }
 
-    public void setDepartmentId(Department departmentId) {
+    public void setDepartment(Department departmentId) {
         this.department = departmentId;
     }
 }
