@@ -6,7 +6,7 @@ package com.wequan.bu.repository.model;
 public class Department {
     private Integer id;
     private String name;
-    private Integer school_id;
+    private Integer schoolId;
 
     public Integer getId() {
         return id;
@@ -24,11 +24,11 @@ public class Department {
         this.name = name;
     }
 
-    public Integer getSchool_id() {
-        return school_id;
+    public Integer getSchoolId() {
+        return schoolId;
     }
 
-    public void setSchool_id(Integer school_id) {
-        this.school_id = school_id;
+    public void setSchoolId(Integer schoolId) {
+        this.schoolId = schoolId;
     }
 }
