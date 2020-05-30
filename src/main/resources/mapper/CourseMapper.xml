@@ -10,8 +10,15 @@
         <result column="school_id" jdbcType="INTEGER" property="schoolId" />
     </resultMap>
 
-    <select id="selectAll" resultMap="courseResultMap" >
+    <select id="selectAll" resultMap="courseResultMap">
         SELECT *
         FROM ${schema}.wq_course
     </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="courseResultMap">
+        SELECT *
+        FROM ${schema}.wq_course
+        WHERE id = #{id, jdbcType=INTEGER}
+    </select>
+
 </mapper>
