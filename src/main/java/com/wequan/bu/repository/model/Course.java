@@ -6,9 +6,10 @@ package com.wequan.bu.repository.model;
 public class Course {
     private Integer id;
     private String name;
-    private String code;
+    private String codeFirst;
+    private String codeSecond;
     private String briefDescription;
-    private String department;
+    private Integer departmentId;
     private Integer schoolId;
 
     public Integer getId() {
@@ -27,12 +28,20 @@ public class Course {
         this.name = name;
     }
 
-    public String getCode() {
-        return code;
+    public String getCodeFirst() {
+        return codeFirst;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setCodeFirst(String codeFirst) {
+        this.codeFirst = codeFirst;
+    }
+
+    public String getCodeSecond() {
+        return codeSecond;
+    }
+
+    public void setCodeSecond(String codeSecond) {
+        this.codeSecond = codeSecond;
     }
 
     public String getBriefDescription() {
@@ -43,12 +52,12 @@ public class Course {
         this.briefDescription = briefDescription;
     }
 
-    public String getDepartment() {
-        return department;
+    public Integer getDepartmentId() {
+        return departmentId;
     }
 
-    public void setDepartment(String department) {
-        this.department = department;
+    public void setDepartmentId(Integer departmentId) {
+        this.departmentId = departmentId;
     }
 
     public Integer getSchoolId() {

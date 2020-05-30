@@ -4,9 +4,10 @@
     <resultMap id="courseResultMap" type="com.wequan.bu.repository.model.Course">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="name" jdbcType="VARCHAR" property="name" />
-        <result column="code" jdbcType="VARCHAR" property="code" />
+        <result column="code_first" jdbcType="VARCHAR" property="codeFirst" />
+        <result column="code_second" jdbcType="VARCHAR" property="codeSecond" />
         <result column="brief_description" jdbcType="LONGVARCHAR" property="briefDescription" />
-        <result column="department" jdbcType="VARCHAR" property="department" />
+        <result column="department_id" jdbcType="INTEGER" property="departmentId" />
         <result column="school_id" jdbcType="INTEGER" property="schoolId" />
     </resultMap>
 
