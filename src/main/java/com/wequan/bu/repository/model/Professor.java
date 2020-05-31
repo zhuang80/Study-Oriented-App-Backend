@@ -16,6 +16,7 @@ public class Professor {
     private Integer createBy;
     private Department department;
     private List<Course> courses;
+    private List<CourseRate> courseRates;
 
     public List<Course> getCourses() {
         return courses;
@@ -87,5 +88,13 @@ public class Professor {
 
     public void setDepartment(Department departmentId) {
         this.department = departmentId;
+    }
+
+    public List<CourseRate> getCourseRates() {
+        return courseRates;
+    }
+
+    public void setCourseRates(List<CourseRate> courseRates) {
+        this.courseRates = courseRates;
     }
 }

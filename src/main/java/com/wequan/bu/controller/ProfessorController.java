@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -30,4 +31,10 @@ public class ProfessorController {
     @GetMapping("/professor/{id}")
     @ApiOperation(value="findById", notes="find a specific professor by its id")
     public Professor findById(@PathVariable("id") Integer id) { return professorService.findById(id); }
+
+    @GetMapping("/search/professor")
+    @ApiOperation(value="", notes="")
+    public List<Professor> findAllWithRateByName(@RequestParam("name") String name){
+        return professorService.findAllWithRateByName(3, name);
+    }
 }
