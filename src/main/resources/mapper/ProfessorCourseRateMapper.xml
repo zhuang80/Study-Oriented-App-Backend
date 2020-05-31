@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.ProfessorCourseRateMapper">
+    <resultMap id="professorCourseRateResultMap" type="com.wequan.bu.repository.model.ProfessorCourseRate">
+        <id column="professor_course_rate_id" jdbcType="INTEGER" property="id"/>
+        <result column="professor_id" jdbcType="INTEGER" property="professorId"/>
+        <result column="rate_course_id" jdbcType="INTEGER" property="courseId"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="quality_score" jdbcType="REAL" property="qualityScore"/>
+        <result column="difficult_score" jdbcType="REAL" property="difficultScore"/>
+        <result column="number_of_exams" jdbcType="INTEGER" property="numberOfExams"/>
+        <result column="number_of_quizzes" jdbcType="INTEGER" property="numberOfQuizzes"/>
+        <result column="number_of_homeworks" jdbcType="INTEGER" property="numberOfHomeworks"/>
+        <result column="number_of_projects" jdbcType="INTEGER" property="numberOfProjects"/>
+        <result column="number_of_papers" jdbcType="INTEGER" property="numberOfPapers"/>
+        <result column="grade_received" jdbcType="REAL" property="gradeReceived"/>
+        <result column="tags" jdbcType="INTEGER" property="tags"/>
+        <result column="comment" jdbcType="VARCHAR" property="comment"/>
+        <result column="anonymous" jdbcType="BOOLEAN" property="anonymous"/>
+        <result column="using_textbook" jdbcType="BOOLEAN" property="usingTextbook"/>
+        <result column="attendance" jdbcType="BOOLEAN" property="attendance"/>
+    </resultMap>
+    <select id="selectAllByProfessorIdAndCourseId" resultMap="professorCourseRateResultMap">
+        SELECT *
+        FROM ${schema}.wq_professor_course_rate
+        WHERE professor_id = #{p_id} AND course_id = #{c_id}
+    </select>
+</mapper>
