@@ -1,9 +1,11 @@
 package com.wequan.bu.repository.model;
 
+import java.util.List;
+
 /**
  * @author Zhaochao Huang
  */
-public class Course {
+public class Course{
     private Integer id;
     private String name;
     private String codeFirst;
@@ -11,6 +13,7 @@ public class Course {
     private String briefDescription;
     private Integer departmentId;
     private Integer schoolId;
+    private List<ProfessorRate> professorRateList;
 
     public Integer getId() {
         return id;

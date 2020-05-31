@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author Zhaochao Huang
  */
-public interface ProfessorCourseRateService extends Service<ProfessorCourseRate {
+public interface ProfessorCourseRateService extends Service<ProfessorCourseRate> {
 
     /**
      *get a list of certain professor reviews for a certain course
