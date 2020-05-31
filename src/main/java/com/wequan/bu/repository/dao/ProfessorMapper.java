@@ -12,7 +12,8 @@ import java.util.List;
 @Mapper
 public interface ProfessorMapper extends GeneralMapper<Professor> {
 
-    /**get a list of Professor with its associated course rates
+    /**
+     * get a list of Professor with its associated course rates
      * @param limit the number of reviews showed for each course
      * @param name select the professor by given name
      * @return a list of Professor associated with course rates
