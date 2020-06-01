@@ -20,6 +20,27 @@
         <result column="using_textbook" jdbcType="BOOLEAN" property="usingTextbook"/>
         <result column="attendance" jdbcType="BOOLEAN" property="attendance"/>
     </resultMap>
+
+    <sql id="professorCourseRateColumns">
+        ${alias}.id ${prefix}_id,
+        ${alias}.professor_id  ${prefix}_professor_id,
+        ${alias}.course_id ${prefix}_course_id,
+        ${alias}.user_id ${prefix}_user_id,
+        ${alias}.quality_score ${prefix}_quality_score,
+        ${alias}.difficult_score ${prefix}_difficult_score,
+        ${alias}.number_of_exams ${prefix}_number_of_exams,
+        ${alias}.number_of_quizzes ${prefix}_number_of_quizzes,
+        ${alias}.number_of_homeworks ${prefix}_number_of_homeworks,
+        ${alias}.number_of_projects ${prefix}_number_of_projects,
+        ${alias}.number_of_papers ${prefix}_number_of_papers,
+        ${alias}.grade_received ${prefix}_grade_received,
+        ${alias}.tags ${prefix}_tags,
+        ${alias}.comment ${prefix}_comment,
+        ${alias}.anonymous ${prefix}_anonymous,
+        ${alias}.using_textbook ${prefix}_using_textbook,
+        ${alias}.attendance ${prefix}_attendance
+    </sql>
+
     <select id="selectAllByProfessorIdAndCourseId" resultMap="professorCourseRateResultMap">
         SELECT *
         FROM ${schema}.wq_professor_course_rate
