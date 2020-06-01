@@ -2,115 +2,78 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wequan.bu.repository.dao.ProfessorMapper">
     <resultMap id="professorResultMap" type="com.wequan.bu.repository.model.Professor">
-        <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="first_name" jdbcType="VARCHAR" property="firstName" />
-        <result column="last_name" jdbcType="VARCHAR" property="lastName" />
-        <result column="overall_score" jdbcType="REAL" property="overallScore" />
-        <result column="create_time" jdbcType="DATE" property="createTime" />
-        <result column="create_by" jdbcType="INTEGER" property="createBy" />
-        <association column="school_id" property="school"  javaType="com.wequan.bu.repository.model.School">
-            <id column="school_id" jdbcType="INTEGER" property="id" />
-            <result column="school_name" jdbcType="VARCHAR" property="name" />
-        </association>
-        <association column="department_id" property="department"  javaType="com.wequan.bu.repository.model.Department">
-            <id column="department_id" jdbcType="INTEGER" property="id"/>
-            <result column="department_name" jdbcType="VARCHAR" property="name"/>
-            <result column="department_school_id" jdbcType="INTEGER" property="schoolId"/>
-        </association>
-        <collection column="course_id" property="courses" ofType="com.wequan.bu.repository.model.Course">
-            <id column="course_id" jdbcType="INTEGER" property="id"/>
-            <result column="course_name" jdbcType="VARCHAR" property="name"/>
-            <result column="brief_description" jdbcType="LONGVARCHAR" property="briefDescription"/>
-            <result column="course_school_id" jdbcType="INTEGER" property="schoolId"/>
-            <result column="course_department_id" jdbcType="INTEGER" property="departmentId"/>
-            <result column="code_first" jdbcType="VARCHAR" property="codeFirst"/>
-            <result column="code_second" jdbcType="VARCHAR" property="codeSecond"/>
-        </collection>
-        <collection column="rate_course_id" property="courseRates" ofType="com.wequan.bu.repository.model.CourseRate">
-            <id column="rate_course_id" jdbcType="INTEGER" property="id"/>
-            <collection column="professor_course_rate_id" property="reviews" ofType="com.wequan.bu.repository.model.ProfessorCourseRate">
-                <id column="professor_course_rate_id" jdbcType="INTEGER" property="id"/>
-                 <result column="professor_id" jdbcType="INTEGER" property="professorId"/>
-                 <result column="rate_course_id" jdbcType="INTEGER" property="courseId"/>
-                 <result column="user_id" jdbcType="INTEGER" property="userId"/>
-                 <result column="quality_score" jdbcType="REAL" property="qualityScore"/>
-                 <result column="difficult_score" jdbcType="REAL" property="difficultScore"/>
-                 <result column="number_of_exams" jdbcType="INTEGER" property="numberOfExams"/>
-                 <result column="number_of_quizzes" jdbcType="INTEGER" property="numberOfQuizzes"/>
-                 <result column="number_of_homeworks" jdbcType="INTEGER" property="numberOfHomeworks"/>
-                 <result column="number_of_projects" jdbcType="INTEGER" property="numberOfProjects"/>
-                 <result column="number_of_papers" jdbcType="INTEGER" property="numberOfPapers"/>
-                 <result column="grade_received" jdbcType="REAL" property="gradeReceived"/>
-                 <result column="tags" jdbcType="INTEGER" property="tags"/>
-                 <result column="comment" jdbcType="VARCHAR" property="comment"/>
-                 <result column="anonymous" jdbcType="BOOLEAN" property="anonymous"/>
-                 <result column="using_textbook" jdbcType="BOOLEAN" property="usingTextbook"/>
-                 <result column="attendance" jdbcType="BOOLEAN" property="attendance"/>
-            </collection>
-        </collection>
+        <id column="professor_id" jdbcType="INTEGER" property="id" />
+        <result column="professor_first_name" jdbcType="VARCHAR" property="firstName" />
+        <result column="professor_last_name" jdbcType="VARCHAR" property="lastName" />
+        <result column="professor_overall_score" jdbcType="REAL" property="overallScore" />
+        <result column="professor_create_time" jdbcType="DATE" property="createTime" />
+        <result column="professor_create_by" jdbcType="INTEGER" property="createBy" />
+        <association property="school"
+                     resultMap="com.wequan.bu.repository.dao.SchoolMapper.schoolResultMap"
+                     columnPrefix="school_"
+        />
+        <association property="department"
+                     resultMap="departmentResultMap"
+                     columnPrefix="department_"
+        />
+        <collection property="courses" ofType="com.wequan.bu.repository.model.Course"
+                    resultMap="com.wequan.bu.repository.dao.CourseMapper.courseResultMap"
+                    columnPrefix="course_"
+        />
+        <collection property="courseRates" ofType="com.wequan.bu.repository.model.CourseRate"
+                    resultMap="courseRateResultMap"
+        />
+    </resultMap>
+
+    <resultMap id="departmentResultMap" type="com.wequan.bu.repository.model.Department">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="school_id" jdbcType="INTEGER" property="schoolId"/>
+    </resultMap>
+
+    <resultMap id="courseRateResultMap" type="com.wequan.bu.repository.model.CourseRate">
+        <id column="professor_course_rate_course_id" jdbcType="INTEGER" property="id"/>
+        <collection property="reviews"
+                    ofType="com.wequan.bu.repository.model.ProfessorCourseRate"
+                    resultMap="com.wequan.bu.repository.dao.ProfessorCourseRateMapper.professorCourseRateResultMap"
+                    columnPrefix="professor_course_rate_"
+        />
     </resultMap>
 
     <sql id="professorColumns">
-        ${alias}.id,
-        ${alias}.first_name,
-        ${alias}.last_name,
-        ${alias}.department_id,
-        ${alias}.overall_score,
-        ${alias}.create_time,
-        ${alias}.create_by,
-        ${alias}.school_id department_school_id
+        ${alias}.id ${prefix}_id,
+        ${alias}.first_name ${prefix}_first_name,
+        ${alias}.last_name ${prefix}_last_name,
+        ${alias}.department_id ${prefix}_department_id,
+        ${alias}.overall_score ${prefix}_overall_score,
+        ${alias}.create_time ${prefix}_create_time,
+        ${alias}.create_by ${prefix}_create_by,
+        ${alias}.school_id ${prefix}_school_id
     </sql>
-    <sql id="schoolColumns">
-        ${alias}.id school_id,
-        ${alias}.name school_name
-    </sql>
+
     <sql id="departmentColumns">
         ${alias}.id department_id,
         ${alias}.name department_name,
         ${alias}.school_id
     </sql>
-    <sql id="courseColumns">
-        ${alias}.id course_id,
-        ${alias}.name course_name,
-        ${alias}.brief_description,
-        ${alias}.school_id course_school_id,
-        ${alias}.department_id course_department_id,
-        ${alias}.code_first,
-        ${alias}.code_second
-    </sql>
-    <sql id="professorCourseRateColumns">
-        ${alias}.id professor_course_rate_id,
-        ${alias}.professor_id,
-        ${alias}.course_id rate_course_id,
-        ${alias}.user_id,
-        ${alias}.quality_score,
-        ${alias}.difficult_score,
-        ${alias}.number_of_exams,
-        ${alias}.number_of_quizzes,
-        ${alias}.number_of_homeworks,
-        ${alias}.number_of_projects,
-        ${alias}.number_of_papers,
-        ${alias}.grade_received,
-        ${alias}.tags,
-        ${alias}.comment,
-        ${alias}.anonymous,
-        ${alias}.using_textbook,
-        ${alias}.attendance
-    </sql>
+
 
     <select id="selectAll" resultMap="professorResultMap">
         SELECT
             <include refid="professorColumns">
                 <property name="alias" value="p"/>
+                <property name="prefix" value="professor"/>
             </include>,
-            <include refid="schoolColumns">
+            <include refid="com.wequan.bu.repository.dao.SchoolMapper.schoolColumns">
                 <property name="alias" value="s"/>
+                <property name="prefix" value="school_"/>
             </include>,
             <include refid="departmentColumns">
                 <property name="alias" value="d"/>
             </include>,
-            <include refid="courseColumns">
+            <include refid="com.wequan.bu.repository.dao.CourseMapper.courseColumns">
                 <property name="alias" value="c"/>
+                <property name="prefix" value="course"/>
             </include>
         FROM ${schema}.wq_professor_profile p
         LEFT JOIN ${schema}.wq_school s on p.school_id = s.id
@@ -121,18 +84,21 @@
 
     <select id="selectByPrimaryKey" resultMap="professorResultMap">
         SELECT
-        <include refid="professorColumns">
-            <property name="alias" value="p"/>
-        </include>,
-        <include refid="schoolColumns">
-            <property name="alias" value="s"/>
-        </include>,
-        <include refid="departmentColumns">
-            <property name="alias" value="d"/>
-        </include>,
-        <include refid="courseColumns">
-            <property name="alias" value="c"/>
-        </include>
+            <include refid="professorColumns">
+                <property name="alias" value="p"/>
+                <property name="prefix" value="professor"/>
+            </include>,
+            <include refid="com.wequan.bu.repository.dao.SchoolMapper.schoolColumns">
+                <property name="alias" value="s"/>
+                <property name="prefix" value="school_"/>
+            </include>,
+            <include refid="departmentColumns">
+                <property name="alias" value="d"/>
+            </include>,
+            <include refid="com.wequan.bu.repository.dao.CourseMapper.courseColumns">
+                <property name="alias" value="c"/>
+                <property name="prefix" value="course"/>
+            </include>
         FROM ${schema}.wq_professor_profile p
         LEFT JOIN ${schema}.wq_school s on p.school_id = s.id
         LEFT JOIN ${schema}.wq_department d on p.department_id = d.id
@@ -145,21 +111,25 @@
         <bind name="name" value="name + '%'" />
        WITH temp_table AS (
             SELECT
-            <include refid="professorColumns">
-                <property name="alias" value="p"/>
-            </include>,
-            <include refid="schoolColumns">
-                <property name="alias" value="s"/>
-            </include>,
-            <include refid="departmentColumns">
-                <property name="alias" value="d"/>
-            </include>,
-            <include refid="courseColumns">
-                <property name="alias" value="c"/>
-            </include>,
-            <include refid="professorCourseRateColumns">
-                <property name="alias" value="pcr"/>
-            </include>
+                <include refid="professorColumns">
+                    <property name="alias" value="p"/>
+                    <property name="prefix" value="professor"/>
+                </include>,
+                <include refid="com.wequan.bu.repository.dao.SchoolMapper.schoolColumns">
+                    <property name="alias" value="s"/>
+                    <property name="prefix" value="school_"/>
+                </include>,
+                <include refid="departmentColumns">
+                    <property name="alias" value="d"/>
+                </include>,
+                <include refid="com.wequan.bu.repository.dao.CourseMapper.courseColumns">
+                    <property name="alias" value="c"/>
+                    <property name="prefix" value="course"/>
+                </include>,
+                <include refid="com.wequan.bu.repository.dao.ProfessorCourseRateMapper.professorCourseRateColumns">
+                    <property name="alias" value="pcr"/>
+                    <property name="prefix" value="professor_course_rate"/>
+                </include>
             FROM ${schema}.wq_professor_profile p
             LEFT JOIN ${schema}.wq_school s on p.school_id = s.id
             LEFT JOIN ${schema}.wq_department d on p.department_id = d.id
@@ -170,10 +140,10 @@
         SELECT *
         FROM (
             SELECT *,
-            ROW_NUMBER() OVER (PARTITION BY id, rate_course_id) AS row_id
+            ROW_NUMBER() OVER (PARTITION BY professor_id, professor_course_rate_course_id) AS row_id
             FROM temp_table
         ) AS A
-        WHERE row_id &lt;= #{limit} AND ( first_name ILIKE #{name} OR last_name ILIKE #{name} )
-        ORDER BY overall_score DESC
+        WHERE row_id &lt;= #{limit} AND ( professor_first_name ILIKE #{name} OR professor_last_name ILIKE #{name} )
+        ORDER BY professor_overall_score DESC
     </select>
 </mapper>
