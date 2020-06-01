@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 /**
  * @author Zhaochao Huang
@@ -20,4 +21,8 @@ public class CourseServiceImpl extends AbstractService<Course> implements Course
     @PostConstruct
     public void postConstruct() { this.setMapper(courseMapper); }
 
+    @Override
+    public List<Course> findByNameOrCode(String name, String code) {
+        return courseMapper.selectByNameOrCode(name, code);
+    }
 }
