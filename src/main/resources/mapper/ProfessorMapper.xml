@@ -17,7 +17,7 @@
                      columnPrefix="department_"
         />
         <collection property="courses" ofType="com.wequan.bu.repository.model.Course"
-                    resultMap="com.wequan.bu.repository.dao.CourseMapper.courseResultMap"
+                    resultMap="com.wequan.bu.repository.dao.CourseMapper.baseResultMap"
                     columnPrefix="course_"
         />
         <collection property="courseRates" ofType="com.wequan.bu.repository.model.CourseRate"
@@ -150,9 +150,23 @@
         ORDER BY professor_overall_score DESC
     </select>
 
-    <select id="selectByCourseId" resultType="com.wequan.bu.repository.model.Professor" >
-        SELECT p.*
+    <select id="selectByCourseId" resultMap="professorResultMap" >
+        SELECT
+            <include refid="professorColumns">
+                <property name="alias" value="p"/>
+                <property name="prefix" value="professor"/>
+            </include>,
+            <include refid="com.wequan.bu.repository.dao.SchoolMapper.schoolColumns">
+                <property name="alias" value="s"/>
+                <property name="prefix" value="school"/>
+            </include>,
+            <include refid="departmentColumns">
+                <property name="alias" value="d"/>
+                <property name="prefix" value="department"/>
+            </include>
         FROM ${schema}.wq_professor_profile p
         INNER JOIN ${schema}.wq_professor_course pc ON pc.professor_id = p.id AND pc.course_id = #{id}
+        INNER JOIN ${schema}.wq_school s on p.school_id = s.id
+        INNER JOIN ${schema}.wq_department d on p.department_id = d.id
     </select>
 </mapper>

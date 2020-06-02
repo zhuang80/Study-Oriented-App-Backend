@@ -13,5 +13,9 @@ import java.util.List;
 public interface CourseMapper extends GeneralMapper<Course> {
 
     public List<Course> selectByNameOrCode(@Param("name") String name, @Param("code") String code);
-    
+
+    /**
+     * select a course by id associated with professors basic information
+     */
+    public Course selectByIdAssociatedWithProfessor(@Param("id") Integer id);
 }
