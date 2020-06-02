@@ -9,6 +9,8 @@
         <result column="brief_description" jdbcType="LONGVARCHAR" property="briefDescription" />
         <result column="department_id" jdbcType="INTEGER" property="departmentId" />
         <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+        <collection property="professors" column="id" ofType="com.wequan.bu.repository.model.Professor"
+                    select="com.wequan.bu.repository.dao.ProfessorMapper.selectByCourseId"/>
     </resultMap>
 
     <sql id="courseColumns">
@@ -35,4 +37,5 @@
     <select id="selectByNameOrCode" resultMap="courseResultMap">
 
     </select>
+
 </mapper>
