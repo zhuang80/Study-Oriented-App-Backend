@@ -4,11 +4,22 @@
     <resultMap id="courseResultMap" type="com.wequan.bu.repository.model.Course">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="name" jdbcType="VARCHAR" property="name" />
-        <result column="code" jdbcType="VARCHAR" property="code" />
+        <result column="code_first" jdbcType="VARCHAR" property="codeFirst" />
+        <result column="code_second" jdbcType="VARCHAR" property="codeSecond" />
         <result column="brief_description" jdbcType="LONGVARCHAR" property="briefDescription" />
-        <result column="department" jdbcType="VARCHAR" property="department" />
+        <result column="department_id" jdbcType="INTEGER" property="departmentId" />
         <result column="school_id" jdbcType="INTEGER" property="schoolId" />
     </resultMap>
+
+    <sql id="courseColumns">
+        ${alias}.id ${prefix}_id,
+        ${alias}.name ${prefix}_name,
+        ${alias}.brief_description ${prefix}_brief_description,
+        ${alias}.school_id ${prefix}_school_id,
+        ${alias}.department_id ${prefix}_department_id,
+        ${alias}.code_first ${prefix}_code_first,
+        ${alias}.code_second ${prefix}_code_second
+    </sql>
 
     <select id="selectAll" resultMap="courseResultMap">
         SELECT *
@@ -21,4 +32,7 @@
         WHERE id = #{id, jdbcType=INTEGER}
     </select>
 
+    <select id="selectByNameOrCode" resultMap="courseResultMap">
+
+    </select>
 </mapper>

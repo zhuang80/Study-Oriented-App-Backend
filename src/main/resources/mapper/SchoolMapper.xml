@@ -6,6 +6,11 @@
         <result column="name" jdbcType="VARCHAR" property="name" />
     </resultMap>
 
+    <sql id="schoolColumns">
+        ${alias}.id ${prefix}_id,
+        ${alias}.name ${prefix}_name
+    </sql>
+
     <select id="selectAll" resultMap="schoolResultMap">
         SELECT *
         FROM ${schema}.wq_school
