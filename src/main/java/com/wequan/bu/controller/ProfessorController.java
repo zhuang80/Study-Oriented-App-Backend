@@ -22,7 +22,7 @@ import java.util.List;
  */
 @RestController
 @Api(value = "Operations for Professor", tags="Professor Rest API")
-public class ProfessorController<ProfessorCourserRate> {
+public class ProfessorController{
 
     private static final Logger log = LoggerFactory.getLogger(CourseController.class);
 
