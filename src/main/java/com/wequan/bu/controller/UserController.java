@@ -29,7 +29,7 @@ import java.util.Date;
  */
 @RestController
 @RequestMapping("/user")
-@Api(value = "对用户的操作", tags = "用户相关Rest Api")
+@Api(tags = "User")
 public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -47,7 +47,7 @@ public class UserController {
     public String register(User user) {
         String nickname = user.getNickname();
         String email = user.getEmail();
-        String password = user.getPassword();
+        String password = user.getCredential();
         //check parameters
         if (!GeneralTool.checkNickname(nickname)) {
             return messageHandler.getFailResponseMessage("40001", "Nickname");
@@ -67,12 +67,12 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    @ApiOperation(value = "用户登录", notes = "返回注册信息")
+    @ApiOperation(value = "用户登录", notes = "返回登录信息")
     public ResponseEntity<String> login(User user) {
         String email = user.getEmail();
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 user.getEmail(),
-                user.getPassword()
+                user.getCredential()
         ));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         AppUserDetails userDetails = (AppUserDetails) authentication.getPrincipal();
@@ -86,22 +86,24 @@ public class UserController {
     }
 
     @GetMapping("/e-confirm")
+    @ApiOperation(value = "验证注册用户", notes = "返回验证注册用户信息")
     public String emailConfirm(@RequestParam("tokenKey") String tokenKey) {
 
         return "";
     }
 
     @PostMapping("/reset-password")
+    @ApiOperation(value = "重置用户密码", notes = "返回重置用户密码信息")
     public String resetPassword() {
         return "";
     }
 
     @GetMapping("/all")
+    @ApiOperation(value = "获取所有用户", notes = "返回用户列表")
     public String getAll() {
         StringBuilder result = new StringBuilder();
         userService.findAll().stream().map(user -> user.getEmail()).forEach(e -> result.append(e));
         return result.toString();
     }
-
 
 }
