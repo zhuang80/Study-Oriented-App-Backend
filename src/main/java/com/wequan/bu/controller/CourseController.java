@@ -23,7 +23,7 @@ import java.util.List;
 @Api(value = "Operations for Course", tags = "Course Rest API")
 public class CourseController {
 
-    private Logger log = LoggerFactory.getLogger(CourseController.class);
+    private static final Logger log = LoggerFactory.getLogger(CourseController.class);
 
     @Autowired
     private CourseService courseService;
@@ -47,10 +47,6 @@ public class CourseController {
     @GetMapping("/search/course")
     @ApiOperation(value = "", notes= "return a list of course with associated information by name or code")
     public List<Course> findByNameOrCode(@RequestParam("name") String name, @RequestParam("code") String code){
-        if(name == null && code == null) {
-            log.info(messageHandler.getFailResponseMessage("40004"));
-            return null;
-        }
         if(name.isEmpty() && code.isEmpty()) {
             log.info(messageHandler.getFailResponseMessage("40004"));
             return null;

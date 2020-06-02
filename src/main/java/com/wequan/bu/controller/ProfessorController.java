@@ -24,7 +24,7 @@ import java.util.List;
 @Api(value = "Operations for Professor", tags="Professor Rest API")
 public class ProfessorController<ProfessorCourserRate> {
 
-    private Logger log = LoggerFactory.getLogger(CourseController.class);
+    private static final Logger log = LoggerFactory.getLogger(CourseController.class);
 
     @Autowired
     private ProfessorService professorService;
@@ -54,7 +54,7 @@ public class ProfessorController<ProfessorCourserRate> {
     @GetMapping("/search/professor")
     @ApiOperation(value="", notes="")
     public List<Professor> findAllWithRateByName(@RequestParam("name") String name){
-        if(name == null || name.isEmpty()) {
+        if(name.isEmpty()) {
             messageHandler.getFailResponseMessage("40006");
             return null;
         }
