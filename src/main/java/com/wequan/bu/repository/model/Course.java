@@ -71,4 +71,12 @@ public class Course{
     public void setSchoolId(Integer schoolId) {
         this.schoolId = schoolId;
     }
+
+    public List<Professor> getProfessors() {
+        return professors;
+    }
+
+    public void setProfessors(List<Professor> professors) {
+        this.professors = professors;
+    }
 }
