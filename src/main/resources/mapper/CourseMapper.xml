@@ -13,6 +13,16 @@
                     select="com.wequan.bu.repository.dao.ProfessorMapper.selectByCourseId"/>
     </resultMap>
 
+    <resultMap id="baseResultMap" type="com.wequan.bu.repository.model.Course">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="code_first" jdbcType="VARCHAR" property="codeFirst" />
+        <result column="code_second" jdbcType="VARCHAR" property="codeSecond" />
+        <result column="brief_description" jdbcType="LONGVARCHAR" property="briefDescription" />
+        <result column="department_id" jdbcType="INTEGER" property="departmentId" />
+        <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+    </resultMap>
+
     <sql id="courseColumns">
         ${alias}.id ${prefix}_id,
         ${alias}.name ${prefix}_name,
@@ -28,7 +38,13 @@
         FROM ${schema}.wq_course
     </select>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="courseResultMap">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="baseResultMap">
+        SELECT *
+        FROM ${schema}.wq_course
+        WHERE id = #{id, jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByIdAssociatedWithProfessor" parameterType="java.lang.Integer" resultMap="courseResultMap">
         SELECT *
         FROM ${schema}.wq_course
         WHERE id = #{id, jdbcType=INTEGER}
