@@ -14,6 +14,7 @@ public class Course{
     private Integer departmentId;
     private Integer schoolId;
     private List<ProfessorRate> professorRateList;
+    private List<Professor> professors;
 
     public Integer getId() {
         return id;
