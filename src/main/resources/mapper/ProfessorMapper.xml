@@ -52,9 +52,9 @@
     </sql>
 
     <sql id="departmentColumns">
-        ${alias}.id department_id,
-        ${alias}.name department_name,
-        ${alias}.school_id
+        ${alias}.id ${prefix}_id,
+        ${alias}.name ${prefix}_name,
+        ${alias}.school_id ${prefix}_school_id
     </sql>
 
 
@@ -66,10 +66,11 @@
             </include>,
             <include refid="com.wequan.bu.repository.dao.SchoolMapper.schoolColumns">
                 <property name="alias" value="s"/>
-                <property name="prefix" value="school_"/>
+                <property name="prefix" value="school"/>
             </include>,
             <include refid="departmentColumns">
                 <property name="alias" value="d"/>
+                <property name="prefix" value="department"/>
             </include>,
             <include refid="com.wequan.bu.repository.dao.CourseMapper.courseColumns">
                 <property name="alias" value="c"/>
@@ -90,10 +91,11 @@
             </include>,
             <include refid="com.wequan.bu.repository.dao.SchoolMapper.schoolColumns">
                 <property name="alias" value="s"/>
-                <property name="prefix" value="school_"/>
+                <property name="prefix" value="school"/>
             </include>,
             <include refid="departmentColumns">
                 <property name="alias" value="d"/>
+                <property name="prefix" value="department"/>
             </include>,
             <include refid="com.wequan.bu.repository.dao.CourseMapper.courseColumns">
                 <property name="alias" value="c"/>
@@ -117,10 +119,11 @@
                 </include>,
                 <include refid="com.wequan.bu.repository.dao.SchoolMapper.schoolColumns">
                     <property name="alias" value="s"/>
-                    <property name="prefix" value="school_"/>
+                    <property name="prefix" value="school"/>
                 </include>,
                 <include refid="departmentColumns">
                     <property name="alias" value="d"/>
+                    <property name="prefix" value="department"/>
                 </include>,
                 <include refid="com.wequan.bu.repository.dao.CourseMapper.courseColumns">
                     <property name="alias" value="c"/>
