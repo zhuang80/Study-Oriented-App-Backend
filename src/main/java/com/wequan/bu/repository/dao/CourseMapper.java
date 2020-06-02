@@ -13,4 +13,5 @@ import java.util.List;
 public interface CourseMapper extends GeneralMapper<Course> {
 
     public List<Course> selectByNameOrCode(@Param("name") String name, @Param("code") String code);
+    
 }
