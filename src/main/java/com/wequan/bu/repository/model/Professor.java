@@ -1,6 +1,6 @@
 package com.wequan.bu.repository.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -12,7 +12,7 @@ public class Professor {
     private String lastName;
     private School school;
     private Double overallScore;
-    private LocalDate createTime;
+    private LocalDateTime createTime;
     private Integer createBy;
     private Department department;
     private List<Course> courses;
@@ -66,11 +66,11 @@ public class Professor {
         this.overallScore = overallScore;
     }
 
-    public LocalDate getCreateTime() {
+    public LocalDateTime getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(LocalDate createTime) {
+    public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
     }
 

@@ -6,7 +6,7 @@
         <result column="professor_first_name" jdbcType="VARCHAR" property="firstName" />
         <result column="professor_last_name" jdbcType="VARCHAR" property="lastName" />
         <result column="professor_overall_score" jdbcType="REAL" property="overallScore" />
-        <result column="professor_create_time" jdbcType="DATE" property="createTime" />
+        <result column="professor_create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="professor_create_by" jdbcType="INTEGER" property="createBy" />
         <association property="school"
                      resultMap="com.wequan.bu.repository.dao.SchoolMapper.schoolResultMap"
