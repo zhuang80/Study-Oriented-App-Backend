@@ -16,7 +16,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/universities")
-@Api(value = "对学校的操作", tags = "学校相关Rest Api")
+@Api(tags = "School")
 public class SchoolController {
     @Autowired
     private SchoolService schoolService;

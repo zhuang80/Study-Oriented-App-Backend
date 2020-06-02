@@ -15,7 +15,7 @@ import java.util.List;
  * @author Zhaochao Huang
  */
 @RestController
-@Api(value = "Operations for Course", tags = "Course Rest API")
+@Api(tags = "Course")
 public class CourseController {
     @Autowired
     private CourseService courseService;
