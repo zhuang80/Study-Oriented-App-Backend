@@ -149,4 +149,10 @@
         WHERE row_id &lt;= #{limit} AND ( professor_first_name ILIKE #{name} OR professor_last_name ILIKE #{name} )
         ORDER BY professor_overall_score DESC
     </select>
+
+    <select id="selectByCourseId" resultType="com.wequan.bu.repository.model.Professor" >
+        SELECT p.*
+        FROM ${schema}.wq_professor_profile p
+        INNER JOIN ${schema}.wq_professor_course pc ON pc.professor_id = p.id AND pc.course_id = #{id}
+    </select>
 </mapper>
