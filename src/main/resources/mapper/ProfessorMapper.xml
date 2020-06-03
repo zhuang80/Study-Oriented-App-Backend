@@ -40,6 +40,7 @@
         />
     </resultMap>
 
+
     <sql id="professorColumns">
         ${alias}.id ${prefix}_id,
         ${alias}.first_name ${prefix}_first_name,
@@ -168,5 +169,11 @@
         INNER JOIN ${schema}.wq_professor_course pc ON pc.professor_id = p.id AND pc.course_id = #{id}
         INNER JOIN ${schema}.wq_school s on p.school_id = s.id
         INNER JOIN ${schema}.wq_department d on p.department_id = d.id
+    </select>
+
+    <select id="getCourseIds" resultType="java.lang.Integer">
+        SELECT pc.course_id
+        FROM ${schema}.wq_professor_course pc
+        WHERE pc.professor_id = #{id}
     </select>
 </mapper>
