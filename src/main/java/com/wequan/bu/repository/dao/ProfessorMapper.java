@@ -27,4 +27,11 @@ public interface ProfessorMapper extends GeneralMapper<Professor> {
      */
     List<Professor> selectByCourseId(@Param("id") Integer id);
 
+    /**
+     * get a list of course ids which a professor teaches
+     * @param id the id of professor
+     * @return
+     */
+    List<Integer> getCourseIds(@Param("id") Integer id);
+
 }

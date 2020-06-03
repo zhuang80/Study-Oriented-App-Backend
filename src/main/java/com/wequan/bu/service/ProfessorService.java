@@ -14,4 +14,12 @@ public interface ProfessorService extends Service<Professor>{
      * @return a list of Professor whose courseRates field is present
      */
     List<Professor> findAllWithRateByName(Integer limit, String name);
+
+    /**
+     * check whether a professor with id teach a course with c_id
+     * @param id the id of professor
+     * @param c_id the id of course
+     * @return
+     */
+    Boolean checkCourseForProfessor(Integer id, Integer c_id);
 }
