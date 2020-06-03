@@ -51,7 +51,9 @@
     </select>
 
     <select id="selectByNameOrCode" resultMap="courseResultMap">
-
+        SELECT *
+        FROM ${schema}.wq_course
+        WHERE name ILIKE #{name} OR code_first || code_second ILIKE #{code}
     </select>
 
 </mapper>
