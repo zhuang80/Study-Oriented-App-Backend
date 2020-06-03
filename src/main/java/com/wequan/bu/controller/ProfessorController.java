@@ -86,7 +86,7 @@ public class ProfessorController{
         if(professorService.checkCourseForProfessor(id, c_id)){
             review.setProfessorId(id);
             review.setCourseId(c_id);
-            review.setUserId(1);
+            review.setUserId(1); //hardcode use id 1, should be changed after
             professorCourseRateService.save(review);
             return ResponseEntity.status(200).body("success");
         }
