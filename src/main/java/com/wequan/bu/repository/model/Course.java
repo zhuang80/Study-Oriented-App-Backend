@@ -1,10 +1,13 @@
 package com.wequan.bu.repository.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.List;
 
 /**
  * @author Zhaochao Huang
  */
+@JsonIgnoreProperties("handler")
 public class Course{
     private Integer id;
     private String name;
@@ -13,7 +16,8 @@ public class Course{
     private String briefDescription;
     private Integer departmentId;
     private Integer schoolId;
-    private List<ProfessorRate> professorRateList;
+  //  private List<ProfessorRate> professorRateList;
+    private List<Professor> professors;
 
     public Integer getId() {
         return id;
@@ -69,5 +73,13 @@ public class Course{
 
     public void setSchoolId(Integer schoolId) {
         this.schoolId = schoolId;
+    }
+
+    public List<Professor> getProfessors() {
+        return professors;
+    }
+
+    public void setProfessors(List<Professor> professors) {
+        this.professors = professors;
     }
 }

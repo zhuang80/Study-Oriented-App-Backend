@@ -5,7 +5,6 @@ import com.wequan.bu.repository.model.Course;
 import com.wequan.bu.service.CourseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,7 @@ public class CourseController {
             log.info(messageHandler.getFailResponseMessage("40003"));
             return null;
         }
-        return courseService.findById(id);
+        return courseService.findByIdAssociatedWithProfessor(id);
     }
 
     @GetMapping("/search/course")

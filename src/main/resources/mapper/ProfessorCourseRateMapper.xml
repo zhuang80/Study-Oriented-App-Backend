@@ -41,9 +41,18 @@
         ${alias}.attendance ${prefix}_attendance
     </sql>
 
+    <sql id="insertColumns">
+        INSERT INTO ${schema}.wq_professor_course_rate(professor_id, course_id, user_id, quality_score, difficult_score, number_of_exams, number_of_quizzes, number_of_homeworks, number_of_projects, number_of_papers, grade_received, tags, comment, anonymous, using_textbook, attendance)
+    </sql>
+
     <select id="selectAllByProfessorIdAndCourseId" resultMap="professorCourseRateResultMap">
         SELECT *
         FROM ${schema}.wq_professor_course_rate
         WHERE professor_id = #{p_id} AND course_id = #{c_id}
     </select>
+
+    <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.ProfessorCourseRate">
+        <include refid="insertColumns" />
+        VALUES(#{professorId}, #{courseId}, #{userId}, #{qualityScore}, #{difficultScore}, #{numberOfExams}, #{numberOfQuizzes}, #{numberOfHomeworks}, #{numberOfProjects}, #{numberOfPapers}, #{gradeReceived}, #{tags}, #{comment}, #{anonymous}, #{usingTextbook}, #{attendance})
+    </insert>
 </mapper>

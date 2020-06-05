@@ -25,4 +25,9 @@ public class CourseServiceImpl extends AbstractService<Course> implements Course
     public List<Course> findByNameOrCode(String name, String code) {
         return courseMapper.selectByNameOrCode(name, code);
     }
+
+    @Override
+    public Course findByIdAssociatedWithProfessor(Integer id) {
+        return courseMapper.selectByIdAssociatedWithProfessor(id);
+    }
 }
