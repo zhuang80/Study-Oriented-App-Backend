@@ -3,11 +3,22 @@
 <mapper namespace="com.wequan.bu.repository.dao.TutorMapper">
   <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.Tutor">
     <id column="id" jdbcType="INTEGER" property="id" />
+    <association property="user" column="{id=user_id}" select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey"/>
   </resultMap>
 
   <select id="selectAll" resultMap="BaseResultMap">
     select *
-    from ${schema}.wq_tutor
+    from ${schema}.wq_tutor_profile
+  </select>
+
+  <select id="selectByConditions" resultMap="BaseResultMap">
+    select * from ${schema}.wq_tutor_profile
+    <if test="where != null and where != ''">
+      where ${where}
+    </if>
+    <if test="orderBy != null and orderBy != ''">
+      order by ${orderBy}
+    </if>
   </select>
 
 </mapper>

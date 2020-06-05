@@ -1,14 +1,20 @@
 package com.wequan.bu.controller.vo;
 
+import javax.validation.constraints.NotNull;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
+ * 针对单表where, group, order, limit(page)
  * @author ChrisChen
  */
 public class Condition {
 
     private Expression expression;
     private List<Sort> sort;
+    private List<String> group;
     private Page page;
 
     public Expression getExpression() {
@@ -27,6 +33,14 @@ public class Condition {
         this.sort = sort;
     }
 
+    public List<String> getGroup() {
+        return group;
+    }
+
+    public void setGroup(List<String> group) {
+        this.group = group;
+    }
+
     public Page getPage() {
         return page;
     }
@@ -35,7 +49,101 @@ public class Condition {
         this.page = page;
     }
 
+    public String getWhereCondition() {
+        String where = "";
+        if (Objects.nonNull(expression)) {
+            StringBuilder whereCondition = getWhereCondition(expression);
+            if (Objects.nonNull(whereCondition)) {
+                where = whereCondition.toString();
+            }
+        }
+        return where;
+    }
 
+    public String getOrderCondition() {
+        StringBuilder builder = new StringBuilder();
+        for (Sort s : sort) {
+            String field = s.getField();
+            String value = s.getValue();
+            if (Objects.nonNull(field) && Objects.nonNull(value)) {
+                // escape ' in postgresql
+                value = value.replaceAll("'","''");
+                if (builder.length() == 0) {
+                    builder.append(field).append(" ").append(value);
+                } else {
+                    builder.append(",").append(field).append(" ").append(value);
+                }
+            }
+        }
+        return builder.toString();
+    }
+
+    public String getGroupCondition() {
+        return group != null ? String.join(", ", group) : "";
+    }
+
+    public Map<String, Integer> getPageCondition() {
+        Map<String, Integer> pageParams = new HashMap<>(2);
+        if (page != null) {
+            pageParams.put("pageNo", page.getNo() != null ? page.getNo() : 1);
+            pageParams.put("pageSize", page.getSize() != null ? page.getSize() : 0);
+        } else {
+            pageParams.put("pageNo", 1);
+            pageParams.put("pageSize", 0);
+        }
+        return pageParams;
+    }
+
+    private StringBuilder getWhereCondition(@NotNull Expression expression) {
+        List<Expression> andList = expression.getAnd();
+        List<Expression> orList = expression.getOr();
+        String field = expression.getField();
+        String value = expression.getValue();
+        String type = expression.getType();
+        String op = expression.getOp();
+        if (expression.getAnd() != null) {
+            StringBuilder andSb = new StringBuilder();
+            int andSize = andList.size();
+            for (int i = 0; i < andSize; i++) {
+                StringBuilder and = getWhereCondition(andList.get(i));
+                if (and != null && and.length() != 0) {
+                    andSb.append(and);
+                    if (i != andSize - 1) {
+                        andSb.append(" and ");
+                    } else {
+                        andSb.insert(0, '(').append(')');
+                    }
+                }
+            }
+            return andSb;
+        } else if (expression.getOr() != null) {
+            StringBuilder orSb = new StringBuilder();
+            int orSize = orList.size();
+            for (int i = 0; i < orSize; i++) {
+                StringBuilder or = getWhereCondition(orList.get(i));
+                if (or != null && or.length() != 0) {
+                    orSb.append(or);
+                    if (i != orSize - 1) {
+                        orSb.append(" or ");
+                    } else {
+                        orSb.insert(0, '(').append(')');
+                    }
+                }
+            }
+            return orSb;
+        } else if (field != null && value != null && type != null && op != null) {
+            StringBuilder sb = new StringBuilder();
+            // escape ' in postgresql
+            value = value.replaceAll("'","''");
+            return sb.append("(").append(field).append(" ").append(op).append(" '").append(value).append("')");
+        }
+        return null;
+    }
+
+    public boolean selfCheck() {
+        // check condition json - in future
+        return true;
+    }
 }
 
 class Expression {
@@ -117,22 +225,22 @@ class Sort {
 }
 
 class Page {
-    private int no;
-    private int size;
+    private Integer no;
+    private Integer size;
 
-    public int getNo() {
+    public Integer getNo() {
         return no;
     }
 
-    public void setNo(int no) {
+    public void setNo(Integer no) {
         this.no = no;
     }
 
-    public int getSize() {
+    public Integer getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(Integer size) {
         this.size = size;
     }
 }
