@@ -26,4 +26,16 @@ public class ProfessorServiceImpl extends AbstractService<Professor> implements 
     public List<Professor> findAllWithRateByName(Integer limit, String name) {
         return professorMapper.selectAllWithRateByName(limit, name);
     }
+
+    @Override
+    public Boolean checkCourseForProfessor(Integer id, Integer c_id) {
+        List<Integer> courseIds = professorMapper.getCourseIds(id);
+        for(Integer courseId : courseIds){
+            //System.out.println(courseId);
+            if(courseId.equals(c_id)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

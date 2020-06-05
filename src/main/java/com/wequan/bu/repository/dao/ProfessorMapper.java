@@ -19,4 +19,19 @@ public interface ProfessorMapper extends GeneralMapper<Professor> {
      * @return a list of Professor associated with course rates
      */
     List<Professor> selectAllWithRateByName(@Param("limit") Integer limit, @Param("name") String name);
+
+    /**
+     * get a list of Professor who teaches a specific course
+     * @param id the id of course
+     * @return a list of Professor with basic information
+     */
+    List<Professor> selectByCourseId(@Param("id") Integer id);
+
+    /**
+     * get a list of course ids which a professor teaches
+     * @param id the id of professor
+     * @return
+     */
+    List<Integer> getCourseIds(@Param("id") Integer id);
+
 }
