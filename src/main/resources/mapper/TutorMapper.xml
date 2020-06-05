@@ -5,6 +5,14 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <association property="user" column="{id=user_id}" select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey"/>
   </resultMap>
+  <resultMap id="TutorMapper" type="com.wequan.bu.repository.model.Tutor">
+    <id column="professor_id" jdbcType="INTEGER" property="id"/>
+    <result column="brief_introduction" jdbcType="VARCHAR" property="briefIntroduction"/>
+    <result column="resume_path" jdbcType="VARCHAR" property="resumePath"/>
+    <result column="transcript_path" jdbcType="VARCHAR" property="transcriptPath"/>
+    <result column="other_proof_path" jdbcType="VARCHAR" property="otherProofPath"/>
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+  </resultMap>
 
   <select id="selectAll" resultMap="BaseResultMap">
     select *
@@ -20,5 +28,15 @@
       order by ${orderBy}
     </if>
   </select>
+
+   <select id="selectTutors" resultMap="BaseResultMap">
+    SELECT *
+    FROM ${schema}.wq_tutor_profile p
+    <if test="subject_id != null">
+        LEFT JOIN ${schema}.wq_tutor_subject s on p.id = s.tutor_id
+        WHERE s.subject_id = #{subject_id}
+    </if>
+    ORDER BY create_time DESC
+   </select>
 
 </mapper>

@@ -9,6 +9,18 @@
         <result column="brief_description" jdbcType="LONGVARCHAR" property="briefDescription" />
         <result column="department_id" jdbcType="INTEGER" property="departmentId" />
         <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+        <collection property="professors" column="id" ofType="com.wequan.bu.repository.model.Professor"
+                    select="com.wequan.bu.repository.dao.ProfessorMapper.selectByCourseId"/>
+    </resultMap>
+
+    <resultMap id="baseResultMap" type="com.wequan.bu.repository.model.Course">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="code_first" jdbcType="VARCHAR" property="codeFirst" />
+        <result column="code_second" jdbcType="VARCHAR" property="codeSecond" />
+        <result column="brief_description" jdbcType="LONGVARCHAR" property="briefDescription" />
+        <result column="department_id" jdbcType="INTEGER" property="departmentId" />
+        <result column="school_id" jdbcType="INTEGER" property="schoolId" />
     </resultMap>
 
     <sql id="courseColumns">
@@ -26,13 +38,22 @@
         FROM ${schema}.wq_course
     </select>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="courseResultMap">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="baseResultMap">
+        SELECT *
+        FROM ${schema}.wq_course
+        WHERE id = #{id, jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByIdAssociatedWithProfessor" parameterType="java.lang.Integer" resultMap="courseResultMap">
         SELECT *
         FROM ${schema}.wq_course
         WHERE id = #{id, jdbcType=INTEGER}
     </select>
 
     <select id="selectByNameOrCode" resultMap="courseResultMap">
-
+        SELECT *
+        FROM ${schema}.wq_course
+        WHERE name ILIKE #{name} OR code_first || code_second ILIKE #{code}
     </select>
+
 </mapper>

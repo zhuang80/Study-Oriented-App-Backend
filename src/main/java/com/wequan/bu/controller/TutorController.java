@@ -41,18 +41,18 @@ public class TutorController {
 
     @GetMapping("/appointments")
     public List<Tutor> getAppointments(@RequestParam("id") String id) throws NoHandlerFoundException {
-        throw new NoHandlerFoundException("get","example.com",null);
+        throw new NoHandlerFoundException("get", "example.com", null);
     }
 
     @GetMapping("/tutors")
     @ApiOperation(value = "Available tutors", notes = "返回Tutor列表，按评分/加入时间倒序")
-    public List<Tutor> getTutors(@RequestParam(value = "subject", required = false) String subject) {
-        return null;
+    public List<Tutor> getTutors(@RequestParam(value = "subject_id", required = false) Integer subjectId) {
+        return tutorService.findTutors(subjectId);
     }
 
     @GetMapping("/tutors/popular")
     @ApiOperation(value = "Popular tutors", notes = "返回Tutor列表，按评分/被查看次数排序")
-    public List<Tutor> getPopularTutors(@RequestParam(value = "subject", required = false)String subject) {
+    public List<Tutor> getPopularTutors(@RequestParam(value = "subject", required = false) String subject) {
         return null;
     }
 
