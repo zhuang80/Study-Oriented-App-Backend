@@ -10,10 +10,8 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,7 +20,7 @@ import java.util.List;
  */
 @RestController
 @Api(value = "Operations for Professor", tags="Professor Rest API")
-public class ProfessorController<ProfessorCourserRate> {
+public class ProfessorController{
 
     private static final Logger log = LoggerFactory.getLogger(CourseController.class);
 
@@ -72,6 +70,27 @@ public class ProfessorController<ProfessorCourserRate> {
             return null;
         }
         return professorCourseRateService.findAllByProfessorIdAndCourseId(p_id, c_id);
+    }
+
+    @PostMapping("/professor/{id}/course/{c_id}/evaluations")
+    @ApiOperation(value="postReview", notes="post a new reviews")
+    public ResponseEntity<String> postReview(@PathVariable("id") Integer id,
+                                             @PathVariable("c_id") Integer c_id,
+                                             @RequestBody ProfessorCourseRate review){
+        if(id<0 || c_id<0) {
+            String message = messageHandler.getFailResponseMessage("40008");
+            log.info(message);
+            return ResponseEntity.status(400).body(message);
+        }
+        log.info(professorService.checkCourseForProfessor(id,c_id).toString());
+        if(professorService.checkCourseForProfessor(id, c_id)){
+            review.setProfessorId(id);
+            review.setCourseId(c_id);
+            review.setUserId(1); //hardcode use id 1, should be changed after
+            professorCourseRateService.save(review);
+            return ResponseEntity.status(200).body("success");
+        }
+        return ResponseEntity.status(400).body("The Professor don't teach this course.");
     }
 }
 

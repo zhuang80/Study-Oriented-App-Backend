@@ -8,7 +8,7 @@ import org.apache.ibatis.session.RowBounds;
 import java.util.List;
 
 /**
- * @author ChrisChen
+ * @author Zhen Lin
  */
 @Mapper
 public interface TutorMapper extends GeneralMapper<Tutor> {
@@ -21,4 +21,6 @@ public interface TutorMapper extends GeneralMapper<Tutor> {
      * @return Tutor列表
      */
     List<Tutor> selectByConditions(@Param("where") String whereCondition, @Param("orderBy") String orderCondition, RowBounds rowBounds);
+
+    List<Tutor> selectTutors(@Param("subject_id") Integer subjectId);
 }

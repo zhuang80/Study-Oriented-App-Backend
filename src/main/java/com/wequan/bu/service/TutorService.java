@@ -19,4 +19,6 @@ public interface TutorService extends Service<Tutor> {
      * @return Tutor列表
      */
     List<Tutor> search(String whereCondition, String groupCondition, String orderCondition, Map<String, Integer> pageCondition);
+
+    public List<Tutor> findTutors(Integer subjectId);
 }

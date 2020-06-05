@@ -43,4 +43,9 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
         }
         return tutors;
     }
+    @Override
+    public List<Tutor> findTutors(Integer subjectId) {
+        return tutorMapper.selectTutors(subjectId);
+    }
+
 }
