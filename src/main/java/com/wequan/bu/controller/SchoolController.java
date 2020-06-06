@@ -21,9 +21,9 @@ public class SchoolController {
     @Autowired
     private SchoolService schoolService;
 
-    @GetMapping("/")
+    @GetMapping("")
     @ApiOperation(value = "findAll", notes = "return a list of schools")
-    public List<School> findAll(){
-        return schoolService.findAll();
+    public List<School> findAll(Integer pageNum, Integer pageSize){
+        return schoolService.findAll(pageNum, pageSize);
     }
 }
