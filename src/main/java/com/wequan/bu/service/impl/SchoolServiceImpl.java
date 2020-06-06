@@ -1,5 +1,6 @@
 package com.wequan.bu.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.wequan.bu.repository.dao.SchoolMapper;
 import com.wequan.bu.repository.model.School;
 import com.wequan.bu.service.SchoolService;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 /**
  * @author Zhaochao Huang
@@ -22,4 +24,21 @@ public class SchoolServiceImpl extends AbstractService<School> implements School
         this.setMapper(schoolMapper);
     }
 
+    /**
+     * return a specified page of schools
+     * @param pageNum the number of page, the default value is 1
+     * @param pageSize the size of each page, the default value is 10
+     * @return
+     */
+    @Override
+    public List<School> findAll(Integer pageNum, Integer pageSize){
+        if(pageNum == null) {
+            pageNum = 1;
+        }
+        if(pageSize == null){
+            pageSize = 10;
+        }
+        PageHelper.startPage(pageNum, pageSize);
+        return schoolMapper.selectAll();
+    }
 }
