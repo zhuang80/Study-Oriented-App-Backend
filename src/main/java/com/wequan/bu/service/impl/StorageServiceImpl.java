@@ -69,6 +69,7 @@ public class StorageServiceImpl implements StorageService {
         return upload(request, body);
     }
 
+    @Override
     public byte[] download(String key) {
         try {
             ResponseBytes<GetObjectResponse> s3Object = s3.getObject(

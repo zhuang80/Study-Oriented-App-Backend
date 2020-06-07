@@ -1,5 +1,7 @@
 package com.wequan.bu.controller;
 
+import com.wequan.bu.controller.vo.result.Result;
+import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.exception.NotImplementedException;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.service.TutorService;
@@ -27,10 +29,10 @@ public class TutorController {
 
     @GetMapping("/all")
     @ApiOperation(value = "Get all tutors", notes = "返回Tutor列表")
-    public List<Tutor> getAll() {
+    public Result<List<Tutor>> getAll() {
         System.out.println(tutorService.findAll().stream().count());
         List<Tutor> allTutors = tutorService.findAll();
-        return allTutors;
+        return ResultGenerator.success(allTutors);
     }
 
     @GetMapping("/info")
@@ -52,8 +54,14 @@ public class TutorController {
 
     @GetMapping("/tutors/popular")
     @ApiOperation(value = "Popular tutors", notes = "返回Tutor列表，按评分/被查看次数排序")
-    public List<Tutor> getPopularTutors(@RequestParam(value = "subject", required = false) String subject) {
-        return null;
+    public Result<List<Tutor>> getPopularTutors(@RequestParam(value = "subject", required = false) String subject) {
+        List<Tutor> abc = null;
+        try {
+            throw new Exception("test it");
+        } catch (Exception e) {
+            return ResultGenerator.fail("");
+        }
+
     }
 
 }
