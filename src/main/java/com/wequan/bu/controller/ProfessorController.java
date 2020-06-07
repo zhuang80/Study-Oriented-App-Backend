@@ -1,8 +1,12 @@
 package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
+import com.wequan.bu.json.JSON;
+import com.wequan.bu.json.JSONS;
+import com.wequan.bu.repository.model.Course;
 import com.wequan.bu.repository.model.Professor;
 import com.wequan.bu.repository.model.ProfessorCourseRate;
+import com.wequan.bu.repository.model.School;
 import com.wequan.bu.service.ProfessorCourseRateService;
 import com.wequan.bu.service.ProfessorService;
 import io.swagger.annotations.Api;
@@ -11,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +23,7 @@ import java.util.List;
 /**
  * @author Zhaochao Huang
  */
-@RestController
+@Controller
 @Api(value = "Operations for Professor", tags="Professor Rest API")
 public class ProfessorController{
 
@@ -35,12 +40,15 @@ public class ProfessorController{
 
     @GetMapping("/professor")
     @ApiOperation(value="findAll", notes="return a list of professors")
+    @JSON(type=Professor.class, filter = "courseRates")
     public List<Professor> findAll(){
         return professorService.findAll();
     }
 
     @GetMapping("/professor/{id}")
     @ApiOperation(value="findById", notes="find a specific professor by its id")
+    @JSON(type = School.class, filter = "id")
+    @JSON(type = Professor.class, filter = "courseRates")
     public Professor findById(@PathVariable("id") Integer id) {
         if(id<0){
             messageHandler.getFailResponseMessage("40005");
@@ -50,6 +58,7 @@ public class ProfessorController{
     }
 
     @GetMapping("/search/professor")
+    @ResponseBody
     @ApiOperation(value="", notes="")
     public List<Professor> findAllWithRateByName(@RequestParam("name") String name){
         if(name.isEmpty()) {
@@ -60,6 +69,7 @@ public class ProfessorController{
     }
 
     @GetMapping("/professor/{id}/course/{c_id}/evaluations")
+    @ResponseBody
     @ApiOperation(value="", notes="return all reviews for each professor, each course")
     public List<ProfessorCourseRate> findAllReviewsByProfessorIdAndCourseId(
             @PathVariable("id") Integer p_id,
@@ -75,6 +85,7 @@ public class ProfessorController{
     }
 
     @PostMapping("/professor/{id}/course/{c_id}/evaluations")
+    @ResponseBody
     @ApiOperation(value="postReview", notes="post a new reviews")
     public ResponseEntity<String> postReview(@PathVariable("id") Integer id,
                                              @PathVariable("c_id") Integer c_id,
