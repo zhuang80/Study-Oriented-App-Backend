@@ -52,6 +52,7 @@ public class JacksonJsonFilter extends FilterProvider{
             @Override
             public void serializeAsField(Object pojo, JsonGenerator jgen, SerializerProvider prov, PropertyWriter writer)
                     throws Exception {
+                System.out.println("=======================================" + writer.getName());
                 if (apply(pojo.getClass(), writer.getName())) {
                     writer.serializeAsField(pojo, jgen, prov);
                 } else if (!jgen.canOmitFields()) {

@@ -13,8 +13,10 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class JsonReturnHandler implements HandlerMethodReturnValueHandler{
     @Override
     public boolean supportsReturnType(MethodParameter returnType) {
-        boolean hasJsonAnno= returnType.getMethodAnnotation(JSON.class) != null;
-        return hasJsonAnno;
+        boolean hasJson = returnType.getMethodAnnotation(JSON.class) != null;
+        boolean hasJsons = returnType.getMethodAnnotation(JSONS.class) != null;
+        System.out.println("has JSON or JSONS annotation -------------: " + (hasJson || hasJsons));
+        return (hasJson || hasJsons);
     }
 
     @Override
@@ -23,9 +25,9 @@ public class JsonReturnHandler implements HandlerMethodReturnValueHandler{
         mavContainer.setRequestHandled(true);
 
         HttpServletResponse response = webRequest.getNativeResponse(HttpServletResponse.class);
-        Annotation[] annos = returnType.getMethodAnnotations();
+        Annotation[] annotations = returnType.getMethodAnnotations();
         CustomerJsonSerializer jsonSerializer = new CustomerJsonSerializer();
-        Arrays.asList(annos).forEach(a -> {
+        Arrays.asList(annotations).forEach(a -> {
             if (a instanceof JSON) {
                 JSON json = (JSON) a;
                 jsonSerializer.filter(json);
