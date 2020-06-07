@@ -23,7 +23,7 @@ public class ImageTest {
 
 
     @Before
-    private void createOutDir() {
+    public void createOutDir() {
         File file = new File(outputPath);
         file.mkdirs();
     }
