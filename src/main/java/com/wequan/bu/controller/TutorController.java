@@ -59,9 +59,9 @@ public class TutorController {
         try {
             throw new Exception("test it");
         } catch (Exception e) {
-
+            return ResultGenerator.fail("");
         }
-        return ResultGenerator.fail("");
+
     }
 
 }
