@@ -63,13 +63,15 @@ public class ProfessorController{
     @ApiOperation(value="", notes="return all reviews for each professor, each course")
     public List<ProfessorCourseRate> findAllReviewsByProfessorIdAndCourseId(
             @PathVariable("id") Integer p_id,
-            @PathVariable("c_id") Integer c_id
+            @PathVariable("c_id") Integer c_id,
+            Integer pageNum,
+            Integer pageSize
     ){
         if(p_id < 0 || c_id < 0) {
             messageHandler.getFailResponseMessage("40007");
             return null;
         }
-        return professorCourseRateService.findAllByProfessorIdAndCourseId(p_id, c_id);
+        return professorCourseRateService.findAllByProfessorIdAndCourseId(p_id, c_id, pageNum, pageSize);
     }
 
     @PostMapping("/professor/{id}/course/{c_id}/evaluations")
