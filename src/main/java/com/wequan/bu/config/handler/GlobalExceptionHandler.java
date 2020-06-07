@@ -1,6 +1,7 @@
 package com.wequan.bu.config.handler;
 
 import com.wequan.bu.exception.NotImplementedException;
+import com.wequan.bu.exception.ServiceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,13 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({NotImplementedException.class, IllegalArgumentException.class, NullPointerException.class, BadSqlGrammarException.class})
+    @ExceptionHandler({
+                    ServiceException.class,
+                    NotImplementedException.class,
+                    IllegalArgumentException.class,
+                    NullPointerException.class,
+                    BadSqlGrammarException.class
+            })
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> internalServerErrorExceptionHandler(RuntimeException exception) {
         Map<String, String> map = new HashMap<>(1);
@@ -32,7 +39,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
         if (body == null) {
             Map<String, Object> resp = new HashMap<>(3);
-            resp.put("statusCode", status.value());
+            resp.put("code", status.value());
             resp.put("exception", ex.getClass().toString());
             resp.put("message", ex.getMessage());
             body = resp;
