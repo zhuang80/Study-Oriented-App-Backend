@@ -41,6 +41,7 @@ public class ProfessorController{
     @GetMapping("/professor")
     @ApiOperation(value="findAll", notes="return a list of professors")
     @JSON(type=Professor.class, filter = "courseRates")
+    @JSON(type = Course.class, filter = {"professors","schoolId","departmentId"})
     public List<Professor> findAll(){
         return professorService.findAll();
     }
@@ -60,6 +61,7 @@ public class ProfessorController{
     @GetMapping("/search/professor")
     @ResponseBody
     @ApiOperation(value="", notes="")
+    @JSON(type = Course.class, filter = {"professors","schoolId","departmentId"})
     public List<Professor> findAllWithRateByName(@RequestParam("name") String name){
         if(name.isEmpty()) {
             messageHandler.getFailResponseMessage("40006");
