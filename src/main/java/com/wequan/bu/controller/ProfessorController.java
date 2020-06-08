@@ -47,8 +47,8 @@ public class ProfessorController{
 
     @GetMapping("/professor/{id}")
     @ApiOperation(value="findById", notes="find a specific professor by its id")
-    @JSON(type = School.class, filter = "id")
     @JSON(type = Professor.class, filter = "courseRates")
+    @JSON(type = Course.class, filter = {"professors","schoolId","departmentId"})
     public Professor findById(@PathVariable("id") Integer id) {
         if(id<0){
             messageHandler.getFailResponseMessage("40005");

@@ -12,13 +12,13 @@ public class CustomerJsonSerializer {
     ObjectMapper mapper = new ObjectMapper();
     JacksonJsonFilter jacksonFilter = new JacksonJsonFilter();
 
-    public void filter(Class<?> clazz, String include, String filter) {
+    public void filter(Class<?> clazz, String[] include, String[] filter) {
         if (clazz == null) return;
-        if (StringUtils.isNotBlank(include)) {
-            jacksonFilter.include(clazz, include.split(","));
+        if (include.length != 0) {
+            jacksonFilter.include(clazz, include);
         }
-        if (StringUtils.isNotBlank(filter)) {
-            jacksonFilter.filter(clazz, filter.split(","));
+        if (filter.length != 0) {
+            jacksonFilter.filter(clazz, filter);
         }
         mapper.addMixIn(clazz, jacksonFilter.getClass());
     }
