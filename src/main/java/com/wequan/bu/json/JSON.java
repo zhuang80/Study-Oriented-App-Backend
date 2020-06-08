@@ -14,6 +14,6 @@ import java.lang.annotation.Target;
 @Repeatable(JSONS.class)
 public @interface JSON {
     Class<?> type();
-    String include() default "";
-    String filter() default "";
+    String[] include() default {};
+    String[] filter() default {};
 }
