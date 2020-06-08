@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * @author Zhaochao Huang
+ */
 public class CustomLocalDateTimeSerializer extends StdSerializer<LocalDateTime> {
 
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd@HH:mm:ss");

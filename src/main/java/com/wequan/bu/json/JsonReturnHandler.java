@@ -10,6 +10,9 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+/**
+ * @author Zhaochao Huang
+ */
 public class JsonReturnHandler implements HandlerMethodReturnValueHandler{
     @Override
     public boolean supportsReturnType(MethodParameter returnType) {
