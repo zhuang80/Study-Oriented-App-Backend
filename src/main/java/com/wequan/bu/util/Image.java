@@ -21,8 +21,10 @@ public class Image {
     public static BufferedImage getImage(String path) {
         File file = new File(path);
 
-        if (!file.exists())
+        if (!file.exists()) {
             return null;
+        }
+
 
         BufferedImage res = getImage(file);
         return res;
