@@ -1,13 +1,17 @@
 package com.wequan.bu.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wequan.bu.config.handler.MessageHandler;
-import com.wequan.bu.controller.vo.*;
+import com.wequan.bu.controller.vo.Condition;
+import com.wequan.bu.controller.vo.DiscussionGroup;
+import com.wequan.bu.controller.vo.OnlineEvent;
+import com.wequan.bu.controller.vo.TutorInquiry;
+import com.wequan.bu.controller.vo.result.Result;
+import com.wequan.bu.controller.vo.result.ResultGenerator;
+import com.wequan.bu.repository.model.Course;
+import com.wequan.bu.repository.model.Professor;
+import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.service.TutorService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,43 +38,65 @@ public class SearchController {
     @PostMapping("/tutor")
     @ApiOperation(value = "Search tutor with topics or name", notes = "返回Tutor列表, 根据subject分组，评分排序，分页")
     @ApiModelProperty(value="condition", notes = "筛选条件json串")
-    public String searchTutor(@RequestBody Condition condition) {
+    public Result<List<Tutor>> searchTutor(@RequestBody Condition condition) {
+        Result<List<Tutor>> result = null;
         if (condition != null && condition.selfCheck()) {
             String whereCondition = condition.getWhereCondition();
             String groupCondition = condition.getGroupCondition();
             String orderCondition = condition.getOrderCondition();
             Map<String, Integer> pageCondition = condition.getPageCondition();
-            try {
-                new ObjectMapper().writeValueAsString(tutorService.search(whereCondition, groupCondition, orderCondition, pageCondition));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
+            List<Tutor> tutors = tutorService.search(whereCondition, groupCondition, orderCondition, pageCondition);
+            result = ResultGenerator.success(tutors);
         } else {
-            // to do
+            ResultGenerator.fail("Invalid parameters");
         }
-        return null;
+        return result;
     }
 
-    @GetMapping("/tutor_inquiry")
+    @PostMapping("/tutor_inquiry")
     @ApiOperation(value = "Search tutor inquiry with topics", notes = "返回Tutor inquires列表，根据subject分组，按时间倒序")
     @ApiModelProperty(value="condition", notes = "筛选条件json串")
-    public List<TutorInquiry> searchTutorInquiry(@RequestBody Condition condition) {
+    public Result<List<TutorInquiry>> searchTutorInquiry(@RequestBody Condition condition) {
 
         return null;
     }
 
-    @GetMapping("/online_event")
+    @PostMapping("/online_event")
     @ApiOperation(value = "Search online event", notes = "返回Online event列表，先按临近时间倒序再按scheduled时间倒序")
     @ApiModelProperty(value="condition", notes = "筛选条件json串")
-    public List<OnlineEvent> searchOnlineEvent(@RequestBody Condition condition) {
+    public Result<List<OnlineEvent>> searchOnlineEvent(@RequestBody Condition condition) {
         return null;
     }
 
-    @GetMapping("/discussion_group")
+    @PostMapping("/discussion_group")
     @ApiOperation(value = "Search discussion group", notes = "返回Discussion group列表，按时间倒序")
     @ApiModelProperty(value="condition", notes = "筛选条件json串")
-    public List<DiscussionGroup> searchDiscussionGroup(@RequestBody Condition condition) {
+    public Result<List<DiscussionGroup>> searchDiscussionGroup(@RequestBody Condition condition) {
         return null;
     }
 
+    @PostMapping("/professor")
+    @ApiOperation(value = "Search professor", notes = "返回Professor列表，按评分倒序")
+    @ApiModelProperty(value="condition", notes = "筛选条件json串")
+    public Result<List<Professor>> searchProfessor(@RequestBody Condition condition) {
+        return null;
+    }
+
+    @PostMapping("/course")
+    @ApiOperation(value = "Search course", notes = "返回Course列表")
+    @ApiModelProperty(value="condition", notes = "筛选条件json串")
+    public Result<List<Course>> searchCourse(@RequestBody Condition condition) {
+        return null;
+    }
+
+    @GetMapping("/professor_or_course")
+    @ApiOperation(value = "Search professor or course by name", notes = "按照professor/course返回分组列表")
+    @ApiResponses(
+            @ApiResponse(code = 200, message = "返回结果data参照Search professor和Search course")
+    )
+    public Result<Map<String, Object>> searchProfessorOrCourse(@RequestParam("schoolId") String schoolId,
+                                                               @RequestParam("professorName") String professorName,
+                                                               @RequestParam("courseName") String courseName) {
+        return null;
+    }
 }
