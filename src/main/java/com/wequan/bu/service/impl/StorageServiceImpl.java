@@ -18,15 +18,16 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Object;
+import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URI;
+import java.net.URL;
+import java.time.Duration;
 
 @Service
 public class StorageServiceImpl implements StorageService {
@@ -35,14 +36,23 @@ public class StorageServiceImpl implements StorageService {
 
     private final Region region = Region.US_EAST_1;
     private final String END_POINT = "http://s3.amazonaws.com";
-    private final String ACCESS_KEY = "AKIAIF4OVFNLW2ABXANQ";
-    private final String SECRET_KEY = "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";
+    private final String ACCESS_KEY = "AKIAT3UCHJRBB7WS5BUB";
+    private final String SECRET_KEY = "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";
     private final String bucket = "wq-dev";
     private S3Client s3;
+    private S3Presigner presigner;
 
     @Autowired
     private void setS3() {
         s3 = getS3Client();
+    }
+
+    @Autowired
+    private void setPresigner() {
+        AwsSessionCredentials awsCreds = AwsSessionCredentials.create(ACCESS_KEY, SECRET_KEY, "");
+        presigner = S3Presigner.builder()
+                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+                .region(region).build();
     }
 
     private boolean upload(PutObjectRequest request, RequestBody body) {
@@ -87,15 +97,20 @@ public class StorageServiceImpl implements StorageService {
                     + "such as not being able to access the network: " + key, ace);
             throw ace;
         }
-//        GetObjectRequest request = getGetObjectRequest(key);;
-//        ResponseInputStream r = s3.getObject(request, ResponseTransformer.toInputStream());
-//        InputStreamResource resource = new InputStreamResource(r);
-//        try {
-//            return resource.getInputStream();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
+    }
+
+    @Override
+    public URL getPresignedURL(String key) {
+        try {
+            PresignedPutObjectRequest presignedRequest =
+                    presigner.presignPutObject(z -> z.signatureDuration(Duration.ofMinutes(10))
+                            .putObjectRequest(por -> por.bucket(bucket).key(key)));
+
+            return presignedRequest.url();
+        } catch (S3Exception e) {
+            e.getStackTrace();
+        }
+        return null;
     }
 
     private S3Client getS3Client() {
@@ -125,9 +140,5 @@ public class StorageServiceImpl implements StorageService {
         return RequestBody.fromInputStream(is, len);
     }
 
-//    private ByteBuffer getRandomByteBuffer(int size) throws IOException {
-//        byte[] b = new byte[size];
-//        new Random().nextBytes(b);
-//        return ByteBuffer.wrap(b);
-//    }
+
 }
