@@ -1,5 +1,6 @@
 package com.wequan.bu.repository.dao;
 
+import com.wequan.bu.controller.vo.ProfessorVo;
 import com.wequan.bu.repository.model.Professor;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -33,5 +34,7 @@ public interface ProfessorMapper extends GeneralMapper<Professor> {
      * @return
      */
     List<Integer> getCourseIds(@Param("id") Integer id);
+
+    ProfessorVo selectBaseInfoById(Integer id);
 
 }
