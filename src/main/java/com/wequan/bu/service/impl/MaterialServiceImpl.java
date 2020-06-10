@@ -1,13 +1,18 @@
 package com.wequan.bu.service.impl;
 
+import com.wequan.bu.repository.dao.MaterialMapper;
+import com.wequan.bu.repository.model.Material;
+import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.MaterialService;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -21,8 +26,14 @@ import java.util.UUID;
  * @author Zhaochao Huang
  */
 @Service
-public class MaterialServiceImpl implements MaterialService {
+public class MaterialServiceImpl extends AbstractService<Material> implements MaterialService {
+    @Autowired
+    private MaterialMapper materialMapper;
 
+    @PostConstruct
+    public void postConstruct(){
+        this.setMapper(materialMapper);
+    }
     /**
      * store the files send from the client on local storage
      * @param files the files send from the client
@@ -85,5 +96,10 @@ public class MaterialServiceImpl implements MaterialService {
                 }
             }
         }
+    }
+
+    @Override
+    public List<Material> findByCourseIdAndProfessorId(Integer c_id, Integer p_id, Integer pageNum, Integer pageSize) {
+        return materialMapper.selectByCourseIdAndProfessorId(c_id, p_id);
     }
 }
