@@ -36,7 +36,7 @@ public class SearchController {
     private TutorService tutorService;
 
     @PostMapping("/tutor")
-    @ApiOperation(value = "Search tutor with topics or name", notes = "返回Tutor列表, 根据subject分组，评分排序，分页")
+    @ApiOperation(value = "Search tutor with condition", notes = "返回Tutor列表, 根据subject分组，评分排序")
     @ApiModelProperty(value="condition", notes = "筛选条件json串")
     public Result<List<Tutor>> searchTutor(@RequestBody Condition condition) {
         Result<List<Tutor>> result = null;
@@ -54,7 +54,7 @@ public class SearchController {
     }
 
     @PostMapping("/tutor_inquiry")
-    @ApiOperation(value = "Search tutor inquiry with topics", notes = "返回Tutor inquires列表，根据subject分组，按时间倒序")
+    @ApiOperation(value = "Search tutor inquiry with condition", notes = "返回Tutor inquires列表，根据subject分组，按时间倒序")
     @ApiModelProperty(value="condition", notes = "筛选条件json串")
     public Result<List<TutorInquiry>> searchTutorInquiry(@RequestBody Condition condition) {
 
@@ -62,14 +62,14 @@ public class SearchController {
     }
 
     @PostMapping("/online_event")
-    @ApiOperation(value = "Search online event", notes = "返回Online event列表，先按临近时间倒序再按scheduled时间倒序")
+    @ApiOperation(value = "Search online event", notes = "返回Online event列表，按临近时间倒序")
     @ApiModelProperty(value="condition", notes = "筛选条件json串")
     public Result<List<OnlineEvent>> searchOnlineEvent(@RequestBody Condition condition) {
         return null;
     }
 
     @PostMapping("/discussion_group")
-    @ApiOperation(value = "Search discussion group", notes = "返回Discussion group列表，按时间倒序")
+    @ApiOperation(value = "Search discussion group", notes = "返回Discussion group列表，按临近时间倒序")
     @ApiModelProperty(value="condition", notes = "筛选条件json串")
     public Result<List<DiscussionGroup>> searchDiscussionGroup(@RequestBody Condition condition) {
         return null;
