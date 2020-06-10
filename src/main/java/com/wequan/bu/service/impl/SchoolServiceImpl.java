@@ -1,7 +1,9 @@
 package com.wequan.bu.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.wequan.bu.repository.dao.DepartmentMapper;
 import com.wequan.bu.repository.dao.SchoolMapper;
+import com.wequan.bu.repository.model.Department;
 import com.wequan.bu.repository.model.School;
 import com.wequan.bu.service.SchoolService;
 import com.wequan.bu.service.AbstractService;
@@ -18,6 +20,9 @@ import java.util.List;
 public class SchoolServiceImpl extends AbstractService<School> implements SchoolService {
     @Autowired
     private SchoolMapper schoolMapper;
+
+    @Autowired
+    private DepartmentMapper departmentMapper;
 
     @PostConstruct
     public void postConstructor() {
@@ -40,5 +45,10 @@ public class SchoolServiceImpl extends AbstractService<School> implements School
         }
         PageHelper.startPage(pageNum, pageSize);
         return schoolMapper.selectAll();
+    }
+
+    @Override
+    public List<Department> findDepartmentsBySchoolId(Integer id) {
+        return departmentMapper.selectDepartmentsBySchoolId(id);
     }
 }

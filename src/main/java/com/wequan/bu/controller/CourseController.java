@@ -55,6 +55,7 @@ public class CourseController {
 
     @GetMapping("course/{id}/professors")
     @ApiOperation(value="", notes="a list of professors who teach required course")
+    @ResponseBody
     public List<Professor> findProfessorsByCourseId(@PathVariable("id") Integer id){
         if(id < 0) {
             log.info(messageHandler.getFailResponseMessage("40003"));
