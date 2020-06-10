@@ -6,6 +6,12 @@
         FROM ${schema}.wq_course_material
     </select>
 
+    <select id="selectByPrimaryKey" resultType="com.wequan.bu.repository.model.Material">
+        SELECT *
+        FROM ${schema}.wq_course_material cm
+        WHERE cm.id = #{id}
+    </select>
+
     <select id="selectByCourseIdAndProfessorId" resultType="com.wequan.bu.repository.model.Material">
         SELECT *
         FROM ${schema}.wq_course_material cm

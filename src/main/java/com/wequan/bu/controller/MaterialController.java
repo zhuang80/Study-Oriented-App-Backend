@@ -55,7 +55,13 @@ public class MaterialController {
 
     @GetMapping("/material/{id}")
     @ApiOperation(value = "", notes="material detail")
-    public void getMaterialById(@RequestParam("id") Integer id){}
+    public Material getMaterialById(@PathVariable("id") Integer id){
+        if(id < 0){
+            messageHandler.getFailResponseMessage("40008");
+            return null;
+        }
+        return materialService.findById(id);
+    }
 
     @GetMapping("materials")
     @ApiOperation(value = "", notes="a list of material")
