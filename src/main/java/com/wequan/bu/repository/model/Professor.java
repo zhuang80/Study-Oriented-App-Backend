@@ -1,5 +1,9 @@
 package com.wequan.bu.repository.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.wequan.bu.json.CustomLocalDateTimeSerializer;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,6 +16,7 @@ public class Professor {
     private String lastName;
     private School school;
     private Double overallScore;
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
     private LocalDateTime createTime;
     private Integer createBy;
     private Department department;

@@ -2,6 +2,7 @@ package com.wequan.bu.config;
 
 import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.config.properties.SwaggerProperties;
+import com.wequan.bu.json.JsonReturnHandler;
 import org.apache.catalina.connector.Connector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -21,6 +23,7 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
 import javax.servlet.MultipartConfigElement;
+import java.util.List;
 
 /**
  * @author ChrisChen
@@ -88,4 +91,8 @@ public class WeQuanConfiguration implements WebMvcConfigurer {
         return factory.createMultipartConfig();
     }
 
+    @Override
+    public void addReturnValueHandlers(final List<HandlerMethodReturnValueHandler> returnValueHandlers){
+        returnValueHandlers.add(new JsonReturnHandler());
+    }
 }
