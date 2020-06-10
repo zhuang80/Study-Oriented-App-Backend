@@ -66,7 +66,7 @@ public class MaterialController {
     @GetMapping("materials")
     @ApiOperation(value = "", notes="a list of material")
     public List<Material> findAll(@RequestParam("courseId") Integer c_id, @RequestParam("professorId") Integer p_id,
-                            Integer pageNum, Integer pageSize){
+                            @RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize){
         if(c_id <0 || p_id <0){
             messageHandler.getFailResponseMessage("40008");
             return null;

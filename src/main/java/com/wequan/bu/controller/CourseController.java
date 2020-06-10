@@ -1,6 +1,7 @@
 package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
+import com.wequan.bu.controller.vo.CourseVo;
 import com.wequan.bu.json.JSON;
 import com.wequan.bu.repository.model.Course;
 import com.wequan.bu.repository.model.Professor;
@@ -73,5 +74,16 @@ public class CourseController {
             return null;
         }
         return courseService.findByNameOrCode(name, code);
+    }
+
+    @PostMapping("/course")
+    @ApiOperation(value="", notes="add a course")
+    @ResponseBody
+    public void addCourse(@RequestBody CourseVo course){
+        try{
+            courseService.save(course);
+        }catch(Exception e){
+            log.info(messageHandler.getFailResponseMessage(e.getMessage()));
+        }
     }
 }

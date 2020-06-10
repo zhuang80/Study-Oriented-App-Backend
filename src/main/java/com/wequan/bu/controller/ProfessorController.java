@@ -63,7 +63,7 @@ public class ProfessorController{
     @ResponseBody
     @ApiOperation(value="", notes="a list of top professor")
     public void findTopProfessor(@RequestParam("schoolId") Integer school_id, @RequestParam("subjectId") Integer subject_id,
-                                 Integer pageNum, Integer pageSize){
+                                 @RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize){
 
     }
 
