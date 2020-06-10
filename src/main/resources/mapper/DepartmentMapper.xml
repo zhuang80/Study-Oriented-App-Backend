@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.DepartmentMapper">
+    <resultMap id="departmentResultMap" type="com.wequan.bu.repository.model.Department">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="school_id" jdbcType="INTEGER" property="schoolId"/>
+    </resultMap>
+
+    <sql id="departmentColumns">
+        ${alias}.id ${prefix}_id,
+        ${alias}.name ${prefix}_name,
+        ${alias}.school_id ${prefix}_school_id
+    </sql>
+
+    <select id="selectDepartmentsBySchoolId" resultMap="departmentResultMap">
+        SELECT *
+        FROM ${schema}.wq_department
+    </select>
+</mapper>
