@@ -19,9 +19,9 @@ import java.util.List;
 /**
  * @author Zhaochao Huang
  */
-@Controller
-@Api(value = "Operations for Course", tags = "Course Rest API")
+@RestController
 @RequestMapping("/study_space")
+@Api(tags = "Course")
 public class CourseController {
 
     private static final Logger log = LoggerFactory.getLogger(CourseController.class);

@@ -4,29 +4,43 @@ package com.wequan.bu.controller.vo;
  * @author ChrisChen
  */
 public class User {
-    private String id;
-    private String name;
+
+    private int id;
+    private String firstName;
+    private String lastName;
     private String nickname;
+    private String avatar;
     private String email;
     private String phone;
     private String address;
     private String zipCode;
-    private String password;
+    private String credential;
+    private int schoolId;
+    private int studyPoints;
+    private String accessToken;
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getNickname() {
@@ -35,6 +49,14 @@ public class User {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public String getEmail() {
@@ -69,11 +91,35 @@ public class User {
         this.zipCode = zipCode;
     }
 
-    public String getPassword() {
-        return password;
+    public String getCredential() {
+        return credential;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setCredential(String credential) {
+        this.credential = credential;
+    }
+
+    public int getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(int schoolId) {
+        this.schoolId = schoolId;
+    }
+
+    public int getStudyPoints() {
+        return studyPoints;
+    }
+
+    public void setStudyPoints(int studyPoints) {
+        this.studyPoints = studyPoints;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 }

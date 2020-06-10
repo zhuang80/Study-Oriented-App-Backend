@@ -17,17 +17,17 @@ import java.util.stream.Collectors;
 public class AppUserDetails implements UserDetails {
 
     private Integer id;
-    private String name;
+//    private String name;
     private String nickname;
     private String email;
     @JsonIgnore
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
-    private AppUserDetails(Integer id, String name, String nickname, String email,
+    private AppUserDetails(Integer id, String nickname, String email,
                           String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
-        this.name = name;
+//        this.name = name;
         this.nickname = nickname;
         this.email = email;
         this.password = password;
@@ -39,7 +39,6 @@ public class AppUserDetails implements UserDetails {
                 .map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
         return new AppUserDetails(
                 user.getId(),
-                user.getName(),
                 user.getNickname(),
                 user.getEmail(),
                 user.getCredential(),
@@ -51,9 +50,9 @@ public class AppUserDetails implements UserDetails {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
+//    public String getName() {
+//        return name;
+//    }
 
     public String getEmail() {
         return email;

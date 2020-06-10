@@ -47,9 +47,10 @@ mybatis:
 
 pagehelper:
   helperDialect: postgresql
+  offset-as-page-num: true
+  page-size-zero: true
   reasonable: true
   supportMethodsArguments: true
-  params: count=countSql
 
 logging:
   level:
