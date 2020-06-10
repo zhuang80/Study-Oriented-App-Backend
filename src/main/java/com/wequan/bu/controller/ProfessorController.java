@@ -25,6 +25,7 @@ import java.util.List;
  */
 @Controller
 @Api(value = "Operations for Professor", tags="Professor Rest API")
+@RequestMapping("/study_space")
 public class ProfessorController{
 
     private static final Logger log = LoggerFactory.getLogger(CourseController.class);
@@ -56,6 +57,14 @@ public class ProfessorController{
             return null;
         }
         return professorService.findById(id);
+    }
+
+    @GetMapping("professor/top")
+    @ResponseBody
+    @ApiOperation(value="", notes="a list of top professor")
+    public void findTopProfessor(@RequestParam("schoolId") Integer school_id, @RequestParam("subjectId") Integer subject_id,
+                                 Integer pageNum, Integer pageSize){
+
     }
 
     @GetMapping("/search/professor")
@@ -107,6 +116,8 @@ public class ProfessorController{
         }
         return ResponseEntity.status(400).body("The Professor don't teach this course.");
     }
+
+
 }
 
 
