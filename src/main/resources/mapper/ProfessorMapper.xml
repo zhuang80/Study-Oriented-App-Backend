@@ -187,4 +187,9 @@
         FROM ${schema}.wq_professor_profile p
         WHERE p.id = #{id}
     </select>
+
+    <insert id="insert" parameterType="com.wequan.bu.controller.vo.ProfessorVo">
+        INSERT INTO ${schema}.wq_professor_profile(first_name, last_name, school_id, create_time, create_by, department_id)
+        VALUES(#{firstName}, #{lastName}, #{schoolId}, #{createTime}, #{createBy}, #{departmentId})
+    </insert>
 </mapper>
