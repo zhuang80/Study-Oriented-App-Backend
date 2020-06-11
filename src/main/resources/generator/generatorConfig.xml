@@ -7,14 +7,14 @@
 
     <context id="wequan" targetRuntime="MyBatis3Simple" defaultModelType="flat">
         <property name="javaFileEncoding" value="UTF-8"/>
-        <plugin type="com.wequan.bu.util.mybatis.generator.plugins.RenameJavaMapperPlugin">
-            <property name="searchString" value="Mapper$" />
-            <property name="replaceString" value="Dao" />
-        </plugin>
-        <plugin type="com.wequan.bu.util.mybatis.generator.plugins.RenameSqlMapperPlugin">
-            <property name="searchString" value="Mapper$" />
-            <property name="replaceString" value="Dao" />
-        </plugin>
+<!--        <plugin type="com.wequan.bu.util.mybatis.generator.plugins.RenameJavaMapperPlugin">-->
+<!--            <property name="searchString" value="Mapper$" />-->
+<!--            <property name="replaceString" value="Dao" />-->
+<!--        </plugin>-->
+<!--        <plugin type="com.wequan.bu.util.mybatis.generator.plugins.RenameSqlMapperPlugin">-->
+<!--            <property name="searchString" value="Mapper$" />-->
+<!--            <property name="replaceString" value="Dao" />-->
+<!--        </plugin>-->
 <!--        <plugin type="org.mybatis-generator.generator.plugins.MapperAnnotationPlugin"></plugin>-->
         <commentGenerator>
             <property name="suppressDate" value="true"/>

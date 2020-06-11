@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.mbg.WqProfessorCourseReviewMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.mbg.WqProfessorCourseReview">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="professor_id" jdbcType="INTEGER" property="professorId" />
+    <result column="course_id" jdbcType="INTEGER" property="courseId" />
+    <result column="create_by" jdbcType="INTEGER" property="createBy" />
+    <result column="quality_score" jdbcType="REAL" property="qualityScore" />
+    <result column="difficult_score" jdbcType="REAL" property="difficultScore" />
+    <result column="number_of_exams" jdbcType="SMALLINT" property="numberOfExams" />
+    <result column="number_of_quizzes" jdbcType="SMALLINT" property="numberOfQuizzes" />
+    <result column="number_of_homeworks" jdbcType="SMALLINT" property="numberOfHomeworks" />
+    <result column="number_of_projects" jdbcType="SMALLINT" property="numberOfProjects" />
+    <result column="number_of_papers" jdbcType="SMALLINT" property="numberOfPapers" />
+    <result column="grade_received" jdbcType="REAL" property="gradeReceived" />
+    <result column="tag" jdbcType="SMALLINT" property="tag" />
+    <result column="comment" jdbcType="VARCHAR" property="comment" />
+    <result column="anonymous" jdbcType="BIT" property="anonymous" />
+    <result column="using_textbook" jdbcType="BIT" property="usingTextbook" />
+    <result column="attendance" jdbcType="BIT" property="attendance" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bu.wq_professor_course_review
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.mbg.WqProfessorCourseReview" useGeneratedKeys="true">
+    insert into bu.wq_professor_course_review (professor_id, course_id, create_by, 
+      quality_score, difficult_score, number_of_exams, 
+      number_of_quizzes, number_of_homeworks, number_of_projects, 
+      number_of_papers, grade_received, tag, 
+      comment, anonymous, using_textbook, 
+      attendance)
+    values (#{professorId,jdbcType=INTEGER}, #{courseId,jdbcType=INTEGER}, #{createBy,jdbcType=INTEGER}, 
+      #{qualityScore,jdbcType=REAL}, #{difficultScore,jdbcType=REAL}, #{numberOfExams,jdbcType=SMALLINT}, 
+      #{numberOfQuizzes,jdbcType=SMALLINT}, #{numberOfHomeworks,jdbcType=SMALLINT}, #{numberOfProjects,jdbcType=SMALLINT}, 
+      #{numberOfPapers,jdbcType=SMALLINT}, #{gradeReceived,jdbcType=REAL}, #{tag,jdbcType=SMALLINT}, 
+      #{comment,jdbcType=VARCHAR}, #{anonymous,jdbcType=BIT}, #{usingTextbook,jdbcType=BIT}, 
+      #{attendance,jdbcType=BIT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wequan.bu.repository.model.mbg.WqProfessorCourseReview">
+    update bu.wq_professor_course_review
+    set professor_id = #{professorId,jdbcType=INTEGER},
+      course_id = #{courseId,jdbcType=INTEGER},
+      create_by = #{createBy,jdbcType=INTEGER},
+      quality_score = #{qualityScore,jdbcType=REAL},
+      difficult_score = #{difficultScore,jdbcType=REAL},
+      number_of_exams = #{numberOfExams,jdbcType=SMALLINT},
+      number_of_quizzes = #{numberOfQuizzes,jdbcType=SMALLINT},
+      number_of_homeworks = #{numberOfHomeworks,jdbcType=SMALLINT},
+      number_of_projects = #{numberOfProjects,jdbcType=SMALLINT},
+      number_of_papers = #{numberOfPapers,jdbcType=SMALLINT},
+      grade_received = #{gradeReceived,jdbcType=REAL},
+      tag = #{tag,jdbcType=SMALLINT},
+      comment = #{comment,jdbcType=VARCHAR},
+      anonymous = #{anonymous,jdbcType=BIT},
+      using_textbook = #{usingTextbook,jdbcType=BIT},
+      attendance = #{attendance,jdbcType=BIT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, professor_id, course_id, create_by, quality_score, difficult_score, number_of_exams, 
+    number_of_quizzes, number_of_homeworks, number_of_projects, number_of_papers, grade_received, 
+    tag, comment, anonymous, using_textbook, attendance
+    from bu.wq_professor_course_review
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, professor_id, course_id, create_by, quality_score, difficult_score, number_of_exams, 
+    number_of_quizzes, number_of_homeworks, number_of_projects, number_of_papers, grade_received, 
+    tag, comment, anonymous, using_textbook, attendance
+    from bu.wq_professor_course_review
+  </select>
+</mapper>

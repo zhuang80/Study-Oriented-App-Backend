@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.mbg.WqThreadStreamMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.mbg.WqThreadStream">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="thread_id" jdbcType="INTEGER" property="threadId" />
+    <result column="comment" jdbcType="VARCHAR" property="comment" />
+    <result column="to_stream_id" jdbcType="INTEGER" property="toStreamId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="likes" jdbcType="INTEGER" property="likes" />
+    <result column="dislikes" jdbcType="INTEGER" property="dislikes" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bu.wq_thread_stream
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.mbg.WqThreadStream" useGeneratedKeys="true">
+    insert into bu.wq_thread_stream (user_id, thread_id, comment, 
+      to_stream_id, create_time, update_time, 
+      likes, dislikes)
+    values (#{userId,jdbcType=INTEGER}, #{threadId,jdbcType=INTEGER}, #{comment,jdbcType=VARCHAR}, 
+      #{toStreamId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{likes,jdbcType=INTEGER}, #{dislikes,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wequan.bu.repository.model.mbg.WqThreadStream">
+    update bu.wq_thread_stream
+    set user_id = #{userId,jdbcType=INTEGER},
+      thread_id = #{threadId,jdbcType=INTEGER},
+      comment = #{comment,jdbcType=VARCHAR},
+      to_stream_id = #{toStreamId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      likes = #{likes,jdbcType=INTEGER},
+      dislikes = #{dislikes,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, user_id, thread_id, comment, to_stream_id, create_time, update_time, likes, 
+    dislikes
+    from bu.wq_thread_stream
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, user_id, thread_id, comment, to_stream_id, create_time, update_time, likes, 
+    dislikes
+    from bu.wq_thread_stream
+  </select>
+</mapper>
