@@ -1,7 +1,9 @@
 package com.wequan.bu.controller;
 
+import com.wequan.bu.controller.vo.DiscussionGroup;
 import com.wequan.bu.controller.vo.OnlineEvent;
-import com.wequan.bu.exception.NotImplementedException;
+import com.wequan.bu.controller.vo.result.Result;
+import com.wequan.bu.controller.vo.result.ResultGenerator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -19,35 +21,49 @@ public class OnlineEventController {
 
     private static final Logger log = LoggerFactory.getLogger(OnlineEventController.class);
 
-
     @GetMapping("/online_events")
-    @ApiOperation(value = "Available online event", notes = "正在进行或即将开始的event列表(公开课，Activity)")
-    public List<OnlineEvent> getAvailableOnlineEvents() {
+    @ApiOperation(value = "Available online event", notes = "返回Online event列表，按临近时间倒序(公开课，Activity)")
+    public Result<List<OnlineEvent>> getAvailableOnlineEvents(@RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         return null;
+    }
+
+    @GetMapping("/online_events/school/{id}")
+    @ApiOperation(value = "Show a list of online event in user’s school", notes = "返回与school对应的online event列表")
+    public Result<List<DiscussionGroup>> getOnlineEventBySchool(@PathVariable("id") Integer id,
+                                                                @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                                @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<DiscussionGroup> result = null;
+        return ResultGenerator.success(result);
     }
 
     @GetMapping("/online_event/classes")
-    @ApiOperation(value = "Public class list", notes = "返回Class page")
-    public List<OnlineEvent> getPublicClassEvents() {
-        return null;
+    @ApiOperation(value = "Public class list", notes = "返回公开课列表")
+    public Result<List<OnlineEvent>> getPublicClassEvents(@RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                          @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<OnlineEvent> result = null;
+        return ResultGenerator.success(result);
     }
 
     @GetMapping("/online_event/activities")
-    @ApiOperation(value = "Activity list", notes = "返回Activity page")
-    public List<OnlineEvent> getActivityEvents() {
-        return null;
+    @ApiOperation(value = "Activity list", notes = "返回Activity列表")
+    public Result<List<OnlineEvent>> getActivityEvents(@RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                       @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<OnlineEvent> result = null;
+        return ResultGenerator.success(result);
     }
 
     @GetMapping("/online_event/{id}")
     @ApiOperation(value = "Online event detail", notes = "Online event详情")
-    public OnlineEvent getAvailableOnlineEvents(@PathVariable("id") int id) {
-        return null;
+    public Result<OnlineEvent> getOnlineEvent(@PathVariable("id") Integer id) {
+        OnlineEvent result = null;
+        return ResultGenerator.success(result);
     }
 
     @PostMapping("/online_event")
-    @ApiOperation(value = "Create an online event", notes = "返回创建online event信息")
-    public String addOnlineEvent(@RequestBody OnlineEvent onlineEvent) throws NotImplementedException {
-        throw new NotImplementedException();
+    @ApiOperation(value = "Create an online event", notes = "返回创建online event成功与否")
+    public Result addOnlineEvent(@RequestBody OnlineEvent onlineEvent) {
+        return ResultGenerator.success();
     }
 
 }
