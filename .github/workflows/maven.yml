@@ -22,3 +22,13 @@ jobs:
         java-version: 1.8
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+    - name: Deploy to Server
+      uses: AEnterprise/rsync-deploy@v1.0
+      env:
+        DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        ARGS: -avz --delete --exclude='*.pyc'
+        SERVER_PORT: '22'
+        FOLDER: ./
+        SERVER_IP: ${{ secrets.SSH_HOST }}
+        USERNAME: ${{ secrets.SSH_USERNAME }}
+        SERVER_DESTINATION: /home/ubuntu/app_backend
