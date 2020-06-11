@@ -38,4 +38,9 @@ public class ProfessorServiceImpl extends AbstractService<Professor> implements 
         }
         return false;
     }
+
+    @Override
+    public List<Professor> findProfessorsByCourseId(Integer id) {
+        return professorMapper.selectByCourseId(id);
+    }
 }
