@@ -33,6 +33,7 @@ public class PDFTest {
     public void PDFBytesToImage() {
 //        byte[] bytes = storage.download("cv.pdf");
         byte[] bytes = storage.download("atc17_slides_zhang_hao.pdf");
+//        byte[] bytes = storage.download("test.pdf");
         BufferedImage image = PDF.PDFBytesToImage(bytes);
         Image.imageToFile(outputPath + UUID.randomUUID().toString() + ".jpg", image);
     }
