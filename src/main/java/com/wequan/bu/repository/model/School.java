@@ -1,25 +1,19 @@
 package com.wequan.bu.repository.model;
 
+import lombok.Data;
+
+import java.util.Date;
+
 /**
  * @author Zhaochao Huang
  */
+@Data
 public class School {
-    private Integer id;
+    private Short id;
+
     private String name;
 
-    public Integer getId() {
-        return id;
-    }
+    private Integer createBy;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    private Date createTime;
 }

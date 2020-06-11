@@ -119,7 +119,7 @@ public class ProfessorController{
             review.setProfessorId(id);
             review.setCourseId(c_id);
             //hardcode use id 1, should be changed after
-            review.setUserId(1);
+            review.setCreateBy(1);
             professorCourseRateService.save(review);
             return ResponseEntity.status(200).body("success");
         }
