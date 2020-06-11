@@ -20,7 +20,7 @@ import java.util.List;
  * @author ChrisChen
  */
 @RestController
-@RequestMapping("/study_space")
+@RequestMapping("/study_space_avoid_conflict")
 @Api(tags = "Study Space")
 public class StudySpaceController {
 
@@ -72,12 +72,7 @@ public class StudySpaceController {
         return result;
     }
 
-    @GetMapping("/professor/{id}")
-    @ApiOperation(value = "professor detail", notes = "根据professor id, 获取professor详情，包括所教课程及评价")
-    public Result<Professor> getProfessor(@PathVariable("id") Integer id) {
-        Result<Professor> result = null;
-        return result;
-    }
+
 
     @PostMapping("/professor/review/report")
     @ApiOperation(value = "report professor review", notes = "对授课教师的评价进行举报")

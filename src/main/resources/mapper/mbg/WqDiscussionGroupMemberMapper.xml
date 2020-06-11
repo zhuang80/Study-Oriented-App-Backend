@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.mbg.WqDiscussionGroupMemberMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.mbg.WqDiscussionGroupMember">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="discussion_group_id" jdbcType="INTEGER" property="discussionGroupId" />
+    <result column="member_id" jdbcType="INTEGER" property="memberId" />
+    <result column="action" jdbcType="VARCHAR" property="action" />
+    <result column="action_time" jdbcType="TIMESTAMP" property="actionTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bu.wq_discussion_group_member
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.mbg.WqDiscussionGroupMember" useGeneratedKeys="true">
+    insert into bu.wq_discussion_group_member (discussion_group_id, member_id, action, 
+      action_time)
+    values (#{discussionGroupId,jdbcType=INTEGER}, #{memberId,jdbcType=INTEGER}, #{action,jdbcType=VARCHAR}, 
+      #{actionTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wequan.bu.repository.model.mbg.WqDiscussionGroupMember">
+    update bu.wq_discussion_group_member
+    set discussion_group_id = #{discussionGroupId,jdbcType=INTEGER},
+      member_id = #{memberId,jdbcType=INTEGER},
+      action = #{action,jdbcType=VARCHAR},
+      action_time = #{actionTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, discussion_group_id, member_id, action, action_time
+    from bu.wq_discussion_group_member
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, discussion_group_id, member_id, action, action_time
+    from bu.wq_discussion_group_member
+  </select>
+</mapper>

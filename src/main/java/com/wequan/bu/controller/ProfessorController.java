@@ -2,11 +2,9 @@ package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.json.JSON;
-import com.wequan.bu.json.JSONS;
 import com.wequan.bu.repository.model.Course;
 import com.wequan.bu.repository.model.Professor;
 import com.wequan.bu.repository.model.ProfessorCourseRate;
-import com.wequan.bu.repository.model.School;
 import com.wequan.bu.service.ProfessorCourseRateService;
 import com.wequan.bu.service.ProfessorService;
 import io.swagger.annotations.Api;
@@ -48,7 +46,7 @@ public class ProfessorController{
     }
 
     @GetMapping("/professor/{id}")
-    @ApiOperation(value="findById", notes="find a specific professor by its id")
+    @ApiOperation(value="Professor detail", notes="返回professor信息，关联所教课程profile")
     @JSON(type = Professor.class, filter = "courseRates")
     @JSON(type = Course.class, filter = {"professors","schoolId","departmentId"})
     public Professor findById(@PathVariable("id") Integer id) {

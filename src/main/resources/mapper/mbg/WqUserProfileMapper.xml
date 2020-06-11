@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.mbg.WqUserProfileMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.mbg.WqUserProfile">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="zip_code" jdbcType="VARCHAR" property="zipCode" />
+    <result column="credential" jdbcType="VARCHAR" property="credential" />
+    <result column="school_id" jdbcType="SMALLINT" property="schoolId" />
+    <result column="study_points" jdbcType="SMALLINT" property="studyPoints" />
+    <result column="access_token" jdbcType="VARCHAR" property="accessToken" />
+    <result column="first_name" jdbcType="VARCHAR" property="firstName" />
+    <result column="last_name" jdbcType="VARCHAR" property="lastName" />
+    <result column="invitation_code" jdbcType="VARCHAR" property="invitationCode" />
+    <result column="avatar" jdbcType="BINARY" property="avatar" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bu.wq_user_profile
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.mbg.WqUserProfile" useGeneratedKeys="true">
+    insert into bu.wq_user_profile (nickname, email, phone, 
+      address, zip_code, credential, 
+      school_id, study_points, access_token, 
+      first_name, last_name, invitation_code, 
+      avatar)
+    values (#{nickname,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{zipCode,jdbcType=VARCHAR}, #{credential,jdbcType=VARCHAR}, 
+      #{schoolId,jdbcType=SMALLINT}, #{studyPoints,jdbcType=SMALLINT}, #{accessToken,jdbcType=VARCHAR}, 
+      #{firstName,jdbcType=VARCHAR}, #{lastName,jdbcType=VARCHAR}, #{invitationCode,jdbcType=VARCHAR}, 
+      #{avatar,jdbcType=BINARY})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wequan.bu.repository.model.mbg.WqUserProfile">
+    update bu.wq_user_profile
+    set nickname = #{nickname,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      zip_code = #{zipCode,jdbcType=VARCHAR},
+      credential = #{credential,jdbcType=VARCHAR},
+      school_id = #{schoolId,jdbcType=SMALLINT},
+      study_points = #{studyPoints,jdbcType=SMALLINT},
+      access_token = #{accessToken,jdbcType=VARCHAR},
+      first_name = #{firstName,jdbcType=VARCHAR},
+      last_name = #{lastName,jdbcType=VARCHAR},
+      invitation_code = #{invitationCode,jdbcType=VARCHAR},
+      avatar = #{avatar,jdbcType=BINARY}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, nickname, email, phone, address, zip_code, credential, school_id, study_points, 
+    access_token, first_name, last_name, invitation_code, avatar
+    from bu.wq_user_profile
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, nickname, email, phone, address, zip_code, credential, school_id, study_points, 
+    access_token, first_name, last_name, invitation_code, avatar
+    from bu.wq_user_profile
+  </select>
+</mapper>
