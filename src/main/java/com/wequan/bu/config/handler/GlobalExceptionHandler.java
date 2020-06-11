@@ -4,6 +4,7 @@ import com.wequan.bu.exception.NotImplementedException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -19,9 +20,9 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(NotImplementedException.class)
+    @ExceptionHandler({NotImplementedException.class, IllegalArgumentException.class, NullPointerException.class, BadSqlGrammarException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, String> notImplementedExceptionHandler(NotImplementedException exception) {
+    public Map<String, String> internalServerErrorExceptionHandler(RuntimeException exception) {
         Map<String, String> map = new HashMap<>(1);
         map.put("message", exception.getMessage());
         return map;
