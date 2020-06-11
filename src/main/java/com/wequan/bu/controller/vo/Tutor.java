@@ -1,33 +1,33 @@
-package com.wequan.bu.repository.model;
+package com.wequan.bu.controller.vo;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
- * @author Zhen Lin
+ * @author ChrisChen
  */
 public class Tutor {
 
-    private Integer id;
+    private int id;
     private User user;
     private String briefIntroduction;
     private String resumePath;
     private String transcriptPath;
     private String otherProofPath;
-    private Integer currentSchoolId;
-    private Integer currentDegreeId;
+    private short currentSchoolId;
+    private short currentDegreeId;
     private String currentLocation;
-    private LocalDateTime createTime;
-    private LocalDateTime updateTime;
-    private Double payRate;
-    private String status;
-    private Integer latePolicyId;
-    private Integer cancellationPolicyId;
+    private Date createTime;
+    private Date updateTime;
+    private double payRate;
+    private short status;
+    private short latePolicyId;
+    private short cancellationPolicyId;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -71,19 +71,19 @@ public class Tutor {
         this.otherProofPath = otherProofPath;
     }
 
-    public Integer getCurrentSchoolId() {
+    public short getCurrentSchoolId() {
         return currentSchoolId;
     }
 
-    public void setCurrentSchoolId(Integer currentSchoolId) {
+    public void setCurrentSchoolId(short currentSchoolId) {
         this.currentSchoolId = currentSchoolId;
     }
 
-    public Integer getCurrentDegreeId() {
+    public short getCurrentDegreeId() {
         return currentDegreeId;
     }
 
-    public void setCurrentDegreeId(Integer currentDegreeId) {
+    public void setCurrentDegreeId(short currentDegreeId) {
         this.currentDegreeId = currentDegreeId;
     }
 
@@ -95,53 +95,51 @@ public class Tutor {
         this.currentLocation = currentLocation;
     }
 
-    public LocalDateTime getCreateTime() {
+    public Date getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(LocalDateTime createTime) {
+    public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
 
-    public LocalDateTime getUpdateTime() {
+    public Date getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(LocalDateTime updateTime) {
+    public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
 
-    public Double getPayRate() {
+    public double getPayRate() {
         return payRate;
     }
 
-    public void setPayRate(Double payRate) {
+    public void setPayRate(double payRate) {
         this.payRate = payRate;
     }
 
-    public String getStatus() {
+    public short getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(short status) {
         this.status = status;
     }
 
-    public Integer getLatePolicyId() {
+    public short getLatePolicyId() {
         return latePolicyId;
     }
 
-    public void setLatePolicyId(Integer latePolicyId) {
+    public void setLatePolicyId(short latePolicyId) {
         this.latePolicyId = latePolicyId;
     }
 
-    public Integer getCancellationPolicyId() {
+    public short getCancellationPolicyId() {
         return cancellationPolicyId;
     }
 
-    public void setCancellationPolicyId(Integer cancellationPolicyId) {
+    public void setCancellationPolicyId(short cancellationPolicyId) {
         this.cancellationPolicyId = cancellationPolicyId;
     }
-
-
 }

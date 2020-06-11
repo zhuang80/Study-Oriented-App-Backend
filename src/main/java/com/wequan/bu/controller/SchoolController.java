@@ -21,7 +21,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/study_space")
-@Api(value = "对学校的操作", tags = "学校相关Rest Api")
+@Api(tags = "School")
 public class SchoolController {
 
     private static final Logger log = LoggerFactory.getLogger(SchoolController.class);
