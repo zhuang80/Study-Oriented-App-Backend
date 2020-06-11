@@ -1,5 +1,6 @@
 package com.wequan.bu.service;
 
+import com.wequan.bu.repository.model.Material;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -9,7 +10,7 @@ import java.util.List;
 /**
  * @author Zhaochao Huang
  */
-public interface MaterialService {
+public interface MaterialService extends Service<Material> {
 
     /**
      * store the files send from the client on local storage
@@ -25,4 +26,14 @@ public interface MaterialService {
      * @param basePath the directory path where files sit
      */
     public void convertPdfToImage(List<File> files, String basePath) throws IOException;
+
+    /**
+     * find a list of materials according to combination of course id and professor id
+     * @param c_id course id
+     * @param p_id professor id
+     * @param pageNum page number
+     * @param pageSize the size of each page
+     * @return a list of material uploaded for a certain course taught by a certain professor
+     */
+    public List<Material> findByCourseIdAndProfessorId(Integer c_id, Integer p_id, Integer pageNum, Integer pageSize);
 }
