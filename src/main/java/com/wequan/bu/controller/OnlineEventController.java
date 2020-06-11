@@ -1,5 +1,6 @@
 package com.wequan.bu.controller;
 
+import com.wequan.bu.controller.vo.DiscussionGroup;
 import com.wequan.bu.controller.vo.OnlineEvent;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
@@ -27,6 +28,15 @@ public class OnlineEventController {
         return null;
     }
 
+    @GetMapping("/online_events/school/{id}")
+    @ApiOperation(value = "Show a list of online event in user’s school", notes = "返回与school对应的online event列表")
+    public Result<List<DiscussionGroup>> getOnlineEventBySchool(@PathVariable("id") Integer id,
+                                                                @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                                @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<DiscussionGroup> result = null;
+        return ResultGenerator.success(result);
+    }
+
     @GetMapping("/online_event/classes")
     @ApiOperation(value = "Public class list", notes = "返回公开课列表")
     public Result<List<OnlineEvent>> getPublicClassEvents(@RequestParam(value = "pageNum", required = false) Integer pageNum,
@@ -45,7 +55,7 @@ public class OnlineEventController {
 
     @GetMapping("/online_event/{id}")
     @ApiOperation(value = "Online event detail", notes = "Online event详情")
-    public Result<OnlineEvent> getAvailableOnlineEvents(@PathVariable("id") Integer id) {
+    public Result<OnlineEvent> getOnlineEvent(@PathVariable("id") Integer id) {
         OnlineEvent result = null;
         return ResultGenerator.success(result);
     }

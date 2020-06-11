@@ -1,5 +1,7 @@
 package com.wequan.bu.controller;
 
+import com.wequan.bu.controller.vo.Appointment;
+import com.wequan.bu.controller.vo.OnlineEvent;
 import com.wequan.bu.controller.vo.TutorReview;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
@@ -8,6 +10,8 @@ import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.service.TutorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +23,8 @@ import java.util.List;
 @RestController
 @Api(tags = "Tutor")
 public class TutorController {
+
+    private static final Logger log = LoggerFactory.getLogger(TutorController.class);
 
     @Autowired
     private TutorService tutorService;
@@ -53,6 +59,20 @@ public class TutorController {
                               @RequestBody TutorReview tutorReview) {
 
         return ResultGenerator.success();
+    }
+
+    @GetMapping("/tutor/{id}/appointments")
+    @ApiOperation(value = "a list of tutor’s appointment", notes = "返回Tutor与用户的appointment列表")
+    public Result<List<Appointment>> getAppointments(@PathVariable("id") Integer id) {
+        List<Appointment> result = null;
+        return ResultGenerator.success(result);
+    }
+
+    @GetMapping("/tutor/{id}/online_events")
+    @ApiOperation(value = "a list of tutor’s online event", notes = "返回Tutor的online event列表")
+    public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer id) {
+        List<OnlineEvent> result = null;
+        return ResultGenerator.success(result);
     }
 
 }

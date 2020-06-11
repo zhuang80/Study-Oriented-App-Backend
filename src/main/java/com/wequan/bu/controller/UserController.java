@@ -5,6 +5,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.wequan.bu.config.WeQuanConstants;
 import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.controller.vo.Appointment;
+import com.wequan.bu.controller.vo.OnlineEvent;
+import com.wequan.bu.controller.vo.TutorInquiry;
 import com.wequan.bu.controller.vo.User;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
@@ -109,12 +111,27 @@ public class UserController {
         return result.toString();
     }
 
-
     @GetMapping("/user/{id}/appointments")
     @ApiOperation(value = "a list of user’s appointment", notes = "返回用户与Tutor的appointment列表")
     public Result<List<Appointment>> getAppointments(@PathVariable("id") Integer id) {
         List<Appointment> result = null;
         return ResultGenerator.success(result);
     }
+
+    @GetMapping("/user/{id}/online_events")
+    @ApiOperation(value = "a list of user’s online event", notes = "返回用户的online event列表")
+    public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer id) {
+        List<OnlineEvent> result = null;
+        return ResultGenerator.success(result);
+    }
+
+    @GetMapping("/user/{id}/tutor_inquiries")
+    @ApiOperation(value = "a list of user’s tutor inquiry", notes = "返回用户的tutor inquiry列表")
+    public Result<List<TutorInquiry>> getTutorInquiries(@PathVariable("id") Integer id) {
+        List<TutorInquiry> result = null;
+        return ResultGenerator.success(result);
+    }
+
+
 
 }
