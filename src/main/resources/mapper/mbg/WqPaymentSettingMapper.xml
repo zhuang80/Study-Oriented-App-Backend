@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.mbg.WqPaymentSettingMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.mbg.WqPaymentSetting">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="payment_type" jdbcType="SMALLINT" property="paymentType" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bu.wq_payment_setting
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.mbg.WqPaymentSetting" useGeneratedKeys="true">
+    insert into bu.wq_payment_setting (user_id, payment_type)
+    values (#{userId,jdbcType=INTEGER}, #{paymentType,jdbcType=SMALLINT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wequan.bu.repository.model.mbg.WqPaymentSetting">
+    update bu.wq_payment_setting
+    set user_id = #{userId,jdbcType=INTEGER},
+      payment_type = #{paymentType,jdbcType=SMALLINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, user_id, payment_type
+    from bu.wq_payment_setting
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, user_id, payment_type
+    from bu.wq_payment_setting
+  </select>
+</mapper>

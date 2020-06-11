@@ -158,13 +158,6 @@
 					<overwrite>true</overwrite>
 					<includeAllDependencies>true</includeAllDependencies>
 				</configuration>
-<!--				<dependencies>-->
-<!--					<dependency>-->
-<!--						<groupId>com.wequan</groupId>-->
-<!--						<artifactId>bu</artifactId>-->
-<!--						<version>0.0.1</version>-->
-<!--					</dependency>-->
-<!--				</dependencies>-->
 			</plugin>
 		</plugins>
 	</build>

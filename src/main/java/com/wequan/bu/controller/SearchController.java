@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -91,12 +93,11 @@ public class SearchController {
 
     @GetMapping("/professor_or_course")
     @ApiOperation(value = "Search professor or course by name", notes = "按照professor/course返回分组列表")
-    @ApiResponses(
-            @ApiResponse(code = 200, message = "返回结果data参照Search professor和Search course")
-    )
-    public Result<Map<String, Object>> searchProfessorOrCourse(@RequestParam("schoolId") String schoolId,
-                                                               @RequestParam("professorName") String professorName,
-                                                               @RequestParam("courseName") String courseName) {
-        return null;
+    public Result<Map<String, List<Object>>> searchProfessorOrCourse(@RequestParam("name") String name) {
+        //存储过程一次搜索或者两次搜索
+        Map<String, List<Object>> result = new HashMap<>(2);
+        result.put("professor", new ArrayList<>());
+        result.put("course", new ArrayList<>());
+        return ResultGenerator.success(result);
     }
 }

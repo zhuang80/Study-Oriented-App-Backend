@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.mbg.WqOnlineEventMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.mbg.WqOnlineEvent">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="type" jdbcType="SMALLINT" property="type" />
+    <result column="brief_description" jdbcType="VARCHAR" property="briefDescription" />
+    <result column="create_by" jdbcType="INTEGER" property="createBy" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="SMALLINT" property="status" />
+    <result column="fee" jdbcType="REAL" property="fee" />
+    <result column="method" jdbcType="VARCHAR" property="method" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="visible" jdbcType="BIT" property="visible" />
+    <result column="belong_school_id" jdbcType="SMALLINT" property="belongSchoolId" />
+    <result column="guid" jdbcType="VARCHAR" property="guid" />
+    <result column="method_detail" jdbcType="VARCHAR" property="methodDetail" />
+    <result column="logo" jdbcType="BINARY" property="logo" />
+    <result column="image" jdbcType="BINARY" property="image" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bu.wq_online_event
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.mbg.WqOnlineEvent" useGeneratedKeys="true">
+    insert into bu.wq_online_event (name, type, brief_description, 
+      create_by, create_time, update_time, 
+      status, fee, method, 
+      start_time, end_time, visible, 
+      belong_school_id, guid, method_detail, 
+      logo, image)
+    values (#{name,jdbcType=VARCHAR}, #{type,jdbcType=SMALLINT}, #{briefDescription,jdbcType=VARCHAR}, 
+      #{createBy,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=SMALLINT}, #{fee,jdbcType=REAL}, #{method,jdbcType=VARCHAR}, 
+      #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{visible,jdbcType=BIT}, 
+      #{belongSchoolId,jdbcType=SMALLINT}, #{guid,jdbcType=VARCHAR}, #{methodDetail,jdbcType=VARCHAR}, 
+      #{logo,jdbcType=BINARY}, #{image,jdbcType=BINARY})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wequan.bu.repository.model.mbg.WqOnlineEvent">
+    update bu.wq_online_event
+    set name = #{name,jdbcType=VARCHAR},
+      type = #{type,jdbcType=SMALLINT},
+      brief_description = #{briefDescription,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=SMALLINT},
+      fee = #{fee,jdbcType=REAL},
+      method = #{method,jdbcType=VARCHAR},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      visible = #{visible,jdbcType=BIT},
+      belong_school_id = #{belongSchoolId,jdbcType=SMALLINT},
+      guid = #{guid,jdbcType=VARCHAR},
+      method_detail = #{methodDetail,jdbcType=VARCHAR},
+      logo = #{logo,jdbcType=BINARY},
+      image = #{image,jdbcType=BINARY}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, name, type, brief_description, create_by, create_time, update_time, status, 
+    fee, method, start_time, end_time, visible, belong_school_id, guid, method_detail, 
+    logo, image
+    from bu.wq_online_event
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, name, type, brief_description, create_by, create_time, update_time, status, 
+    fee, method, start_time, end_time, visible, belong_school_id, guid, method_detail, 
+    logo, image
+    from bu.wq_online_event
+  </select>
+</mapper>
