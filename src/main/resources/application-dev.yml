@@ -2,7 +2,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/wequan
+    url: jdbc:postgresql://wequan.cgnev0a5e0ak.us-east-1.rds.amazonaws.com:5432/wequan
     username: wequan_admin
     password: wequan@bu
 
