@@ -37,4 +37,6 @@ public interface ProfessorMapper extends GeneralMapper<Professor> {
 
     ProfessorVo selectBaseInfoById(Integer id);
 
+    void insert(ProfessorVo professor);
+
 }

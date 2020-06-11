@@ -1,6 +1,8 @@
 package com.wequan.bu.controller;
 
+import ch.qos.logback.core.encoder.EchoEncoder;
 import com.wequan.bu.config.handler.MessageHandler;
+import com.wequan.bu.controller.vo.ProfessorVo;
 import com.wequan.bu.json.JSON;
 import com.wequan.bu.json.JSONS;
 import com.wequan.bu.repository.model.Course;
@@ -117,6 +119,16 @@ public class ProfessorController{
         return ResponseEntity.status(400).body("The Professor don't teach this course.");
     }
 
+    @PostMapping("/professor")
+    @ApiOperation(value="", notes="add professor")
+    @ResponseBody
+    public void addProfessor(@RequestBody ProfessorVo professor){
+        try{
+            professorService.save(professor);
+        }catch(Exception e){
+            log.info(messageHandler.getFailResponseMessage(e.getMessage()));
+        }
+    }
 
 }
 
