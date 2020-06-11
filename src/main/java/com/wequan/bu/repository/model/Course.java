@@ -13,8 +13,6 @@ public class Course{
     private String name;
     private String codeFirst;
     private String codeSecond;
-    private String briefDescription;
-    private Integer departmentId;
     private Integer schoolId;
   //  private List<ProfessorRate> professorRateList;
     private List<Professor> professors;
@@ -49,22 +47,6 @@ public class Course{
 
     public void setCodeSecond(String codeSecond) {
         this.codeSecond = codeSecond;
-    }
-
-    public String getBriefDescription() {
-        return briefDescription;
-    }
-
-    public void setBriefDescription(String briefDescription) {
-        this.briefDescription = briefDescription;
-    }
-
-    public Integer getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(Integer departmentId) {
-        this.departmentId = departmentId;
     }
 
     public Integer getSchoolId() {
