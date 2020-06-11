@@ -11,14 +11,17 @@ import com.wequan.bu.repository.model.Course;
 import com.wequan.bu.repository.model.Professor;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.service.TutorService;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -91,13 +94,4 @@ public class SearchController {
         return null;
     }
 
-    @GetMapping("/professor_or_course")
-    @ApiOperation(value = "Search professor or course by name", notes = "按照professor/course返回分组列表")
-    public Result<Map<String, List<Object>>> searchProfessorOrCourse(@RequestParam("name") String name) {
-        //存储过程一次搜索或者两次搜索
-        Map<String, List<Object>> result = new HashMap<>(2);
-        result.put("professor", new ArrayList<>());
-        result.put("course", new ArrayList<>());
-        return ResultGenerator.success(result);
-    }
 }
