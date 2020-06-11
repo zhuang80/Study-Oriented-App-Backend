@@ -1,7 +1,8 @@
 package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
-import com.wequan.bu.controller.vo.MaterialForm;
+import com.wequan.bu.controller.vo.result.Result;
+import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.Material;
 import com.wequan.bu.service.MaterialService;
 import io.swagger.annotations.Api;
@@ -23,10 +24,10 @@ import java.util.List;
  * @author Zhaochao Huang
  */
 @RestController
-@Api(value="Operations for material", tags="material Rest APi")
+@Api(tags = "Material")
 @EnableAsync
-@RequestMapping("/study_space")
 public class MaterialController {
+
     private static final Logger log = LoggerFactory.getLogger(MaterialController.class);
 
     @Autowired
@@ -47,7 +48,7 @@ public class MaterialController {
     }
 
     @GetMapping("/material/{id}")
-    @ApiOperation(value = "", notes="material detail")
+    @ApiOperation(value = "material detail", notes="根据material id获取课程资料详情")
     public Material getMaterialById(@PathVariable("id") Integer id){
         if(id < 0){
             messageHandler.getFailResponseMessage("40008");
@@ -56,15 +57,27 @@ public class MaterialController {
         return materialService.findById(id);
     }
 
-    @GetMapping("materials")
-    @ApiOperation(value = "", notes="a list of material")
-    public List<Material> findAll(@RequestParam("courseId") Integer c_id, @RequestParam("professorId") Integer p_id,
-                            Integer pageNum, Integer pageSize){
-        if(c_id <0 || p_id <0){
+    @GetMapping("/materials")
+    @ApiOperation(value = "a list of materials", notes = "根据professor id, course id获取解基本课程资料列表")
+    public Result<List<Material>> getMaterials(@RequestParam("professorId") Integer professorId,
+                                                                           @RequestParam("courseId") Integer courseId,
+                                                                           @RequestParam("pageNum") Integer pageNum,
+                                                                           @RequestParam("pageSize") Integer pageSize) {
+        List<Material> result = null;
+        if(courseId <0 || professorId <0){
             messageHandler.getFailResponseMessage("40008");
             return null;
         }
-        return materialService.findByCourseIdAndProfessorId(c_id, p_id, pageNum, pageSize);
+        result = materialService.findByCourseIdAndProfessorId(courseId, professorId, pageNum, pageSize);
+        return ResultGenerator.success(result);
+    }
+
+    @PostMapping("/material/{id}/unlock")
+    @ApiOperation(value = "unlock material", notes = "根据material id解锁课程资料")
+    public Result<Material> unlockMaterial(@PathVariable("id") Integer id,
+                                           @RequestParam("userId") Integer userId) {
+        Result<Material> result = null;
+        return result;
     }
 
 }
