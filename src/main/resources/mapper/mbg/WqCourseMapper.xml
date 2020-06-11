@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.mbg.WqCourseMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.mbg.WqCourse">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="school_id" jdbcType="SMALLINT" property="schoolId" />
+    <result column="code_first" jdbcType="VARCHAR" property="codeFirst" />
+    <result column="code_second" jdbcType="VARCHAR" property="codeSecond" />
+    <result column="category_id" jdbcType="INTEGER" property="categoryId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bu.wq_course
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.mbg.WqCourse" useGeneratedKeys="true">
+    insert into bu.wq_course (name, school_id, code_first, 
+      code_second, category_id)
+    values (#{name,jdbcType=VARCHAR}, #{schoolId,jdbcType=SMALLINT}, #{codeFirst,jdbcType=VARCHAR}, 
+      #{codeSecond,jdbcType=VARCHAR}, #{categoryId,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wequan.bu.repository.model.mbg.WqCourse">
+    update bu.wq_course
+    set name = #{name,jdbcType=VARCHAR},
+      school_id = #{schoolId,jdbcType=SMALLINT},
+      code_first = #{codeFirst,jdbcType=VARCHAR},
+      code_second = #{codeSecond,jdbcType=VARCHAR},
+      category_id = #{categoryId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, name, school_id, code_first, code_second, category_id
+    from bu.wq_course
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, name, school_id, code_first, code_second, category_id
+    from bu.wq_course
+  </select>
+</mapper>

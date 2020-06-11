@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.mbg.WqApplyTutorRecordMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.mbg.WqApplyTutorRecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="brief_introduction" jdbcType="VARCHAR" property="briefIntroduction" />
+    <result column="resume_path" jdbcType="VARCHAR" property="resumePath" />
+    <result column="transcript_path" jdbcType="VARCHAR" property="transcriptPath" />
+    <result column="other_proof_path" jdbcType="VARCHAR" property="otherProofPath" />
+    <result column="current_school_id" jdbcType="SMALLINT" property="currentSchoolId" />
+    <result column="current_degree_id" jdbcType="SMALLINT" property="currentDegreeId" />
+    <result column="current_location" jdbcType="VARCHAR" property="currentLocation" />
+    <result column="apply_tutor_courses" jdbcType="VARCHAR" property="applyTutorCourses" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="admin_action" jdbcType="SMALLINT" property="adminAction" />
+    <result column="admin_action_time" jdbcType="TIMESTAMP" property="adminActionTime" />
+    <result column="status" jdbcType="SMALLINT" property="status" />
+    <result column="admin_comment" jdbcType="VARCHAR" property="adminComment" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bu.wq_apply_tutor_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.mbg.WqApplyTutorRecord" useGeneratedKeys="true">
+    insert into bu.wq_apply_tutor_record (user_id, brief_introduction, resume_path, 
+      transcript_path, other_proof_path, current_school_id, 
+      current_degree_id, current_location, apply_tutor_courses, 
+      create_time, update_time, admin_action, 
+      admin_action_time, status, admin_comment
+      )
+    values (#{userId,jdbcType=INTEGER}, #{briefIntroduction,jdbcType=VARCHAR}, #{resumePath,jdbcType=VARCHAR}, 
+      #{transcriptPath,jdbcType=VARCHAR}, #{otherProofPath,jdbcType=VARCHAR}, #{currentSchoolId,jdbcType=SMALLINT}, 
+      #{currentDegreeId,jdbcType=SMALLINT}, #{currentLocation,jdbcType=VARCHAR}, #{applyTutorCourses,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{adminAction,jdbcType=SMALLINT}, 
+      #{adminActionTime,jdbcType=TIMESTAMP}, #{status,jdbcType=SMALLINT}, #{adminComment,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wequan.bu.repository.model.mbg.WqApplyTutorRecord">
+    update bu.wq_apply_tutor_record
+    set user_id = #{userId,jdbcType=INTEGER},
+      brief_introduction = #{briefIntroduction,jdbcType=VARCHAR},
+      resume_path = #{resumePath,jdbcType=VARCHAR},
+      transcript_path = #{transcriptPath,jdbcType=VARCHAR},
+      other_proof_path = #{otherProofPath,jdbcType=VARCHAR},
+      current_school_id = #{currentSchoolId,jdbcType=SMALLINT},
+      current_degree_id = #{currentDegreeId,jdbcType=SMALLINT},
+      current_location = #{currentLocation,jdbcType=VARCHAR},
+      apply_tutor_courses = #{applyTutorCourses,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      admin_action = #{adminAction,jdbcType=SMALLINT},
+      admin_action_time = #{adminActionTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=SMALLINT},
+      admin_comment = #{adminComment,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, user_id, brief_introduction, resume_path, transcript_path, other_proof_path, 
+    current_school_id, current_degree_id, current_location, apply_tutor_courses, create_time, 
+    update_time, admin_action, admin_action_time, status, admin_comment
+    from bu.wq_apply_tutor_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, user_id, brief_introduction, resume_path, transcript_path, other_proof_path, 
+    current_school_id, current_degree_id, current_location, apply_tutor_courses, create_time, 
+    update_time, admin_action, admin_action_time, status, admin_comment
+    from bu.wq_apply_tutor_record
+  </select>
+</mapper>
