@@ -32,3 +32,15 @@ jobs:
         SERVER_IP: ${{ secrets.SSH_HOST }}
         USERNAME: ${{ secrets.SSH_USERNAME }}
         SERVER_DESTINATION: /home/ubuntu/app_backend
+    - name: Build and run on AWS ECS (Docker)
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.DEPLOY_KEY }}
+        script: |
+          cd /home/ubuntu/app_backend
+          mvn -B package --file pom.xml
+          sudo docker build -t app_backend:latest .
+          sudo docker stop app_backend || true && sudo docker rm app_backend || true
+          sudo docker run -it -d --name app_backend -p 8080:8080 app_backend:latest
