@@ -22,4 +22,11 @@ public interface ProfessorService extends Service<Professor>{
      * @return
      */
     Boolean checkCourseForProfessor(Integer id, Integer c_id);
+
+    /**
+     * find professors who teach a certain course
+     * @param id the course id
+     * @return a list of professors who teach the required course
+     */
+    List<Professor> findProfessorsByCourseId(Integer id);
 }

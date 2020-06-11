@@ -6,6 +6,7 @@ import com.wequan.bu.config.properties.SwaggerProperties;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultCode;
 import com.wequan.bu.exception.ServiceException;
+import com.wequan.bu.json.JsonReturnHandler;
 import org.apache.catalina.connector.Connector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -173,4 +175,8 @@ public class WeQuanConfiguration implements WebMvcConfigurer {
         return ip;
     }
 
+    @Override
+    public void addReturnValueHandlers(final List<HandlerMethodReturnValueHandler> returnValueHandlers){
+        returnValueHandlers.add(new JsonReturnHandler());
+    }
 }

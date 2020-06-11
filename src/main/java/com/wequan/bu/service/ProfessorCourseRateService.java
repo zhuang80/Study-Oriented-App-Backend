@@ -13,7 +13,9 @@ public interface ProfessorCourseRateService extends Service<ProfessorCourseRate>
      *get a list of certain professor reviews for a certain course
      * @param p_id the professor id
      * @param c_id the course id
+     * @param pageNum the number of page
+     * @param pageSize the size of each page
      * @return a list of reviews
      */
-    public List<ProfessorCourseRate> findAllByProfessorIdAndCourseId(Integer p_id, Integer c_id);
+    public List<ProfessorCourseRate> findAllByProfessorIdAndCourseId(Integer p_id, Integer c_id, Integer pageNum, Integer pageSize);
 }

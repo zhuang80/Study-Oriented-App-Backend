@@ -1,5 +1,6 @@
 package com.wequan.bu.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.wequan.bu.repository.dao.ProfessorCourseRateMapper;
 import com.wequan.bu.repository.model.ProfessorCourseRate;
 import com.wequan.bu.service.AbstractService;
@@ -24,8 +25,23 @@ public class ProfessorCourseRateServiceImpl extends AbstractService<ProfessorCou
         this.setMapper(professorCourseRateMapper);
     }
 
+    /**
+     *get a list of certain professor reviews for a certain course
+     * @param p_id the professor id
+     * @param c_id the course id
+     * @param pageNum the number of page
+     * @param pageSize the size of each page
+     * @return a list of reviews
+     */
     @Override
-    public List<ProfessorCourseRate> findAllByProfessorIdAndCourseId(Integer p_id, Integer c_id) {
+    public List<ProfessorCourseRate> findAllByProfessorIdAndCourseId(Integer p_id, Integer c_id, Integer pageNum, Integer pageSize) {
+        if(pageNum == null) {
+            pageNum = 1;
+        }
+        if(pageSize == null){
+            pageSize = 10;
+        }
+        PageHelper.startPage(pageNum, pageSize);
         return professorCourseRateMapper.selectAllByProfessorIdAndCourseId(p_id, c_id);
     }
 }
