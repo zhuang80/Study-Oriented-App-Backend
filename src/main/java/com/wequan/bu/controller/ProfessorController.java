@@ -1,6 +1,8 @@
 package com.wequan.bu.controller;
 
+import ch.qos.logback.core.encoder.EchoEncoder;
 import com.wequan.bu.config.handler.MessageHandler;
+import com.wequan.bu.controller.vo.ProfessorVo;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.json.JSON;
@@ -42,14 +44,9 @@ public class ProfessorController{
     @ApiOperation(value="findAll", notes="return a list of professors")
     @JSON(type=Professor.class, filter = "courseRates")
     @JSON(type = Course.class, filter = {"professors","schoolId","departmentId"})
-    public List<Professor> findAll(){
-        return professorService.findAll();
-    }
-
-    @PostMapping("/professor")
-    @ApiOperation(value = "add professor", notes = "添加授课教师")
-    public Result addProfessor(@RequestBody Professor professor) {
-        Result result = ResultGenerator.success();
+    public Result<List<Professor>> findAll(){
+        List<Professor> professorList = professorService.findAll();
+        Result result = ResultGenerator.success(professorList);
         return result;
     }
 
@@ -66,6 +63,7 @@ public class ProfessorController{
     }
 
     @GetMapping("/professor/top")
+    @ResponseBody
     @ApiOperation(value = "a list of top professor", notes = "根据school id, subject id获取professor列表，按评分排名")
     public Result<List<Professor>> getTopProfessors(@RequestParam("schoolId") Integer schoolId,
                                                     @RequestParam("subjectId") Integer subjectId,
@@ -124,6 +122,17 @@ public class ProfessorController{
             return ResponseEntity.status(200).body("success");
         }
         return ResponseEntity.status(400).body("The Professor don't teach this course.");
+    }
+
+    @PostMapping("/professor")
+    @ApiOperation(value="", notes="add professor")
+    @ResponseBody
+    public void addProfessor(@RequestBody ProfessorVo professor) {
+        try {
+            professorService.save(professor);
+        } catch (Exception e) {
+            log.info(messageHandler.getFailResponseMessage(e.getMessage()));
+        }
     }
 
     @PostMapping("/professor/review/report")
