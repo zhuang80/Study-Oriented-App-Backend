@@ -32,8 +32,6 @@ public class ProfessorCourseRate {
 
     private Float gradeReceived;
 
-    private Short tag;
-
     private String comment;
 
     private Boolean anonymous;
@@ -41,7 +39,5 @@ public class ProfessorCourseRate {
     private Boolean usingTextbook;
 
     private Boolean attendance;
-
-
 
 }

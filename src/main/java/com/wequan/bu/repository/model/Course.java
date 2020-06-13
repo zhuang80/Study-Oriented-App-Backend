@@ -14,7 +14,7 @@ public class Course{
     private String codeFirst;
     private String codeSecond;
     private Integer schoolId;
-  //  private List<ProfessorRate> professorRateList;
+    private Integer categoryId;
     private List<Professor> professors;
 
     public Integer getId() {
@@ -63,5 +63,13 @@ public class Course{
 
     public void setProfessors(List<Professor> professors) {
         this.professors = professors;
+    }
+
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
     }
 }

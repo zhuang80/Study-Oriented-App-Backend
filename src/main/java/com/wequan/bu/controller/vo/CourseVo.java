@@ -5,10 +5,8 @@ public class CourseVo {
     private String name;
     private String codeFirst;
     private String codeSecond;
-    private String briefDescription;
-    private Integer departmentId;
     private Integer schoolId;
-    private Integer professorId;
+    private Integer categoryId;
 
     public Integer getId() {
         return id;
@@ -42,22 +40,6 @@ public class CourseVo {
         this.codeSecond = codeSecond;
     }
 
-    public String getBriefDescription() {
-        return briefDescription;
-    }
-
-    public void setBriefDescription(String briefDescription) {
-        this.briefDescription = briefDescription;
-    }
-
-    public Integer getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(Integer departmentId) {
-        this.departmentId = departmentId;
-    }
-
     public Integer getSchoolId() {
         return schoolId;
     }
@@ -66,11 +48,11 @@ public class CourseVo {
         this.schoolId = schoolId;
     }
 
-    public Integer getProfessorId() {
-        return professorId;
+    public Integer getCategoryId() {
+        return categoryId;
     }
 
-    public void setProfessorId(Integer professorId) {
-        this.professorId = professorId;
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
     }
 }

@@ -30,7 +30,7 @@
         <collection property="reviews"
                     ofType="com.wequan.bu.repository.model.ProfessorCourseRate"
                     resultMap="com.wequan.bu.repository.dao.ProfessorCourseRateMapper.professorCourseRateResultMap"
-                    columnPrefix="professor_course_rate_"
+                    columnPrefix="professor_course_review_"
         />
     </resultMap>
 
@@ -137,20 +137,20 @@
                 </include>,
                 <include refid="com.wequan.bu.repository.dao.ProfessorCourseRateMapper.professorCourseRateColumns">
                     <property name="alias" value="pcr"/>
-                    <property name="prefix" value="professor_course_rate"/>
+                    <property name="prefix" value="professor_course_review"/>
                 </include>
             FROM ${schema}.wq_professor_profile p
             LEFT JOIN ${schema}.wq_school s on p.school_id = s.id
             LEFT JOIN ${schema}.wq_department d on p.department_id = d.id
             LEFT JOIN ${schema}.wq_professor_course pc on p.id = pc.professor_id
             LEFT JOIN ${schema}.wq_course c on pc.course_id = c.id
-            LEFT JOIN ${schema}.wq_professor_course_rate pcr on p.id = pcr.professor_id
+            LEFT JOIN ${schema}.wq_professor_course_review pcr on p.id = pcr.professor_id
         )
         SELECT *
         FROM (
-            SELECT *,
-            ROW_NUMBER() OVER (PARTITION BY professor_id, professor_course_rate_course_id) AS row_id
-            FROM temp_table
+        SELECT *,
+        ROW_NUMBER() OVER (PARTITION BY professor_id, professor_course_review_course_id) AS row_id
+        FROM temp_table
         ) AS A
         WHERE row_id &lt;= #{limit} AND ( professor_first_name ILIKE #{name} OR professor_last_name ILIKE #{name} )
         ORDER BY professor_overall_score DESC
