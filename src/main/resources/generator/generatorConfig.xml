@@ -5,20 +5,38 @@
 <generatorConfiguration>
     <properties resource="generator/generator.properties"/>
 
-    <context id="wequan" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+    <context id="wequan" targetRuntime="MyBatis3" defaultModelType="flat">
         <property name="javaFileEncoding" value="UTF-8"/>
-<!--        <plugin type="com.wequan.bu.util.mybatis.generator.plugins.RenameJavaMapperPlugin">-->
-<!--            <property name="searchString" value="Mapper$" />-->
-<!--            <property name="replaceString" value="Dao" />-->
-<!--        </plugin>-->
-<!--        <plugin type="com.wequan.bu.util.mybatis.generator.plugins.RenameSqlMapperPlugin">-->
-<!--            <property name="searchString" value="Mapper$" />-->
-<!--            <property name="replaceString" value="Dao" />-->
-<!--        </plugin>-->
-<!--        <plugin type="org.mybatis-generator.generator.plugins.MapperAnnotationPlugin"></plugin>-->
+
+        <plugin type="com.itfsw.mybatis.generator.plugins.CommentPlugin">
+            <property name="template" value="src/main/resources/generator/default-comment.ftl" />
+        </plugin>
+        <plugin type="com.itfsw.mybatis.generator.plugins.TableRenamePlugin">
+            <property name="searchString" value="^Wq"/>
+            <property name="replaceString" value=""/>
+        </plugin>
+        <plugin type="com.itfsw.mybatis.generator.plugins.LombokPlugin">
+            <property name="@Data" value="true"/>
+            <property name="@Builder" value="false"/>
+            <property name="@AllArgsConstructor" value="false"/>
+            <property name="@NoArgsConstructor" value="false"/>
+            <property name="@Accessors(chain = true)" value="false"/>
+            <property name="supportSuperBuilderForIdea" value="false"/>
+        </plugin>
+        <plugin type="com.itfsw.mybatis.generator.plugins.TableRenameConfigurationPlugin">
+            <property name="exampleSuffix" value="Query"/>
+        </plugin>
+        <plugin type="com.itfsw.mybatis.generator.plugins.ExampleTargetPlugin">
+            <property name="targetPackage" value="com.wequan.bu.repository.dao.mbg.example"/>
+        </plugin>
+        <plugin type="org.mybatis.generator.plugins.CachePlugin"/>
+        <plugin type="org.mybatis.generator.plugins.CaseInsensitiveLikePlugin"/>
+        <plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin"/>
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
+
         <commentGenerator>
             <property name="suppressDate" value="true"/>
-            <property name="suppressAllComments" value="true"/>
+            <property name="suppressAllComments" value="false"/>
             <property name="addRemarkComments" value="true" />
         </commentGenerator>
         
