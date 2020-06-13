@@ -38,7 +38,7 @@ public class MaterialController {
     private MessageHandler messageHandler;
 
     @PostMapping("/material")
-    @ApiOperation(value="", notes="upload course material")
+    @ApiOperation(value="Add course material", notes="上传课程资料")
     public String uploadFile(@RequestParam MultipartFile[] files, HttpSession session) throws IOException {
         Long begin, end;
         String basePath = "C:\\Users\\huang\\Desktop\\Wequan\\LocalStorage\\";
@@ -59,7 +59,7 @@ public class MaterialController {
     }
 
     @GetMapping("/materials")
-    @ApiOperation(value = "a list of materials", notes = "根据professor id, course id获取解基本课程资料列表")
+    @ApiOperation(value = "a list of materials", notes = "根据professor id, course id获取基本课程资料列表")
     public Result<List<Material>> getMaterials(@RequestParam("professorId") Integer professorId,
                                                @RequestParam("courseId") Integer courseId,
                                                @RequestParam("pageNum") Integer pageNum,
@@ -75,9 +75,17 @@ public class MaterialController {
         return ResultGenerator.success(materialList);
     }
 
-    @PostMapping("/material/{id}/unlock")
+    @PostMapping("/material/unlock")
     @ApiOperation(value = "unlock material", notes = "根据material id解锁课程资料")
-    public Result<Material> unlockMaterial(@PathVariable("id") Integer id,
+    public Result<Material> unlockMaterial(@RequestParam("materialId") Integer materialId,
+                                           @RequestParam("userId") Integer userId) {
+        Result<Material> result = null;
+        return result;
+    }
+
+    @PostMapping("/material/report")
+    @ApiOperation(value = "report material", notes = "对课程资料进行举报")
+    public Result<Material> reportMaterial(@PathVariable("id") Integer id,
                                            @RequestParam("userId") Integer userId) {
         Result<Material> result = null;
         return result;

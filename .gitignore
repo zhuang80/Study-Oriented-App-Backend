@@ -30,3 +30,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### MyBatis Generator ###
+src/main/java/com/wequan/bu/repository/dao/mbg/**
+src/main/java/com/wequan/bu/repository/model/mbg/**
+src/main/resources/mapper/mbg/**
