@@ -2,6 +2,7 @@ package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.controller.vo.result.Result;
+import com.wequan.bu.controller.vo.result.ResultCode;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.Material;
 import com.wequan.bu.service.MaterialService;
@@ -60,16 +61,18 @@ public class MaterialController {
     @GetMapping("/materials")
     @ApiOperation(value = "a list of materials", notes = "根据professor id, course id获取解基本课程资料列表")
     public Result<List<Material>> getMaterials(@RequestParam("professorId") Integer professorId,
-                                                                           @RequestParam("courseId") Integer courseId,
-                                                                           @RequestParam("pageNum") Integer pageNum,
-                                                                           @RequestParam("pageSize") Integer pageSize) {
-        List<Material> result = null;
+                                               @RequestParam("courseId") Integer courseId,
+                                               @RequestParam("pageNum") Integer pageNum,
+                                               @RequestParam("pageSize") Integer pageSize) {
+        Result result;
+        List<Material> materialList = null;
         if(courseId <0 || professorId <0){
-            messageHandler.getFailResponseMessage("40008");
+            String message = messageHandler.getFailResponseMessage("40008");
+            result = ResultGenerator.fail(ResultCode.FAIL.code(), message);
             return null;
         }
-        result = materialService.findByCourseIdAndProfessorId(courseId, professorId, pageNum, pageSize);
-        return ResultGenerator.success(result);
+        materialList = materialService.findByCourseIdAndProfessorId(courseId, professorId, pageNum, pageSize);
+        return ResultGenerator.success(materialList);
     }
 
     @PostMapping("/material/{id}/unlock")

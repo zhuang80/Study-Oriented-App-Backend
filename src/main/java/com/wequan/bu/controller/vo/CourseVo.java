@@ -1,21 +1,12 @@
-package com.wequan.bu.repository.model;
+package com.wequan.bu.controller.vo;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import java.util.List;
-
-/**
- * @author Zhaochao Huang
- */
-@JsonIgnoreProperties("handler")
-public class Course{
+public class CourseVo {
     private Integer id;
     private String name;
     private String codeFirst;
     private String codeSecond;
     private Integer schoolId;
     private Integer categoryId;
-    private List<Professor> professors;
 
     public Integer getId() {
         return id;
@@ -55,14 +46,6 @@ public class Course{
 
     public void setSchoolId(Integer schoolId) {
         this.schoolId = schoolId;
-    }
-
-    public List<Professor> getProfessors() {
-        return professors;
-    }
-
-    public void setProfessors(List<Professor> professors) {
-        this.professors = professors;
     }
 
     public Integer getCategoryId() {

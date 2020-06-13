@@ -30,10 +30,19 @@
         <collection property="reviews"
                     ofType="com.wequan.bu.repository.model.ProfessorCourseRate"
                     resultMap="com.wequan.bu.repository.dao.ProfessorCourseRateMapper.professorCourseRateResultMap"
-                    columnPrefix="professor_course_rate_"
+                    columnPrefix="professor_course_review_"
         />
     </resultMap>
 
+    <resultMap id="baseResultMap" type="com.wequan.bu.controller.vo.ProfessorVo">
+        <id column="professor_id" jdbcType="INTEGER" property="id" />
+        <result column="professor_first_name" jdbcType="VARCHAR" property="firstName" />
+        <result column="professor_last_name" jdbcType="VARCHAR" property="lastName" />
+        <result column="professor_overall_score" jdbcType="REAL" property="overallScore" />
+        <result column="professor_create_by" jdbcType="INTEGER" property="createBy" />
+        <result column="professor_school_id" jdbcType="INTEGER" property="schoolId"/>
+        <result column="professor_department_id" jdbcType="INTEGER" property="departmentId"/>
+    </resultMap>
 
     <sql id="professorColumns">
         ${alias}.id ${prefix}_id,
@@ -46,6 +55,15 @@
         ${alias}.school_id ${prefix}_school_id
     </sql>
 
+    <sql id="baseProfessorColumns">
+        ${alias}.id ${prefix}_id,
+        ${alias}.first_name ${prefix}_first_name,
+        ${alias}.last_name ${prefix}_last_name,
+        ${alias}.department_id ${prefix}_department_id,
+        ${alias}.overall_score ${prefix}_overall_score,
+        ${alias}.create_by ${prefix}_create_by,
+        ${alias}.school_id ${prefix}_school_id
+    </sql>
     <select id="selectAll" resultMap="professorResultMap">
         SELECT
             <include refid="professorColumns">
@@ -119,20 +137,20 @@
                 </include>,
                 <include refid="com.wequan.bu.repository.dao.ProfessorCourseRateMapper.professorCourseRateColumns">
                     <property name="alias" value="pcr"/>
-                    <property name="prefix" value="professor_course_rate"/>
+                    <property name="prefix" value="professor_course_review"/>
                 </include>
             FROM ${schema}.wq_professor_profile p
             LEFT JOIN ${schema}.wq_school s on p.school_id = s.id
             LEFT JOIN ${schema}.wq_department d on p.department_id = d.id
             LEFT JOIN ${schema}.wq_professor_course pc on p.id = pc.professor_id
             LEFT JOIN ${schema}.wq_course c on pc.course_id = c.id
-            LEFT JOIN ${schema}.wq_professor_course_rate pcr on p.id = pcr.professor_id
+            LEFT JOIN ${schema}.wq_professor_course_review pcr on p.id = pcr.professor_id
         )
         SELECT *
         FROM (
-            SELECT *,
-            ROW_NUMBER() OVER (PARTITION BY professor_id, professor_course_rate_course_id) AS row_id
-            FROM temp_table
+        SELECT *,
+        ROW_NUMBER() OVER (PARTITION BY professor_id, professor_course_review_course_id) AS row_id
+        FROM temp_table
         ) AS A
         WHERE row_id &lt;= #{limit} AND ( professor_first_name ILIKE #{name} OR professor_last_name ILIKE #{name} )
         ORDER BY professor_overall_score DESC
@@ -163,4 +181,15 @@
         FROM ${schema}.wq_professor_course pc
         WHERE pc.professor_id = #{id}
     </select>
+
+    <select id="selectBaseInfoById" resultType="com.wequan.bu.controller.vo.ProfessorVo">
+        SELECT *
+        FROM ${schema}.wq_professor_profile p
+        WHERE p.id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.wequan.bu.controller.vo.ProfessorVo">
+        INSERT INTO ${schema}.wq_professor_profile(first_name, last_name, school_id, create_time, create_by, department_id)
+        VALUES(#{firstName}, #{lastName}, #{schoolId}, #{createTime}, #{createBy}, #{departmentId})
+    </insert>
 </mapper>

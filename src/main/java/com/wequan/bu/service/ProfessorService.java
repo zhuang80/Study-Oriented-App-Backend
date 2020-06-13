@@ -1,5 +1,6 @@
 package com.wequan.bu.service;
 
+import com.wequan.bu.controller.vo.ProfessorVo;
 import com.wequan.bu.repository.model.Professor;
 
 import java.util.List;
@@ -29,4 +30,6 @@ public interface ProfessorService extends Service<Professor>{
      * @return a list of professors who teach the required course
      */
     List<Professor> findProfessorsByCourseId(Integer id);
+
+    void save(ProfessorVo professor) throws Exception;
 }

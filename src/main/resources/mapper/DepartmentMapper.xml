@@ -17,4 +17,10 @@
         SELECT *
         FROM ${schema}.wq_department
     </select>
+
+    <select id="selectByPrimaryKey" resultMap="departmentResultMap">
+        SELECT *
+        FROM ${schema}.wq_department d
+        WHERE d.id = #{id}
+    </select>
 </mapper>
