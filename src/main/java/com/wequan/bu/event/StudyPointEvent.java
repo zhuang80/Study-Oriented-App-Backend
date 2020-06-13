@@ -1,5 +1,6 @@
 package com.wequan.bu.event;
 
+import com.wequan.bu.controller.vo.StudyPointHistory;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -7,13 +8,12 @@ import org.springframework.context.ApplicationEvent;
  */
 public class StudyPointEvent extends ApplicationEvent {
 
-    /**
-     * Create a new {@code ApplicationEvent}.
-     *
-     * @param source the object on which the event initially occurred or with
-     *               which the event is associated (never {@code null})
-     */
-    public StudyPointEvent(Object source) {
+    public StudyPointEvent(StudyPointHistory source) {
         super(source);
+    }
+
+    @Override
+    public StudyPointHistory getSource() {
+        return (StudyPointHistory)super.getSource();
     }
 }
