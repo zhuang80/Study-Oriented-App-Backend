@@ -6,9 +6,8 @@
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="code_first" jdbcType="VARCHAR" property="codeFirst" />
         <result column="code_second" jdbcType="VARCHAR" property="codeSecond" />
-        <result column="brief_description" jdbcType="LONGVARCHAR" property="briefDescription" />
-        <result column="department_id" jdbcType="INTEGER" property="departmentId" />
         <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+        <result column="category_id" jdbcType="INTEGER" property="categoryId" />
         <collection property="professors" column="id" ofType="com.wequan.bu.repository.model.Professor"
                     select="com.wequan.bu.repository.dao.ProfessorMapper.selectByCourseId"/>
     </resultMap>
@@ -18,19 +17,17 @@
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="code_first" jdbcType="VARCHAR" property="codeFirst" />
         <result column="code_second" jdbcType="VARCHAR" property="codeSecond" />
-        <result column="brief_description" jdbcType="LONGVARCHAR" property="briefDescription" />
-        <result column="department_id" jdbcType="INTEGER" property="departmentId" />
         <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+        <result column="category_id" jdbcType="INTEGER" property="categoryId" />
     </resultMap>
 
     <sql id="courseColumns">
         ${alias}.id ${prefix}_id,
         ${alias}.name ${prefix}_name,
-        ${alias}.brief_description ${prefix}_brief_description,
         ${alias}.school_id ${prefix}_school_id,
-        ${alias}.department_id ${prefix}_department_id,
         ${alias}.code_first ${prefix}_code_first,
-        ${alias}.code_second ${prefix}_code_second
+        ${alias}.code_second ${prefix}_code_second,
+        ${alias}.category_id ${prefix}_category_id
     </sql>
 
     <select id="selectAll" resultMap="courseResultMap">
@@ -57,7 +54,7 @@
     </select>
 
     <insert id="save" parameterType="com.wequan.bu.controller.vo.CourseVo">
-        INSERT INTO ${schema}.wq_course(name, brief_description, school_id, department_id, code_first, code_second)
-        VALUES(#{name}, #{briefDescription}, #{schoolId}, #{departmentId}, #{codeFirst}, #{codeSecond})
+        INSERT INTO ${schema}.wq_course(name, school_id, code_first, code_second, category_id)
+        VALUES(#{name}, #{schoolId}, #{codeFirst}, #{codeSecond}, #{categoryId})
     </insert>
 </mapper>

@@ -15,6 +15,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ import java.util.List;
 /**
  * @author Zhaochao Huang
  */
-@RestController
+@Controller
 @Api(tags = "Course")
 public class CourseController {
 
@@ -37,6 +38,7 @@ public class CourseController {
     private ProfessorService professorService;
 
     @PostMapping("/course")
+    @ResponseBody
     @ApiOperation(value = "add course", notes = "添加课程")
     public Result addCourse(@RequestBody CourseVo course) {
         Result result;
@@ -44,7 +46,7 @@ public class CourseController {
             courseService.save(course);
         }catch(Exception e){
             String message = messageHandler.getFailResponseMessage(e.getMessage());
-            result = ResultGenerator.fail(message);
+            result = ResultGenerator.fail(ResultCode.FAIL.code(), message);
             return result;
         }
         result = ResultGenerator.success();
@@ -67,6 +69,7 @@ public class CourseController {
     }
 
     @GetMapping("/course/top")
+    @ResponseBody
     @ApiOperation(value = "a list of top course", notes = "根据school id, subject id获取course列表，按查看记录排名")
     public Result<List<Course>> getTopCourses(@RequestParam("schoolId") Integer schoolId,
                                               @RequestParam("subjectId") Integer subjectId,
@@ -92,8 +95,8 @@ public class CourseController {
     }
 
     @GetMapping("/course/{id}/professors")
-    @ApiOperation(value="a list of professors who teach required course", notes="根据course id获取授课教师列表")
     @ResponseBody
+    @ApiOperation(value="a list of professors who teach required course", notes="根据course id获取授课教师列表")
     public Result<List<Professor>> findProfessorsByCourseId(@PathVariable("id") Integer id){
         Result result;
         if(id < 0) {

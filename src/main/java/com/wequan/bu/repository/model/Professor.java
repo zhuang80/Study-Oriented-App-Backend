@@ -1,5 +1,6 @@
 package com.wequan.bu.repository.model;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.wequan.bu.json.CustomLocalDateTimeSerializer;
@@ -22,6 +23,8 @@ public class Professor {
     private Department department;
     private List<Course> courses;
     private List<CourseRate> courseRates;
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+    private LocalDateTime updateTime;
 
     public List<Course> getCourses() {
         return courses;
@@ -101,5 +104,13 @@ public class Professor {
 
     public void setCourseRates(List<CourseRate> courseRates) {
         this.courseRates = courseRates;
+    }
+
+    public LocalDateTime getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(LocalDateTime updateTime) {
+        this.updateTime = updateTime;
     }
 }
