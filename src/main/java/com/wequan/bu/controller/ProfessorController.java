@@ -2,12 +2,9 @@ package com.wequan.bu.controller;
 
 import ch.qos.logback.core.encoder.EchoEncoder;
 import com.wequan.bu.config.handler.MessageHandler;
-<<<<<<< HEAD
 import com.wequan.bu.controller.vo.ProfessorVo;
-=======
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
->>>>>>> master
 import com.wequan.bu.json.JSON;
 import com.wequan.bu.repository.model.Course;
 import com.wequan.bu.repository.model.Professor;
@@ -47,14 +44,9 @@ public class ProfessorController{
     @ApiOperation(value="findAll", notes="return a list of professors")
     @JSON(type=Professor.class, filter = "courseRates")
     @JSON(type = Course.class, filter = {"professors","schoolId","departmentId"})
-    public List<Professor> findAll(){
-        return professorService.findAll();
-    }
-
-    @PostMapping("/professor")
-    @ApiOperation(value = "add professor", notes = "添加授课教师")
-    public Result addProfessor(@RequestBody Professor professor) {
-        Result result = ResultGenerator.success();
+    public Result<List<Professor>> findAll(){
+        List<Professor> professorList = professorService.findAll();
+        Result result = ResultGenerator.success(professorList);
         return result;
     }
 
@@ -70,15 +62,8 @@ public class ProfessorController{
         return professorService.findById(id);
     }
 
-<<<<<<< HEAD
-    @GetMapping("professor/top")
-    @ResponseBody
-    @ApiOperation(value="", notes="a list of top professor")
-    public void findTopProfessor(@RequestParam("schoolId") Integer school_id, @RequestParam("subjectId") Integer subject_id,
-                                 @RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize){
-
-=======
     @GetMapping("/professor/top")
+    @ResponseBody
     @ApiOperation(value = "a list of top professor", notes = "根据school id, subject id获取professor列表，按评分排名")
     public Result<List<Professor>> getTopProfessors(@RequestParam("schoolId") Integer schoolId,
                                                     @RequestParam("subjectId") Integer subjectId,
@@ -86,7 +71,6 @@ public class ProfessorController{
                                                     @RequestParam("pageSize") Integer pageSize) {
         Result<List<Professor>> result = null;
         return result;
->>>>>>> master
     }
 
     @GetMapping("/professors")
@@ -140,17 +124,17 @@ public class ProfessorController{
         return ResponseEntity.status(400).body("The Professor don't teach this course.");
     }
 
-<<<<<<< HEAD
     @PostMapping("/professor")
     @ApiOperation(value="", notes="add professor")
     @ResponseBody
-    public void addProfessor(@RequestBody ProfessorVo professor){
-        try{
+    public void addProfessor(@RequestBody ProfessorVo professor) {
+        try {
             professorService.save(professor);
-        }catch(Exception e){
+        } catch (Exception e) {
             log.info(messageHandler.getFailResponseMessage(e.getMessage()));
         }
-=======
+    }
+
     @PostMapping("/professor/review/report")
     @ApiOperation(value = "report professor review", notes = "对授课教师的评价进行举报")
     public Result reportProfessorReview(@RequestParam("reviewId") Integer reviewId,
@@ -166,7 +150,6 @@ public class ProfessorController{
                                       @RequestParam("userId") Integer userId) {
         Result result = ResultGenerator.success();
         return result;
->>>>>>> master
     }
 
     @PostMapping("/professor/review/dislike")
