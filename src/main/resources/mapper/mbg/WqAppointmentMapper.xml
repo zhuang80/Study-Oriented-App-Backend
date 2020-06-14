@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.mbg.WqAppointmentMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.mbg.WqAppointment">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="tutor_id" jdbcType="INTEGER" property="tutorId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="SMALLINT" property="status" />
+    <result column="brief_description" jdbcType="VARCHAR" property="briefDescription" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="subject_id" jdbcType="SMALLINT" property="subjectId" />
+    <result column="topic_id" jdbcType="SMALLINT" property="topicId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="fee" jdbcType="REAL" property="fee" />
+    <result column="transaction_id" jdbcType="VARCHAR" property="transactionId" />
+    <result column="review_id" jdbcType="INTEGER" property="reviewId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bu.wq_appointment
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.mbg.WqAppointment" useGeneratedKeys="true">
+    insert into bu.wq_appointment (tutor_id, user_id, create_time, 
+      update_time, status, brief_description, 
+      start_time, end_time, subject_id, 
+      topic_id, title, fee, 
+      transaction_id, review_id)
+    values (#{tutorId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{status,jdbcType=SMALLINT}, #{briefDescription,jdbcType=VARCHAR}, 
+      #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{subjectId,jdbcType=SMALLINT}, 
+      #{topicId,jdbcType=SMALLINT}, #{title,jdbcType=VARCHAR}, #{fee,jdbcType=REAL}, 
+      #{transactionId,jdbcType=VARCHAR}, #{reviewId,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wequan.bu.repository.model.mbg.WqAppointment">
+    update bu.wq_appointment
+    set tutor_id = #{tutorId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=SMALLINT},
+      brief_description = #{briefDescription,jdbcType=VARCHAR},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      subject_id = #{subjectId,jdbcType=SMALLINT},
+      topic_id = #{topicId,jdbcType=SMALLINT},
+      title = #{title,jdbcType=VARCHAR},
+      fee = #{fee,jdbcType=REAL},
+      transaction_id = #{transactionId,jdbcType=VARCHAR},
+      review_id = #{reviewId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, tutor_id, user_id, create_time, update_time, status, brief_description, 
+    start_time, end_time, subject_id, topic_id, title, fee, transaction_id, review_id
+    from bu.wq_appointment
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, tutor_id, user_id, create_time, update_time, status, brief_description, 
+    start_time, end_time, subject_id, topic_id, title, fee, transaction_id, review_id
+    from bu.wq_appointment
+  </select>
+</mapper>

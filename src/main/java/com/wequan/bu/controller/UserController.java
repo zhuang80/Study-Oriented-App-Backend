@@ -4,7 +4,12 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.wequan.bu.config.WeQuanConstants;
 import com.wequan.bu.config.handler.MessageHandler;
+import com.wequan.bu.controller.vo.Appointment;
+import com.wequan.bu.controller.vo.OnlineEvent;
+import com.wequan.bu.controller.vo.TutorInquiry;
 import com.wequan.bu.controller.vo.User;
+import com.wequan.bu.controller.vo.result.Result;
+import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.security.component.AppUserDetails;
 import com.wequan.bu.service.UserService;
 import com.wequan.bu.util.GeneralTool;
@@ -23,12 +28,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author ChrisChen
  */
 @RestController
-@RequestMapping("/user")
 @Api(tags = "User")
 public class UserController {
 
@@ -41,7 +46,7 @@ public class UserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @PostMapping("/register")
+    @PostMapping("/user/register")
     @ApiOperation(value = "用户注册", notes = "返回注册信息")
     @ApiModelProperty(value = "user", notes = "用户信息的json串")
     public String register(User user) {
@@ -66,7 +71,7 @@ public class UserController {
         return "";
     }
 
-    @PostMapping("/login")
+    @PostMapping("/user/login")
     @ApiOperation(value = "用户登录", notes = "返回登录信息")
     public ResponseEntity<String> login(User user) {
         String email = user.getEmail();
@@ -85,25 +90,48 @@ public class UserController {
         return ResponseEntity.ok().headers(respHeaders).body("success");
     }
 
-    @GetMapping("/e-confirm")
+    @GetMapping("/user/e-confirm")
     @ApiOperation(value = "验证注册用户", notes = "返回验证注册用户信息")
     public String emailConfirm(@RequestParam("tokenKey") String tokenKey) {
 
         return "";
     }
 
-    @PostMapping("/reset-password")
+    @PostMapping("/user/reset-password")
     @ApiOperation(value = "重置用户密码", notes = "返回重置用户密码信息")
     public String resetPassword() {
         return "";
     }
 
-    @GetMapping("/all")
+    @GetMapping("/users")
     @ApiOperation(value = "获取所有用户", notes = "返回用户列表")
     public String getAll() {
         StringBuilder result = new StringBuilder();
         userService.findAll().stream().map(user -> user.getEmail()).forEach(e -> result.append(e));
         return result.toString();
     }
+
+    @GetMapping("/user/{id}/appointments")
+    @ApiOperation(value = "a list of user’s appointment", notes = "返回用户与Tutor的appointment列表")
+    public Result<List<Appointment>> getAppointments(@PathVariable("id") Integer id) {
+        List<Appointment> result = null;
+        return ResultGenerator.success(result);
+    }
+
+    @GetMapping("/user/{id}/online_events")
+    @ApiOperation(value = "a list of user’s online event", notes = "返回用户的online event列表")
+    public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer id) {
+        List<OnlineEvent> result = null;
+        return ResultGenerator.success(result);
+    }
+
+    @GetMapping("/user/{id}/tutor_inquiries")
+    @ApiOperation(value = "a list of user’s tutor inquiry", notes = "返回用户的tutor inquiry列表")
+    public Result<List<TutorInquiry>> getTutorInquiries(@PathVariable("id") Integer id) {
+        List<TutorInquiry> result = null;
+        return ResultGenerator.success(result);
+    }
+
+
 
 }

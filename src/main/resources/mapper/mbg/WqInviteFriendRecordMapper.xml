@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.mbg.WqInviteFriendRecordMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.mbg.WqInviteFriendRecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="friend_email" jdbcType="VARCHAR" property="friendEmail" />
+    <result column="invite_time" jdbcType="TIMESTAMP" property="inviteTime" />
+    <result column="status" jdbcType="SMALLINT" property="status" />
+    <result column="study_points_accquired" jdbcType="SMALLINT" property="studyPointsAccquired" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bu.wq_invite_friend_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.mbg.WqInviteFriendRecord" useGeneratedKeys="true">
+    insert into bu.wq_invite_friend_record (user_id, friend_email, invite_time, 
+      status, study_points_accquired)
+    values (#{userId,jdbcType=INTEGER}, #{friendEmail,jdbcType=VARCHAR}, #{inviteTime,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=SMALLINT}, #{studyPointsAccquired,jdbcType=SMALLINT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wequan.bu.repository.model.mbg.WqInviteFriendRecord">
+    update bu.wq_invite_friend_record
+    set user_id = #{userId,jdbcType=INTEGER},
+      friend_email = #{friendEmail,jdbcType=VARCHAR},
+      invite_time = #{inviteTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=SMALLINT},
+      study_points_accquired = #{studyPointsAccquired,jdbcType=SMALLINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, user_id, friend_email, invite_time, status, study_points_accquired
+    from bu.wq_invite_friend_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, user_id, friend_email, invite_time, status, study_points_accquired
+    from bu.wq_invite_friend_record
+  </select>
+</mapper>

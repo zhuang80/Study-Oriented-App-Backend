@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.mbg.WqProfessorProfileMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.mbg.WqProfessorProfile">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="first_name" jdbcType="VARCHAR" property="firstName" />
+    <result column="last_name" jdbcType="VARCHAR" property="lastName" />
+    <result column="school_id" jdbcType="SMALLINT" property="schoolId" />
+    <result column="overall_score" jdbcType="REAL" property="overallScore" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="create_by" jdbcType="INTEGER" property="createBy" />
+    <result column="department_id" jdbcType="INTEGER" property="departmentId" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bu.wq_professor_profile
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.mbg.WqProfessorProfile" useGeneratedKeys="true">
+    insert into bu.wq_professor_profile (first_name, last_name, school_id, 
+      overall_score, create_time, create_by, 
+      department_id, update_time)
+    values (#{firstName,jdbcType=VARCHAR}, #{lastName,jdbcType=VARCHAR}, #{schoolId,jdbcType=SMALLINT}, 
+      #{overallScore,jdbcType=REAL}, #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=INTEGER}, 
+      #{departmentId,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wequan.bu.repository.model.mbg.WqProfessorProfile">
+    update bu.wq_professor_profile
+    set first_name = #{firstName,jdbcType=VARCHAR},
+      last_name = #{lastName,jdbcType=VARCHAR},
+      school_id = #{schoolId,jdbcType=SMALLINT},
+      overall_score = #{overallScore,jdbcType=REAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_by = #{createBy,jdbcType=INTEGER},
+      department_id = #{departmentId,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, first_name, last_name, school_id, overall_score, create_time, create_by, 
+    department_id, update_time
+    from bu.wq_professor_profile
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, first_name, last_name, school_id, overall_score, create_time, create_by, 
+    department_id, update_time
+    from bu.wq_professor_profile
+  </select>
+</mapper>

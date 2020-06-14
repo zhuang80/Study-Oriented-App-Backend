@@ -1,5 +1,8 @@
 package com.wequan.bu.controller;
 
+import com.wequan.bu.controller.vo.Appointment;
+import com.wequan.bu.controller.vo.OnlineEvent;
+import com.wequan.bu.controller.vo.TutorReview;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.exception.NotImplementedException;
@@ -7,12 +10,10 @@ import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.service.TutorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,48 +21,58 @@ import java.util.List;
  * @author ChrisChen
  */
 @RestController
-@RequestMapping("/tutor")
 @Api(tags = "Tutor")
 public class TutorController {
+
+    private static final Logger log = LoggerFactory.getLogger(TutorController.class);
 
     @Autowired
     private TutorService tutorService;
 
-    @GetMapping("/all")
-    @ApiOperation(value = "Get all tutors", notes = "返回Tutor列表")
-    public Result<List<Tutor>> getAll() {
-        System.out.println(tutorService.findAll().stream().count());
-        List<Tutor> allTutors = tutorService.findAll();
-        return ResultGenerator.success(allTutors);
-    }
-
-    @GetMapping("/info")
+    @GetMapping("/tutor/{id}")
     @ApiOperation(value = "Get tutor info", notes = "返回Tutor详情")
-    public List<Tutor> getInfo(@RequestParam("id") String id) throws NotImplementedException {
+    public Tutor getTutor(@RequestParam("id") Integer id) throws NotImplementedException {
         throw new NotImplementedException();
-    }
-
-    @GetMapping("/appointments")
-    public List<Tutor> getAppointments(@RequestParam("id") String id) throws NoHandlerFoundException {
-        throw new NoHandlerFoundException("get", "example.com", null);
     }
 
     @GetMapping("/tutors")
     @ApiOperation(value = "Available tutors", notes = "返回Tutor列表，按评分/加入时间倒序")
-    public List<Tutor> getTutors(@RequestParam(value = "subject_id", required = false) Integer subjectId) {
-        return tutorService.findTutors(subjectId);
+    public Result<List<Tutor>> getTutors(@RequestParam(value = "subjectId", required = false) Integer subjectId,
+                                         @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                         @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<Tutor> tutors = tutorService.findTutors(subjectId);
+        return ResultGenerator.success(tutors);
     }
 
     @GetMapping("/tutors/popular")
-    @ApiOperation(value = "Popular tutors", notes = "返回Tutor列表，按评分/被查看次数排序")
-    public Result<List<Tutor>> getPopularTutors(@RequestParam(value = "subject", required = false) String subject) {
-        List<Tutor> abc = null;
-        try {
-            throw new Exception("test it");
-        } catch (Exception e) {
-            return ResultGenerator.fail("");
-        }
+    @ApiOperation(value = "Popular tutors", notes = "返回Tutor列表，按评分和被查看次数排序")
+    public Result<List<Tutor>> getPopularTutors(@RequestParam(value = "subjectId", required = false) Integer subjectId,
+                                                @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<Tutor> result = null;
+        return ResultGenerator.success(result);
+    }
 
+    @PostMapping("/tutor/{id}/review")
+    @ApiOperation(value = "Review tutor", notes = "返回评价tutor成功与否")
+    public Result reviewTutor(@PathVariable("id") Integer id,
+                              @RequestBody TutorReview tutorReview) {
+
+        return ResultGenerator.success();
+    }
+
+    @GetMapping("/tutor/{id}/appointments")
+    @ApiOperation(value = "a list of tutor’s appointment", notes = "返回Tutor与用户的appointment列表")
+    public Result<List<Appointment>> getAppointments(@PathVariable("id") Integer id) {
+        List<Appointment> result = null;
+        return ResultGenerator.success(result);
+    }
+
+    @GetMapping("/tutor/{id}/online_events")
+    @ApiOperation(value = "a list of tutor’s online event", notes = "返回Tutor的online event列表")
+    public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer id) {
+        List<OnlineEvent> result = null;
+        return ResultGenerator.success(result);
     }
 
 }

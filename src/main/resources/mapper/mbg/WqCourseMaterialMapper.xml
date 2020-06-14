@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.mbg.WqCourseMaterialMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.mbg.WqCourseMaterial">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="type" jdbcType="SMALLINT" property="type" />
+    <result column="store_directory" jdbcType="VARCHAR" property="storeDirectory" />
+    <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="source_from" jdbcType="VARCHAR" property="sourceFrom" />
+    <result column="subject_id" jdbcType="INTEGER" property="subjectId" />
+    <result column="course_id" jdbcType="INTEGER" property="courseId" />
+    <result column="professor_id" jdbcType="INTEGER" property="professorId" />
+    <result column="study_points_required" jdbcType="SMALLINT" property="studyPointsRequired" />
+    <result column="term" jdbcType="VARCHAR" property="term" />
+    <result column="file_type" jdbcType="VARCHAR" property="fileType" />
+    <result column="upload_by" jdbcType="INTEGER" property="uploadBy" />
+    <result column="upload_time" jdbcType="TIMESTAMP" property="uploadTime" />
+    <result column="source_external_link" jdbcType="VARCHAR" property="sourceExternalLink" />
+    <result column="total_page" jdbcType="SMALLINT" property="totalPage" />
+    <result column="likes" jdbcType="INTEGER" property="likes" />
+    <result column="status" jdbcType="SMALLINT" property="status" />
+    <result column="checker" jdbcType="INTEGER" property="checker" />
+    <result column="comment" jdbcType="VARCHAR" property="comment" />
+    <result column="check_time" jdbcType="TIMESTAMP" property="checkTime" />
+    <result column="uuid" jdbcType="VARCHAR" property="uuid" />
+    <result column="preview_pages" jdbcType="BINARY" property="previewPages" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bu.wq_course_material
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.mbg.WqCourseMaterial" useGeneratedKeys="true">
+    insert into bu.wq_course_material (type, store_directory, file_name, 
+      source_from, subject_id, course_id, 
+      professor_id, study_points_required, term, 
+      file_type, upload_by, upload_time, 
+      source_external_link, total_page, likes, 
+      status, checker, comment, 
+      check_time, uuid, preview_pages
+      )
+    values (#{type,jdbcType=SMALLINT}, #{storeDirectory,jdbcType=VARCHAR}, #{fileName,jdbcType=VARCHAR}, 
+      #{sourceFrom,jdbcType=VARCHAR}, #{subjectId,jdbcType=INTEGER}, #{courseId,jdbcType=INTEGER}, 
+      #{professorId,jdbcType=INTEGER}, #{studyPointsRequired,jdbcType=SMALLINT}, #{term,jdbcType=VARCHAR}, 
+      #{fileType,jdbcType=VARCHAR}, #{uploadBy,jdbcType=INTEGER}, #{uploadTime,jdbcType=TIMESTAMP}, 
+      #{sourceExternalLink,jdbcType=VARCHAR}, #{totalPage,jdbcType=SMALLINT}, #{likes,jdbcType=INTEGER}, 
+      #{status,jdbcType=SMALLINT}, #{checker,jdbcType=INTEGER}, #{comment,jdbcType=VARCHAR}, 
+      #{checkTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR}, #{previewPages,jdbcType=BINARY}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wequan.bu.repository.model.mbg.WqCourseMaterial">
+    update bu.wq_course_material
+    set type = #{type,jdbcType=SMALLINT},
+      store_directory = #{storeDirectory,jdbcType=VARCHAR},
+      file_name = #{fileName,jdbcType=VARCHAR},
+      source_from = #{sourceFrom,jdbcType=VARCHAR},
+      subject_id = #{subjectId,jdbcType=INTEGER},
+      course_id = #{courseId,jdbcType=INTEGER},
+      professor_id = #{professorId,jdbcType=INTEGER},
+      study_points_required = #{studyPointsRequired,jdbcType=SMALLINT},
+      term = #{term,jdbcType=VARCHAR},
+      file_type = #{fileType,jdbcType=VARCHAR},
+      upload_by = #{uploadBy,jdbcType=INTEGER},
+      upload_time = #{uploadTime,jdbcType=TIMESTAMP},
+      source_external_link = #{sourceExternalLink,jdbcType=VARCHAR},
+      total_page = #{totalPage,jdbcType=SMALLINT},
+      likes = #{likes,jdbcType=INTEGER},
+      status = #{status,jdbcType=SMALLINT},
+      checker = #{checker,jdbcType=INTEGER},
+      comment = #{comment,jdbcType=VARCHAR},
+      check_time = #{checkTime,jdbcType=TIMESTAMP},
+      uuid = #{uuid,jdbcType=VARCHAR},
+      preview_pages = #{previewPages,jdbcType=BINARY}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, type, store_directory, file_name, source_from, subject_id, course_id, 
+    professor_id, study_points_required, term, file_type, upload_by, upload_time, source_external_link, 
+    total_page, likes, status, checker, comment, check_time, uuid, preview_pages
+    from bu.wq_course_material
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, type, store_directory, file_name, source_from, subject_id, course_id, 
+    professor_id, study_points_required, term, file_type, upload_by, upload_time, source_external_link, 
+    total_page, likes, status, checker, comment, check_time, uuid, preview_pages
+    from bu.wq_course_material
+  </select>
+</mapper>

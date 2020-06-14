@@ -33,7 +33,7 @@ public class MessageHandler {
      * @param params escape for "
      * @return message
      */
-    private String getMessage(String code, Object... params) {
+    public String getMessage(String code, Object... params) {
         return messageSource.getMessage(code, params, RequestContextUtils.getLocale(request));
     }
 

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.mbg.WqLatePolicyMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.mbg.WqLatePolicy">
+    <id column="id" jdbcType="SMALLINT" property="id" />
+    <result column="label" jdbcType="VARCHAR" property="label" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="overdue_allowed" jdbcType="SMALLINT" property="overdueAllowed" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Short">
+    delete from bu.wq_late_policy
+    where id = #{id,jdbcType=SMALLINT}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.mbg.WqLatePolicy" useGeneratedKeys="true">
+    insert into bu.wq_late_policy (label, description, overdue_allowed
+      )
+    values (#{label,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{overdueAllowed,jdbcType=SMALLINT}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wequan.bu.repository.model.mbg.WqLatePolicy">
+    update bu.wq_late_policy
+    set label = #{label,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      overdue_allowed = #{overdueAllowed,jdbcType=SMALLINT}
+    where id = #{id,jdbcType=SMALLINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Short" resultMap="BaseResultMap">
+    select id, label, description, overdue_allowed
+    from bu.wq_late_policy
+    where id = #{id,jdbcType=SMALLINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, label, description, overdue_allowed
+    from bu.wq_late_policy
+  </select>
+</mapper>
