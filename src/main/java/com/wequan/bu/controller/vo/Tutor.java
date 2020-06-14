@@ -1,6 +1,7 @@
 package com.wequan.bu.controller.vo;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author ChrisChen
@@ -22,6 +23,7 @@ public class Tutor {
     private short status;
     private short latePolicyId;
     private short cancellationPolicyId;
+    private List<TutorReview> tutorReviews;
 
     public int getId() {
         return id;
@@ -141,5 +143,13 @@ public class Tutor {
 
     public void setCancellationPolicyId(short cancellationPolicyId) {
         this.cancellationPolicyId = cancellationPolicyId;
+    }
+
+    public List<TutorReview> getTutorReviews() {
+        return tutorReviews;
+    }
+
+    public void setTutorReviews(List<TutorReview> tutorReviews) {
+        this.tutorReviews = tutorReviews;
     }
 }

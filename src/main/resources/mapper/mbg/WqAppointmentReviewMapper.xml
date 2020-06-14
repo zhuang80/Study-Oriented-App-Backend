@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.mbg.WqAppointmentReviewMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.mbg.WqAppointmentReview">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="appointment_id" jdbcType="INTEGER" property="appointmentId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="score" jdbcType="REAL" property="score" />
+    <result column="review" jdbcType="VARCHAR" property="review" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bu.wq_appointment_review
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.mbg.WqAppointmentReview" useGeneratedKeys="true">
+    insert into bu.wq_appointment_review (appointment_id, user_id, score, 
+      review)
+    values (#{appointmentId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{score,jdbcType=REAL}, 
+      #{review,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wequan.bu.repository.model.mbg.WqAppointmentReview">
+    update bu.wq_appointment_review
+    set appointment_id = #{appointmentId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      score = #{score,jdbcType=REAL},
+      review = #{review,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, appointment_id, user_id, score, review
+    from bu.wq_appointment_review
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, appointment_id, user_id, score, review
+    from bu.wq_appointment_review
+  </select>
+</mapper>
