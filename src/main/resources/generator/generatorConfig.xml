@@ -11,10 +11,10 @@
         <plugin type="com.itfsw.mybatis.generator.plugins.CommentPlugin">
             <property name="template" value="src/main/resources/generator/default-comment.ftl" />
         </plugin>
-        <plugin type="com.itfsw.mybatis.generator.plugins.TableRenamePlugin">
-            <property name="searchString" value="^Wq"/>
-            <property name="replaceString" value=""/>
-        </plugin>
+<!--        <plugin type="com.itfsw.mybatis.generator.plugins.TableRenamePlugin">-->
+<!--            <property name="searchString" value="^Wq"/>-->
+<!--            <property name="replaceString" value=""/>-->
+<!--        </plugin>-->
         <plugin type="com.itfsw.mybatis.generator.plugins.LombokPlugin">
             <property name="@Data" value="true"/>
             <property name="@Builder" value="false"/>

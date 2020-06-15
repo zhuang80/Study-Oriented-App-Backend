@@ -13,11 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 
@@ -37,15 +33,22 @@ public class MaterialController {
     @Autowired
     private MessageHandler messageHandler;
 
-    @PostMapping("/material")
-    @ApiOperation(value="Add course material", notes="上传课程资料")
-    public String uploadFile(@RequestParam MultipartFile[] files, HttpSession session) throws IOException {
-        Long begin, end;
-        String basePath = "C:\\Users\\huang\\Desktop\\Wequan\\LocalStorage\\";
-        List<File> returnedFile = materialService.uploadFiles(files, basePath);
-        materialService.convertPdfToImage(returnedFile, basePath);
-        System.out.println("================================> Send response back to client. ");
-        return "success";
+//    @PostMapping("/material")
+//    @ApiOperation(value="Add course material", notes="上传课程资料")
+//    public String uploadFile(@RequestParam MultipartFile[] files, ) throws IOException {
+//        Long begin, end;
+//        String basePath = "C:\\Users\\huang\\Desktop\\Wequan\\LocalStorage\\";
+//        List<File> returnedFile = materialService.uploadFiles(files, basePath);
+//        materialService.convertPdfToImage(returnedFile, basePath);
+//        System.out.println("================================> Send response back to client. ");
+//        return "success";
+//    }
+
+    @GetMapping("/materials/upload/list")
+    @ApiOperation(value="a list of materials user uploaded", notes="返回用户上传资料的列表")
+    public Result<List<Material>> getUploadMaterials(@RequestParam("userId") Integer userId) {
+        List<Material> result = null;
+        return ResultGenerator.success(result);
     }
 
     @GetMapping("/material/{id}")
@@ -83,10 +86,18 @@ public class MaterialController {
         return result;
     }
 
+    @GetMapping("/materials/unlock/list")
+    @ApiOperation(value = "a list of user's unlock materials", notes = "返回用户解锁成功的material列表")
+    public Result<Material> unlockMaterial(@RequestParam("userId") Integer userId) {
+        Result<Material> result = null;
+        return result;
+    }
+
     @PostMapping("/material/report")
     @ApiOperation(value = "report material", notes = "对课程资料进行举报")
-    public Result<Material> reportMaterial(@PathVariable("id") Integer id,
-                                           @RequestParam("userId") Integer userId) {
+    public Result<Material> reportMaterial(@RequestParam("materialId") Integer materialId,
+                                           @RequestParam("userId") Integer userId,
+                                           @RequestParam("reason") String reason) {
         Result<Material> result = null;
         return result;
     }
