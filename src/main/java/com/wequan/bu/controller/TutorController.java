@@ -68,11 +68,21 @@ public class TutorController {
         return ResultGenerator.success(result);
     }
 
-    @GetMapping("/tutor/{id}/online_events")
-    @ApiOperation(value = "a list of tutor’s online event", notes = "返回Tutor的online event列表")
+    @GetMapping("/tutor/{id}/public_class")
+    @ApiOperation(value = "a list of tutor’s public class", notes = "返回Tutor创建的public class列表")
     public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer id) {
         List<OnlineEvent> result = null;
         return ResultGenerator.success(result);
     }
+
+//    @PostMapping("/tutor/apply")
+//    @ApiOperation(value = "a list of tutor’s appointment", notes = "返回Tutor与用户的appointment列表")
+//    public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer id) {
+//        List<OnlineEvent> result = null;
+//        return ResultGenerator.success(result);
+//    }
+
+
+
 
 }

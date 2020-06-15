@@ -8,7 +8,7 @@ public class User {
     private int id;
     private String firstName;
     private String lastName;
-    private String nickname;
+    private String userName;
     private String avatar;
     private String email;
     private String phone;
@@ -43,12 +43,12 @@ public class User {
         this.lastName = lastName;
     }
 
-    public String getNickname() {
-        return nickname;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getAvatar() {
