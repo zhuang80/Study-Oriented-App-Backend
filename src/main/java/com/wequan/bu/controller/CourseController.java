@@ -1,7 +1,6 @@
 package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
-import com.wequan.bu.controller.vo.CourseVo;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultCode;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
@@ -40,7 +39,7 @@ public class CourseController {
     @PostMapping("/course")
     @ResponseBody
     @ApiOperation(value = "add course", notes = "添加课程")
-    public Result addCourse(@RequestBody CourseVo course) {
+    public Result addCourse(@RequestBody Course course) {
         Result result;
         try{
             courseService.save(course);
@@ -53,7 +52,7 @@ public class CourseController {
         return result;
     }
 
-    @GetMapping("/search/courses")
+    @GetMapping("/courses")
     @ApiOperation(value="Search course", notes="根据课程名或者课程代号返回课程列表，关联授课professor的 name, rating")
     @JSON(type = Professor.class, filter = {"courses", "courseRates", "department", "school"})
     public Result<List<Course>> findCourses(@RequestParam(value = "name", required = false) String name,
@@ -97,7 +96,7 @@ public class CourseController {
     @GetMapping("/course/{id}/professors")
     @ResponseBody
     @ApiOperation(value="a list of professors who teach required course", notes="根据course id获取授课教师列表")
-    public Result<List<Professor>> findProfessorsByCourseId(@PathVariable("id") Integer id){
+    public Result<List<Professor>> findProfessorsByCourseId(@PathVariable("id") Integer id) {
         Result result;
         if(id < 0) {
             String message = messageHandler.getFailResponseMessage("40003");
@@ -107,6 +106,14 @@ public class CourseController {
         List<Professor> professorList = professorService.findProfessorsByCourseId(id);
         result = ResultGenerator.success(professorList);
         return result;
+    }
+
+    @PostMapping("/course/associate_professor")
+    @ApiOperation(value="course associate with professor", notes="课程关联授课教师")
+    public Result associateProfessor(@RequestParam("courseId") Integer courseId,
+                                     @RequestParam("professorId") Integer professorId,
+                                     @RequestParam("userId") Integer userId) {
+        return null;
     }
 
 }

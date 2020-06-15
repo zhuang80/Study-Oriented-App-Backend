@@ -1,6 +1,5 @@
 package com.wequan.bu.controller;
 
-import ch.qos.logback.core.encoder.EchoEncoder;
 import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.controller.vo.ProfessorVo;
 import com.wequan.bu.controller.vo.result.Result;
@@ -19,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
@@ -42,6 +42,7 @@ public class ProfessorController{
 
     @GetMapping("/professor")
     @ApiOperation(value="findAll", notes="return a list of professors")
+    @ApiIgnore("Not in the rest api list")
     @JSON(type=Professor.class, filter = "courseRates")
     @JSON(type = Course.class, filter = {"professors","schoolId","departmentId"})
     public Result<List<Professor>> findAll(){
@@ -105,7 +106,7 @@ public class ProfessorController{
     @ResponseBody
     @ApiOperation(value="Rate course for professor", notes="评价授课教师所教课程")
     public ResponseEntity<String> postReview(@PathVariable("id") Integer id,
-                                             @PathVariable("c_id") Integer c_id,
+                                             @PathVariable("cId") Integer c_id,
                                              @RequestBody ProfessorCourseRate review){
         if(id<0 || c_id<0) {
             String message = messageHandler.getFailResponseMessage("40008");
@@ -165,6 +166,14 @@ public class ProfessorController{
     public Result rateProfessor(@RequestBody ProfessorCourseRate professorCourseRate) {
         Result result = ResultGenerator.success();
         return result;
+    }
+
+    @PostMapping("/professor/associate_course")
+    @ApiOperation(value="professor associate with course", notes="授课教师关联课程")
+    public Result associateCourse(@RequestParam("courseId") Integer courseId,
+                                  @RequestParam("professorId") Integer professorId,
+                                  @RequestParam("userId") Integer userId) {
+        return null;
     }
 }
 
