@@ -1,7 +1,6 @@
 package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
-import com.wequan.bu.repository.model.Department;
 import com.wequan.bu.repository.model.School;
 import com.wequan.bu.service.SchoolService;
 import io.swagger.annotations.Api;
@@ -11,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -37,13 +35,4 @@ public class SchoolController {
         return schoolService.findAll(pageNum, pageSize);
     }
 
-    @GetMapping("/departments")
-    @ApiOperation(value = "", notes = "return a list of departments by school id")
-    public List<Department> findDepartmentsBySchoolId(@RequestParam("schoolId") Integer id){
-        if(id < 0){
-            log.info(messageHandler.getFailResponseMessage("40008"));
-            return null;
-        }
-        return schoolService.findDepartmentsBySchoolId(id);
-    }
 }
