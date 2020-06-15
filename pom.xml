@@ -23,6 +23,7 @@
 		<auth0.jwt.version>3.10.0</auth0.jwt.version>
 		<guava.version>28.2-jre</guava.version>
 		<commons-lang3.version>3.9</commons-lang3.version>
+		<commons.beanutils.version>1.9.4</commons.beanutils.version>
 		<swagger.version>2.9.2</swagger.version>
 	</properties>
 
@@ -119,6 +120,11 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>${guava.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>${commons.beanutils.version}</version>
 		</dependency>
 		<!--测试相关-->
 		<dependency>
