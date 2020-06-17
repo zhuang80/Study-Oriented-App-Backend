@@ -1,5 +1,7 @@
 package com.wequan.bu.controller.vo;
 
+import com.wequan.bu.repository.model.User;
+
 import java.util.List;
 
 public class TutorReview extends BaseVo {

@@ -4,17 +4,18 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.wequan.bu.config.WeQuanConstants;
 import com.wequan.bu.config.handler.MessageHandler;
-import com.wequan.bu.controller.vo.*;
+import com.wequan.bu.controller.vo.Appointment;
+import com.wequan.bu.controller.vo.OnlineEvent;
 import com.wequan.bu.controller.vo.Thread;
+import com.wequan.bu.controller.vo.TutorInquiry;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
+import com.wequan.bu.repository.model.User;
 import com.wequan.bu.repository.model.UserFollow;
 import com.wequan.bu.security.component.AppUserDetails;
 import com.wequan.bu.service.UserService;
 import com.wequan.bu.util.GeneralTool;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,6 +142,10 @@ public class UserController {
 
     @GetMapping("/user/{id}/threads")
     @ApiOperation(value = "a list of user’s threads", notes = "返回用户的thread列表")
+    @ApiResponses(
+            @ApiResponse(code = 200, message = "a list of thread card (title, thread id, user name, user id, tag, created time, first 100 words, \n" +
+                    "first 3 photos, # of likes, # of dislikes, # of views, school id, study points reward, status) sorted by created time")
+    )
     public Result<List<Thread>> getThreads(@PathVariable("id") Integer id,
                                            @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                            @RequestParam(value = "pageSize", required = false) Integer pageSize) {
@@ -150,8 +155,12 @@ public class UserController {
 
     @GetMapping("/user/{id}/profile")
     @ApiOperation(value = "user basic info", notes = "返回用户基本信息")
-    public Result<List<TutorInquiry>> getUserProfile(@PathVariable("id") Integer id) {
-        List<TutorInquiry> result = null;
+    @ApiResponses(
+            @ApiResponse(code = 200, message = "name, username, school name, school id, subjects, subject id, avatar, " +
+                    "brief intro, # of threads, # of following, # of followers, # of groups")
+    )
+    public Result<User> getUserProfile(@PathVariable("id") Integer userId) {
+        User result = null;
         return ResultGenerator.success(result);
     }
 
@@ -196,9 +205,12 @@ public class UserController {
         return ResultGenerator.success();
     }
 
-    @GetMapping("/user/{id}/follow")
+    @GetMapping("/user/{id}/following")
     @ApiOperation(value = "a list of follow", notes = "返回所关注用户列表")
-    public Result<List<UserFollow>> getUserFollows(@PathVariable("id") Integer userId) {
+    @ApiResponses(
+            @ApiResponse(code = 200, message = "a list of user cards (name, username, user id, avatar, status)")
+    )
+    public Result<List<UserFollow>> getUserFollowing(@PathVariable("id") Integer userId) {
         List<UserFollow> result = null;
         return ResultGenerator.success(result);
     }
