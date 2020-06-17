@@ -1,7 +1,7 @@
 package com.wequan.bu.controller;
 
-import com.wequan.bu.controller.vo.User;
 import com.wequan.bu.controller.vo.result.Result;
+import com.wequan.bu.repository.model.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ public class RecommendationController {
 
     @GetMapping("/user/{id}/recommendation/users")
     @ApiOperation(value = "a list of recommend users", notes = "返回推荐用户列表")
-    public Result<List<List<User>>> getUserRecommendation(@PathVariable("id") Integer userId,
+    public Result<List<User>> getUserRecommendation(@PathVariable("id") Integer userId,
                                                           @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                           @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         return null;
