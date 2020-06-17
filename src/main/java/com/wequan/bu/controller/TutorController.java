@@ -1,5 +1,6 @@
 package com.wequan.bu.controller;
 
+import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.controller.vo.Appointment;
 import com.wequan.bu.controller.vo.OnlineEvent;
 import com.wequan.bu.controller.vo.TutorReview;
@@ -7,6 +8,7 @@ import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.exception.NotImplementedException;
 import com.wequan.bu.repository.model.Tutor;
+import com.wequan.bu.repository.model.extend.TutorRateInfo;
 import com.wequan.bu.service.TutorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import sun.plugin2.message.Message;
 
 import java.util.List;
 
@@ -28,6 +31,8 @@ public class TutorController {
 
     @Autowired
     private TutorService tutorService;
+    @Autowired
+    private MessageHandler messageHandler;
 
     @GetMapping("/tutor/{id}")
     @ApiOperation(value = "Get tutor info", notes = "返回Tutor详情")
@@ -46,10 +51,14 @@ public class TutorController {
 
     @GetMapping("/tutors/popular")
     @ApiOperation(value = "Popular tutors", notes = "返回Tutor列表，按评分和被查看次数排序")
-    public Result<List<Tutor>> getPopularTutors(@RequestParam(value = "subjectId", required = false) Integer subjectId,
+    public Result<List<TutorRateInfo>> getPopularTutors(@RequestParam(value = "subjectId", required = false) Integer subjectId,
                                                 @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                 @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<Tutor> result = null;
+        if(subjectId != null && subjectId < 0 ){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
+        List<TutorRateInfo> result = tutorService.findTopTutors(subjectId);
         return ResultGenerator.success(result);
     }
 

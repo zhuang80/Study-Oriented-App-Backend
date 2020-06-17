@@ -2,6 +2,7 @@ package com.wequan.bu.service.impl;
 
 import com.wequan.bu.repository.dao.TutorMapper;
 import com.wequan.bu.repository.model.Tutor;
+import com.wequan.bu.repository.model.extend.TutorRateInfo;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.TutorService;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +47,11 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
     @Override
     public List<Tutor> findTutors(Integer subjectId) {
         return tutorMapper.selectTutors(subjectId);
+    }
+
+    @Override
+    public List<TutorRateInfo> findTopTutors(Integer subjectId) {
+        return tutorMapper.selectTopTutors(subjectId);
     }
 
 }

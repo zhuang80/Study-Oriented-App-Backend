@@ -3,8 +3,10 @@
 <mapper namespace="com.wequan.bu.repository.dao.TutorMapper">
   <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.Tutor">
     <id column="id" jdbcType="INTEGER" property="id" />
-    <association property="user" column="{id=user_id}" select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey"/>
+      <result column="brief_introduction" jdbcType="VARCHAR" property="briefIntroduction"/>
+   <!-- <association property="user" column="{id=user_id}" select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey"/> -->
   </resultMap>
+
   <resultMap id="TutorMapper" type="com.wequan.bu.repository.model.Tutor">
     <id column="professor_id" jdbcType="INTEGER" property="id"/>
     <result column="brief_introduction" jdbcType="VARCHAR" property="briefIntroduction"/>
@@ -14,6 +16,31 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
   </resultMap>
 
+    <!-- created by Zhaochao Huang -->
+    <resultMap id="TutorRateResultMap" type="com.wequan.bu.repository.model.extend.TutorRateInfo">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="brief_introduction" jdbcType="VARCHAR" property="briefIntroduction" />
+        <result column="resume_path" jdbcType="VARCHAR" property="resumePath" />
+        <result column="transcript_path" jdbcType="VARCHAR" property="transcriptPath" />
+        <result column="other_proof_path" jdbcType="VARCHAR" property="otherProofPath" />
+        <result column="current_degree_id" jdbcType="SMALLINT" property="currentDegreeId" />
+        <result column="current_location" jdbcType="VARCHAR" property="currentLocation" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="pay_rate" jdbcType="REAL" property="payRate" />
+        <result column="status" jdbcType="SMALLINT" property="status" />
+        <result column="late_policy_id" jdbcType="SMALLINT" property="latePolicyId" />
+        <result column="cancellation_policy_id" jdbcType="SMALLINT" property="cancellationPolicyId" />
+        <result column="tutor_available" jdbcType="BIT" property="tutorAvailable" />
+        <result column="score" jdbcType="REAL" property="score" />
+        <association column="current_school_id"
+                     property="school"
+                     select="com.wequan.bu.repository.dao.SchoolMapper.selectByPrimaryKey"/>
+        <collection property="subjectList" ofType="com.wequan.bu.repository.model.Subject">
+            <id property="id" jdbcType="INTEGER" column="subject_id" />
+            <result property="name" jdbcType="VARCHAR" column="subject_name" />
+        </collection>
+    </resultMap>
   <select id="selectAll" resultMap="BaseResultMap">
     select *
     from ${schema}.wq_tutor_profile
@@ -39,4 +66,28 @@
     ORDER BY create_time DESC
    </select>
 
+    <!-- created by Zhaochao Huang, find the top tutors associated rate, school info-->
+    <select id="selectTopTutors" resultMap="TutorRateResultMap">
+        WITH temp_rate AS(
+            SELECT
+                tutor_id,
+                AVG(rating) as score
+            FROM ${schema}.wq_tutor_review
+            GROUP BY tutor_id
+        )
+
+        SELECT
+            tp.*,
+            tr.score,
+            s.id as subject_id,
+            s.name as subject_name
+        FROM ${schema}.wq_tutor_profile tp
+        LEFT JOIN temp_rate tr on tr.tutor_id = tp.id
+        LEFT JOIN ${schema}.wq_tutor_subject ts on tp.id = ts.tutor_id
+        LEFT JOIN ${schema}.wq_subjects s on s.id = ts.subject_id
+        <if test="subject_id != null">
+            WHERE s.id = #{subject_id}
+        </if>
+        ORDER BY score DESC
+    </select>
 </mapper>
