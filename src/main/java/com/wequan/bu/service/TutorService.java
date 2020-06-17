@@ -1,6 +1,7 @@
 package com.wequan.bu.service;
 
 import com.wequan.bu.repository.model.Tutor;
+import com.wequan.bu.repository.model.extend.TutorRateInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -21,4 +22,6 @@ public interface TutorService extends Service<Tutor> {
     List<Tutor> search(String whereCondition, String groupCondition, String orderCondition, Map<String, Integer> pageCondition);
 
     public List<Tutor> findTutors(Integer subjectId);
+
+    public List<TutorRateInfo> findTopTutors(Integer subjectId);
 }
