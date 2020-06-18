@@ -63,6 +63,8 @@ public class OnlineEventController {
     @PostMapping("/online_event")
     @ApiOperation(value = "Create an online event", notes = "返回创建online event成功与否")
     public Result addOnlineEvent(@RequestBody OnlineEvent onlineEvent) {
+        // only tutor can create public class
+        // user can create activities
         return ResultGenerator.success();
     }
 
