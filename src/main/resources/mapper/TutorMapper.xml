@@ -46,25 +46,39 @@
     from ${schema}.wq_tutor_profile
   </select>
 
-  <select id="selectByConditions" resultMap="BaseResultMap">
-    select * from ${schema}.wq_tutor_profile
-    <if test="where != null and where != ''">
-      where ${where}
-    </if>
-    <if test="orderBy != null and orderBy != ''">
-      order by ${orderBy}
-    </if>
-  </select>
+    <select id="selectByConditions" resultMap="BaseResultMap">
+        select * from ${schema}.wq_tutor_profile
+        <if test="where != null and where != ''">
+            where ${where}
+        </if>
+        <if test="orderBy != null and orderBy != ''">
+            order by ${orderBy}
+        </if>
+    </select>
 
-   <select id="selectTutors" resultMap="BaseResultMap">
-    SELECT *
-    FROM ${schema}.wq_tutor_profile p
-    <if test="subject_id != null">
-        LEFT JOIN ${schema}.wq_tutor_subject s on p.id = s.tutor_id
-        WHERE s.subject_id = #{subject_id}
-    </if>
-    ORDER BY create_time DESC
-   </select>
+    <select id="selectTutors" resultMap="TutorRateResultMap">
+        WITH temp_rate AS(
+        SELECT
+        tutor_id,
+        AVG(rating) as score
+        FROM ${schema}.wq_tutor_review
+        GROUP BY tutor_id
+        )
+
+        SELECT
+        tp.*,
+        tr.score,
+        s.id as subject_id,
+        s.name as subject_name
+        FROM ${schema}.wq_tutor_profile tp
+        LEFT JOIN temp_rate tr on tr.tutor_id = tp.id
+        LEFT JOIN ${schema}.wq_tutor_subject ts on tp.id = ts.tutor_id
+        LEFT JOIN ${schema}.wq_subjects s on s.id = ts.subject_id
+        <if test="subject_id != null">
+            WHERE s.id = #{subject_id}
+        </if>
+        ORDER BY score DESC, tp.create_time DESC
+    </select>
 
     <!-- created by Zhaochao Huang, find the top tutors associated rate, school info-->
     <select id="selectTopTutors" resultMap="TutorRateResultMap">
