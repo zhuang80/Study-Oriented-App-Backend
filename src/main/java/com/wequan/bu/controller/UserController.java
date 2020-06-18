@@ -4,15 +4,12 @@ import com.wequan.bu.controller.vo.Thread;
 import com.wequan.bu.controller.vo.*;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
-import com.wequan.bu.repository.model.User;
-import com.wequan.bu.repository.model.UserFollow;
+import com.wequan.bu.repository.model.*;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -49,7 +46,11 @@ public class UserController {
 
     @GetMapping("/user/{id}/online_events")
     @ApiOperation(value = "a list of user’s online event", notes = "返回用户的online event列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "type", value = "0, public class; 1, activity")
+    })
     public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer userId,
+                                                     @RequestParam(value = "type", required = false) Integer type,
                                                      @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                      @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         List<OnlineEvent> result = null;
@@ -111,24 +112,36 @@ public class UserController {
         return ResultGenerator.success(result);
     }
 
+    @GetMapping("/user/{id}/replies")
+    @ApiOperation(value = "a list of user’s replies", notes = "返回用户的帖子回复列表")
+    public Result<List<ThreadStream>> getThreadReplies(@PathVariable("id") Integer userId,
+                                                       @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                       @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<ThreadStream> result = null;
+        return ResultGenerator.success(result);
+    }
+
     @GetMapping("/user/{id}/favorites")
-    @ApiOperation(value = "a list of favorites according to category for user", notes = "按类别返回用户收藏列表")
+    @ApiOperation(value = "a list of favorites according to category for user", notes = "按类别返回用户收藏列表，格式分别为" +
+            "tutor(tutor name, tutor id, rating, subjects); course (course name, course id, course code);" +
+            "material (title, if unlock, material type, upload date, # of likes, # of views)")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "categoryId", value = "1 -> tutor; 2 -> course; 3 -> material; 4 -> thread; 5 -> professor")
+            @ApiImplicitParam(name = "categoryId", value = "1 -> tutor; 2 -> course; 3 -> material;" +
+                    " 4 -> thread; 5 -> professor; 6 -> activity; 7 -> public class; 8 -> thread reply")
     })
     public Result<List<Object>> getFavorites(@PathVariable("id") Integer userId,
                                              @RequestParam("categoryId") Integer categoryId,
                                              @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         List<Object> result = null;
-        result = Collections.singletonList(new ArrayList<Thread>());
         return ResultGenerator.success(result);
     }
 
     @PostMapping("/user/{id}/favorite")
     @ApiOperation(value = "favorite/unfavorite tutor/course/material/thread/professor", notes = "返回用户按类别收藏/取消收藏成功与否")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "categoryId", value = "1 -> tutor; 2 -> course; 3 -> material; 4 -> thread; 5 -> professor"),
+            @ApiImplicitParam(name = "categoryId", value = "1 -> tutor; 2 -> course; 3 -> material;" +
+                    " 4 -> thread; 5 -> professor; 6 -> activity; 7 -> public class; 8 -> thread reply"),
             @ApiImplicitParam(name = "favoriteId", value = "收藏资源的id"),
             @ApiImplicitParam(name = "action", value = "1 -> 收藏；-1 -> 取消收藏"),
     })
@@ -167,4 +180,17 @@ public class UserController {
         return ResultGenerator.success(result);
     }
 
+    @GetMapping("/user/{id}/professor/reviews")
+    @ApiOperation(value = "a list of user's review for professor", notes = "返回用户对授课教师评价列表")
+    public Result<List<ProfessorCourseRate>> getUserProfessorReviews(@PathVariable("id") Integer userId) {
+        List<ProfessorCourseRate> result = null;
+        return ResultGenerator.success(result);
+    }
+
+    @GetMapping("/user/{id}/appointment/reviews")
+    @ApiOperation(value = "a list of user's review for appointment ", notes = "返回用户对appointment评价列表")
+    public Result<List<AppointmentReview>> getUserAppointmentReviews(@PathVariable("id") Integer userId) {
+        List<AppointmentReview> result = null;
+        return ResultGenerator.success(result);
+    }
 }
