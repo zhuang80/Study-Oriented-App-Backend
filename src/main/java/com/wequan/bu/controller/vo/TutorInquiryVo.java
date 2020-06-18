@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * @author ChrisChen
  */
-public class TutorInquiry extends BaseVo {
+public class TutorInquiryVo extends BaseVo {
 
     private int subjectId;
     private String briefDescription;
