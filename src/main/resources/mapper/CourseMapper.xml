@@ -4,21 +4,57 @@
     <resultMap id="courseResultMap" type="com.wequan.bu.repository.model.Course">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="name" jdbcType="VARCHAR" property="name" />
-        <result column="code" jdbcType="VARCHAR" property="code" />
-        <result column="brief_description" jdbcType="LONGVARCHAR" property="briefDescription" />
-        <result column="department" jdbcType="VARCHAR" property="department" />
+        <result column="code_first" jdbcType="VARCHAR" property="codeFirst" />
+        <result column="code_second" jdbcType="VARCHAR" property="codeSecond" />
         <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+        <result column="category_id" jdbcType="INTEGER" property="categoryId" />
+        <collection property="professors" column="id" ofType="com.wequan.bu.repository.model.Professor"
+                    select="com.wequan.bu.repository.dao.ProfessorMapper.selectByCourseId"/>
     </resultMap>
+
+    <resultMap id="baseResultMap" type="com.wequan.bu.repository.model.Course">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="code_first" jdbcType="VARCHAR" property="codeFirst" />
+        <result column="code_second" jdbcType="VARCHAR" property="codeSecond" />
+        <result column="school_id" jdbcType="INTEGER" property="schoolId" />
+        <result column="category_id" jdbcType="INTEGER" property="categoryId" />
+    </resultMap>
+
+    <sql id="courseColumns">
+        ${alias}.id ${prefix}_id,
+        ${alias}.name ${prefix}_name,
+        ${alias}.school_id ${prefix}_school_id,
+        ${alias}.code_first ${prefix}_code_first,
+        ${alias}.code_second ${prefix}_code_second,
+        ${alias}.category_id ${prefix}_category_id
+    </sql>
 
     <select id="selectAll" resultMap="courseResultMap">
         SELECT *
         FROM ${schema}.wq_course
     </select>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="courseResultMap">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="baseResultMap">
         SELECT *
         FROM ${schema}.wq_course
         WHERE id = #{id, jdbcType=INTEGER}
     </select>
 
+    <select id="selectByIdAssociatedWithProfessor" parameterType="java.lang.Integer" resultMap="courseResultMap">
+        SELECT *
+        FROM ${schema}.wq_course
+        WHERE id = #{id, jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByNameOrCode" resultMap="courseResultMap">
+        SELECT *
+        FROM ${schema}.wq_course
+        WHERE name ILIKE #{name} OR code_first || code_second ILIKE #{code}
+    </select>
+
+    <insert id="save" parameterType="com.wequan.bu.controller.vo.CourseVo">
+        INSERT INTO ${schema}.wq_course(name, school_id, code_first, code_second, category_id)
+        VALUES(#{name}, #{schoolId}, #{codeFirst}, #{codeSecond}, #{categoryId})
+    </insert>
 </mapper>

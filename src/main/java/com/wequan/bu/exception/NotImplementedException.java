@@ -3,7 +3,7 @@ package com.wequan.bu.exception;
 /**
  * @author ChrisChen
  */
-public class NotImplementedException extends Exception {
+public class NotImplementedException extends RuntimeException {
 
     public NotImplementedException() {
         super("Not implemented yet");

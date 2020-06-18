@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.ProfessorCourseRateMapper">
+    <resultMap id="professorCourseRateResultMap" type="com.wequan.bu.repository.model.ProfessorCourseRate">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="professor_id" jdbcType="INTEGER" property="professorId"/>
+        <result column="course_id" jdbcType="INTEGER" property="courseId"/>
+        <result column="create_by" jdbcType="INTEGER" property="createBy" />
+        <result column="quality_score" jdbcType="REAL" property="qualityScore"/>
+        <result column="difficult_score" jdbcType="REAL" property="difficultScore"/>
+        <result column="number_of_exams" jdbcType="INTEGER" property="numberOfExams"/>
+        <result column="number_of_quizzes" jdbcType="INTEGER" property="numberOfQuizzes"/>
+        <result column="number_of_homeworks" jdbcType="INTEGER" property="numberOfHomeworks"/>
+        <result column="number_of_projects" jdbcType="INTEGER" property="numberOfProjects"/>
+        <result column="number_of_papers" jdbcType="INTEGER" property="numberOfPapers"/>
+        <result column="grade_received" jdbcType="REAL" property="gradeReceived"/>
+        <result column="comment" jdbcType="VARCHAR" property="comment"/>
+        <result column="anonymous" jdbcType="BOOLEAN" property="anonymous"/>
+        <result column="using_textbook" jdbcType="BOOLEAN" property="usingTextbook"/>
+        <result column="attendance" jdbcType="BOOLEAN" property="attendance"/>
+    </resultMap>
+
+    <sql id="professorCourseRateColumns">
+        ${alias}.id ${prefix}_id,
+        ${alias}.professor_id  ${prefix}_professor_id,
+        ${alias}.course_id ${prefix}_course_id,
+        ${alias}.create_by ${prefix}_create_by,
+        ${alias}.quality_score ${prefix}_quality_score,
+        ${alias}.difficult_score ${prefix}_difficult_score,
+        ${alias}.number_of_exams ${prefix}_number_of_exams,
+        ${alias}.number_of_quizzes ${prefix}_number_of_quizzes,
+        ${alias}.number_of_homeworks ${prefix}_number_of_homeworks,
+        ${alias}.number_of_projects ${prefix}_number_of_projects,
+        ${alias}.number_of_papers ${prefix}_number_of_papers,
+        ${alias}.grade_received ${prefix}_grade_received,
+        ${alias}.comment ${prefix}_comment,
+        ${alias}.anonymous ${prefix}_anonymous,
+        ${alias}.using_textbook ${prefix}_using_textbook,
+        ${alias}.attendance ${prefix}_attendance
+    </sql>
+
+    <sql id="insertColumns">
+        INSERT INTO ${schema}.wq_professor_course_rate(professor_id, course_id, create_by, quality_score, difficult_score, number_of_exams, number_of_quizzes, number_of_homeworks, number_of_projects, number_of_papers, grade_received, create_by, comment, anonymous, using_textbook, attendance)
+    </sql>
+
+    <select id="selectAllByProfessorIdAndCourseId" resultMap="professorCourseRateResultMap">
+        SELECT *
+        FROM ${schema}.wq_professor_course_review
+        WHERE professor_id = #{p_id} AND course_id = #{c_id}
+    </select>
+
+    <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.ProfessorCourseRate">
+        <include refid="insertColumns" />
+        VALUES(#{professorId}, #{courseId}, #{userId}, #{qualityScore}, #{difficultScore}, #{numberOfExams}, #{numberOfQuizzes}, #{numberOfHomeworks}, #{numberOfProjects}, #{numberOfPapers}, #{gradeReceived}, #{createBy}, #{comment}, #{anonymous}, #{usingTextbook}, #{attendance})
+    </insert>
+</mapper>

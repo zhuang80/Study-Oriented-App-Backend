@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.ProfessorMapper">
+    <resultMap id="professorResultMap" type="com.wequan.bu.repository.model.Professor">
+        <id column="professor_id" jdbcType="INTEGER" property="id" />
+        <result column="professor_first_name" jdbcType="VARCHAR" property="firstName" />
+        <result column="professor_last_name" jdbcType="VARCHAR" property="lastName" />
+        <result column="professor_overall_score" jdbcType="REAL" property="overallScore" />
+        <result column="professor_create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="professor_create_by" jdbcType="INTEGER" property="createBy" />
+        <association property="school"
+                     resultMap="com.wequan.bu.repository.dao.SchoolMapper.schoolResultMap"
+                     columnPrefix="school_"
+        />
+        <association property="department"
+                     resultMap="com.wequan.bu.repository.dao.DepartmentMapper.departmentResultMap"
+                     columnPrefix="department_"
+        />
+        <collection property="courses" ofType="com.wequan.bu.repository.model.Course"
+                    resultMap="com.wequan.bu.repository.dao.CourseMapper.baseResultMap"
+                    columnPrefix="course_"
+        />
+        <collection property="courseRates" ofType="com.wequan.bu.repository.model.CourseRate"
+                    resultMap="courseRateResultMap"
+        />
+    </resultMap>
+
+    <resultMap id="courseRateResultMap" type="com.wequan.bu.repository.model.CourseRate">
+        <id column="professor_course_rate_course_id" jdbcType="INTEGER" property="id"/>
+        <collection property="reviews"
+                    ofType="com.wequan.bu.repository.model.ProfessorCourseRate"
+                    resultMap="com.wequan.bu.repository.dao.ProfessorCourseRateMapper.professorCourseRateResultMap"
+                    columnPrefix="professor_course_review_"
+        />
+    </resultMap>
+
+    <resultMap id="baseResultMap" type="com.wequan.bu.controller.vo.ProfessorVo">
+        <id column="professor_id" jdbcType="INTEGER" property="id" />
+        <result column="professor_first_name" jdbcType="VARCHAR" property="firstName" />
+        <result column="professor_last_name" jdbcType="VARCHAR" property="lastName" />
+        <result column="professor_overall_score" jdbcType="REAL" property="overallScore" />
+        <result column="professor_create_by" jdbcType="INTEGER" property="createBy" />
+        <result column="professor_school_id" jdbcType="INTEGER" property="schoolId"/>
+        <result column="professor_department_id" jdbcType="INTEGER" property="departmentId"/>
+    </resultMap>
+
+    <sql id="professorColumns">
+        ${alias}.id ${prefix}_id,
+        ${alias}.first_name ${prefix}_first_name,
+        ${alias}.last_name ${prefix}_last_name,
+        ${alias}.department_id ${prefix}_department_id,
+        ${alias}.overall_score ${prefix}_overall_score,
+        ${alias}.create_time ${prefix}_create_time,
+        ${alias}.create_by ${prefix}_create_by,
+        ${alias}.school_id ${prefix}_school_id
+    </sql>
+
+    <sql id="baseProfessorColumns">
+        ${alias}.id ${prefix}_id,
+        ${alias}.first_name ${prefix}_first_name,
+        ${alias}.last_name ${prefix}_last_name,
+        ${alias}.department_id ${prefix}_department_id,
+        ${alias}.overall_score ${prefix}_overall_score,
+        ${alias}.create_by ${prefix}_create_by,
+        ${alias}.school_id ${prefix}_school_id
+    </sql>
+    <select id="selectAll" resultMap="professorResultMap">
+        SELECT
+            <include refid="professorColumns">
+                <property name="alias" value="p"/>
+                <property name="prefix" value="professor"/>
+            </include>,
+            <include refid="com.wequan.bu.repository.dao.SchoolMapper.schoolColumns">
+                <property name="alias" value="s"/>
+                <property name="prefix" value="school"/>
+            </include>,
+            <include refid="com.wequan.bu.repository.dao.DepartmentMapper.departmentColumns">
+                <property name="alias" value="d"/>
+                <property name="prefix" value="department"/>
+            </include>,
+            <include refid="com.wequan.bu.repository.dao.CourseMapper.courseColumns">
+                <property name="alias" value="c"/>
+                <property name="prefix" value="course"/>
+            </include>
+        FROM ${schema}.wq_professor_profile p
+        LEFT JOIN ${schema}.wq_school s on p.school_id = s.id
+        LEFT JOIN ${schema}.wq_department d on p.department_id = d.id
+        LEFT JOIN ${schema}.wq_professor_course pc on p.id = pc.professor_id
+        LEFT JOIN ${schema}.wq_course c on pc.course_id = c.id
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="professorResultMap">
+        SELECT
+            <include refid="professorColumns">
+                <property name="alias" value="p"/>
+                <property name="prefix" value="professor"/>
+            </include>,
+            <include refid="com.wequan.bu.repository.dao.SchoolMapper.schoolColumns">
+                <property name="alias" value="s"/>
+                <property name="prefix" value="school"/>
+            </include>,
+            <include refid="com.wequan.bu.repository.dao.DepartmentMapper.departmentColumns">
+                <property name="alias" value="d"/>
+                <property name="prefix" value="department"/>
+            </include>,
+            <include refid="com.wequan.bu.repository.dao.CourseMapper.courseColumns">
+                <property name="alias" value="c"/>
+                <property name="prefix" value="course"/>
+            </include>
+        FROM ${schema}.wq_professor_profile p
+        LEFT JOIN ${schema}.wq_school s on p.school_id = s.id
+        LEFT JOIN ${schema}.wq_department d on p.department_id = d.id
+        LEFT JOIN ${schema}.wq_professor_course pc on p.id = pc.professor_id
+        LEFT JOIN ${schema}.wq_course c on pc.course_id = c.id
+        WHERE p.id = #{id, jdbcType=INTEGER}
+    </select>
+
+    <select id="selectAllWithRateByName" resultMap="professorResultMap">
+        <bind name="name" value="name + '%'" />
+       WITH temp_table AS (
+            SELECT
+                <include refid="professorColumns">
+                    <property name="alias" value="p"/>
+                    <property name="prefix" value="professor"/>
+                </include>,
+                <include refid="com.wequan.bu.repository.dao.SchoolMapper.schoolColumns">
+                    <property name="alias" value="s"/>
+                    <property name="prefix" value="school"/>
+                </include>,
+                <include refid="com.wequan.bu.repository.dao.DepartmentMapper.departmentColumns">
+                    <property name="alias" value="d"/>
+                    <property name="prefix" value="department"/>
+                </include>,
+                <include refid="com.wequan.bu.repository.dao.CourseMapper.courseColumns">
+                    <property name="alias" value="c"/>
+                    <property name="prefix" value="course"/>
+                </include>,
+                <include refid="com.wequan.bu.repository.dao.ProfessorCourseRateMapper.professorCourseRateColumns">
+                    <property name="alias" value="pcr"/>
+                    <property name="prefix" value="professor_course_review"/>
+                </include>
+            FROM ${schema}.wq_professor_profile p
+            LEFT JOIN ${schema}.wq_school s on p.school_id = s.id
+            LEFT JOIN ${schema}.wq_department d on p.department_id = d.id
+            LEFT JOIN ${schema}.wq_professor_course pc on p.id = pc.professor_id
+            LEFT JOIN ${schema}.wq_course c on pc.course_id = c.id
+            LEFT JOIN ${schema}.wq_professor_course_review pcr on p.id = pcr.professor_id
+        )
+        SELECT *
+        FROM (
+        SELECT *,
+        ROW_NUMBER() OVER (PARTITION BY professor_id, professor_course_review_course_id) AS row_id
+        FROM temp_table
+        ) AS A
+        WHERE row_id &lt;= #{limit} AND ( professor_first_name ILIKE #{name} OR professor_last_name ILIKE #{name} )
+        ORDER BY professor_overall_score DESC
+    </select>
+
+    <select id="selectByCourseId" resultMap="professorResultMap" >
+        SELECT
+            <include refid="professorColumns">
+                <property name="alias" value="p"/>
+                <property name="prefix" value="professor"/>
+            </include>,
+            <include refid="com.wequan.bu.repository.dao.SchoolMapper.schoolColumns">
+                <property name="alias" value="s"/>
+                <property name="prefix" value="school"/>
+            </include>,
+            <include refid="com.wequan.bu.repository.dao.DepartmentMapper.departmentColumns">
+                <property name="alias" value="d"/>
+                <property name="prefix" value="department"/>
+            </include>
+        FROM ${schema}.wq_professor_profile p
+        INNER JOIN ${schema}.wq_professor_course pc ON pc.professor_id = p.id AND pc.course_id = #{id}
+        INNER JOIN ${schema}.wq_school s on p.school_id = s.id
+        INNER JOIN ${schema}.wq_department d on p.department_id = d.id
+    </select>
+
+    <select id="getCourseIds" resultType="java.lang.Integer">
+        SELECT pc.course_id
+        FROM ${schema}.wq_professor_course pc
+        WHERE pc.professor_id = #{id}
+    </select>
+
+    <select id="selectBaseInfoById" resultType="com.wequan.bu.controller.vo.ProfessorVo">
+        SELECT *
+        FROM ${schema}.wq_professor_profile p
+        WHERE p.id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.wequan.bu.controller.vo.ProfessorVo">
+        INSERT INTO ${schema}.wq_professor_profile(first_name, last_name, school_id, create_time, create_by, department_id)
+        VALUES(#{firstName}, #{lastName}, #{schoolId}, #{createTime}, #{createBy}, #{departmentId})
+    </insert>
+</mapper>

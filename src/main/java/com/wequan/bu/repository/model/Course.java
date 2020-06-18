@@ -1,15 +1,21 @@
 package com.wequan.bu.repository.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.util.List;
+
 /**
  * @author Zhaochao Huang
  */
-public class Course {
+@JsonIgnoreProperties("handler")
+public class Course{
     private Integer id;
     private String name;
-    private String code;
-    private String briefDescription;
-    private String department;
+    private String codeFirst;
+    private String codeSecond;
     private Integer schoolId;
+    private Integer categoryId;
+    private List<Professor> professors;
 
     public Integer getId() {
         return id;
@@ -27,28 +33,20 @@ public class Course {
         this.name = name;
     }
 
-    public String getCode() {
-        return code;
+    public String getCodeFirst() {
+        return codeFirst;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setCodeFirst(String codeFirst) {
+        this.codeFirst = codeFirst;
     }
 
-    public String getBriefDescription() {
-        return briefDescription;
+    public String getCodeSecond() {
+        return codeSecond;
     }
 
-    public void setBriefDescription(String briefDescription) {
-        this.briefDescription = briefDescription;
-    }
-
-    public String getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
+    public void setCodeSecond(String codeSecond) {
+        this.codeSecond = codeSecond;
     }
 
     public Integer getSchoolId() {
@@ -57,5 +55,21 @@ public class Course {
 
     public void setSchoolId(Integer schoolId) {
         this.schoolId = schoolId;
+    }
+
+    public List<Professor> getProfessors() {
+        return professors;
+    }
+
+    public void setProfessors(List<Professor> professors) {
+        this.professors = professors;
+    }
+
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
     }
 }

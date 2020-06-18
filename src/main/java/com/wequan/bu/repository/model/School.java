@@ -1,25 +1,19 @@
 package com.wequan.bu.repository.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.wequan.bu.json.CustomLocalDateTimeSerializer;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
 /**
  * @author Zhaochao Huang
  */
+@Data
 public class School {
-    private Integer id;
+    private Short id;
     private String name;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    private Integer createBy;
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+    private LocalDateTime createTime;
 }
