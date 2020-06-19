@@ -6,11 +6,13 @@ import com.wequan.bu.controller.vo.OnlineEvent;
 import com.wequan.bu.controller.vo.TutorReview;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
-import com.wequan.bu.exception.NotImplementedException;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.repository.model.extend.TutorRateInfo;
+import com.wequan.bu.repository.model.TutorViewHistory;
 import com.wequan.bu.service.TutorService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import sun.plugin2.message.Message;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author ChrisChen
@@ -36,8 +39,15 @@ public class TutorController {
 
     @GetMapping("/tutor/{id}")
     @ApiOperation(value = "Get tutor info", notes = "返回Tutor详情")
-    public Tutor getTutor(@RequestParam("id") Integer id) throws NotImplementedException {
-        throw new NotImplementedException();
+    public Result<Tutor> getTutor(@PathVariable("id") Integer tutorId) {
+        Tutor tutor = null;
+        return ResultGenerator.success(tutor);
+    }
+
+    @PutMapping("/tutor/{id}")
+    @ApiOperation(value = "modify tutor basic info", notes = "修改tutor基本信息")
+    public Result modifyTutorBasicInfo(@RequestBody Tutor tutor) {
+        return ResultGenerator.success();
     }
 
     @GetMapping("/tutors")
@@ -64,7 +74,7 @@ public class TutorController {
 
     @PostMapping("/tutor/{id}/review")
     @ApiOperation(value = "Review tutor", notes = "返回评价tutor成功与否")
-    public Result reviewTutor(@PathVariable("id") Integer id,
+    public Result reviewTutor(@PathVariable("id") Integer tutorId,
                               @RequestBody TutorReview tutorReview) {
 
         return ResultGenerator.success();
@@ -72,26 +82,43 @@ public class TutorController {
 
     @GetMapping("/tutor/{id}/appointments")
     @ApiOperation(value = "a list of tutor’s appointment", notes = "返回Tutor与用户的appointment列表")
-    public Result<List<Appointment>> getAppointments(@PathVariable("id") Integer id) {
+    public Result<List<Appointment>> getAppointments(@PathVariable("id") Integer tutorId) {
         List<Appointment> result = null;
         return ResultGenerator.success(result);
     }
 
     @GetMapping("/tutor/{id}/public_class")
     @ApiOperation(value = "a list of tutor’s public class", notes = "返回Tutor创建的public class列表")
-    public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer id) {
+    public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer tutorId) {
         List<OnlineEvent> result = null;
         return ResultGenerator.success(result);
     }
 
-//    @PostMapping("/tutor/apply")
-//    @ApiOperation(value = "a list of tutor’s appointment", notes = "返回Tutor与用户的appointment列表")
-//    public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer id) {
-//        List<OnlineEvent> result = null;
-//        return ResultGenerator.success(result);
-//    }
+    @GetMapping("/tutor/{id}/incoming_events")
+    @ApiOperation(value = "incoming events for tutor", notes = "返回Tutor邻近的事件")
+    public Result<Map<String, List<Object>>> getIncomingEvents(@PathVariable("id") Integer tutorId) {
+        Map<String, List<Object>> result = null;
+        return ResultGenerator.success(result);
+    }
 
+    @PutMapping("/tutor/{id}/availability")
+    @ApiOperation(value = "tutor change availability", notes = "返回Tutor改变能否辅导成功与否")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "action", value = "1 -> open; 0 -> close")
+    })
+    public Result changeAvailability(@PathVariable("id") Integer tutorId,
+                                     @RequestParam("action") Integer action) {
 
+        return ResultGenerator.success();
+    }
 
+    @GetMapping("/tutor/{id}/viewed_history")
+    @ApiOperation(value = "tutor viewed history", notes = "返回Tutor被查看历史，便于tutor分析用户")
+    public Result<List<TutorViewHistory>> changeAvailability(@PathVariable("id") Integer tutorId,
+                                                       @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                       @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<TutorViewHistory> tutorViewHistories = null;
+        return ResultGenerator.success(tutorViewHistories);
+    }
 
 }
