@@ -9,6 +9,7 @@ import com.wequan.bu.json.JSON;
 import com.wequan.bu.repository.model.Subject;
 import com.wequan.bu.repository.model.Topic;
 import com.wequan.bu.repository.model.TutorInquiry;
+import com.wequan.bu.repository.model.User;
 import com.wequan.bu.service.TutorInquiryService;
 import com.wequan.bu.util.TutorInquiryTool;
 import io.swagger.annotations.Api;
@@ -37,6 +38,7 @@ public class TutorInquiryController {
     private MessageHandler messageHandler;
 
     @GetMapping("/tutor_inquiries")
+    @JSON(type = User.class, include = {"id", "userName", "email", "avatar"})
     @JSON(type = TutorInquiry.class, filter = "subject")
     @JSON(type = Subject.class, filter = {"createBy","createTime"})
     @JSON(type = Topic.class, include = {"id", "name", "subjectId"})
@@ -50,6 +52,7 @@ public class TutorInquiryController {
     }
 
     @GetMapping("/tutor_inquiry/{id}")
+    @JSON(type = User.class, include = {"id", "userName", "email", "avatar"})
     @JSON(type = Subject.class, include = {"id", "name"})
     @JSON(type = Topic.class, include = {"id", "name", "subjectId"})
     @ApiOperation(value = "Tutor inquiry detail", notes = "返回Tutor inquiry详情")
