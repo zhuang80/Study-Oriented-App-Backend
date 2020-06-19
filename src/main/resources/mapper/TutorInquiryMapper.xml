@@ -14,13 +14,50 @@
         <association property="subject"
                      resultMap="com.wequan.bu.repository.dao.TutorInquiryMapper.subjectResultMap"
                      columnPrefix="subject_"/>
+        <collection property="topicList" ofType="com.wequan.bu.repository.model.Topic"
+                    resultMap="topicResultMap"
+                    columnPrefix="topic_" />
     </resultMap>
+
+    <resultMap id="baseLazyResultMap" type="com.wequan.bu.repository.model.TutorInquiry">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="brief_description" jdbcType="VARCHAR" property="briefDescription" />
+        <result column="online" jdbcType="BIT" property="online" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="status" jdbcType="SMALLINT" property="status" />
+        <result column="request_start_time" jdbcType="TIMESTAMP" property="requestStartTime" />
+        <result column="request_end_time" jdbcType="TIMESTAMP" property="requestEndTime" />
+        <result column="acceptable_pay_rate" jdbcType="REAL" property="acceptablePayRate" />
+        <association property="subject"
+                     resultMap="com.wequan.bu.repository.dao.TutorInquiryMapper.subjectResultMap"
+                     columnPrefix="subject_"/>
+        <collection property="topicList" ofType="com.wequan.bu.repository.model.Topic"
+                    select="selectTopic"
+                    column="id"/>
+    </resultMap>
+
     <resultMap id="subjectResultMap" type="com.wequan.bu.repository.model.Subject">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="name" jdbcType="VARCHAR" property="name" />
     </resultMap>
 
-    <select id="selectBySubject" resultMap="baseResultMap">
+    <resultMap id="topicResultMap" type="com.wequan.bu.repository.model.Topic">
+        <id property="id" jdbcType="INTEGER" column="id" />
+        <result property="name" jdbcType="VARCHAR" column="name" />
+        <result property="subjectId" jdbcType="INTEGER" column="subject_id" />
+    </resultMap>
+
+    <select id="selectTopic" resultMap="topicResultMap">
+        SELECT
+            t.id,
+            t.name,
+            t.subject_id
+        FROM ${schema}.wq_tutor_inquiry_topic tit
+        LEFT JOIN ${schema}.wq_topic t ON tit.topic_id = t.id
+        WHERE tit.tutor_inquiry_id = #{id}
+    </select>
+    <select id="selectBySubject" resultMap="baseLazyResultMap">
         SELECT
             ti.*,
             s.name subject_name
@@ -29,14 +66,40 @@
         <if test="subject_id != null">
             WHERE s.id = #{subject_id}
         </if>
+
+    </select>
+
+    <select id="selectPartPerSubject" resultMap="baseLazyResultMap">
+        WITH temp_table AS (
+            SELECT
+                ti.*,
+                s.name subject_name
+            FROM ${schema}.wq_tutor_inquiry ti
+            LEFT JOIN ${schema}.wq_subjects s ON s.id = ti.subject_id
+        )
+        SELECT *
+        FROM (
+            SELECT
+                *,
+                ROW_NUMBER() OVER (PARTITION BY subject_id ORDER BY subject_id) AS row_id
+            FROM temp_table
+        ) AS A
+        WHERE row_id &lt;= #{limit}
+
+
     </select>
 
     <select id="selectByPrimaryKey" resultMap="baseResultMap">
         SELECT
         ti.*,
-        s.name subject_name
+        s.name subject_name,
+        t.id topic_id,
+        t.name topic_name,
+        t.subject_id topic_subject_id
         FROM ${schema}.wq_tutor_inquiry ti
         LEFT JOIN ${schema}.wq_subjects s ON s.id = ti.subject_id
+        LEFT JOIN ${schema}.wq_tutor_inquiry_topic tit ON ti.id = tit.tutor_inquiry_id
+        LEFT JOIN ${schema}.wq_topic t ON tit.topic_id = t.id
         WHERE ti.id = #{id}
     </select>
 
