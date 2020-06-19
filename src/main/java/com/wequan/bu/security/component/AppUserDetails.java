@@ -3,13 +3,10 @@ package com.wequan.bu.security.component;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wequan.bu.repository.model.User;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * @author ChrisChen
@@ -35,14 +32,15 @@ public class AppUserDetails implements UserDetails {
     }
 
     public static AppUserDetails create(User user) {
-        List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+//        List<GrantedAuthority> authorities = user.getRoles().stream()
+//                .map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
         return new AppUserDetails(
                 user.getId(),
-                user.getNickname(),
+                user.getUserName(),
                 user.getEmail(),
                 user.getCredential(),
-                authorities
+//                authorities
+                null
         );
     }
 

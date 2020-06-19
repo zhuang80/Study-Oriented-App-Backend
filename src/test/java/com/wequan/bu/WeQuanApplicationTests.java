@@ -18,7 +18,7 @@ class WeQuanApplicationTests extends BaseTester {
 	@Test
 	void eventTest() {
 		StudyPointHistory pointHistory = new StudyPointHistory();
-		pointHistory.setAmount(-100);
+		pointHistory.setChangeAmount(-100);
 		StudyPointEvent studyPointEvent = new StudyPointEvent(pointHistory);
 		applicationContext.publishEvent(studyPointEvent);
 	}

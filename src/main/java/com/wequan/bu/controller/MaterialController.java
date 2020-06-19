@@ -8,6 +8,8 @@ import com.wequan.bu.repository.model.Material;
 import com.wequan.bu.service.MaterialService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,13 +45,6 @@ public class MaterialController {
 //        System.out.println("================================> Send response back to client. ");
 //        return "success";
 //    }
-
-    @GetMapping("/materials/upload/list")
-    @ApiOperation(value="a list of materials user uploaded", notes="返回用户上传资料的列表")
-    public Result<List<Material>> getUploadMaterials(@RequestParam("userId") Integer userId) {
-        List<Material> result = null;
-        return ResultGenerator.success(result);
-    }
 
     @GetMapping("/material/{id}")
     @ApiOperation(value = "material detail", notes="根据material id获取课程资料详情")
@@ -87,10 +82,23 @@ public class MaterialController {
     }
 
     @GetMapping("/materials/unlock/list")
-    @ApiOperation(value = "a list of user's unlock materials", notes = "返回用户解锁成功的material列表")
-    public Result<Material> unlockMaterial(@RequestParam("userId") Integer userId) {
-        Result<Material> result = null;
-        return result;
+    @ApiOperation(value = "a list of user's unlock materials", notes = "返回用户解锁成功的资料列表")
+    @ApiResponses(
+            @ApiResponse(code = 200, message = "a list of cards describing a course material (title, material type, upload date, # of likes, # of views)")
+    )
+    public Result<List<Material>> unlockMaterial(@RequestParam("userId") Integer userId) {
+        List<Material> materials = null;
+        return ResultGenerator.success(materials);
+    }
+
+    @GetMapping("/materials/upload/list")
+    @ApiOperation(value = "a list of user's upload materials", notes = "返回用户上传资料的列表")
+    @ApiResponses(
+            @ApiResponse(code = 200, message = "a list of cards describing a course material (title, material type, upload date, # of likes, # of views)")
+    )
+    public Result<List<Material>> uploadMaterial(@RequestParam("userId") Integer userId) {
+        List<Material> materials = null;
+        return ResultGenerator.success(materials);
     }
 
     @PostMapping("/material/report")
