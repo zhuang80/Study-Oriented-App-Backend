@@ -1,5 +1,6 @@
 package com.wequan.bu.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.wequan.bu.controller.vo.TutorInquiryVo;
 import com.wequan.bu.repository.dao.TutorInquiryMapper;
 import com.wequan.bu.repository.model.TutorInquiry;
@@ -26,8 +27,24 @@ public class TutorInquiryServiceImpl extends AbstractService<TutorInquiry> imple
 
 
     @Override
-    public List<TutorInquiry> findBySubject(Integer subjectId) {
-        return tutorInquiryMapper.selectBySubject(subjectId);
+    public List<TutorInquiry> findBySubject(Integer subjectId, Integer pageNum, Integer pageSize) {
+        //the limit indicates how many tutor inquiries displayed under each subject
+        Integer limit = 4;
+        if(pageNum == null || pageNum <= 0 ) {
+            pageNum = 1;
+        }
+        if(pageSize == null || pageSize <= 0){
+            pageSize = 10;
+        }
+        PageHelper.startPage(pageNum, pageSize);
+        List<TutorInquiry> tutorInquiryList;
+        if(subjectId == null){
+            tutorInquiryList = tutorInquiryMapper.selectPartPerSubject(limit);
+        }else {
+            tutorInquiryList = tutorInquiryMapper.selectBySubject(subjectId);
+        }
+
+        return tutorInquiryList;
     }
 
     @Override

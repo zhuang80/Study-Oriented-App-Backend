@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface TutorInquiryService extends Service<TutorInquiry> {
 
-    List<TutorInquiry> findBySubject(Integer subjectId);
+    List<TutorInquiry> findBySubject(Integer subjectId, Integer pageNum, Integer pageSize);
 
     void save(TutorInquiryVo tutorInquiry);
 }
