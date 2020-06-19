@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wequan.bu.repository.dao.TutorInquiryMapper">
-    <resultMap id="baseResultMap" type="com.wequan.bu.repository.model.TutorInquiry">
-        <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="brief_description" jdbcType="VARCHAR" property="briefDescription" />
-        <result column="online" jdbcType="BIT" property="online" />
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-        <result column="status" jdbcType="SMALLINT" property="status" />
-        <result column="request_start_time" jdbcType="TIMESTAMP" property="requestStartTime" />
-        <result column="request_end_time" jdbcType="TIMESTAMP" property="requestEndTime" />
-        <result column="acceptable_pay_rate" jdbcType="REAL" property="acceptablePayRate" />
-        <association property="subject"
-                     resultMap="com.wequan.bu.repository.dao.TutorInquiryMapper.subjectResultMap"
-                     columnPrefix="subject_"/>
-        <collection property="topicList" ofType="com.wequan.bu.repository.model.Topic"
-                    resultMap="topicResultMap"
-                    columnPrefix="topic_" />
-    </resultMap>
-
     <resultMap id="baseLazyResultMap" type="com.wequan.bu.repository.model.TutorInquiry">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="brief_description" jdbcType="VARCHAR" property="briefDescription" />
@@ -32,6 +14,9 @@
         <association property="subject"
                      resultMap="com.wequan.bu.repository.dao.TutorInquiryMapper.subjectResultMap"
                      columnPrefix="subject_"/>
+        <association property="createBy"
+                     column="create_by"
+                     select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey" />
         <collection property="topicList" ofType="com.wequan.bu.repository.model.Topic"
                     select="selectTopic"
                     column="id"/>
@@ -89,7 +74,7 @@
 
     </select>
 
-    <select id="selectByPrimaryKey" resultMap="baseResultMap">
+    <select id="selectByPrimaryKey" resultMap="baseLazyResultMap">
         SELECT
         ti.*,
         s.name subject_name,
