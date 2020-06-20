@@ -1,6 +1,7 @@
 package com.wequan.bu.repository.dao;
 
 import com.wequan.bu.repository.model.Tutor;
+import com.wequan.bu.repository.model.TutorViewHistory;
 import com.wequan.bu.repository.model.extend.TutorRateInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -26,4 +27,6 @@ public interface TutorMapper extends GeneralMapper<Tutor> {
     List<Tutor> selectTutors(@Param("subject_id") Integer subjectId);
 
     List<TutorRateInfo> selectTopTutors(@Param("subject_id") Integer subjectId);
+
+    List<TutorViewHistory> selectViewHistoryByTutorId(@Param("tutor_id") Integer tutorId);
 }

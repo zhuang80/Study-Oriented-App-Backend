@@ -12,7 +12,6 @@ import java.util.List;
  */
 @Data
 public class TutorRateInfo extends Tutor {
-    private School school;
     private Double score;
     private List<Subject> subjectList;
 }

@@ -36,10 +36,15 @@ public class TutorController {
     @Autowired
     private MessageHandler messageHandler;
 
+
     @GetMapping("/tutor/{id}")
     @ApiOperation(value = "Get tutor info", notes = "返回Tutor详情")
     public Result<Tutor> getTutor(@PathVariable("id") Integer tutorId) {
-        Tutor tutor = null;
+        if( tutorId < 0 ){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
+        Tutor tutor = tutorService.findById(tutorId);
         return ResultGenerator.success(tutor);
     }
 
@@ -54,7 +59,7 @@ public class TutorController {
     public Result<List<Tutor>> getTutors(@RequestParam(value = "subjectId", required = false) Integer subjectId,
                                          @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                          @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<Tutor> tutors = tutorService.findTutors(subjectId);
+        List<Tutor> tutors = tutorService.findTutors(subjectId, pageNum, pageSize);
         return ResultGenerator.success(tutors);
     }
 
@@ -67,7 +72,7 @@ public class TutorController {
             String message = messageHandler.getFailResponseMessage("40008");
             return ResultGenerator.fail(message);
         }
-        List<TutorRateInfo> result = tutorService.findTopTutors(subjectId);
+        List<TutorRateInfo> result = tutorService.findTopTutors(subjectId, pageNum, pageSize);
         return ResultGenerator.success(result);
     }
 
@@ -88,8 +93,8 @@ public class TutorController {
 
     @GetMapping("/tutor/{id}/public_class")
     @ApiOperation(value = "a list of tutor’s public class", notes = "返回Tutor创建的public class列表")
-    public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer tutorId) {
-        List<OnlineEvent> result = null;
+    public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer userId) {
+        List<OnlineEvent> result = tutorService.findOnlineEventByUserId(userId);
         return ResultGenerator.success(result);
     }
 
@@ -116,7 +121,11 @@ public class TutorController {
     public Result<List<TutorViewHistory>> changeAvailability(@PathVariable("id") Integer tutorId,
                                                        @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                        @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<TutorViewHistory> tutorViewHistories = null;
+        if( tutorId < 0 ){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
+        List<TutorViewHistory> tutorViewHistories = tutorService.findViewHistoryByTutorId(tutorId, pageNum, pageSize);
         return ResultGenerator.success(tutorViewHistories);
     }
 
