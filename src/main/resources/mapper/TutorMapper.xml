@@ -1,86 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wequan.bu.repository.dao.TutorMapper">
-  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.Tutor">
-    <id column="id" jdbcType="INTEGER" property="id" />
-      <result column="brief_introduction" jdbcType="VARCHAR" property="briefIntroduction"/>
-   <!-- <association property="user" column="{id=user_id}" select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey"/> -->
-  </resultMap>
-
-  <resultMap id="TutorMapper" type="com.wequan.bu.repository.model.Tutor">
-    <id column="professor_id" jdbcType="INTEGER" property="id"/>
-    <result column="brief_introduction" jdbcType="VARCHAR" property="briefIntroduction"/>
-    <result column="resume_path" jdbcType="VARCHAR" property="resumePath"/>
-    <result column="transcript_path" jdbcType="VARCHAR" property="transcriptPath"/>
-    <result column="other_proof_path" jdbcType="VARCHAR" property="otherProofPath"/>
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
-  </resultMap>
-
-    <!-- created by Zhaochao Huang -->
+    
     <resultMap id="TutorRateResultMap" type="com.wequan.bu.repository.model.extend.TutorRateInfo">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="brief_introduction" jdbcType="VARCHAR" property="briefIntroduction" />
-        <result column="resume_path" jdbcType="VARCHAR" property="resumePath" />
-        <result column="transcript_path" jdbcType="VARCHAR" property="transcriptPath" />
-        <result column="other_proof_path" jdbcType="VARCHAR" property="otherProofPath" />
-        <result column="current_degree_id" jdbcType="SMALLINT" property="currentDegreeId" />
-        <result column="current_location" jdbcType="VARCHAR" property="currentLocation" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-        <result column="pay_rate" jdbcType="REAL" property="payRate" />
         <result column="status" jdbcType="SMALLINT" property="status" />
         <result column="late_policy_id" jdbcType="SMALLINT" property="latePolicyId" />
         <result column="cancellation_policy_id" jdbcType="SMALLINT" property="cancellationPolicyId" />
         <result column="tutor_available" jdbcType="BIT" property="tutorAvailable" />
-        <result column="score" jdbcType="REAL" property="score" />
-        <association column="current_school_id"
-                     property="school"
-                     select="com.wequan.bu.repository.dao.SchoolMapper.selectByPrimaryKey"/>
-        <collection property="subjectList" ofType="com.wequan.bu.repository.model.Subject">
-            <id property="id" jdbcType="INTEGER" column="subject_id" />
-            <result property="name" jdbcType="VARCHAR" column="subject_name" />
-        </collection>
+        <result column="tutor_application_id" jdbcType="INTEGER" property="tutorApplicationId" />
+        <result column="current_city" jdbcType="VARCHAR" property="currentCity" />
+        <result column="current_state" jdbcType="VARCHAR" property="currentState" />
+        <result column="teach_method" jdbcType="VARCHAR" property="teachMethod" />
+        <result column="hourly_rate" jdbcType="REAL" property="hourlyRate" />
+        <association property="user"
+                     column="user_id"
+                     select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey" />
     </resultMap>
-  <select id="selectAll" resultMap="BaseResultMap">
-    select *
-    from ${schema}.wq_tutor_profile
-  </select>
 
-    <select id="selectByConditions" resultMap="BaseResultMap">
-        select * from ${schema}.wq_tutor_profile
-        <if test="where != null and where != ''">
-            where ${where}
-        </if>
-        <if test="orderBy != null and orderBy != ''">
-            order by ${orderBy}
-        </if>
-    </select>
+    <resultMap id="ViewHistoryResultMap" type="com.wequan.bu.repository.model.TutorViewHistory">
+        <id property="id" jdbcType="INTEGER" column="id" />
+        <result property="userId" jdbcType="INTEGER" column="user_id" />
+        <result property="tutorId" jdbcType="INTEGER" column="tutor_id" />
+        <result property="viewTime" jdbcType="TIMESTAMP" column="view_time" />
+    </resultMap>
 
     <select id="selectTutors" resultMap="TutorRateResultMap">
         WITH temp_rate AS(
-        SELECT
-        tutor_id,
-        AVG(rating) as score
-        FROM ${schema}.wq_tutor_review
-        GROUP BY tutor_id
+            SELECT
+            tutor_id,
+            AVG(rating) as score
+            FROM ${schema}.wq_tutor_review
+            GROUP BY tutor_id
         )
 
         SELECT
-        tp.*,
-        tr.score,
-        s.id as subject_id,
-        s.name as subject_name
+            tp.*,
+            tr.score
         FROM ${schema}.wq_tutor_profile tp
         LEFT JOIN temp_rate tr on tr.tutor_id = tp.id
         LEFT JOIN ${schema}.wq_tutor_subject ts on tp.id = ts.tutor_id
-        LEFT JOIN ${schema}.wq_subjects s on s.id = ts.subject_id
         <if test="subject_id != null">
-            WHERE s.id = #{subject_id}
+            WHERE ts.subject_id = #{subject_id}
         </if>
         ORDER BY score DESC, tp.create_time DESC
     </select>
 
-    <!-- created by Zhaochao Huang, find the top tutors associated rate, school info-->
     <select id="selectTopTutors" resultMap="TutorRateResultMap">
         WITH temp_rate AS(
             SELECT
@@ -92,16 +60,25 @@
 
         SELECT
             tp.*,
-            tr.score,
-            s.id as subject_id,
-            s.name as subject_name
+            tr.score
         FROM ${schema}.wq_tutor_profile tp
         LEFT JOIN temp_rate tr on tr.tutor_id = tp.id
         LEFT JOIN ${schema}.wq_tutor_subject ts on tp.id = ts.tutor_id
-        LEFT JOIN ${schema}.wq_subjects s on s.id = ts.subject_id
         <if test="subject_id != null">
-            WHERE s.id = #{subject_id}
+            WHERE ts.subject_id = #{subject_id}
         </if>
         ORDER BY score DESC
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="TutorRateResultMap">
+        SELECT *
+        FROM ${schema}.wq_tutor_profile tp
+        WHERE tp.id = #{id, jdbcType=INTEGER}
+    </select>
+
+    <select id="selectViewHistoryByTutorId" resultMap="ViewHistoryResultMap">
+        SELECT *
+        FROM ${schema}.wq_tutor_view_history tvh
+        WHERE tvh.tutor_id = #{tutor_id}
     </select>
 </mapper>

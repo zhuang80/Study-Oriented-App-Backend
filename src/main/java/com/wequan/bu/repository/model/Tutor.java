@@ -13,17 +13,15 @@ public class Tutor {
     private Integer id;
     private User user;
     private String briefIntroduction;
-    private String resumePath;
-    private String transcriptPath;
-    private String otherProofPath;
-    private Integer currentSchoolId;
-    private Integer currentDegreeId;
-    private String currentLocation;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-    private Double payRate;
-    private String status;
-    private Integer latePolicyId;
-    private Integer cancellationPolicyId;
+    private Short status;
+    private Short latePolicyId;
+    private Short cancellationPolicyId;
     private Boolean tutorAvailable;
+    private Integer tutorApplicationId;
+    private String currentCity;
+    private String currentState;
+    private String teachMethod;
+    private Float hourlyRate;
 }
