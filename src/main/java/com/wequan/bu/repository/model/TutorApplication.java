@@ -1,6 +1,8 @@
 package com.wequan.bu.repository.model;
 
 import java.time.LocalDateTime;
+
+import com.wequan.bu.controller.vo.TutorApplicationVo;
 import lombok.Data;
 
 /**
@@ -41,4 +43,16 @@ public class TutorApplication {
      *   resumes, transcripts, etc文件id，关联support_material(id)，多个id用逗号连接，如1,2,3
      */
     private String supportMaterialIds;
+
+    public TutorApplication(TutorApplicationVo t){
+        this.userId = t.getUserId();
+        this.briefIntroduction = t.getBriefIntroduction();
+        this.currentCity = t.getCurrentCity();
+        this.currentState = t.getCurrentState();
+        this.teachMethod = t.getTeachMethod();
+        this.hourlyRate = t.getHourlyRate();
+        this.latePolicyId = t.getLatePolicyId();
+        this.cancellationPolicyId = t.getCancellationPolicyId();
+        this.subjectTopicsIds = t.getSubjectTopicsIds();
+    }
 }

@@ -2,6 +2,7 @@ package com.wequan.bu.service;
 
 import com.wequan.bu.controller.vo.MultipartFileWrapper;
 import com.wequan.bu.repository.model.Material;
+import io.swagger.models.auth.In;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -40,6 +41,6 @@ public interface MaterialService extends Service<Material> {
      */
     public List<Material> findByCourseIdAndProfessorId(Integer c_id, Integer p_id, Integer pageNum, Integer pageSize);
 
-    public void uploadSupportMaterial(MultipartFileWrapper files, String basePath) throws IOException;
+    public List<Integer> uploadSupportMaterial(MultipartFileWrapper files, String basePath) throws IOException;
 
 }
