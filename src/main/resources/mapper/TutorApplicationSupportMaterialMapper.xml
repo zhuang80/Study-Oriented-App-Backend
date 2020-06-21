@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.TutorApplicationSupportMaterialMapper">
+    <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.TutorApplicationSupportMaterial">
+        <selectKey resultType="int" order="AFTER" keyProperty="id">
+            SELECT currval('bu.wq_tutor_application_support_material_id_seq'::regclass) AS id
+        </selectKey>
+        INSERT INTO ${schema}.wq_tutor_application_support_material(type, store_path, file_type, file_name, upload_by, upload_time, source_from, source_external_link, uuid)
+        VALUES(#{type}, #{storePath}, #{fileType}, #{fileName}, #{uploadBy}, #{uploadTime}, #{sourceFrom}, #{sourceExternalLink}, #{uuid})
+    </insert>
+</mapper>

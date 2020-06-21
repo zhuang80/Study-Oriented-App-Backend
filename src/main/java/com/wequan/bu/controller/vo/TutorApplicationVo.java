@@ -1,44 +1,37 @@
-package com.wequan.bu.repository.model;
+package com.wequan.bu.controller.vo;
+
+import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import lombok.Data;
 
-/**
- * @author Zhaochao Huang
- */
 @Data
-public class TutorApplication {
+public class TutorApplicationVo {
     private Integer id;
     private Integer userId;
     private String briefIntroduction;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-    /**
-     * Database Column Remarks:
-     *   0, default with apply; 1, checker pass; -1,  checker reject; -2, user delete
-     */
-    private Short status;
     private String currentCity;
     private String currentState;
     private String teachMethod;
     private Float hourlyRate;
     private Short latePolicyId;
     private Short cancellationPolicyId;
+
+    private MultipartFile[] resumes;
+    private MultipartFile[] transcripts;
+    private MultipartFile[] others;
     /**
      * Database Column Remarks:
      *   关联education_background(id)，多个id用逗号连接，如1,2,3
      */
-    private String educationBackgroundIds;
-
+  //  private String educationBackgroundIds;
     /**
      * Database Column Remarks:
      *   关联subject_topics(id)，多个id用逗号连接，如1,2,3
      */
-    private String subjectTopicsIds;
+   // private String subjectTopicsIds;
 
-    /**
-     * Database Column Remarks:
-     *   resumes, transcripts, etc文件id，关联support_material(id)，多个id用逗号连接，如1,2,3
-     */
-    private String supportMaterialIds;
+
 }

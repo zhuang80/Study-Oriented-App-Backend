@@ -60,6 +60,7 @@ public class StorageServiceImpl implements StorageService {
             s3.putObject(request, body);
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            return false;
         }
         return true;
     }
@@ -76,6 +77,13 @@ public class StorageServiceImpl implements StorageService {
         long len = buffer.length;
         PutObjectRequest request = getPutObjectRequest(key);
         RequestBody body = RequestBody.fromInputStream(is, len);
+        return upload(request, body);
+    }
+
+    @Override
+    public boolean uploadFile(String key, File file) {
+        PutObjectRequest request = getPutObjectRequest(key);
+        RequestBody body = RequestBody.fromFile(file);
         return upload(request, body);
     }
 
