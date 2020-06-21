@@ -26,12 +26,12 @@ public class TutorApplicationVo {
      * Database Column Remarks:
      *   关联education_background(id)，多个id用逗号连接，如1,2,3
      */
-  //  private String educationBackgroundIds;
+    private String educationBackgroundIds;
     /**
      * Database Column Remarks:
      *   关联subject_topics(id)，多个id用逗号连接，如1,2,3
      */
-   // private String subjectTopicsIds;
+    private String subjectTopicsIds;
 
 
 }

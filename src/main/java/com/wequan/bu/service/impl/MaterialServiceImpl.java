@@ -135,7 +135,8 @@ public class MaterialServiceImpl extends AbstractService<Material> implements Ma
     }
 
     @Override
-    public void uploadSupportMaterial(MultipartFileWrapper filesWrapper, String basePath) throws IOException {
+    public List<Integer> uploadSupportMaterial(MultipartFileWrapper filesWrapper, String basePath) throws IOException {
+        List<Integer> idList = new ArrayList<>();
         String path = "application/";
         String key;
         File tempFile = null;
@@ -160,6 +161,7 @@ public class MaterialServiceImpl extends AbstractService<Material> implements Ma
                     System.out.println("============================================= before id: " + material.getId());
                     supportMaterialMapper.insertSelective(material);
                     System.out.println("============================================= id: " + material.getId());
+                    idList.add(material.getId());
                 }
             }catch (Exception e){
                 System.out.println(e.getMessage());
@@ -173,5 +175,6 @@ public class MaterialServiceImpl extends AbstractService<Material> implements Ma
                 }
             }
         }
+        return idList;
     }
 }
