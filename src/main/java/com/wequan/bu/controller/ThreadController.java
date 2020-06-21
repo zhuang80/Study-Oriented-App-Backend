@@ -1,10 +1,11 @@
 package com.wequan.bu.controller;
 
-import com.wequan.bu.controller.vo.Thread;
+import com.wequan.bu.repository.model.Thread;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.ThreadStream;
 import com.wequan.bu.repository.model.ThreadUserSelectedSubjects;
+import com.wequan.bu.service.ThreadService;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ public class ThreadController {
 
     private static final Logger log = LoggerFactory.getLogger(ThreadController.class);
 
+    private ThreadService threadService;
 
     @GetMapping("/thread/myschool/top")
     @ApiOperation(value = "a list of top thread for user's school", notes = "根据school id获取thread列表，按查看次数排序")
@@ -50,7 +52,7 @@ public class ThreadController {
                                                           @RequestParam("tagId") Integer tagId,
                                                           @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                           @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<Thread> result = null;
+        List<Thread> result = threadService.findBySchoolAndTag(schoolId,tagId);
         return ResultGenerator.success(result);
     }
 
@@ -61,7 +63,7 @@ public class ThreadController {
                     "# of dislikes, # of replies, # of views, status, study points reward")
     )
     public Result<Thread> getThread(@PathVariable("id") Integer threadId) {
-        Thread result = null;
+        Thread result = threadService.findByPrimaryKey(threadId);
         return ResultGenerator.success(result);
     }
 
@@ -74,7 +76,7 @@ public class ThreadController {
     public Result<List<ThreadStream>> getThreadDirectReplies(@PathVariable("id") Integer threadId,
                                                              @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<ThreadStream> result = null;
+        List<ThreadStream> result = threadService.getThreadReplies(threadId);
         return ResultGenerator.success(result);
     }
 
@@ -86,15 +88,17 @@ public class ThreadController {
     public Result<List<ThreadStream>> getThreadIndirectReplies(@PathVariable("id") Integer threadId,
                                                                @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                                @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<ThreadStream> result = null;
+        List<ThreadStream> result = threadService.getThreadReplies(threadId);;
         return ResultGenerator.success(result);
     }
 
     @PostMapping("/thread")
     @ApiOperation(value = "add thread", notes = "返回创建帖子成功与否")
     public Result addThread(@RequestBody Thread thread) {
-
-        return ResultGenerator.success();
+        if(threadService.insert(thread)>0){
+            return ResultGenerator.success();
+        }
+        return null;
     }
 
     @PostMapping("/thread/reply")
@@ -123,28 +127,49 @@ public class ThreadController {
         return result;
     }
 
+    /**
+     * 6/19
+     * @param threadId
+     * @param userId
+     * @return
+     */
     @PostMapping("/thread/like")
     @ApiOperation(value = "like thread", notes = "对帖子点赞")
     public Result likeThread(@RequestParam("threadId") Integer threadId,
                              @RequestParam("userId") Integer userId) {
+        threadService.likeThread(threadId,userId);
         Result result = ResultGenerator.success();
         return result;
     }
 
+    /**
+     * 6/19
+     * @param threadId
+     * @param userId
+     * @return
+     */
     @PostMapping("/thread/dislike")
     @ApiOperation(value = "dislike thread", notes = "对帖子拍砖")
     public Result dislikeThread(@RequestParam("threadId") Integer threadId,
                                 @RequestParam("userId") Integer userId) {
+        threadService.dislikeThread(threadId,userId);
         Result result = ResultGenerator.success();
         return result;
     }
 
+    /**
+     * 6/20
+     * @param threadId
+     * @param replyId
+     * @param userId
+     * @return
+     */
     @PostMapping("/thread/reply/like")
     @ApiOperation(value = "like the reply of thread", notes = "对帖子回复点赞")
     public Result likeThreadReply(@RequestParam("threadId") Integer threadId,
                                   @RequestParam("replyId") Integer replyId,
                                   @RequestParam("userId") Integer userId) {
-
+        threadService.likeReplyOfThread(threadId,replyId,userId);
         Result result = ResultGenerator.success();
         return result;
     }
@@ -154,6 +179,7 @@ public class ThreadController {
     public Result dislikeThreadReply(@RequestParam("threadId") Integer threadId,
                                      @RequestParam("replyId") Integer replyId,
                                      @RequestParam("userId") Integer userId) {
+        threadService.dislikeReplyOfThread(threadId,replyId,userId);
         Result result = ResultGenerator.success();
         return result;
     }
@@ -187,6 +213,7 @@ public class ThreadController {
     @GetMapping("/thread/study_help/subjects")
     @ApiOperation(value = "a list of user interested subjects", notes = "根据user id获取之前感兴趣的科目列表")
     public Result<ThreadUserSelectedSubjects> getUserSelectedSubjects(@RequestParam("userId") Integer userId) {
+
         ThreadUserSelectedSubjects result = null;
         return ResultGenerator.success(result);
     }
