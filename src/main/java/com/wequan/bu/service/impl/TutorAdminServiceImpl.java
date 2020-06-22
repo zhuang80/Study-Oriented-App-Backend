@@ -117,8 +117,18 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
     public void approve(Integer id) {
         TutorApplication tutorApplication = tutorApplicationMapper.selectByPrimaryKey(id);
         tutorApplication.setStatus((short) 1);
+        tutorApplication.setUpdateTime(LocalDateTime.now());
         tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
         tutorService.approveTutorApplication(tutorApplication);
+    }
+
+    @Override
+    public void disapprove(Integer id){
+        TutorApplication tutorApplication = new TutorApplication();
+        tutorApplication.setId(id);
+        tutorApplication.setStatus((short) -1);
+        tutorApplication.setUpdateTime(LocalDateTime.now());
+        tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
     }
 
     private UploadFileWrapper transferAndWrap(MultipartFile[] multipartFiles, short type, Integer userId) throws IOException {

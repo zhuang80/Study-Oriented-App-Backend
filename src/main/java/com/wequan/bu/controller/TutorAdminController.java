@@ -88,4 +88,12 @@ public class TutorAdminController {
         tutorAdminService.approve(id);
         return ResultGenerator.success();
     }
+
+    @PutMapping("/tutor_application/{id}/disapprove")
+    @ResponseBody
+    @ApiOperation(value = "disapprove the tutor application", notes = "管理员审核tutor申请信息和文件资料后，不批准申请")
+    public Result disapproveTutorApplication(@PathVariable("id") Integer id){
+        tutorAdminService.disapprove(id);
+        return ResultGenerator.success();
+    }
 }
