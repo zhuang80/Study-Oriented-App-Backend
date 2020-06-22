@@ -4,7 +4,7 @@ import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.controller.vo.Condition;
 import com.wequan.bu.controller.vo.DiscussionGroup;
 import com.wequan.bu.controller.vo.OnlineEvent;
-import com.wequan.bu.controller.vo.TutorInquiry;
+import com.wequan.bu.controller.vo.TutorInquiryVo;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.Course;
@@ -61,7 +61,7 @@ public class SearchController {
     @PostMapping("/tutor_inquiry")
     @ApiOperation(value = "Search tutor inquiry with condition", notes = "返回Tutor inquires列表，根据subject分组，按时间倒序")
     @ApiModelProperty(value="condition", notes = "筛选条件json串")
-    public Result<List<TutorInquiry>> searchTutorInquiry(@RequestBody Condition condition) {
+    public Result<List<TutorInquiryVo>> searchTutorInquiry(@RequestBody Condition condition) {
 
         return null;
     }

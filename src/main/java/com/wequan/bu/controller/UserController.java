@@ -92,10 +92,10 @@ public class UserController {
 
     @GetMapping("/user/{id}/tutor_inquiries")
     @ApiOperation(value = "a list of user’s tutor inquiry", notes = "返回用户的tutor inquiry列表")
-    public Result<List<TutorInquiry>> getTutorInquiries(@PathVariable("id") Integer userId,
-                                                        @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                                        @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<TutorInquiry> result = null;
+    public Result<List<TutorInquiryVo>> getTutorInquiries(@PathVariable("id") Integer userId,
+                                                          @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                          @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<TutorInquiryVo> result = null;
         return ResultGenerator.success(result);
     }
 

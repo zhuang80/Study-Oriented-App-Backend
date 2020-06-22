@@ -14,6 +14,8 @@ public interface StorageService {
 
     boolean uploadBufferedImage(String key, BufferedImage image);
 
+    boolean uploadFile(String key, File file);
+
     /**
      * Download
      */

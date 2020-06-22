@@ -1,7 +1,12 @@
 package com.wequan.bu.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.wequan.bu.controller.vo.OnlineEvent;
+import com.wequan.bu.repository.dao.OnlineEvenMapper;
 import com.wequan.bu.repository.dao.TutorMapper;
 import com.wequan.bu.repository.model.Tutor;
+import com.wequan.bu.repository.model.TutorViewHistory;
+import com.wequan.bu.repository.model.extend.TutorRateInfo;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.TutorService;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +31,9 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
     @Autowired
     private TutorMapper tutorMapper;
 
+    @Autowired
+    private OnlineEvenMapper onlineEvenMapper;
+
     @PostConstruct
     public void postConstruct() {
         this.setMapper(tutorMapper);
@@ -44,8 +52,44 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
         return tutors;
     }
     @Override
-    public List<Tutor> findTutors(Integer subjectId) {
+    public List<Tutor> findTutors(Integer subjectId, Integer pageNum, Integer pageSize) {
+        if(pageNum == null || pageNum <= 0 ) {
+            pageNum = 1;
+        }
+        if(pageSize == null || pageSize <= 0){
+            pageSize = 10;
+        }
+        PageHelper.startPage(pageNum, pageSize);
         return tutorMapper.selectTutors(subjectId);
+    }
+
+    @Override
+    public List<TutorRateInfo> findTopTutors(Integer subjectId, Integer pageNum, Integer pageSize) {
+        if(pageNum == null || pageNum <= 0 ) {
+            pageNum = 1;
+        }
+        if(pageSize == null || pageSize <= 0){
+            pageSize = 10;
+        }
+        PageHelper.startPage(pageNum, pageSize);
+        return tutorMapper.selectTopTutors(subjectId);
+    }
+
+    @Override
+    public List<TutorViewHistory> findViewHistoryByTutorId(Integer tutorId, Integer pageNum, Integer pageSize) {
+        if(pageNum == null || pageNum <= 0 ) {
+            pageNum = 1;
+        }
+        if(pageSize == null || pageSize <= 0){
+            pageSize = 10;
+        }
+        PageHelper.startPage(pageNum, pageSize);
+        return tutorMapper.selectViewHistoryByTutorId(tutorId);
+    }
+
+    @Override
+    public List<OnlineEvent> findOnlineEventByUserId(Integer userId) {
+        return onlineEvenMapper.selectByUserId(userId);
     }
 
 }
