@@ -52,7 +52,7 @@ public class ThreadController {
                                                           @RequestParam("tagId") Integer tagId,
                                                           @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                           @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<Thread> result = threadService.findBySchoolAndTag(schoolId,tagId);
+        List<Thread> result = threadService.findBySchoolAndTag(schoolId,tagId, pageNum, pageSize);
         return ResultGenerator.success(result);
     }
 
@@ -76,10 +76,17 @@ public class ThreadController {
     public Result<List<ThreadStream>> getThreadDirectReplies(@PathVariable("id") Integer threadId,
                                                              @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<ThreadStream> result = threadService.getThreadReplies(threadId);
+        List<ThreadStream> result = threadService.getDirectThreadReplies(threadId, pageNum, pageSize);
         return ResultGenerator.success(result);
     }
 
+    /**
+     * 6/22
+     * @param threadId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @GetMapping("/thread/{id}/indirect_replies")
     @ApiOperation(value = "a list of indirect replies to the thread", notes = "返回第二层（间接回复帖子的）回帖列表")
     @ApiResponses(
@@ -88,7 +95,7 @@ public class ThreadController {
     public Result<List<ThreadStream>> getThreadIndirectReplies(@PathVariable("id") Integer threadId,
                                                                @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                                @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<ThreadStream> result = threadService.getThreadReplies(threadId);;
+        List<ThreadStream> result = threadService.getIndirectThreadReplies(threadId, pageNum,pageSize);;
         return ResultGenerator.success(result);
     }
 
@@ -101,11 +108,19 @@ public class ThreadController {
         return null;
     }
 
+    /**
+     * 6/22
+     * @param threadStream
+     * @return
+     */
     @PostMapping("/thread/reply")
     @ApiOperation(value = "reply to the thread", notes = "包括直接/间接回复，返回回帖成功与否")
     public Result addThreadReply(@RequestBody ThreadStream threadStream) {
-
-        return ResultGenerator.success();
+        int result = threadService.insertReply(threadStream);
+        if(result>0){
+            return ResultGenerator.success(result);
+        }
+        return null;
     }
 
     @PostMapping("/thread/report")
@@ -174,6 +189,13 @@ public class ThreadController {
         return result;
     }
 
+    /**
+     * 6/19
+     * @param threadId
+     * @param replyId
+     * @param userId
+     * @return
+     */
     @PostMapping("/thread/reply/dislike")
     @ApiOperation(value = "dislike the reply of thread", notes = "对帖子回复拍砖")
     public Result dislikeThreadReply(@RequestParam("threadId") Integer threadId,
@@ -184,6 +206,13 @@ public class ThreadController {
         return result;
     }
 
+    /**
+     * 6/22
+     * @param userId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @GetMapping("/thread/following")
     @ApiOperation(value = "a list of thread for user's following users", notes = "根据用户关注的人，获取thread列表，按创建时间排序")
     @ApiResponses(
@@ -193,10 +222,17 @@ public class ThreadController {
     public Result<List<Thread>> getFollowingThreads(@RequestParam("userId") Integer userId,
                                                     @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                     @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<Thread> result = null;
+        List<Thread> result = threadService.findByUserFollowingId(userId, pageNum, pageSize);
         return ResultGenerator.success(result);
     }
 
+    /**
+     * 6/22
+     * @param schoolId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @GetMapping("/thread/explore")
     @ApiOperation(value = "a list of thread for other school", notes = "根据school id获取thread列表，按创建时间排序")
     @ApiResponses(
@@ -206,7 +242,7 @@ public class ThreadController {
     public Result<List<Thread>> getOtherSchoolThreads(@RequestParam("schoolId") Integer schoolId,
                                                       @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                       @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<Thread> result = null;
+        List<Thread> result = threadService.findByOtherSchoolId(schoolId, pageNum, pageSize);
         return ResultGenerator.success(result);
     }
 

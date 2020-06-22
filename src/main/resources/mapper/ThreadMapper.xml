@@ -27,6 +27,11 @@
     <result column="dislikes" jdbcType="INTEGER" property="dislikes" />
   </resultMap>
 
+  <resultMap id="SubjectsResultMap" type="com.wequan.bu.repository.model.ThreadUserSelectedSubjects">
+    <id column="id" jdbcType="INTEGER" property="userId"/>
+    <result column="subjects_ids" jdbcType="VARCHAR" property="subjectIds"/>
+  </resultMap>
+
   <sql id="Base_Column_List">
     id, create_by, title, category, tag_id, content, study_points_bonus, create_time, 
     update_time, likes, dislikes
@@ -44,7 +49,7 @@
     update_time, likes, dislikes
     from bu.wq_thread join bu.wq_user_profile
     on bu.wq_thread.create_by = bu.wq_user_profile.id
-    where school_id = #{school_id, jdbcType=INTEGER}
+    where school_id = #{schoolId, jdbcType=INTEGER}
   </select>
 
   <select id="selectBySchoolIdAndTag" resultMap="BaseResultMap">
@@ -56,12 +61,24 @@
     order by bu.wq_thread.create_time desc
   </select>
 
-  <select id="selectRepliesById" parameterType="java.lang.Integer" resultMap="StreamResultMap">
+  <select id="selectDirectRepliesById" parameterType="java.lang.Integer" resultMap="StreamResultMap">
     select *
     from bu.wq_thread_stream
     where thread_id = #{thread_id,jdbcType=INTEGER}
   </select>
 
+  <select id="selectIndirectRepliesById" parameterType="java.lang.Integer" resultMap="StreamResultMap">
+    select *
+    from bu.wq_thread_stream
+    where thread_id = #{thread_id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByUserFollowingId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select bu.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
+    update_time, likes, dislikes
+    from bu.wq_thread join bu.wq_user_follow on bu.wq_thread.create_by = bu.wq_user_follow.follow_id
+    where bu.wq_user_follow.user_id = #{userId,jdbcType=INTEGER}
+  </select>
 
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
@@ -152,6 +169,11 @@
         #{dislikes,jdbcType=INTEGER},
       </if>
     </trim>
+  </insert>
+
+  <insert id="addUserInterestedSubjects" keyColumn="user_id" keyProperty="user_id" parameterType="com.wequan.bu.repository.model.ThreadUserSelectedSubjects" useGeneratedKeys="true">
+    insert into bu.wq_thread_user_selected_subjects(user_id, subject_ids)
+    values (#{userId, jdbcType=INTEGER}, #{subject_ids, jdbcType=VARCHAR})
   </insert>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.Thread">

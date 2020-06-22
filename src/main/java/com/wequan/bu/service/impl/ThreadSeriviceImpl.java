@@ -6,6 +6,7 @@ import com.wequan.bu.repository.model.ThreadStream;
 import com.wequan.bu.repository.model.ThreadUserSelectedSubjects;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.ThreadService;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -41,13 +42,6 @@ public class ThreadSeriviceImpl extends AbstractService<Thread> implements Threa
         return -1;
     }
 
-    @Override
-    public Integer numberOfLikesOfThread(Thread thread){
-        if(thread!=null){
-
-        }
-        return null;
-    }
 
     /**
      * 6/20
@@ -102,19 +96,84 @@ public class ThreadSeriviceImpl extends AbstractService<Thread> implements Threa
      * @return
      */
     @Override
-    public List<Thread> findBySchoolAndTag(Integer schoolId, Integer tagId){
+    public List<Thread> findBySchoolAndTag(Integer schoolId, Integer tagId, Integer pageNum, Integer pageSize){
         if(schoolId!=null && tagId!=null){
-            return threadMapper.selectBySchoolIdAndTag(schoolId, tagId);
+            if(pageNum==null){
+                pageNum=1;
+            }
+            if(pageSize==null){
+                pageSize=10;
+            }
+            RowBounds rowBounds = new RowBounds(pageNum,pageSize);
+            return threadMapper.selectBySchoolIdAndTag(schoolId, tagId, rowBounds);
         }
         return null;
     }
 
+    /**
+     * 6/22
+     * @param schoolId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @Override
-    public List<ThreadStream> getThreadReplies(Integer threadId){
+    public List<Thread> findByOtherSchoolId(Integer schoolId, Integer pageNum, Integer pageSize){
+        if(schoolId!=null){
+            if(pageNum==null){
+                pageNum=1;
+            }
+            if(pageSize==null){
+                pageSize=10;
+            }
+            RowBounds rowBounds = new RowBounds(pageNum, pageSize);
+            return threadMapper.selectBySchoolId(schoolId,rowBounds);
+        }
+        return null;
+    }
+
+    /**
+     * 6/18
+     * @param threadId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public List<ThreadStream> getDirectThreadReplies(Integer threadId, Integer pageNum, Integer pageSize){
         if(threadId!=null){
-            return threadMapper.selectRepliesById(threadId);
+            if(pageNum==null){
+                pageNum=1;
+            }
+            if(pageSize==null){
+                pageSize=10;
+            }
+            RowBounds r = new RowBounds(pageNum,pageSize);
+            return threadMapper.selectDirectRepliesById(threadId, r);
         }
         return  null;
+    }
+
+    /**
+     * 6/22
+     * @param threadId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public List<ThreadStream> getIndirectThreadReplies(Integer threadId,Integer pageNum, Integer pageSize){
+        if(threadId!=null){
+            if(pageNum==null){
+                pageNum=2;
+            }
+            if(pageSize==null){
+                pageSize=10;
+            }
+            RowBounds r = new RowBounds(pageNum,pageSize);
+            return threadMapper.selectDirectRepliesById(threadId, r);
+        }
+        return null;
     }
 
     /**
@@ -177,4 +236,37 @@ public class ThreadSeriviceImpl extends AbstractService<Thread> implements Threa
         return null;
     }
 
+    /**
+     * 6/20
+     * @param userId
+     * @param subjectsId
+     */
+    @Override
+    public void addUserSelectedSubject(Integer userId, String subjectsId){
+        if(userId!=null && subjectsId!=null){
+            threadMapper.addUserInterestedSubjects(userId, subjectsId);
+        }
+    }
+
+    /**
+     * 6/22
+     * @param userId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public List<Thread> findByUserFollowingId(Integer userId, Integer pageNum, Integer pageSize){
+        if(userId!=null){
+            if(pageNum==null){
+                pageNum=1;
+            }
+            if(pageSize==null){
+                pageSize=10;
+            }
+            RowBounds r = new RowBounds(pageNum,pageSize);
+            return threadMapper.selectByUserFollowingId(userId, r);
+        }
+        return null;
+    }
 }
