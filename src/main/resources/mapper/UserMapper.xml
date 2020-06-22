@@ -3,56 +3,261 @@
 <mapper namespace="com.wequan.bu.repository.dao.UserMapper">
   <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.User">
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="email" jdbcType="VARCHAR" property="email" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="address" jdbcType="VARCHAR" property="address" />
     <result column="zip_code" jdbcType="VARCHAR" property="zipCode" />
     <result column="credential" jdbcType="VARCHAR" property="credential" />
+    <result column="school_id" jdbcType="SMALLINT" property="schoolId" />
+    <result column="study_points" jdbcType="SMALLINT" property="studyPoints" />
+    <result column="access_token" jdbcType="VARCHAR" property="accessToken" />
+    <result column="first_name" jdbcType="VARCHAR" property="firstName" />
+    <result column="last_name" jdbcType="VARCHAR" property="lastName" />
+    <result column="invitation_code" jdbcType="VARCHAR" property="invitationCode" />
+    <result column="brief_introduction" jdbcType="VARCHAR" property="briefIntroduction" />
+    <result column="email_verified" jdbcType="BIT" property="emailVerified" />
+    <result column="provider" jdbcType="VARCHAR" property="provider" />
+    <result column="provider_id" jdbcType="VARCHAR" property="providerId" />
+    <result column="avatar_url_in_provider" jdbcType="VARCHAR" property="avatarUrlInProvider" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.wequan.bu.repository.model.User">
+    <result column="avatar" jdbcType="BINARY" property="avatar" />
   </resultMap>
 
-  <sql id="columns">id, nickname, email, phone, address, zip_code, credential</sql>
+  <sql id="Base_Column_List">
+    id, user_name, email, phone, address, zip_code, credential, school_id, study_points,
+    access_token, first_name, last_name, invitation_code, brief_introduction, email_verified,
+    provider, provider_id, avatar_url_in_provider, create_time, update_time
+  </sql>
+  <sql id="Blob_Column_List">
+    avatar
+  </sql>
+  <sql id="simple_columns">
+    id, user_name, email, credential, first_name, last_name, create_time, update_time, provider, provider_id
+  </sql>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from ${schema}.wq_user_profile
     where id = #{id,jdbcType=INTEGER}
   </delete>
 
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.User" useGeneratedKeys="true">
-    insert into ${schema}.wq_user_profile (name, nickname, email, phone, address, zip_code, credential)
-    values (#{name,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},
-            #{address,jdbcType=VARCHAR}, #{zipCode,jdbcType=VARCHAR}, #{credential,jdbcType=VARCHAR})
-  </insert>
-
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.User" useGeneratedKeys="true">
-
+    insert into ${schema}.wq_user_profile
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userName != null and userName != ''">
+        user_name,
+      </if>
+      <if test="email != null and email != ''">
+        email,
+      </if>
+      <if test="phone != null and phone != ''">
+        phone,
+      </if>
+      <if test="address != null and address != ''">
+        address,
+      </if>
+      <if test="zipCode != null and zipCode != ''">
+        zip_code,
+      </if>
+      <if test="credential != null and credential != ''">
+        credential,
+      </if>
+      <if test="schoolId != null">
+        school_id,
+      </if>
+      <if test="studyPoints != null">
+        study_points,
+      </if>
+      <if test="accessToken != null and accessToken != ''">
+        access_token,
+      </if>
+      <if test="firstName != null and firstName != ''">
+        first_name,
+      </if>
+      <if test="lastName != null and lastName != ''">
+        last_name,
+      </if>
+      <if test="invitationCode != null and invitationCode != ''">
+        invitation_code,
+      </if>
+      <if test="briefIntroduction != null and briefIntroduction != ''">
+        brief_introduction,
+      </if>
+      <if test="emailVerified != null">
+        email_verified,
+      </if>
+      <if test="provider != null and provider != ''">
+        provider,
+      </if>
+      <if test="providerId != null and providerId != ''">
+        provider_id,
+      </if>
+      <if test="avatarUrlInProvider != null and avatarUrlInProvider != ''">
+        avatar_url_in_provider,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="avatar != null">
+        avatar,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userName != null and userName != ''">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null and email != ''">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null and phone != ''">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null and address != ''">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="zipCode != null and zipCode != ''">
+        #{zipCode,jdbcType=VARCHAR},
+      </if>
+      <if test="credential != null and credential != ''">
+        #{credential,jdbcType=VARCHAR},
+      </if>
+      <if test="schoolId != null">
+        #{schoolId,jdbcType=SMALLINT},
+      </if>
+      <if test="studyPoints != null">
+        #{studyPoints,jdbcType=SMALLINT},
+      </if>
+      <if test="accessToken != null and accessToken != ''">
+        #{accessToken,jdbcType=VARCHAR},
+      </if>
+      <if test="firstName != null and firstName != ''">
+        #{firstName,jdbcType=VARCHAR},
+      </if>
+      <if test="lastName != null and lastName != ''">
+        #{lastName,jdbcType=VARCHAR},
+      </if>
+      <if test="invitationCode != null and invitationCode != ''">
+        #{invitationCode,jdbcType=VARCHAR},
+      </if>
+      <if test="briefIntroduction != null and briefIntroduction != ''">
+        #{briefIntroduction,jdbcType=VARCHAR},
+      </if>
+      <if test="emailVerified != null">
+        #{emailVerified,jdbcType=BIT},
+      </if>
+      <if test="provider != null and provider != ''">
+        #{provider,jdbcType=VARCHAR},
+      </if>
+      <if test="providerId != null and providerId != ''">
+        #{providerId,jdbcType=VARCHAR},
+      </if>
+      <if test="avatarUrlInProvider != null and avatarUrlInProvider != ''">
+        #{avatarUrlInProvider,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="avatar != null">
+        #{avatar,jdbcType=BINARY},
+      </if>
+    </trim>
   </insert>
 
-  <update id="updateByPrimaryKey" parameterType="com.wequan.bu.repository.model.User">
+  <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.User">
     update ${schema}.wq_user_profile
-    set name = #{name,jdbcType=VARCHAR},
-      nickname = #{nickname,jdbcType=VARCHAR},
-      email = #{email,jdbcType=VARCHAR},
-      phone = #{phone,jdbcType=VARCHAR},
-      address = #{address,jdbcType=VARCHAR},
-      zip_code = #{zipCode,jdbcType=VARCHAR},
-      credential = #{credential,jdbcType=VARCHAR}
+    <set>
+      <if test="userName != null and userName != ''">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null and email != ''">
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null and phone != ''">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null and address != ''">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="zipCode != null and zipCode != ''">
+        zip_code = #{zipCode,jdbcType=VARCHAR},
+      </if>
+      <if test="credential != null and credential != ''">
+        credential = #{credential,jdbcType=VARCHAR},
+      </if>
+      <if test="schoolId != null">
+        school_id = #{schoolId,jdbcType=SMALLINT},
+      </if>
+      <if test="studyPoints != null">
+        study_points = #{studyPoints,jdbcType=SMALLINT},
+      </if>
+      <if test="accessToken != null and accessToken != ''">
+        access_token = #{accessToken,jdbcType=VARCHAR},
+      </if>
+      <if test="firstName != null and firstName != ''">
+        first_name = #{firstName,jdbcType=VARCHAR},
+      </if>
+      <if test="lastName != null and lastName != ''">
+        last_name = #{lastName,jdbcType=VARCHAR},
+      </if>
+      <if test="invitationCode != null and invitationCode != ''">
+        invitation_code = #{invitationCode,jdbcType=VARCHAR},
+      </if>
+      <if test="briefIntroduction != null and briefIntroduction != ''">
+        brief_introduction = #{briefIntroduction,jdbcType=VARCHAR},
+      </if>
+      <if test="emailVerified != null">
+        email_verified = #{emailVerified,jdbcType=BIT},
+      </if>
+      <if test="provider != null and provider != ''">
+        provider = #{provider,jdbcType=VARCHAR},
+      </if>
+      <if test="providerId != null and providerId != ''">
+        provider_id = #{providerId,jdbcType=VARCHAR},
+      </if>
+      <if test="avatarUrlInProvider != null and avatarUrlInProvider != ''">
+        avatar_url_in_provider = #{avatarUrlInProvider,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="avatar != null">
+        avatar = #{avatar,jdbcType=BINARY},
+      </if>
+    </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
 
   <select id="selectByPrimaryKey" resultMap="BaseResultMap">
-    select <include refid="columns" />
+    select <include refid="Base_Column_List" />
     from ${schema}.wq_user_profile
     where id = #{id,jdbcType=INTEGER}
   </select>
 
   <select id="selectAll" resultMap="BaseResultMap">
-    select <include refid="columns" />
+    select <include refid="Base_Column_List" />
     from ${schema}.wq_user_profile
   </select>
 
   <select id="selectByEmail" resultMap="BaseResultMap">
-    select <include refid="columns" />
+    select <include refid="simple_columns" />
+    from ${schema}.wq_user_profile
+    where email = #{email}
+  </select>
+
+  <select id="existsByEmail" resultType="java.lang.Boolean">
+    select count(1) > 0
     from ${schema}.wq_user_profile
     where email = #{email}
   </select>

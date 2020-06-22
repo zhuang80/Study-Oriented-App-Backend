@@ -2,7 +2,7 @@ package com.wequan.bu.security.component;
 
 import com.wequan.bu.repository.dao.UserMapper;
 import com.wequan.bu.repository.model.User;
-import com.wequan.bu.security.component.AppUserDetails;
+import com.wequan.bu.security.AppUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,7 +24,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // username as email
         // to do - check email format to avoid sql injection
-
         User user = userMapper.selectByEmail(username);
         if (Objects.isNull(user)) {
             throw new UsernameNotFoundException("User not found with email: " + username);
@@ -33,7 +32,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return AppUserDetails.create(user);
     }
 
-    public UserDetails loadUserById(Integer id) {
+    public UserDetails loadUserById(Long id) {
         User user = userMapper.selectByPrimaryKey(id);
         if (Objects.isNull(user)) {
             throw new UsernameNotFoundException("User not found with id: " + id);

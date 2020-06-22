@@ -15,4 +15,9 @@ public interface UserMapper extends GeneralMapper<User> {
      */
     User selectByEmail(String email);
 
+    /** 检查email是否已经存在
+     * @param email email
+     * @return 存在或不存在
+     */
+    Boolean existsByEmail(String email);
 }

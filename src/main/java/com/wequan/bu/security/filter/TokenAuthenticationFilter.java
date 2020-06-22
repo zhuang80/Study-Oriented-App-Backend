@@ -1,8 +1,7 @@
 package com.wequan.bu.security.filter;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.wequan.bu.config.WeQuanConstants;
+import com.wequan.bu.security.component.TokenProvider;
 import com.wequan.bu.security.component.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,40 +24,42 @@ import java.io.IOException;
  * @author ChrisChen
  */
 @Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(TokenAuthenticationFilter.class);
 
     @Autowired
-    private UserDetailsServiceImpl userDetailsServiceImpl;
+    private TokenProvider tokenProvider;
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String jwt = getJwtFromRequest(request);
-            if (StringUtils.hasText(jwt)) {
-                String subject = JWT.require(Algorithm.HMAC512(WeQuanConstants.SECRET_KEY.getBytes()))
-                        .build().verify(jwt).getSubject();
-                Integer userId = Integer.parseInt(subject);
+            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+                Long userId = tokenProvider.getUserIdFromToken(jwt);
+
                 // if no need for authorities, then
                 // new UsernamePasswordAuthenticationToken(userId, null, new ArrayList<>());
-                UserDetails userDetails = userDetailsServiceImpl.loadUserById(userId);
+                UserDetails userDetails = userDetailsService.loadUserById(userId);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        } catch (Exception e) {
-            logger.error("Could not set user authentication in security context", e);
+        } catch (Exception ex) {
+            logger.error("Could not set user authentication in security context", ex);
         }
+
         filterChain.doFilter(request, response);
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
-        String token = null;
-        String authHeader = request.getHeader(WeQuanConstants.AUTH_HEADER);
-        if (StringUtils.hasText(authHeader) && authHeader.startsWith(WeQuanConstants.TOKEN_PREFIX)) {
-            token = authHeader.substring(WeQuanConstants.TOKEN_PREFIX.length());
+        String bearerToken = request.getHeader(WeQuanConstants.AUTH_HEADER);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(WeQuanConstants.TOKEN_PREFIX)) {
+            return bearerToken.substring(7);
         }
-        return token;
+        return null;
     }
 }
