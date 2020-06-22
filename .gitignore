@@ -35,3 +35,6 @@ build/
 src/main/java/com/wequan/bu/repository/dao/mbg/**
 src/main/java/com/wequan/bu/repository/model/mbg/**
 src/main/resources/mapper/mbg/**
+
+### .DS_Store
+**/.DS_Store
