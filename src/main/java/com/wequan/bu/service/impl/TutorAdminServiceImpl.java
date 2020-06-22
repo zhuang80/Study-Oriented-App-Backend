@@ -104,6 +104,11 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
 
     }
 
+    @Override
+    public List<TutorApplication> findStatusByUserId(Integer userId) {
+        return tutorApplicationMapper.selectStatusByUserId(userId);
+    }
+
     private UploadFileWrapper transferAndWrap(MultipartFile[] multipartFiles, short type, Integer userId) throws IOException {
         List<File> files = materialService.uploadFiles(multipartFiles, OUTPUT_PATH);
         return (files == null ? null : new UploadFileWrapper(type, userId, files));
