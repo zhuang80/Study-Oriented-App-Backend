@@ -3,7 +3,7 @@
 <mapper namespace="com.wequan.bu.repository.dao.UserMapper">
   <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.User">
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="email" jdbcType="VARCHAR" property="email" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="address" jdbcType="VARCHAR" property="address" />
@@ -11,7 +11,7 @@
     <result column="credential" jdbcType="VARCHAR" property="credential" />
   </resultMap>
 
-  <sql id="columns">id, nickname, email, phone, address, zip_code, credential</sql>
+  <sql id="columns">id, user_name, email, phone, address, zip_code, credential</sql>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from ${schema}.wq_user_profile
