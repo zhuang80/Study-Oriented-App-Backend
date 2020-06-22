@@ -24,4 +24,6 @@ public interface TutorAdminService extends Service<TutorApplication> {
     public List<TutorApplication> findStatusByUserId(Integer userId);
 
     public void approve(Integer id);
+
+    public void disapprove(Integer id);
 }
