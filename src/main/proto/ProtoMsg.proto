@@ -1,0 +1,93 @@
+syntax = "proto3";
+package com.wequan.bu.im.common.bean.msg;
+
+// type of body
+enum HeadType {
+    HEART_BEAT = 0;
+    LOGIN_REQUEST = 2;
+    LOGIN_RESPONSE = 3;
+    LOGOUT_REQUEST = 4;
+    LOGOUT_RESPONSE = 5;
+    MESSAGE_REQUEST = 6;
+    MESSAGE_RESPONSE = 7;
+    MESSAGE_NOTIFICATION_REQUEST = 8;
+    MESSAGE_NOTIFICATION_RESPONSE = 9;
+}
+
+// From client to server
+message LoginRequest {
+    string uid = 1;
+    string deviceId = 2;
+    string token = 3;
+    // platform ios, android, web
+    uint32 platform = 4;
+    string appVersion = 5;
+}
+
+// From server to client
+message LoginResponse {
+    // true -> success
+    bool result = 1;
+    uint32 code = 2;
+    // Description
+    string info = 3;
+}
+
+// From client to server
+message MessageRequest {
+    uint64 fingerPrint = 1;
+    string from = 2;
+    uint32 ope = 3;
+    string to = 4;
+    uint64 time = 5;
+    uint32 msgType = 6;
+    string content = 7;
+    string url = 8;
+}
+
+// From server to client
+message MessageResponse {
+    bool result = 1;
+    uint64 msgId = 2;
+    uint32 code = 3;
+    string info = 4;
+    uint32 expose = 5;
+}
+
+// From server to client
+message MessageNotificationRequest {
+    uint64 msgId = 1;
+    string from = 2;
+    uint32 ope = 3;
+    string to = 4;
+    uint64 time = 5;
+    uint32 msgType = 6;
+    string content = 7;
+    string url = 8;
+}
+
+// From client to server
+message MessageNotificationResponse {
+    uint64 msgId = 1;
+}
+
+//
+message MessageHeartBeat {
+    uint32   seq = 1;
+    string   uid = 2;
+    string   json =3;
+}
+
+message Message {
+    HeadType       type = 1; //通用字段: 消息类型
+    uint64         sequence = 2;  //通用字段：消息序列号
+    string         session_id = 3;   //通用字段：会话id
+    LoginRequest   loginRequest = 4;   //登录请求
+    LoginResponse  loginResponse = 5;   //登录响应
+    MessageRequest  messageRequest = 6;    //IM消息请求
+    MessageResponse  messageResponse = 7;      //IM消息响应
+    MessageNotification  notification = 8;        //系统通知
+    MessageHeartBeat     heartBeat = 9;  //心跳
+}
+
+
