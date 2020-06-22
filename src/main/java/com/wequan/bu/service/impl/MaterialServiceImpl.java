@@ -1,6 +1,6 @@
 package com.wequan.bu.service.impl;
 
-import com.wequan.bu.controller.vo.MultipartFileWrapper;
+import com.wequan.bu.controller.vo.UploadFileWrapper;
 import com.wequan.bu.repository.dao.MaterialMapper;
 import com.wequan.bu.repository.dao.TutorApplicationSupportMaterialMapper;
 import com.wequan.bu.repository.model.Material;
@@ -11,7 +11,6 @@ import com.wequan.bu.service.StorageService;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -57,6 +56,7 @@ public class MaterialServiceImpl extends AbstractService<Material> implements Ma
      */
     @Override
     public List<File> uploadFiles(MultipartFile[] files, String basePath) throws IOException {
+        if(files == null) return null;
         List<File> ret = new ArrayList<>();
         for(MultipartFile file : files) {
            ret.add(uploadFile(file, basePath));
@@ -99,6 +99,12 @@ public class MaterialServiceImpl extends AbstractService<Material> implements Ma
         return newFilename;
     }
 
+    public String getOriginalName(String filename){
+        String[] temps = filename.split("\\.", 2);
+        int index = temps[0].indexOf("-");
+        return temps[0].substring(0,index) + "." +temps[1];
+    }
+
     /**
      * convert PDF file to Image, it is an async method
      * @param files a list of files of pdf MIME type
@@ -134,43 +140,43 @@ public class MaterialServiceImpl extends AbstractService<Material> implements Ma
         return materialMapper.selectByCourseIdAndProfessorId(c_id, p_id);
     }
 
+
     @Override
-    public List<Integer> uploadSupportMaterial(MultipartFileWrapper filesWrapper, String basePath) throws IOException {
+    public List<Integer> uploadSupportMaterial(UploadFileWrapper filesWrapper) throws IOException {
+        if(filesWrapper == null) return null;
         List<Integer> idList = new ArrayList<>();
         String path = "application/";
         String key;
-        File tempFile = null;
-        for(MultipartFile multipartFile : filesWrapper.getFiles()){
+
+        for(File file : filesWrapper.getFiles()){
             try{
                 TutorApplicationSupportMaterial material = new TutorApplicationSupportMaterial();
-                material.setFileName(multipartFile.getOriginalFilename());
+                material.setFileName(getOriginalName(file.getName()));
 
-                //first transfer multipart file to local file
-                tempFile = uploadFile(multipartFile, basePath);
-                key = path + tempFile.getName();
+                key = path + file.getName();
                 //try to upload file to S3 bucket
-                if(storageService.uploadFile(key, tempFile)){
-                    System.out.println("-------------------------"+ tempFile.getName().length());
+                System.out.println("===========================S3 key"+key);
+                if(storageService.uploadFile(key, file)){
                     material.setType(filesWrapper.getType());
                     material.setStorePath(key);
-                    material.setFileType(Files.probeContentType(tempFile.toPath()));
-                    material.setUuid(tempFile.getName());
+                    material.setFileType(Files.probeContentType(file.toPath()));
+                    material.setUuid(file.getName());
                     material.setUploadBy(filesWrapper.getUploadBy());
                     material.setUploadTime(LocalDateTime.now());
                     material.setSourceFrom((short) 4);
-                    System.out.println("============================================= before id: " + material.getId());
+
                     supportMaterialMapper.insertSelective(material);
-                    System.out.println("============================================= id: " + material.getId());
+
                     idList.add(material.getId());
                 }
             }catch (Exception e){
                 System.out.println(e.getMessage());
             }finally {
-                if(tempFile != null){
-                    if(tempFile.delete()){
-                        System.out.println(tempFile.getName() + " deleted successfully!");
+                if(file != null){
+                    if(file.delete()){
+                        System.out.println(file.getName() + " deleted successfully!");
                     }else{
-                        System.out.println("fail to delete file" + tempFile.getName());
+                        System.out.println("fail to delete file" + file.getName());
                     }
                 }
             }
