@@ -6,6 +6,7 @@ import com.wequan.bu.repository.dao.TutorApplicationEducationBackgroundMapper;
 import com.wequan.bu.repository.dao.TutorApplicationMapper;
 import com.wequan.bu.repository.model.TutorApplication;
 import com.wequan.bu.repository.model.TutorApplicationEducationBackground;
+import com.wequan.bu.repository.model.extend.TutorApplicationFullInfo;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.MaterialService;
 import com.wequan.bu.service.TutorAdminService;
@@ -94,8 +95,15 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         return uploadFiles;
     }
 
+    @Override
+    public List<TutorApplicationFullInfo> findByUserId(Integer userId) {
+        return tutorApplicationMapper.selectByUserId(userId);
+    }
+
     private UploadFileWrapper transferAndWrap(MultipartFile[] multipartFiles, short type, Integer userId) throws IOException {
         List<File> files = materialService.uploadFiles(multipartFiles, OUTPUT_PATH);
         return (files == null ? null : new UploadFileWrapper(type, userId, files));
     }
+
+
 }

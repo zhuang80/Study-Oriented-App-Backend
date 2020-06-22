@@ -43,7 +43,7 @@ public class TutorApplication {
      *   resumes, transcripts, etc文件id，关联support_material(id)，多个id用逗号连接，如1,2,3
      */
     private String supportMaterialIds;
-
+    public TutorApplication(){};
     public TutorApplication(TutorApplicationVo t){
         this.userId = t.getUserId();
         this.briefIntroduction = t.getBriefIntroduction();
