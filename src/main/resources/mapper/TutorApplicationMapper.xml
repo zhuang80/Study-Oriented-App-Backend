@@ -28,6 +28,12 @@
                     select="com.wequan.bu.repository.dao.TutorApplicationSupportMaterialMapper.selectByIds"
                     column="support_material_ids" />
     </resultMap>
+
+    <resultMap id="statusResultMap" type="com.wequan.bu.repository.model.TutorApplication">
+        <id property="id" jdbcType="INTEGER" column="id"/>
+        <result  property="status" jdbcType="SMALLINT" column="status"/>
+    </resultMap>
+
     <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.TutorApplication">
         INSERT INTO ${schema}.wq_tutor_application(user_id, brief_introduction, create_time, update_time, status, current_city, current_state, teach_method, hourly_rate, late_policy_id, cancellation_policy_id, education_background_ids, subject_topics_ids, support_material_ids)
         VALUES (#{userId}, #{briefIntroduction}, #{createTime}, #{updateTime}, #{status}, #{currentCity}, #{currentState}, #{teachMethod}, #{hourlyRate}, #{latePolicyId}, #{cancellationPolicyId}, #{educationBackgroundIds}, #{subjectTopicsIds}, #{supportMaterialIds});
@@ -88,5 +94,11 @@
         SELECT *
         FROM ${schema}.wq_tutor_application
         WHERE user_id = #{user_id}
+    </select>
+
+    <select id="selectStatusByUserId" resultMap="statusResultMap">
+        SELECT id, status
+        FROM ${schema}.wq_tutor_application
+        WHERE user_id = #{user_id, jdbcType=INTEGER}
     </select>
 </mapper>
