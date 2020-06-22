@@ -50,7 +50,9 @@ public class TutorController {
 
     @PutMapping("/tutor/{id}")
     @ApiOperation(value = "modify tutor basic info", notes = "修改tutor基本信息")
-    public Result modifyTutorBasicInfo(@RequestBody Tutor tutor) {
+    public Result modifyTutorBasicInfo(@RequestBody Tutor tutor, @PathVariable Integer id) {
+        tutor.setId(id);
+        tutorService.update(tutor);
         return ResultGenerator.success();
     }
 
