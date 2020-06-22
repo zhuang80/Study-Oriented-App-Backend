@@ -22,13 +22,6 @@ public interface ThreadService extends Service<Thread> {
      */
     public int insertReply(ThreadStream threadStream);
 
-    /**
-     *
-     * @param thread
-     * @return
-     */
-    public Integer numberOfLikesOfThread(Thread thread);
-
     public int insertSelective(Thread record);
 
     public void updateByIdSelective(Thread record);
@@ -41,18 +34,42 @@ public interface ThreadService extends Service<Thread> {
      * @return
      */
     public int replyToThread(ThreadStream threadStream);
+
     /**
      * 6/19
+     * @param schoolId
+     * @param tagId
+     * @param pageNum
+     * @param pageSize
+     * @return
      */
-    public List<Thread> findBySchoolAndTag(Integer schoolId, Integer tagId);
+    public List<Thread> findBySchoolAndTag(Integer schoolId, Integer tagId, Integer pageNum, Integer pageSize);
 
+    /**
+     * 6/22
+     * @param schoolId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    public List<Thread> findByOtherSchoolId(Integer schoolId, Integer pageNum, Integer pageSize);
     /**
      * 6/20
      * @param threadId
-     * @return replies
+     * @param pageNum
+     * @param pageSize
+     * @return
      */
-    public List<ThreadStream> getThreadReplies(Integer threadId);
+    public List<ThreadStream> getDirectThreadReplies(Integer threadId,Integer pageNum, Integer pageSize);
 
+    /**
+     * 6/22
+     * @param threadId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    public List<ThreadStream> getIndirectThreadReplies(Integer threadId,Integer pageNum, Integer pageSize);
     /**
      * 6/20
      * @param threadId
@@ -68,7 +85,7 @@ public interface ThreadService extends Service<Thread> {
     public void dislikeThread(Integer threadId, Integer userId);
 
     /**
-     *
+     *6/19
      * @param threadId
      * @param replyId
      * @param userId
@@ -76,7 +93,7 @@ public interface ThreadService extends Service<Thread> {
     public void likeReplyOfThread(Integer threadId, Integer replyId, Integer userId);
 
     /**
-     *
+     *6/19
      * @param threadId
      * @param replyId
      * @param userId
@@ -89,4 +106,20 @@ public interface ThreadService extends Service<Thread> {
      * @return
      */
     public ThreadUserSelectedSubjects findUsersSubjects(Integer userId);
+
+    /**
+     * 6/20
+     * @param userId
+     * @param subjectsId
+     */
+    public void addUserSelectedSubject(Integer userId, String subjectsId);
+
+    /**
+     * 6/22
+     * @param userId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    public List<Thread> findByUserFollowingId(Integer userId, Integer pageNum, Integer pageSize);
 }
