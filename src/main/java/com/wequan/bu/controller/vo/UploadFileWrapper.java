@@ -1,44 +1,23 @@
 package com.wequan.bu.controller.vo;
 
+import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * @author Zhaochao Huang
  */
-public class MultipartFileWrapper {
+@Data
+public class UploadFileWrapper {
     private Short type;
     private Integer uploadBy;
-    private MultipartFile[] files;
+    private List<File> files;
 
-    public MultipartFileWrapper(){}
-
-    public MultipartFileWrapper(Short type, Integer userId, MultipartFile[] files){
+    public UploadFileWrapper(Short type, Integer userId, List<File> files){
         this.type = type;
         this.uploadBy = userId;
-        this.files = files;
-    }
-
-    public Short getType() {
-        return type;
-    }
-
-    public void setType(Short type) {
-        this.type = type;
-    }
-
-    public Integer getUploadBy() {
-        return uploadBy;
-    }
-
-    public void setUploadBy(Integer uploadBy) {
-        this.uploadBy = uploadBy;
-    }
-
-    public MultipartFile[] getFiles() {
-        return files;
-    }
-
-    public void setFiles(MultipartFile[] files) {
         this.files = files;
     }
 }

@@ -1,9 +1,11 @@
 package com.wequan.bu.controller.vo;
 
+import com.wequan.bu.repository.model.TutorApplicationEducationBackground;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class TutorApplicationVo {
@@ -32,6 +34,6 @@ public class TutorApplicationVo {
      *   关联subject_topics(id)，多个id用逗号连接，如1,2,3
      */
     private String subjectTopicsIds;
-
+    private List<TutorApplicationEducationBackground> educationBackgrounds;
 
 }
