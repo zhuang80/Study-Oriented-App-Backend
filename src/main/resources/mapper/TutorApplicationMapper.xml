@@ -32,6 +32,58 @@
         INSERT INTO ${schema}.wq_tutor_application(user_id, brief_introduction, create_time, update_time, status, current_city, current_state, teach_method, hourly_rate, late_policy_id, cancellation_policy_id, education_background_ids, subject_topics_ids, support_material_ids)
         VALUES (#{userId}, #{briefIntroduction}, #{createTime}, #{updateTime}, #{status}, #{currentCity}, #{currentState}, #{teachMethod}, #{hourlyRate}, #{latePolicyId}, #{cancellationPolicyId}, #{educationBackgroundIds}, #{subjectTopicsIds}, #{supportMaterialIds});
     </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.TutorApplication">
+        UPDATE ${schema}.wq_tutor_application
+        <set>
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="briefIntroduction != null">
+                brief_introduction = #{briefIntroduction,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=SMALLINT},
+            </if>
+            <if test="currentCity != null">
+                current_city = #{currentCity,jdbcType=VARCHAR},
+            </if>
+            <if test="currentState != null">
+                current_state = #{currentState,jdbcType=VARCHAR},
+            </if>
+            <if test="teachMethod != null">
+                teach_method = #{teachMethod,jdbcType=VARCHAR},
+            </if>
+            <if test="hourlyRate != null">
+                hourly_rate = #{hourlyRate,jdbcType=REAL},
+            </if>
+            <if test="latePolicyId != null">
+                late_policy_id = #{latePolicyId,jdbcType=SMALLINT},
+            </if>
+            <if test="cancellationPolicyId != null">
+                cancellation_policy_id = #{cancellationPolicyId,jdbcType=SMALLINT},
+            </if>
+            <if test="educationBackgroundIds != null">
+                education_background_ids = #{educationBackgroundIds,jdbcType=VARCHAR},
+            </if>
+            <if test="subjectTopicsIds != null">
+                subject_topics_ids = #{subjectTopicsIds,jdbcType=VARCHAR},
+            </if>
+            <if test="supportMaterialIds != null">
+                support_material_ids = #{supportMaterialIds,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE id = #{id, jdbcType=INTEGER}
+    </update>
     <select id="selectByUserId" resultMap="baseResultMap">
         SELECT *
         FROM ${schema}.wq_tutor_application

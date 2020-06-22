@@ -19,4 +19,6 @@ public interface TutorAdminService extends Service<TutorApplication> {
 
     public List<TutorApplicationFullInfo> findByUserId(Integer userId);
 
+    public void update(TutorApplicationVo tutorApplicationVo, List<UploadFileWrapper> uploadFileWrapperList) throws IOException;
+
 }

@@ -59,8 +59,10 @@ public class TutorAdminController {
 
     @PutMapping("/user/{id}/tutor_application")
     @ApiOperation(value = "modify tutor application", notes = "返回用户修改Tutor申请成功与否")
-    public Result modifyTutorApplication(@RequestBody TutorApplicationVo tutorApplicationVo) {
-
+    public Result modifyTutorApplication(TutorApplicationVo tutorApplicationVo) throws IOException {
+        //save the uploaded file on local
+        List<UploadFileWrapper> uploadFiles = tutorAdminService.bufferUploadFile(tutorApplicationVo);
+        tutorAdminService.update(tutorApplicationVo, uploadFiles);
         return ResultGenerator.success();
     }
 
