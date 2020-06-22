@@ -81,4 +81,11 @@ public class TutorAdminController {
         return ResultGenerator.success(result);
     }
 
+    @PostMapping("/tutor_application/{id}/approve")
+    @ResponseBody
+    @ApiOperation(value = "approve the tutor application", notes = "管理员审核tutor申请信息和文件材料，并批准该申请")
+    public Result approveTutorApplication(@PathVariable("id") Integer id){
+        tutorAdminService.approve(id);
+        return ResultGenerator.success();
+    }
 }

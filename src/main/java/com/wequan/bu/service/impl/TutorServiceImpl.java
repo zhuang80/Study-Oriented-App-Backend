@@ -5,6 +5,7 @@ import com.wequan.bu.controller.vo.OnlineEvent;
 import com.wequan.bu.repository.dao.OnlineEvenMapper;
 import com.wequan.bu.repository.dao.TutorMapper;
 import com.wequan.bu.repository.model.Tutor;
+import com.wequan.bu.repository.model.TutorApplication;
 import com.wequan.bu.repository.model.TutorViewHistory;
 import com.wequan.bu.repository.model.extend.TutorRateInfo;
 import com.wequan.bu.service.AbstractService;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -90,6 +92,29 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
     @Override
     public List<OnlineEvent> findOnlineEventByUserId(Integer userId) {
         return onlineEvenMapper.selectByUserId(userId);
+    }
+
+    @Override
+    public void approveTutorApplication(TutorApplication tutorApplication) {
+        Tutor tutor = setTutorProfile(tutorApplication);
+        tutorMapper.insertSelective(tutor);
+    }
+
+    private Tutor setTutorProfile(TutorApplication tutorApplication){
+        Tutor tutor = new Tutor();
+        tutor.setUserId(tutorApplication.getUserId());
+        tutor.setBriefIntroduction(tutorApplication.getBriefIntroduction());
+        tutor.setCreateTime(LocalDateTime.now());
+        tutor.setStatus((short) 1);
+        tutor.setLatePolicyId(tutorApplication.getLatePolicyId());
+        tutor.setCancellationPolicyId(tutorApplication.getCancellationPolicyId());
+        tutor.setTutorAvailable(true);
+        tutor.setTutorApplicationId(tutorApplication.getId());
+        tutor.setCurrentCity(tutorApplication.getCurrentCity());
+        tutor.setCurrentState(tutorApplication.getCurrentState());
+        tutor.setTeachMethod(tutorApplication.getTeachMethod());
+        tutor.setHourlyRate(tutorApplication.getHourlyRate());
+        return tutor;
     }
 
 }
