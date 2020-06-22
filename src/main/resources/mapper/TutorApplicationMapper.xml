@@ -101,4 +101,10 @@
         FROM ${schema}.wq_tutor_application
         WHERE user_id = #{user_id, jdbcType=INTEGER}
     </select>
+
+    <select id="selectByPrimaryKey" resultType="com.wequan.bu.repository.model.TutorApplication">
+        SELECT *
+        FROM ${schema}.wq_tutor_application
+        WHERE id = #{id, jdbcType=INTEGER}
+    </select>
 </mapper>

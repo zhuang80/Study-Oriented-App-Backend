@@ -81,4 +81,17 @@
         FROM ${schema}.wq_tutor_view_history tvh
         WHERE tvh.tutor_id = #{tutor_id}
     </select>
+
+    <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.Tutor">
+        INSERT INTO ${schema}.wq_tutor_profile (user_id, brief_introduction, create_time,
+            update_time, status, late_policy_id,
+            cancellation_policy_id, tutor_available, tutor_application_id,
+            current_city, current_state, teach_method,
+            hourly_rate)
+        VALUES (#{userId,jdbcType=INTEGER}, #{briefIntroduction,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+            #{updateTime,jdbcType=TIMESTAMP}, #{status,jdbcType=SMALLINT}, #{latePolicyId,jdbcType=SMALLINT},
+            #{cancellationPolicyId,jdbcType=SMALLINT}, #{tutorAvailable,jdbcType=BIT}, #{tutorApplicationId,jdbcType=INTEGER},
+            #{currentCity,jdbcType=VARCHAR}, #{currentState,jdbcType=VARCHAR}, #{teachMethod,jdbcType=VARCHAR},
+            #{hourlyRate,jdbcType=REAL})
+    </insert>
 </mapper>

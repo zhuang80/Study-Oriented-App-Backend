@@ -10,6 +10,7 @@ import com.wequan.bu.repository.model.extend.TutorApplicationFullInfo;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.MaterialService;
 import com.wequan.bu.service.TutorAdminService;
+import com.wequan.bu.service.TutorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,9 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
 
     @Autowired
     private TutorApplicationEducationBackgroundMapper educationBackgroundMapper;
+
+    @Autowired
+    private TutorService tutorService;
 
     @Async
     @Override
@@ -107,6 +111,14 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
     @Override
     public List<TutorApplication> findStatusByUserId(Integer userId) {
         return tutorApplicationMapper.selectStatusByUserId(userId);
+    }
+
+    @Override
+    public void approve(Integer id) {
+        TutorApplication tutorApplication = tutorApplicationMapper.selectByPrimaryKey(id);
+        tutorApplication.setStatus((short) 1);
+        tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
+        tutorService.approveTutorApplication(tutorApplication);
     }
 
     private UploadFileWrapper transferAndWrap(MultipartFile[] multipartFiles, short type, Integer userId) throws IOException {
