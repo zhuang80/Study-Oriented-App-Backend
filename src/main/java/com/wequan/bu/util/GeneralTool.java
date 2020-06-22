@@ -70,8 +70,8 @@ public class GeneralTool {
         return decryptedText;
     }
 
-    public static boolean checkNickname(String nickname){
-        return StringUtils.hasText(nickname);
+    public static boolean checkUsername(String userName){
+        return StringUtils.hasText(userName);
     }
 
     public static boolean checkEmail(String email) {
