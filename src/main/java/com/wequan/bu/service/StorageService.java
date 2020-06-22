@@ -27,4 +27,6 @@ public interface StorageService {
      * @return url
      */
     URL getPresignedURL(String key);
+
+    void deleteObject(String key);
 }
