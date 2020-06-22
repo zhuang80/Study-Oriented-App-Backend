@@ -16,4 +16,15 @@
         FROM ${schema}.wq_tutor_application_support_material
         WHERE id IN ${ids}
     </select>
+
+    <select id="selectByPrimaryKey" resultType="com.wequan.bu.repository.model.TutorApplicationSupportMaterial">
+        SELECT *
+        FROM ${schema}.wq_tutor_application_support_material
+        WHERE id = #{id, jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey">
+        DELETE FROM ${schema}.wq_tutor_application_support_material
+        WHERE id = #{id, jdbcType=INTEGER}
+    </delete>
 </mapper>

@@ -97,6 +97,9 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         ebList.addAll(insertEducationBackground(tutorApplicationVo));
         String ebIds= joinIds(ebList);
 
+        materialService.deleteById(tutorApplicationVo.getDeletedSupportMaterialId());
+        educationBackgroundMapper.deleteByPrimaryKey(tutorApplicationVo.getDeletedEducationBackgroundId());
+
         updateTutorApplication(tutorApplicationVo, smIds, ebIds);
 
     }

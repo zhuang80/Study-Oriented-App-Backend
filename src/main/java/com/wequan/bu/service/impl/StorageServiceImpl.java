@@ -121,6 +121,11 @@ public class StorageServiceImpl implements StorageService {
         return null;
     }
 
+    @Override
+    public void deleteObject(String key) {
+        s3.deleteObject(DeleteObjectRequest.builder().bucket(bucket).key(key).build());
+    }
+
     private S3Client getS3Client() {
 
         AwsSessionCredentials awsCreds = AwsSessionCredentials.create(ACCESS_KEY, SECRET_KEY, "");

@@ -15,4 +15,8 @@
         FROM ${schema}.wq_tutor_application_education_background
         WHERE id IN ${ids}
     </select>
+    <delete id="deleteByPrimaryKey">
+        DELETE FROM ${schema}.wq_tutor_application_education_background
+        WHERE id = #{id, jdbcType=INTEGER}
+    </delete>
 </mapper>

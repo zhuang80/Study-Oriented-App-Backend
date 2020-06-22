@@ -183,4 +183,16 @@ public class MaterialServiceImpl extends AbstractService<Material> implements Ma
         }
         return idList;
     }
+
+    @Override
+    public void deleteById(Integer id){
+        //get the file meta data
+        TutorApplicationSupportMaterial supportMaterial = supportMaterialMapper.selectByPrimaryKey(id);
+        if(supportMaterial != null) {
+            //delete file from S3
+            storageService.deleteObject(supportMaterial.getStorePath());
+            //delete file meta data from table
+            supportMaterialMapper.deleteByPrimaryKey(id);
+        }
+    }
 }
