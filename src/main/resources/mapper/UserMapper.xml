@@ -43,7 +43,6 @@
     delete from ${schema}.wq_user_profile
     where id = #{id,jdbcType=INTEGER}
   </delete>
-
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.User" useGeneratedKeys="true">
     insert into ${schema}.wq_user_profile
     <trim prefix="(" suffix=")" suffixOverrides=",">
