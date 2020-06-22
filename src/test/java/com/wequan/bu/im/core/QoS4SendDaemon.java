@@ -13,6 +13,9 @@ import com.wequan.bu.im.protocal.Protocal;
 
 //import org.jdesktop.swingworker.SwingWorker;
 
+/**
+ * @author zhen
+ */
 public class QoS4SendDaemon {
     private final static String TAG = QoS4SendDaemon.class.getSimpleName();
 

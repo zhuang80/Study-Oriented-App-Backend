@@ -10,6 +10,9 @@ import com.wequan.bu.im.ClientCore;
 import com.wequan.bu.im.utils.Log;
 import com.wequan.bu.im.protocal.Protocal;
 
+/**
+ * @author zhen
+ */
 public class QoS4ReciveDaemon {
     private final static String TAG = QoS4ReciveDaemon.class.getSimpleName();
 

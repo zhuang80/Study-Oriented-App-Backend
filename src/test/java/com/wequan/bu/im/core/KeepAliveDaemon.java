@@ -9,6 +9,9 @@ import javax.swing.Timer;
 import com.wequan.bu.im.ClientCore;
 import com.wequan.bu.im.utils.Log;
 
+/**
+ * @author zhen
+ */
 public class KeepAliveDaemon {
     private final static String TAG = KeepAliveDaemon.class.getSimpleName();
 

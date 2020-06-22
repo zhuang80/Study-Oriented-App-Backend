@@ -6,6 +6,9 @@ import com.wequan.bu.im.ClientCore;
 import com.wequan.bu.im.conf.ConfigEntity;
 import com.wequan.bu.im.utils.Log;
 
+/**
+ * @author zhen
+ */
 public class LocalUDPSocketProvider {
     private final static String TAG = LocalUDPSocketProvider.class.getSimpleName();
 

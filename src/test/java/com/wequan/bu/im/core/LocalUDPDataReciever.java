@@ -15,6 +15,9 @@ import com.wequan.bu.im.protocal.ProtocalType;
 import com.wequan.bu.im.protocal.s.PErrorResponse;
 import com.wequan.bu.im.protocal.s.PLoginInfoResponse;
 
+/**
+ * @author zhen
+ */
 public class LocalUDPDataReciever {
     private final static String TAG = LocalUDPDataReciever.class.getSimpleName();
 

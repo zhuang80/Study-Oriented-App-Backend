@@ -14,6 +14,9 @@ import com.wequan.bu.im.protocal.ProtocalFactory;
 import com.wequan.bu.im.protocal.ErrorCode;
 import com.wequan.bu.im.protocal.Protocal;
 
+/**
+ * @author zhen
+ */
 public class LocalUDPDataSender {
     private final static String TAG = LocalUDPDataSender.class.getSimpleName();
 

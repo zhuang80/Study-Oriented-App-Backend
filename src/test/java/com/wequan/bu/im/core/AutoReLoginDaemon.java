@@ -10,6 +10,9 @@ import com.wequan.bu.im.utils.Log;
 
 //import org.jdesktop.swingworker.SwingWorker;
 
+/**
+ * @author zhen
+ */
 public class AutoReLoginDaemon {
     private final static String TAG = AutoReLoginDaemon.class.getSimpleName();
 
