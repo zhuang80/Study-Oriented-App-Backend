@@ -18,7 +18,6 @@ public class JsonReturnHandler implements HandlerMethodReturnValueHandler{
     public boolean supportsReturnType(MethodParameter returnType) {
         boolean hasJson = returnType.getMethodAnnotation(JSON.class) != null;
         boolean hasJsons = returnType.getMethodAnnotation(JSONS.class) != null;
-        System.out.println("has JSON or JSONS annotation -------------: " + (hasJson || hasJsons));
         return (hasJson || hasJsons);
     }
 

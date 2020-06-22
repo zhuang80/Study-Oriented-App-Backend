@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.TutorApplicationEducationBackgroundMapper">
+    <insert id="insertList" parameterType="com.wequan.bu.repository.model.TutorApplicationEducationBackground"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO ${schema}.wq_tutor_application_education_background(school_id, degree_id, major_id, gpa, date_from, date_to)
+        VALUES
+        <foreach item="item" collection="list" separator=",">
+            (#{item.schoolId}, #{item.degreeId}, #{item.majorId}, #{item.gpa}, #{item.dateFrom}, #{item.dateTo})
+        </foreach>
+    </insert>
+</mapper>

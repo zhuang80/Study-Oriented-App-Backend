@@ -1,11 +1,13 @@
 package com.wequan.bu.controller;
 
+import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.controller.vo.Appointment;
 import com.wequan.bu.controller.vo.OnlineEvent;
 import com.wequan.bu.controller.vo.TutorReview;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.Tutor;
+import com.wequan.bu.repository.model.extend.TutorRateInfo;
 import com.wequan.bu.repository.model.TutorViewHistory;
 import com.wequan.bu.service.TutorService;
 import io.swagger.annotations.Api;
@@ -31,11 +33,18 @@ public class TutorController {
 
     @Autowired
     private TutorService tutorService;
+    @Autowired
+    private MessageHandler messageHandler;
+
 
     @GetMapping("/tutor/{id}")
     @ApiOperation(value = "Get tutor info", notes = "返回Tutor详情")
     public Result<Tutor> getTutor(@PathVariable("id") Integer tutorId) {
-        Tutor tutor = null;
+        if( tutorId < 0 ){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
+        Tutor tutor = tutorService.findById(tutorId);
         return ResultGenerator.success(tutor);
     }
 
@@ -50,16 +59,20 @@ public class TutorController {
     public Result<List<Tutor>> getTutors(@RequestParam(value = "subjectId", required = false) Integer subjectId,
                                          @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                          @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<Tutor> tutors = tutorService.findTutors(subjectId);
+        List<Tutor> tutors = tutorService.findTutors(subjectId, pageNum, pageSize);
         return ResultGenerator.success(tutors);
     }
 
     @GetMapping("/tutors/popular")
     @ApiOperation(value = "Popular tutors", notes = "返回Tutor列表，按评分和被查看次数排序")
-    public Result<List<Tutor>> getPopularTutors(@RequestParam(value = "subjectId", required = false) Integer subjectId,
+    public Result<List<TutorRateInfo>> getPopularTutors(@RequestParam(value = "subjectId", required = false) Integer subjectId,
                                                 @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                 @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<Tutor> result = null;
+        if(subjectId != null && subjectId < 0 ){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
+        List<TutorRateInfo> result = tutorService.findTopTutors(subjectId, pageNum, pageSize);
         return ResultGenerator.success(result);
     }
 
@@ -80,8 +93,8 @@ public class TutorController {
 
     @GetMapping("/tutor/{id}/public_class")
     @ApiOperation(value = "a list of tutor’s public class", notes = "返回Tutor创建的public class列表")
-    public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer tutorId) {
-        List<OnlineEvent> result = null;
+    public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer userId) {
+        List<OnlineEvent> result = tutorService.findOnlineEventByUserId(userId);
         return ResultGenerator.success(result);
     }
 
@@ -108,7 +121,11 @@ public class TutorController {
     public Result<List<TutorViewHistory>> changeAvailability(@PathVariable("id") Integer tutorId,
                                                        @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                        @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<TutorViewHistory> tutorViewHistories = null;
+        if( tutorId < 0 ){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
+        List<TutorViewHistory> tutorViewHistories = tutorService.findViewHistoryByTutorId(tutorId, pageNum, pageSize);
         return ResultGenerator.success(tutorViewHistories);
     }
 
