@@ -7,6 +7,7 @@ import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.TutorApplication;
 import com.wequan.bu.repository.model.TutorApplicationEducationBackground;
 import com.wequan.bu.repository.model.TutorApplicationLog;
+import com.wequan.bu.repository.model.extend.TutorApplicationFullInfo;
 import com.wequan.bu.service.TutorAdminService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -65,8 +66,8 @@ public class TutorAdminController {
 
     @GetMapping("/user/{id}/tutor_applications/current")
     @ApiOperation(value = "get current tutor application info for user", notes = "返回用户当前tutor申请信息")
-    public Result<TutorApplication> getCurrentTutorApplicationInfo(@PathVariable("id") Integer userId) {
-        TutorApplication result = null;
+    public Result<List<TutorApplicationFullInfo>> getCurrentTutorApplicationInfo(@PathVariable("id") Integer userId) {
+        List<TutorApplicationFullInfo> result = tutorAdminService.findByUserId(userId);
         return ResultGenerator.success(result);
     }
 

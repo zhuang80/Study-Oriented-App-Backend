@@ -9,4 +9,10 @@
             (#{item.schoolId}, #{item.degreeId}, #{item.majorId}, #{item.gpa}, #{item.dateFrom}, #{item.dateTo})
         </foreach>
     </insert>
+    <select id="selectByIds" resultType="com.wequan.bu.repository.model.TutorApplicationEducationBackground">
+        <bind name="ids" value="'('+ ids + ')'" />
+        SELECT *
+        FROM ${schema}.wq_tutor_application_education_background
+        WHERE id IN ${ids}
+    </select>
 </mapper>
