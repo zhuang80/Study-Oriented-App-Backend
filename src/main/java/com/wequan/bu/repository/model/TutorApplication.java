@@ -45,6 +45,7 @@ public class TutorApplication {
     private String supportMaterialIds;
     public TutorApplication(){};
     public TutorApplication(TutorApplicationVo t){
+        this.id = t.getId();
         this.userId = t.getUserId();
         this.briefIntroduction = t.getBriefIntroduction();
         this.currentCity = t.getCurrentCity();

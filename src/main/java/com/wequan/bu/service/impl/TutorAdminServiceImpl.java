@@ -42,42 +42,23 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
     @Async
     @Override
     public void apply(TutorApplicationVo tutorApplicationVo, List<UploadFileWrapper> uploadFileWrapperList) throws IOException {
-        List<Integer> idList = new ArrayList<>();
+        List<Integer> smList = new ArrayList<>();
         List<Integer> ebList = new ArrayList<>();
 
         for(UploadFileWrapper file: uploadFileWrapperList){
-            idList.addAll(materialService.uploadSupportMaterial(file));
+            smList.addAll(materialService.uploadSupportMaterial(file));
         }
+        //support material ids list string
+        String smIds = joinIds(smList);
 
-        String smIds = idList
-                    .stream()
-                    .map(v->String.valueOf(v))
-                    .collect(Collectors.joining(","));
-        String ebIds;
-
-        List<TutorApplicationEducationBackground> educationBackgrounds = tutorApplicationVo.getEducationBackgrounds();
-
-        educationBackgroundMapper.insertList(tutorApplicationVo.getEducationBackgrounds());
-        ebList.addAll(tutorApplicationVo.getEducationBackgrounds()
-                .stream()
-                .map(v -> v.getId())
-                .collect(Collectors.toList()));
-
-        ebIds = ebList
-                .stream()
-                .map(v->String.valueOf(v))
-                .collect(Collectors.joining(","));
+        //education background ids list string
+        ebList.addAll(insertEducationBackground(tutorApplicationVo));
+        String ebIds= joinIds(ebList);
 
         for(TutorApplicationEducationBackground t: tutorApplicationVo.getEducationBackgrounds()){
             System.out.println(t.getId() + "    gpa "+t.getGpa());
         }
-
-        TutorApplication tutorApplication = new TutorApplication(tutorApplicationVo);
-        tutorApplication.setCreateTime(LocalDateTime.now());
-        tutorApplication.setSupportMaterialIds(smIds);
-        tutorApplication.setEducationBackgroundIds(ebIds);
-        tutorApplication.setStatus((short) 0);
-        tutorApplicationMapper.insertSelective(tutorApplication);
+        insertTutorApplication(tutorApplicationVo, smIds, ebIds);
     }
 
     @Override
@@ -100,10 +81,69 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         return tutorApplicationMapper.selectByUserId(userId);
     }
 
+    @Async
+    @Override
+    public void update(TutorApplicationVo tutorApplicationVo, List<UploadFileWrapper> uploadFileWrapperList) throws IOException {
+        List<Integer> smList = new ArrayList<>();
+        List<Integer> ebList = new ArrayList<>();
+
+        for(UploadFileWrapper file: uploadFileWrapperList){
+            smList.addAll(materialService.uploadSupportMaterial(file));
+        }
+        //support material ids list string
+        String smIds = joinIds(smList);
+
+        //education background ids list string
+        ebList.addAll(insertEducationBackground(tutorApplicationVo));
+        String ebIds= joinIds(ebList);
+
+        updateTutorApplication(tutorApplicationVo, smIds, ebIds);
+
+    }
+
     private UploadFileWrapper transferAndWrap(MultipartFile[] multipartFiles, short type, Integer userId) throws IOException {
         List<File> files = materialService.uploadFiles(multipartFiles, OUTPUT_PATH);
         return (files == null ? null : new UploadFileWrapper(type, userId, files));
     }
 
+    /**
+     * join ids using commas as delimiter
+     * @param ids the id list
+     * @return a id list string, ids separated by commas
+     */
+    private String joinIds(List<Integer> ids){
+         return ids.stream()
+                    .map(v->String.valueOf(v))
+                    .collect(Collectors.joining(","));
+    }
 
+    private List<Integer> insertEducationBackground(List<TutorApplicationEducationBackground> educationBackgroundList){
+        educationBackgroundMapper.insertList(educationBackgroundList);
+        return educationBackgroundList
+                .stream()
+                .map(v -> v.getId())
+                .collect(Collectors.toList());
+    }
+    private List<Integer> insertEducationBackground(TutorApplicationVo tutorApplicationVo){
+        return insertEducationBackground(tutorApplicationVo.getEducationBackgrounds());
+    }
+
+    private void insertTutorApplication(TutorApplicationVo tutorApplicationVo, String smIds, String ebIds){
+        TutorApplication tutorApplication = new TutorApplication(tutorApplicationVo);
+        tutorApplication.setCreateTime(LocalDateTime.now());
+        tutorApplication.setSupportMaterialIds(smIds);
+        tutorApplication.setEducationBackgroundIds(ebIds);
+        tutorApplication.setStatus((short) 0);
+        tutorApplicationMapper.insertSelective(tutorApplication);
+    }
+
+    private void updateTutorApplication(TutorApplicationVo tutorApplicationVo, String smIds, String ebIds){
+        TutorApplication tutorApplication = new TutorApplication(tutorApplicationVo);
+        tutorApplication.setCreateTime(tutorApplicationVo.getCreateTime());
+        tutorApplication.setUpdateTime(LocalDateTime.now());
+        tutorApplication.setSupportMaterialIds(tutorApplicationVo.getSupportMaterialIds() + "," + smIds);
+        tutorApplication.setEducationBackgroundIds(tutorApplicationVo.getEducationBackgroundIds()+ "," + ebIds);
+        tutorApplication.setStatus((short) 0);
+        tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
+    }
 }
