@@ -2,8 +2,8 @@
 # configuration for https
 server:
   port: 443
-  servlet:
-    context-path: /api
+#  servlet:
+#    context-path: /api
   ssl:
     key-store: classpath:cert/https_dev_cert.jks
     key-store-password: quanzi@bu
