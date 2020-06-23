@@ -24,3 +24,9 @@ The following guides illustrate how to use some features concretely:
 * Https certification for dev
 1. keytool -genkey -alias https_dev_cert -keypass quanzi@bu -keyalg RSA -sigalg sha256withrsa -keysize 1024 -validity 730 -keystore https_dev_cert.jks -storepass quanzi@bu
 2. keytool -importkeystore -srckeystore https_dev_cert.jks -destkeystore https_dev_cert.jks -deststoretype pkcs12
+
+
+#### IDGen clarification
+1. The purpose is to generate globally unique ids with increasing trend
+2. At present, we use leaf-snowflake algorithm to generate message sequence id(for Instant messaging system)
+3. Snowflake algorithm depends on system clock. When we restart the OS, the clock may go back, which means that some IDs generated next may be duplicate. To avoid this problem, we use redis to generate different worker_id.
