@@ -9,6 +9,7 @@ import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.repository.model.extend.TutorRateInfo;
 import com.wequan.bu.repository.model.TutorViewHistory;
+import com.wequan.bu.service.TutorReviewService;
 import com.wequan.bu.service.TutorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +37,9 @@ public class TutorController {
     private TutorService tutorService;
     @Autowired
     private MessageHandler messageHandler;
+
+    @Autowired
+    private TutorReviewService tutorReviewService;
 
 
     @GetMapping("/tutor/{id}")
@@ -82,7 +87,12 @@ public class TutorController {
     @ApiOperation(value = "Review tutor", notes = "返回评价tutor成功与否")
     public Result reviewTutor(@PathVariable("id") Integer tutorId,
                               @RequestBody TutorReview tutorReview) {
-
+        if(tutorId < 0){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
+        tutorReview.setCreateTime(LocalDateTime.now());
+        tutorReviewService.save(tutorReview);
         return ResultGenerator.success();
     }
 

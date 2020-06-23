@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.TagMapper">
+    <insert id="insertList" parameterType="com.wequan.bu.repository.model.Tag"
+            keyProperty="id" keyColumn="id" useGeneratedKeys="true">
+        INSERT INTO ${schema}.wq_tags(
+                name,
+                category,
+                create_by,
+                create_time)
+        VALUES
+        <foreach item="item" separator="," collection="list">
+           (
+            #{item.name,jdbcType=VARCHAR},
+            #{item.category,jdbcType=SMALLINT},
+            #{item.createBy,jdbcType=INTEGER},
+            #{item.createTime,jdbcType=TIMESTAMP}
+            )
+
+        </foreach>
+    </insert>
+
+    <insert id="insertTutorReviewAndTagRelation" parameterType="com.wequan.bu.repository.model.TutorReviewTag"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO ${schema}.wq_tutor_review_tag(
+                tutor_review_id,
+                tag_id,
+                create_by,
+                create_time)
+        VALUES
+        <foreach item="item" collection="list" separator=",">
+           ( #{item.tutorReviewId,jdbcType=INTEGER},
+            #{item.tagId,jdbcType=SMALLINT},
+            #{item.createBy,jdbcType=INTEGER},
+            #{item.createTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+</mapper>
