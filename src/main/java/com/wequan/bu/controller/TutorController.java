@@ -132,8 +132,8 @@ public class TutorController {
             @ApiImplicitParam(name = "action", value = "1 -> open; 0 -> close")
     })
     public Result changeAvailability(@PathVariable("id") Integer tutorId,
-                                     @RequestParam("action") Integer action) {
-
+                                     @RequestParam("action") Short action) {
+        tutorService.updateAvailability(tutorId, action);
         return ResultGenerator.success();
     }
 

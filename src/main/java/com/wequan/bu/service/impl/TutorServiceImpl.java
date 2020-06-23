@@ -100,6 +100,14 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
         tutorMapper.insertSelective(tutor);
     }
 
+    @Override
+    public void updateAvailability(Integer tutorId, Short action) {
+        Tutor tutor = new Tutor();
+        tutor.setId(tutorId);
+        tutor.setTutorAvailable(action == 1 ? true:false);
+        tutorMapper.updateByPrimaryKeySelective(tutor);
+    }
+
     private Tutor setTutorProfile(TutorApplication tutorApplication){
         Tutor tutor = new Tutor();
         tutor.setUserId(tutorApplication.getUserId());

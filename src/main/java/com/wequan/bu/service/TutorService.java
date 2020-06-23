@@ -33,4 +33,6 @@ public interface TutorService extends Service<Tutor> {
     public List<OnlineEvent> findOnlineEventByUserId(Integer userId);
 
     public void approveTutorApplication(TutorApplication tutorApplication);
+
+    public void updateAvailability(Integer tutorId, Short action);
 }
