@@ -80,10 +80,21 @@
     where bu.wq_user_follow.user_id = #{userId,jdbcType=INTEGER}
   </select>
 
+  <select id="selectUserSelectedSubjectsById" parameterType="java.lang.Integer" resultMap="SubjectsResultMap">
+    select subjects_ids
+    from bu.wq_user_selected_subjects
+    where id = #{userId,jdbcType=INTEGER}
+  </select>
+
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from bu.wq_thread
     where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <delete id="deleteUserSelectedSubjectsById" parameterType="java.lang.Integer">
+    delete from bu.wq_thread_user_selected_subjects
+    where id = #{userId,jdbcType=INTEGER}
   </delete>
 
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.Thread" useGeneratedKeys="true">
@@ -171,7 +182,7 @@
     </trim>
   </insert>
 
-  <insert id="addUserInterestedSubjects" keyColumn="user_id" keyProperty="user_id" parameterType="com.wequan.bu.repository.model.ThreadUserSelectedSubjects" useGeneratedKeys="true">
+  <insert id="addUserInterestedSubjects" keyColumn="user_id" keyProperty="userId" parameterType="com.wequan.bu.repository.model.ThreadUserSelectedSubjects" useGeneratedKeys="true">
     insert into bu.wq_thread_user_selected_subjects(user_id, subject_ids)
     values (#{userId, jdbcType=INTEGER}, #{subject_ids, jdbcType=VARCHAR})
   </insert>

@@ -227,24 +227,37 @@ public class ThreadSeriviceImpl extends AbstractService<Thread> implements Threa
     }
 
     /**
-     *
+     *6/22
      * @param userId
      * @return
      */
     @Override
-    public ThreadUserSelectedSubjects findUsersSubjects(Integer userId){
+    public ThreadUserSelectedSubjects findUsersSelectedSubjects(Integer userId){
+        if(userId!=null){
+            return threadMapper.selectUserSelectedSubjectsById(userId);
+        }
         return null;
     }
 
     /**
-     * 6/20
+     * 6/22
      * @param userId
      * @param subjectsId
      */
     @Override
-    public void addUserSelectedSubject(Integer userId, String subjectsId){
+    public void addUserSelectedSubjects(Integer userId, String subjectsId){
         if(userId!=null && subjectsId!=null){
             threadMapper.addUserInterestedSubjects(userId, subjectsId);
+        }
+    }
+
+    /**
+     * 6/22
+     * @param userId
+     */
+    public void deleteUserSelectedSubjects(Integer userId){
+        if(userId!=null){
+            threadMapper.deleteUserSelectedSubjectsById(userId);
         }
     }
 
@@ -264,8 +277,8 @@ public class ThreadSeriviceImpl extends AbstractService<Thread> implements Threa
             if(pageSize==null){
                 pageSize=10;
             }
-            RowBounds r = new RowBounds(pageNum,pageSize);
-            return threadMapper.selectByUserFollowingId(userId, r);
+            RowBounds rowBounds = new RowBounds(pageNum,pageSize);
+            return threadMapper.selectByUserFollowingId(userId, rowBounds);
         }
         return null;
     }

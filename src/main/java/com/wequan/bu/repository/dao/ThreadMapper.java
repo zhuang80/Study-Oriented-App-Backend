@@ -113,7 +113,7 @@ public interface ThreadMapper extends GeneralMapper<Thread>{
     void dislikeReplyOfThread(Integer threadId, Integer replyId, Integer userId);
 
     /**
-     * 6/20
+     * 6/22
      * @param userId
      * @param subjectsId
      */
@@ -143,5 +143,13 @@ public interface ThreadMapper extends GeneralMapper<Thread>{
      */
     List<Thread> selectByUserFollowingId(Integer userId, RowBounds rowBounds);
 
+    /**
+     * 6/22
+     * @param userId
+     * @return
+     */
+    ThreadUserSelectedSubjects selectUserSelectedSubjectsById(Integer userId);
+
+    void deleteUserSelectedSubjectsById(Integer userId);
 
 }
