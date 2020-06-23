@@ -2,6 +2,7 @@ package com.wequan.bu.controller.vo;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -18,8 +19,8 @@ public class OnlineEvent extends BaseVo {
     private short status;
     private String method;
     private String methodDetail;
-    private Date startTime;
-    private Date endTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private byte[] logo;
     private byte[] image;
     private boolean visible;

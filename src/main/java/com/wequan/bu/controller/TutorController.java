@@ -113,8 +113,9 @@ public class TutorController {
 
     @GetMapping("/tutor/{id}/public_class")
     @ApiOperation(value = "a list of tutor’s public class", notes = "返回Tutor创建的public class列表")
-    public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer userId) {
-        List<OnlineEvent> result = tutorService.findOnlineEventByUserId(userId);
+    public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer tutorId) {
+        Tutor tutor = tutorService.findById(tutorId);
+        List<OnlineEvent> result = tutorService.findOnlineEventByUserId(tutor.getUser().getId());
         return ResultGenerator.success(result);
     }
 
