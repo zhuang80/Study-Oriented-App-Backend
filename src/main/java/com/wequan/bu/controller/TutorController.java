@@ -9,6 +9,7 @@ import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.repository.model.extend.TutorRateInfo;
 import com.wequan.bu.repository.model.TutorViewHistory;
+import com.wequan.bu.service.AppointmentService;
 import com.wequan.bu.service.TutorReviewService;
 import com.wequan.bu.service.TutorService;
 import io.swagger.annotations.Api;
@@ -40,6 +41,9 @@ public class TutorController {
 
     @Autowired
     private TutorReviewService tutorReviewService;
+
+    @Autowired
+    private AppointmentService appointmentService;
 
 
     @GetMapping("/tutor/{id}")
@@ -99,7 +103,11 @@ public class TutorController {
     @GetMapping("/tutor/{id}/appointments")
     @ApiOperation(value = "a list of tutor’s appointment", notes = "返回Tutor与用户的appointment列表")
     public Result<List<Appointment>> getAppointments(@PathVariable("id") Integer tutorId) {
-        List<Appointment> result = null;
+        if(tutorId < 0){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
+        List<Appointment> result = appointmentService.findByTutorId(tutorId);
         return ResultGenerator.success(result);
     }
 
