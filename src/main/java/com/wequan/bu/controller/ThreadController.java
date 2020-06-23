@@ -41,6 +41,14 @@ public class ThreadController {
         return ResultGenerator.success(result);
     }
 
+    /**
+     * 6/18
+     * @param schoolId
+     * @param tagId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @GetMapping("/thread/myschool")
     @ApiOperation(value = "a list of thread for user's school and selected tag", notes = "根据school id, tag id获取thread列表，按创建时间排序")
     @ApiResponses(
@@ -56,6 +64,11 @@ public class ThreadController {
         return ResultGenerator.success(result);
     }
 
+    /**
+     * 6/18
+     * @param threadId
+     * @return
+     */
     @GetMapping("/thread/{id}")
     @ApiOperation(value = "thread detail", notes = "返回帖子详情")
     @ApiResponses(
@@ -67,6 +80,13 @@ public class ThreadController {
         return ResultGenerator.success(result);
     }
 
+    /**
+     * 6/22
+     * @param threadId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @GetMapping("/thread/{id}/direct_replies")
     @ApiOperation(value = "a list of direct replies to the thread", notes = "返回第一层（直接回复帖子的）回帖列表")
     @ApiResponses(
@@ -99,6 +119,11 @@ public class ThreadController {
         return ResultGenerator.success(result);
     }
 
+    /**
+     * 6/19
+     * @param thread
+     * @return
+     */
     @PostMapping("/thread")
     @ApiOperation(value = "add thread", notes = "返回创建帖子成功与否")
     public Result addThread(@RequestBody Thread thread) {
@@ -246,14 +271,25 @@ public class ThreadController {
         return ResultGenerator.success(result);
     }
 
+    /**
+     * 6/22
+     * @param userId
+     * @return
+     */
     @GetMapping("/thread/study_help/subjects")
     @ApiOperation(value = "a list of user interested subjects", notes = "根据user id获取之前感兴趣的科目列表")
     public Result<ThreadUserSelectedSubjects> getUserSelectedSubjects(@RequestParam("userId") Integer userId) {
 
-        ThreadUserSelectedSubjects result = null;
+        ThreadUserSelectedSubjects result = threadService.findUsersSelectedSubjects(userId);
         return ResultGenerator.success(result);
     }
 
+    /**
+     * 6/22
+     * @param userId
+     * @param subjectIds
+     * @return
+     */
     @PutMapping("/thread/study_help/subject")
     @ApiOperation(value = "update user interested subjects", notes = "根据user id更新感兴趣的科目列表")
     @ApiImplicitParams({
@@ -261,13 +297,19 @@ public class ThreadController {
     })
     public Result addUserSelectedSubjects(@RequestParam("userId") Integer userId,
                                           @RequestParam("subjectIds") String subjectIds) {
-
+        threadService.addUserSelectedSubjects(userId, subjectIds);
         return ResultGenerator.success();
     }
 
+    /**
+     * 6/22
+     * @param userId
+     * @return
+     */
     @DeleteMapping("/thread/study_help/subject")
     @ApiOperation(value = "delete user interested subjects", notes = "根据user id删除感兴趣的科目列表")
     public Result deleteUserSelectedSubjects(@RequestParam("userId") Integer userId) {
+        threadService.deleteUserSelectedSubjects(userId);
         return ResultGenerator.success();
     }
 

@@ -101,18 +101,24 @@ public interface ThreadService extends Service<Thread> {
     public void dislikeReplyOfThread(Integer threadId, Integer replyId, Integer userId);
 
     /**
-     * 6/20
+     * 6/22
      * @param userId
      * @return
      */
-    public ThreadUserSelectedSubjects findUsersSubjects(Integer userId);
+    public ThreadUserSelectedSubjects findUsersSelectedSubjects(Integer userId);
 
     /**
-     * 6/20
+     * 6/22
      * @param userId
      * @param subjectsId
      */
-    public void addUserSelectedSubject(Integer userId, String subjectsId);
+    public void addUserSelectedSubjects(Integer userId, String subjectsId);
+
+    /**
+     * 6/22
+     * @param userId
+     */
+    public void deleteUserSelectedSubjects(Integer userId);
 
     /**
      * 6/22
