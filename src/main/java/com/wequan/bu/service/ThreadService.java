@@ -3,6 +3,7 @@ package com.wequan.bu.service;
 import com.wequan.bu.repository.model.Thread;
 import com.wequan.bu.repository.model.ThreadStream;
 import com.wequan.bu.repository.model.ThreadUserSelectedSubjects;
+import com.wequan.bu.repository.model.extend.ThreadBriefInfo;
 
 import java.util.List;
 
@@ -128,4 +129,30 @@ public interface ThreadService extends Service<Thread> {
      * @return
      */
     public List<Thread> findByUserFollowingId(Integer userId, Integer pageNum, Integer pageSize);
+
+    /**
+     * 6/23
+     * @param schoolId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    public List<Thread> findBySchoolIdOrderByView(Integer schoolId, Integer pageNum, Integer pageSize);
+
+    /**
+     * 6/23
+     * @param threadId
+     * @param userId
+     * @param reason
+     */
+    public void reportThread(Integer threadId, Integer userId, String reason);
+
+    /**
+     * 6/23
+     * @param threadId
+     * @param replyId
+     * @param userId
+     * @param reason
+     */
+    public void reportReplyToThread(Integer threadId, Integer replyId, Integer userId, String reason);
 }

@@ -32,6 +32,15 @@
     <result column="subjects_ids" jdbcType="VARCHAR" property="subjectIds"/>
   </resultMap>
 
+  <resultMap id="ReportRecordResultMap" type="com.wequan.bu.repository.model.ReportRecord">
+    <id column="id" jdbcType="INTEGER" property="id"/>
+    <result column="user_id" jdbcType="INTEGER" property="userId"/>
+    <result column="resource_type" jdbcType="SMALLINT" property="resourceType"/>
+    <result column="resource_id" jdbcType="INTEGER" property="resourceId"/>
+    <result column="report_time" jdbcType="TIMESTAMP" property="reportTime"/>
+    <result column="reason" jdbcType="VARCHAR" property="reason"/>
+  </resultMap>
+
   <sql id="Base_Column_List">
     id, create_by, title, category, tag_id, content, study_points_bonus, create_time, 
     update_time, likes, dislikes
@@ -86,6 +95,14 @@
     where id = #{userId,jdbcType=INTEGER}
   </select>
 
+  <select id="selectedBySchoolIdOrderedByView" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select bu.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
+    update_time, likes, dislikes
+    from bu.wq_thread join bu.wq_user_profile
+    on bu.wq_thread.create_by = bu.wq_user_profile.id
+    where school_id = #{schoolId, jdbcType=INTEGER}
+    order by num_of_view desc
+  </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from bu.wq_thread
@@ -97,7 +114,7 @@
     where id = #{userId,jdbcType=INTEGER}
   </delete>
 
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.Thread" useGeneratedKeys="true">
+  <insert id="insertThread" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.Thread" useGeneratedKeys="true">
     insert into bu.wq_thread (create_by, title, category, 
       tag_id, content, study_points_bonus, 
       create_time, update_time, likes, 
@@ -185,6 +202,12 @@
   <insert id="addUserInterestedSubjects" keyColumn="user_id" keyProperty="userId" parameterType="com.wequan.bu.repository.model.ThreadUserSelectedSubjects" useGeneratedKeys="true">
     insert into bu.wq_thread_user_selected_subjects(user_id, subject_ids)
     values (#{userId, jdbcType=INTEGER}, #{subject_ids, jdbcType=VARCHAR})
+  </insert>
+
+  <insert id="reportThread" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.ReportRecord">
+    insert into bu.wq_report_record(id, user_id, resource_type, resource_id, report_time, reason)
+    value (#{id, jdbcType=INTEGER},#{userId, jdbcType=INTEGER},#{resourceType, jdbcType=SMALLINT},#{threadId, jdbcType=INTEGER},
+    #{reportTime, jdbcType=TIMESTAMP},#{reason, jdbcType=VARCHAR},)
   </insert>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.Thread">

@@ -29,6 +29,13 @@ public class ThreadController {
 
     private ThreadService threadService;
 
+    /**
+     * 6/23
+     * @param schoolId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @GetMapping("/thread/myschool/top")
     @ApiOperation(value = "a list of top thread for user's school", notes = "根据school id获取thread列表，按查看次数排序")
     @ApiResponses(
@@ -37,7 +44,7 @@ public class ThreadController {
     public Result<List<Thread>> getMySchoolTopThreads(@RequestParam("schoolId") Integer schoolId,
                                                       @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                       @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<Thread> result = null;
+        List<Thread> result = threadService.findBySchoolIdOrderByView(schoolId, pageNum, pageSize);
         return ResultGenerator.success(result);
     }
 
@@ -148,11 +155,19 @@ public class ThreadController {
         return null;
     }
 
+    /**
+     * 6/23
+     * @param threadId
+     * @param userId
+     * @param reason
+     * @return
+     */
     @PostMapping("/thread/report")
     @ApiOperation(value = "report thread", notes = "对帖子进行举报")
     public Result reportThread(@RequestParam("threadId") Integer threadId,
                                @RequestParam("userId") Integer userId,
                                @RequestParam("reason") String reason) {
+        threadService.reportThread(threadId, userId, reason);
         Result result = ResultGenerator.success();
         return result;
     }

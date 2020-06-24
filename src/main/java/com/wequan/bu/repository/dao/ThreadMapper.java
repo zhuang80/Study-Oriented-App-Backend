@@ -1,12 +1,14 @@
 package com.wequan.bu.repository.dao;
 
+import com.wequan.bu.repository.model.ReportRecord;
 import com.wequan.bu.repository.model.Thread;
 import com.wequan.bu.repository.model.ThreadStream;
 import com.wequan.bu.repository.model.ThreadUserSelectedSubjects;
-import io.swagger.models.auth.In;
+import com.wequan.bu.repository.model.extend.ThreadBriefInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.RowBounds;
 
+import java.sql.Date;
 import java.util.List;
 
 @Mapper
@@ -26,7 +28,7 @@ public interface ThreadMapper extends GeneralMapper<Thread>{
      *
      * @mbg.generated
      */
-    int insert(Thread record);
+    int insertThread(Thread record);
 
     /**
      *6/20
@@ -150,6 +152,30 @@ public interface ThreadMapper extends GeneralMapper<Thread>{
      */
     ThreadUserSelectedSubjects selectUserSelectedSubjectsById(Integer userId);
 
+    /**
+     * 6/22
+     * @param userId
+     */
     void deleteUserSelectedSubjectsById(Integer userId);
+
+    /**
+     * 6/23
+     * @param schoolId
+     * @param rowBounds
+     * @return
+     */
+    List<Thread> selectedBySchoolIdOrderedByView(Integer schoolId, RowBounds rowBounds);
+
+    /**
+     * 6/23
+     * @param reportRecord
+     */
+    void reportThread(ReportRecord reportRecord);
+
+    /**
+     * 6/23
+     * @param reportRecord
+     */
+    void reportReplyToThread(ReportRecord reportRecord);
 
 }

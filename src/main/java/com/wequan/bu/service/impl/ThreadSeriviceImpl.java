@@ -1,15 +1,18 @@
 package com.wequan.bu.service.impl;
 
 import com.wequan.bu.repository.dao.ThreadMapper;
+import com.wequan.bu.repository.model.ReportRecord;
 import com.wequan.bu.repository.model.Thread;
 import com.wequan.bu.repository.model.ThreadStream;
 import com.wequan.bu.repository.model.ThreadUserSelectedSubjects;
+import com.wequan.bu.repository.model.extend.ThreadBriefInfo;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.ThreadService;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import java.sql.Date;
 import java.util.List;
 
 public class ThreadSeriviceImpl extends AbstractService<Thread> implements ThreadService {
@@ -37,7 +40,7 @@ public class ThreadSeriviceImpl extends AbstractService<Thread> implements Threa
     @Override
     public int insert(Thread record){
         if(record!=null){
-            return threadMapper.insert(record);
+            return threadMapper.insertThread(record);
         }
         return -1;
     }
@@ -281,5 +284,48 @@ public class ThreadSeriviceImpl extends AbstractService<Thread> implements Threa
             return threadMapper.selectByUserFollowingId(userId, rowBounds);
         }
         return null;
+    }
+
+    /**
+     * 6/23
+     * @param schoolId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    public List<Thread> findBySchoolIdOrderByView(Integer schoolId, Integer pageNum, Integer pageSize){
+        if(schoolId!=null){
+            if(pageNum==null){
+                pageNum=1;
+            }
+            if(pageSize==null){
+                pageSize=10;
+            }
+            RowBounds rowBounds = new RowBounds(pageNum,pageSize);
+            return threadMapper.selectedBySchoolIdOrderedByView(schoolId, rowBounds);
+        }
+        return null;
+    }
+
+    /**
+     * 6/23
+     * @param threadId
+     * @param userId
+     * @param reason
+     */
+    @Override
+    public void reportThread(Integer threadId, Integer userId, String reason){
+        if(threadId!=null && userId!=null && reason!=null){
+            Date reportDate = new Date(new java.util.Date().getTime());
+            ReportRecord reportRecord = new ReportRecord(userId, (short) 1, threadId, reportDate, reason);
+            threadMapper.reportThread(reportRecord);
+        }
+    }
+
+    @Override
+    public void reportReplyToThread(Integer threadId, Integer replyId, Integer userId, String reason){
+        if(threadId!=null && replyId!=null && userId!=null && reason!=null){
+
+        }
     }
 }
