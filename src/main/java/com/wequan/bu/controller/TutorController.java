@@ -48,12 +48,17 @@ public class TutorController {
 
     @GetMapping("/tutor/{id}")
     @ApiOperation(value = "Get tutor info", notes = "返回Tutor详情")
-    public Result<Tutor> getTutor(@PathVariable("id") Integer tutorId) {
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userId", value = "当前用户的id, 若当前用户非tutor本人，便会增加tutor profile的被浏览的历史记录")
+    })
+    public Result<Tutor> getTutor(@PathVariable("id") Integer tutorId,
+                                  @RequestParam(value="userId", required=false) Integer userId) {
         if( tutorId < 0 ){
             String message = messageHandler.getFailResponseMessage("40008");
             return ResultGenerator.fail(message);
         }
         Tutor tutor = tutorService.findById(tutorId);
+        tutorService.logTutorViewHistory(tutor, userId);
         return ResultGenerator.success(tutor);
     }
 
