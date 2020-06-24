@@ -51,5 +51,11 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
         emailService.sendRegisterEmail(receiver, userName);
     }
 
+    @Override
+    public boolean confirmEmail(String email) {
+        int result = userMapper.updateEmailVerifiedByEmail(email, true);
+        return result > 0;
+    }
+
 
 }

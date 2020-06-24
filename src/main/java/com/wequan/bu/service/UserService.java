@@ -33,5 +33,10 @@ public interface UserService extends Service<User> {
      */
     void sendConfirmEmail(String receiver, String useName);
 
-
+    /**
+     * 邮箱得到认证
+     * @param email email
+     * @return 更新数据库成功与否
+     */
+    boolean confirmEmail(String email);
 }
