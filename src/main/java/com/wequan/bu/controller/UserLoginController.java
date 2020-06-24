@@ -1,6 +1,7 @@
 package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
+import com.wequan.bu.config.properties.AppProperties;
 import com.wequan.bu.controller.vo.LoginSignUp;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
@@ -11,6 +12,8 @@ import com.wequan.bu.security.component.TokenProvider;
 import com.wequan.bu.security.oauth2.user.AuthProvider;
 import com.wequan.bu.service.UserService;
 import com.wequan.bu.util.GeneralTool;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -24,10 +27,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -51,6 +56,8 @@ public class UserLoginController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private TokenProvider tokenProvider;
+    @Autowired
+    private AppProperties appProperties;
 
     @PostMapping("/user/register")
     @ApiOperation(value = "user register", notes = "返回注册信息")
@@ -89,10 +96,11 @@ public class UserLoginController {
         user.setEmail(email);
         user.setProvider(AuthProvider.LOCAL.toString());
         user.setCredential(passwordEncoder.encode(password));
+        user.setCreateTime(new Date());
         boolean success = userService.registerUser(user);
         if (success) {
             //send confirm email
-            userService.sendConfirmEmail("bingo.tech.20@gmail.com", "Chris");
+            userService.sendConfirmEmail(email, userName);
             return ResultGenerator.success();
         } else {
             return ResultGenerator.fail(500, messageHandler.getMessage("500"));
@@ -128,9 +136,21 @@ public class UserLoginController {
 
     @GetMapping("/user/e-confirm")
     @ApiOperation(value = "verify user", notes = "返回验证注册用户信息")
-    public String emailConfirm(@RequestParam("tokenKey") String tokenKey) {
-
-        return "";
+    public Result emailConfirm(@RequestParam("token") String token) {
+        Result result;
+        if (StringUtils.hasText(token) && tokenProvider.validateToken(token)) {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(appProperties.getAuth().getTokenSecret())
+                    .parseClaimsJws(token)
+                    .getBody();
+            String subject = claims.getSubject();
+            String email = subject.split("\\|\\|")[0];
+            userService.confirmEmail(email);
+            result = ResultGenerator.success();
+        } else {
+            result = ResultGenerator.fail(messageHandler.getMessage("40099"));
+        }
+        return result;
     }
 
     @PostMapping("/user/reset-password")

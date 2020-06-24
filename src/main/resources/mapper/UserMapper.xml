@@ -237,6 +237,11 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <update id="updateEmailVerifiedByEmail">
+    update ${schema}.wq_user_profile
+    set email_verified = #{verified,jdbcType=BIT}
+    where email = #{email,jdbcType=VARCHAR}
+  </update>
 
   <select id="selectByPrimaryKey" resultMap="BaseResultMap">
     select <include refid="Base_Column_List" />
