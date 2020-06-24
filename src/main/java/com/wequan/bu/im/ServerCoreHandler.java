@@ -1,5 +1,6 @@
 package com.wequan.bu.im;
 
+import com.wequan.bu.im.idgen.snowflake.SnowflakeIDGenImpl;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import com.wequan.bu.im.event.MessageQoSEventListenerS2C;
@@ -72,7 +73,9 @@ public class ServerCoreHandler {
 
     public void messageReceived(Channel session, ByteBuf bytebuf) throws Exception {
         Protocal pFromClient = ServerToolKits.fromIOBuffer(bytebuf);
-
+        if(pFromClient.getMsgId() == -1) {
+            pFromClient.setMsgId(SnowflakeIDGenImpl.getInstance().get(null).getId());
+        }
         String remoteAddress = ServerToolKits.clientInfoToString(session);
 //    	logger.info("---------------------------------------------------------");
 //    	logger.info("[IMCORE-netty] << 收到客户端"+remoteAddress+"的消息:::"+pFromClient.toGsonString());

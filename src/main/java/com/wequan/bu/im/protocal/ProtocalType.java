@@ -4,8 +4,10 @@ package com.wequan.bu.im.protocal;
  * @author zhen
  */
 public interface ProtocalType {
-    //------------------------------------------------------- from client
-    public interface C {
+    /**
+     * from client
+     */
+    interface C {
         int FROM_CLIENT_TYPE_OF_LOGIN = 0;
         int FROM_CLIENT_TYPE_OF_KEEP$ALIVE = 1;
         int FROM_CLIENT_TYPE_OF_COMMON$DATA = 2;
@@ -16,8 +18,10 @@ public interface ProtocalType {
         int FROM_CLIENT_TYPE_OF_ECHO = 5;
     }
 
-    //------------------------------------------------------- from server
-    public interface S {
+    /**
+     * from server
+     */
+    interface S {
         int FROM_SERVER_TYPE_OF_RESPONSE$LOGIN = 50;
         int FROM_SERVER_TYPE_OF_RESPONSE$KEEP$ALIVE = 51;
 

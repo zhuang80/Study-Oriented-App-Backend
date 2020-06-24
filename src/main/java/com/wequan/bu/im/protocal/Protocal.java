@@ -8,6 +8,7 @@ import com.google.gson.Gson;
  * @author zhen
  */
 public class Protocal {
+    private long msgId = -1;
     private boolean bridge = false;
     private int type = 0;
     private String dataContent = null;
@@ -45,6 +46,14 @@ public class Protocal {
         } else {
             fp = fingerPrint;
         }
+    }
+
+    public long getMsgId() {
+        return msgId;
+    }
+
+    public void setMsgId(long msgId) {
+        this.msgId = msgId;
     }
 
     public int getType() {
