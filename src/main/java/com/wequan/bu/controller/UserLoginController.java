@@ -24,7 +24,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -56,45 +55,48 @@ public class UserLoginController {
     @PostMapping("/user/register")
     @ApiOperation(value = "user register", notes = "返回注册信息")
     @ApiModelProperty(value = "user", notes = "用户信息的json串")
-    @Transactional(rollbackFor = Exception.class)
     public Result register(@RequestBody LoginSignUp loginSignUp) {
         String userName = loginSignUp.getUserName();
         String email = loginSignUp.getEmail();
         String password = loginSignUp.getPassword();
         //check parameters
-        String msg = null;
+        String msg;
         if (!GeneralTool.checkUsername(userName)) {
-            msg = messageHandler.getFailResponseMessage("40001", "User Name");
+            msg = messageHandler.getMessage("40001", "User Name");
             return ResultGenerator.fail(msg);
         }
         if (!GeneralTool.checkEmail(email)) {
-            msg = messageHandler.getFailResponseMessage("40001", "Email");
+            msg = messageHandler.getMessage("40001", "Email");
             return ResultGenerator.fail(msg);
         }
         if (!GeneralTool.checkPassword(password)) {
-            msg = messageHandler.getFailResponseMessage("40001", "Password");
+            msg = messageHandler.getMessage("40001", "Password");
             return ResultGenerator.fail(msg);
         }
         //check email registered
         if (userService.checkEmailRegistered(email)) {
-            msg = messageHandler.getFailResponseMessage("40002", email);
+            msg = messageHandler.getMessage("40002", email);
             return ResultGenerator.fail(msg);
         }
         //check username registered
-        //to do
-
+        if (userService.checkUerNameRegistered(userName)) {
+            msg = messageHandler.getMessage("40002", email);
+            return ResultGenerator.fail(msg);
+        }
         //add user info
         User user = new User();
         user.setUserName(userName);
         user.setEmail(email);
         user.setProvider(AuthProvider.LOCAL.toString());
         user.setCredential(passwordEncoder.encode(password));
-        int result = userMapper.insertSelective(user);
-
-        //send confirm email - to do with AWS
-        userService.sendConfirmEmail("ccyzhope@gmail.com", "Chris");
-
-        return ResultGenerator.success(userName);
+        boolean success = userService.registerUser(user);
+        if (success) {
+            //send confirm email
+            userService.sendConfirmEmail("bingo.tech.20@gmail.com", "Chris");
+            return ResultGenerator.success();
+        } else {
+            return ResultGenerator.fail(500, messageHandler.getMessage("500"));
+        }
     }
 
     @PostMapping("/user/login")
@@ -141,7 +143,7 @@ public class UserLoginController {
     @ApiOperation(value = "a list of users", notes = "返回用户列表")
     public String getAll() {
         StringBuilder result = new StringBuilder();
-        userService.findAll().stream().map(user -> user.getEmail()).forEach(e -> result.append(e));
+        userService.findAll().stream().map(User::getEmail).forEach(result::append);
         return result.toString();
     }
 
