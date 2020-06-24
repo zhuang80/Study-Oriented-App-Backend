@@ -21,13 +21,6 @@
                      select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey" />
     </resultMap>
 
-    <resultMap id="ViewHistoryResultMap" type="com.wequan.bu.repository.model.TutorViewHistory">
-        <id property="id" jdbcType="INTEGER" column="id" />
-        <result property="userId" jdbcType="INTEGER" column="user_id" />
-        <result property="tutorId" jdbcType="INTEGER" column="tutor_id" />
-        <result property="viewTime" jdbcType="TIMESTAMP" column="view_time" />
-    </resultMap>
-
     <select id="selectTutors" resultMap="TutorRateResultMap">
         WITH temp_rate AS(
             SELECT
@@ -74,12 +67,6 @@
         SELECT *
         FROM ${schema}.wq_tutor_profile tp
         WHERE tp.id = #{id, jdbcType=INTEGER}
-    </select>
-
-    <select id="selectViewHistoryByTutorId" resultMap="ViewHistoryResultMap">
-        SELECT *
-        FROM ${schema}.wq_tutor_view_history tvh
-        WHERE tvh.tutor_id = #{tutor_id}
     </select>
 
     <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.Tutor">

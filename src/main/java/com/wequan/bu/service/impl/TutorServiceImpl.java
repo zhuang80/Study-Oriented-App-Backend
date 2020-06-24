@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.wequan.bu.controller.vo.OnlineEvent;
 import com.wequan.bu.repository.dao.OnlineEvenMapper;
 import com.wequan.bu.repository.dao.TutorMapper;
+import com.wequan.bu.repository.dao.TutorViewHistoryMapper;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.repository.model.TutorApplication;
 import com.wequan.bu.repository.model.TutorViewHistory;
@@ -35,6 +36,9 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
 
     @Autowired
     private OnlineEvenMapper onlineEvenMapper;
+
+    @Autowired
+    private TutorViewHistoryMapper tutorViewHistoryMapper;
 
     @PostConstruct
     public void postConstruct() {
@@ -86,7 +90,7 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
             pageSize = 10;
         }
         PageHelper.startPage(pageNum, pageSize);
-        return tutorMapper.selectViewHistoryByTutorId(tutorId);
+        return tutorViewHistoryMapper.selectByTutorId(tutorId);
     }
 
     @Override
@@ -106,6 +110,20 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
         tutor.setId(tutorId);
         tutor.setTutorAvailable(action == 1 ? true:false);
         tutorMapper.updateByPrimaryKeySelective(tutor);
+    }
+
+    @Override
+    public void logTutorViewHistory(Tutor tutor, Integer userId) {
+        /** check whether the user who view the tutor profile is the owner of the profile
+         * only log view history when the user is not the owner of the profile
+         */
+        if(!tutor.getUser().getId().equals(userId)){
+            TutorViewHistory viewHistory = new TutorViewHistory();
+            viewHistory.setUserId(userId);
+            viewHistory.setTutorId(tutor.getId());
+            viewHistory.setViewTime(LocalDateTime.now());
+            tutorViewHistoryMapper.insertSelective(viewHistory);
+        }
     }
 
     private Tutor setTutorProfile(TutorApplication tutorApplication){
