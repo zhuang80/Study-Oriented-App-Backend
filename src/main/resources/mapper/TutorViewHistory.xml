@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.TutorViewHistoryMapper">
+
+
+    <select id="selectByTutorId" resultType="com.wequan.bu.repository.model.TutorViewHistory">
+        SELECT *
+        FROM ${schema}.wq_tutor_view_history tvh
+        WHERE tvh.tutor_id = #{tutor_id}
+    </select>
+
+    <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.TutorViewHistory">
+        INSERT INTO ${schema}.wq_tutor_view_history(user_id, tutor_id, view_time)
+        VALUES(#{userId}, #{tutorId}, #{viewTime})
+    </insert>
+</mapper>
