@@ -168,14 +168,21 @@ public interface ThreadMapper extends GeneralMapper<Thread>{
 
     /**
      * 6/23
-     * @param reportRecord
+     * @param threadId
+     * @param userId
+     * @param reason
+     * @param reportDate
      */
-    void reportThread(ReportRecord reportRecord);
+    void reportThread(Integer threadId, Integer userId, String reason, Date reportDate);
 
     /**
      * 6/23
-     * @param reportRecord
+     * @param threadId
+     * @param replyId
+     * @param userId
+     * @param reason
+     * @param reportDate
      */
-    void reportReplyToThread(ReportRecord reportRecord);
+    void reportReplyToThread(Integer threadId, Integer replyId, Integer userId, String reason, Date reportDate);
 
 }

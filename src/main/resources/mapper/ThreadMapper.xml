@@ -204,10 +204,16 @@
     values (#{userId, jdbcType=INTEGER}, #{subject_ids, jdbcType=VARCHAR})
   </insert>
 
-  <insert id="reportThread" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.ReportRecord">
+  <insert id="reportThread" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
     insert into bu.wq_report_record(id, user_id, resource_type, resource_id, report_time, reason)
-    value (#{id, jdbcType=INTEGER},#{userId, jdbcType=INTEGER},#{resourceType, jdbcType=SMALLINT},#{threadId, jdbcType=INTEGER},
-    #{reportTime, jdbcType=TIMESTAMP},#{reason, jdbcType=VARCHAR},)
+    values (#{id, jdbcType=INTEGER},#{userId, jdbcType=INTEGER},#{1, jdbcType=SMALLINT},#{threadId, jdbcType=INTEGER},
+    #{reportDate, jdbcType=TIMESTAMP},#{reason, jdbcType=VARCHAR},)
+  </insert>
+
+  <insert id="reportReplyToThread" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+    insert into bu.wq_report_record(id, user_id, resource_type, resource_id, report_time, reason)
+    values (#{id, jdbcType=INTEGER},#{userId, jdbcType=INTEGER},#{2, jdbcType=SMALLINT},#{replyId, jdbcType=INTEGER},
+    #{reportDate, jdbcType=TIMESTAMP},#{reason, jdbcType=VARCHAR},)
   </insert>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.Thread">

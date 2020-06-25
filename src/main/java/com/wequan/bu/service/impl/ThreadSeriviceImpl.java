@@ -37,6 +37,12 @@ public class ThreadSeriviceImpl extends AbstractService<Thread> implements Threa
         }
         return -1;
     }
+
+    /**
+     * 6/18
+     * @param record
+     * @return
+     */
     @Override
     public int insert(Thread record){
         if(record!=null){
@@ -44,7 +50,6 @@ public class ThreadSeriviceImpl extends AbstractService<Thread> implements Threa
         }
         return -1;
     }
-
 
     /**
      * 6/20
@@ -258,6 +263,7 @@ public class ThreadSeriviceImpl extends AbstractService<Thread> implements Threa
      * 6/22
      * @param userId
      */
+    @Override
     public void deleteUserSelectedSubjects(Integer userId){
         if(userId!=null){
             threadMapper.deleteUserSelectedSubjectsById(userId);
@@ -293,6 +299,7 @@ public class ThreadSeriviceImpl extends AbstractService<Thread> implements Threa
      * @param pageSize
      * @return
      */
+    @Override
     public List<Thread> findBySchoolIdOrderByView(Integer schoolId, Integer pageNum, Integer pageSize){
         if(schoolId!=null){
             if(pageNum==null){
@@ -317,15 +324,22 @@ public class ThreadSeriviceImpl extends AbstractService<Thread> implements Threa
     public void reportThread(Integer threadId, Integer userId, String reason){
         if(threadId!=null && userId!=null && reason!=null){
             Date reportDate = new Date(new java.util.Date().getTime());
-            ReportRecord reportRecord = new ReportRecord(userId, (short) 1, threadId, reportDate, reason);
-            threadMapper.reportThread(reportRecord);
+            threadMapper.reportThread(threadId, userId, reason, reportDate);
         }
     }
 
+    /**
+     * 6/23
+     * @param threadId
+     * @param replyId
+     * @param userId
+     * @param reason
+     */
     @Override
     public void reportReplyToThread(Integer threadId, Integer replyId, Integer userId, String reason){
         if(threadId!=null && replyId!=null && userId!=null && reason!=null){
-
+            Date reportDate = new Date(new java.util.Date().getTime());
+            threadMapper.reportReplyToThread(threadId, replyId, userId, reason, reportDate);
         }
     }
 }

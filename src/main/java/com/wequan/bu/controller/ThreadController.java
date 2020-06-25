@@ -172,12 +172,21 @@ public class ThreadController {
         return result;
     }
 
+    /**
+     * 6/23
+     * @param threadId
+     * @param replyId
+     * @param userId
+     * @param reason
+     * @return
+     */
     @PostMapping("/thread/reply/report")
     @ApiOperation(value = "report the reply to thread", notes = "对帖子回复进行举报")
     public Result reportProfessorReview(@RequestParam("threadId") Integer threadId,
                                         @RequestParam("replyId") Integer replyId,
                                         @RequestParam("userId") Integer userId,
                                         @RequestParam("reason") String reason) {
+        threadService.reportReplyToThread(threadId, replyId, userId, reason);
         Result result = ResultGenerator.success();
         return result;
     }
