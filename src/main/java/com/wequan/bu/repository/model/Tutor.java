@@ -12,6 +12,7 @@ public class Tutor {
 
     private Integer id;
     private User user;
+    private Integer userId;
     private String briefIntroduction;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
