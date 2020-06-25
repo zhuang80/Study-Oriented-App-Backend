@@ -3,6 +3,7 @@ package com.wequan.bu.controller;
 import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.controller.vo.Appointment;
 import com.wequan.bu.controller.vo.OnlineEvent;
+import com.wequan.bu.controller.vo.SubjectGroup;
 import com.wequan.bu.controller.vo.TutorReview;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
@@ -12,6 +13,7 @@ import com.wequan.bu.repository.model.TutorViewHistory;
 import com.wequan.bu.service.AppointmentService;
 import com.wequan.bu.service.TutorReviewService;
 import com.wequan.bu.service.TutorService;
+import com.wequan.bu.util.GroupTool;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -57,6 +59,10 @@ public class TutorController {
             String message = messageHandler.getFailResponseMessage("40008");
             return ResultGenerator.fail(message);
         }
+        if(userId != null && userId < 0){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
         Tutor tutor = tutorService.findById(tutorId);
         tutorService.logTutorViewHistory(tutor, userId);
         return ResultGenerator.success(tutor);
@@ -65,6 +71,10 @@ public class TutorController {
     @PutMapping("/tutor/{id}")
     @ApiOperation(value = "modify tutor basic info", notes = "修改tutor基本信息")
     public Result modifyTutorBasicInfo(@RequestBody Tutor tutor, @PathVariable Integer id) {
+        if( id < 0 ){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
         tutor.setId(id);
         tutorService.update(tutor);
         return ResultGenerator.success();
@@ -72,11 +82,16 @@ public class TutorController {
 
     @GetMapping("/tutors")
     @ApiOperation(value = "Available tutors", notes = "返回Tutor列表，按评分/加入时间倒序")
-    public Result<List<Tutor>> getTutors(@RequestParam(value = "subjectId", required = false) Integer subjectId,
+    public Result<List<SubjectGroup<List<Tutor>>>> getTutors(@RequestParam(value = "subjectId", required = false) Integer subjectId,
                                          @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                          @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        if(subjectId != null && subjectId < 0 ){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
         List<Tutor> tutors = tutorService.findTutors(subjectId, pageNum, pageSize);
-        return ResultGenerator.success(tutors);
+        List<SubjectGroup<List<Tutor>>> tutorGroup = GroupTool.groupTutorBySubject(tutors);
+        return ResultGenerator.success(tutorGroup);
     }
 
     @GetMapping("/tutors/popular")
@@ -105,6 +120,16 @@ public class TutorController {
         return ResultGenerator.success();
     }
 
+    @GetMapping("/tutor/{id}/review")
+    @ApiOperation(value = "Get tutor reviews by tutor id", notes="返回tutor的评价")
+    public Result<List<TutorReview>> getTutorReview(@PathVariable("id") Integer tutorId){
+        if(tutorId < 0){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
+        return ResultGenerator.success(tutorReviewService.findByTutorId(tutorId));
+    }
+
     @GetMapping("/tutor/{id}/appointments")
     @ApiOperation(value = "a list of tutor’s appointment", notes = "返回Tutor与用户的appointment列表")
     public Result<List<Appointment>> getAppointments(@PathVariable("id") Integer tutorId) {
@@ -119,6 +144,10 @@ public class TutorController {
     @GetMapping("/tutor/{id}/public_class")
     @ApiOperation(value = "a list of tutor’s public class", notes = "返回Tutor创建的public class列表")
     public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer tutorId) {
+        if(tutorId < 0){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
         Tutor tutor = tutorService.findById(tutorId);
         List<OnlineEvent> result = tutorService.findOnlineEventByUserId(tutor.getUser().getId());
         return ResultGenerator.success(result);
@@ -127,6 +156,10 @@ public class TutorController {
     @GetMapping("/tutor/{id}/incoming_events")
     @ApiOperation(value = "incoming events for tutor", notes = "返回Tutor邻近的事件")
     public Result<Map<String, List<Object>>> getIncomingEvents(@PathVariable("id") Integer tutorId) {
+        if(tutorId < 0){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
         Map<String, List<Object>> result = null;
         return ResultGenerator.success(result);
     }
@@ -138,6 +171,10 @@ public class TutorController {
     })
     public Result changeAvailability(@PathVariable("id") Integer tutorId,
                                      @RequestParam("action") Short action) {
+        if(tutorId < 0 ){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
         tutorService.updateAvailability(tutorId, action);
         return ResultGenerator.success();
     }
@@ -154,6 +191,4 @@ public class TutorController {
         List<TutorViewHistory> tutorViewHistories = tutorService.findViewHistoryByTutorId(tutorId, pageNum, pageSize);
         return ResultGenerator.success(tutorViewHistories);
     }
-
-
 }

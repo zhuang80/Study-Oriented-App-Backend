@@ -60,4 +60,9 @@ public class TutorReviewServiceImpl extends AbstractService<TutorReview> impleme
        }
         return ret;
     }
+
+    @Override
+    public List<TutorReview> findByTutorId(Integer tutorId) {
+        return tutorReviewMapper.selectByTutorId(tutorId);
+    }
 }

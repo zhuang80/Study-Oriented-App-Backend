@@ -117,7 +117,7 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
         /** check whether the user who view the tutor profile is the owner of the profile
          * only log view history when the user is not the owner of the profile
          */
-        if(!tutor.getUser().getId().equals(userId)){
+        if(!(userId == null || tutor.getUser().getId().equals(userId))){
             TutorViewHistory viewHistory = new TutorViewHistory();
             viewHistory.setUserId(userId);
             viewHistory.setTutorId(tutor.getId());
