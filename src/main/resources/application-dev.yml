@@ -45,6 +45,7 @@ logging:
 # aws service configuration
 aws:
   ses:
+    enabled: true
     access-key-id: AKIAT3UCHJRBHHDUGM3L
     secret-access-key: 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
 

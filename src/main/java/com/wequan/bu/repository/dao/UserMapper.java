@@ -29,4 +29,12 @@ public interface UserMapper extends GeneralMapper<User> {
      * @return
      */
     int updateEmailVerifiedByEmail(@Param("email") String email, @Param("verified") boolean verified);
+
+    /**
+     * 根据用户名查询User
+     * @param userName 用户名
+     * @return User实体
+     */
+    User selectByUserName(String userName);
+
 }

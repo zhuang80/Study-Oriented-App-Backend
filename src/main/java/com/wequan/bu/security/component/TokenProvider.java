@@ -2,6 +2,8 @@ package com.wequan.bu.security.component;
 
 import com.wequan.bu.config.properties.AppProperties;
 import com.wequan.bu.security.AppUserDetails;
+import com.wequan.bu.security.authentication.token.EmailPasswordAuthenticationToken;
+import com.wequan.bu.security.authentication.token.UserNamePasswordAuthenticationToken;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,26 +27,32 @@ public class TokenProvider {
     }
 
     public String createToken(Authentication authentication) {
-        AppUserDetails appUserDetails = (AppUserDetails) authentication.getPrincipal();
-
+        String userId;
+        if (authentication instanceof EmailPasswordAuthenticationToken
+                || authentication instanceof UserNamePasswordAuthenticationToken) {
+            userId = authentication.getPrincipal().toString();
+        } else {
+            AppUserDetails appUserDetails = (AppUserDetails) authentication.getPrincipal();
+            userId = appUserDetails.getId().toString();
+        }
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + appProperties.getAuth().getTokenExpirationMsec());
 
         return Jwts.builder()
-                .setSubject(Long.toString(appUserDetails.getId()))
+                .setSubject(userId)
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, appProperties.getAuth().getTokenSecret())
                 .compact();
     }
 
-    public Long getUserIdFromToken(String token) {
+    public String getUserIdFromToken(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(appProperties.getAuth().getTokenSecret())
                 .parseClaimsJws(token)
                 .getBody();
 
-        return Long.parseLong(claims.getSubject());
+        return claims.getSubject();
     }
 
     public boolean validateToken(String authToken) {
