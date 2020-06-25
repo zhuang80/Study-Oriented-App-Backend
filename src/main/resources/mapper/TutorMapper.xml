@@ -19,6 +19,10 @@
         <association property="user"
                      column="user_id"
                      select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey" />
+        <collection property="subjectList"
+                    column="id"
+                    ofType="com.wequan.bu.repository.model.Subject"
+                    select="com.wequan.bu.repository.dao.SubjectsMapper.selectByTutorId" />
     </resultMap>
 
     <select id="selectTutors" resultMap="TutorRateResultMap">
@@ -35,8 +39,8 @@
             tr.score
         FROM ${schema}.wq_tutor_profile tp
         LEFT JOIN temp_rate tr on tr.tutor_id = tp.id
-        LEFT JOIN ${schema}.wq_tutor_subject ts on tp.id = ts.tutor_id
         <if test="subject_id != null">
+            LEFT JOIN ${schema}.wq_tutor_subject ts on tp.id = ts.tutor_id
             WHERE ts.subject_id = #{subject_id}
         </if>
         ORDER BY score DESC, tp.create_time DESC
@@ -56,8 +60,8 @@
             tr.score
         FROM ${schema}.wq_tutor_profile tp
         LEFT JOIN temp_rate tr on tr.tutor_id = tp.id
-        LEFT JOIN ${schema}.wq_tutor_subject ts on tp.id = ts.tutor_id
         <if test="subject_id != null">
+            LEFT JOIN ${schema}.wq_tutor_subject ts on tp.id = ts.tutor_id
             WHERE ts.subject_id = #{subject_id}
         </if>
         ORDER BY score DESC

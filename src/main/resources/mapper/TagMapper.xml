@@ -35,4 +35,11 @@
             #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
+
+    <select id="selectByTutorReviewId" resultType="com.wequan.bu.repository.model.Tag">
+        SELECT *
+        FROM ${schema}.wq_tags t
+        INNER JOIN ${schema}.wq_tutor_review_tag trt ON trt.tag_id = t.id
+        WHERE trt.tutor_review_id = #{tutor_review_id, jdbcType=INTEGER}
+    </select>
 </mapper>
