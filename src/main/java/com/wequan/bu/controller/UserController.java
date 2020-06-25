@@ -5,6 +5,7 @@ import com.wequan.bu.controller.vo.*;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.*;
+import com.wequan.bu.security.CurrentUser;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ public class UserController {
             @ApiResponse(code = 200, message = "name, username, school name, school id, subjects, subject id, avatar, " +
                     "brief intro, # of threads, # of following, # of followers, # of groups")
     )
-    public Result<User> getUserProfile(@PathVariable("id") Integer userId) {
+    public Result<User> getUserProfile(@PathVariable("id") Integer userId, @CurrentUser String currentUserId) {
         User result = null;
         return ResultGenerator.success(result);
     }

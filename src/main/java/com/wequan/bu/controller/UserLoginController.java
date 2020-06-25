@@ -5,9 +5,11 @@ import com.wequan.bu.config.properties.AppProperties;
 import com.wequan.bu.controller.vo.LoginSignUp;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
+import com.wequan.bu.exception.NotImplementedException;
 import com.wequan.bu.repository.dao.UserMapper;
 import com.wequan.bu.repository.model.User;
 import com.wequan.bu.security.authentication.token.EmailPasswordAuthenticationToken;
+import com.wequan.bu.security.authentication.token.UserNamePasswordAuthenticationToken;
 import com.wequan.bu.security.component.TokenProvider;
 import com.wequan.bu.security.oauth2.user.AuthProvider;
 import com.wequan.bu.service.UserService;
@@ -23,15 +25,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.Date;
 import java.util.Objects;
 
@@ -112,16 +111,25 @@ public class UserLoginController {
     public ResponseEntity<Result> login(@RequestBody LoginSignUp loginSignUp) {
         String userName = loginSignUp.getUserName();
         String email = loginSignUp.getEmail();
+        String password = loginSignUp.getPassword();
         Authentication authentication = null;
-        if (Objects.nonNull(userName)) {
-            authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(userName, loginSignUp.getPassword())
-            );
+        if (StringUtils.hasText(userName) && StringUtils.hasText(password)) {
+            try {
+                authentication = authenticationManager.authenticate(
+                        new UserNamePasswordAuthenticationToken(userName, password)
+                );
+            } catch (Exception e) {
+                log.error(String.format("Authentication fail with username = %s", userName), e);
+            }
         }
-        if (Objects.nonNull(email)) {
-            authentication = authenticationManager.authenticate(
-                    new EmailPasswordAuthenticationToken(email, loginSignUp.getPassword())
-            );
+        if (authentication == null && StringUtils.hasText(email) && StringUtils.hasText(password)) {
+            try {
+                authentication = authenticationManager.authenticate(
+                        new EmailPasswordAuthenticationToken(email, password)
+                );
+            } catch (Exception e) {
+                log.error(String.format("Authentication fail with email = %s", email), e);
+            }
         }
         if (Objects.isNull(authentication)) {
             return ResponseEntity.ok().body(ResultGenerator.fail("认证失败"));
@@ -156,27 +164,7 @@ public class UserLoginController {
     @PostMapping("/user/reset-password")
     @ApiOperation(value = "reset password", notes = "返回重置用户密码信息")
     public String resetPassword() {
-        return "";
+        throw new NotImplementedException();
     }
 
-    @GetMapping("/users")
-    @ApiOperation(value = "a list of users", notes = "返回用户列表")
-    public String getAll() {
-        StringBuilder result = new StringBuilder();
-        userService.findAll().stream().map(User::getEmail).forEach(result::append);
-        return result.toString();
-    }
-
-    @PostMapping("/auth/signup")
-    public ResponseEntity<?> registerUser(@RequestBody LoginSignUp loginSignUp) {
-        // Creating user's account
-        User user = new User();
-        int result = userMapper.insertSelective(user);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/user/me")
-                .buildAndExpand(user.getId()).toUri();
-
-        return ResponseEntity.created(location).body(ResultGenerator.success("User registered successfully"));
-    }
 }

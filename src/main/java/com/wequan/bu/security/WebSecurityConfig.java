@@ -1,8 +1,9 @@
 package com.wequan.bu.security;
 
 import com.wequan.bu.config.WeQuanConstants;
+import com.wequan.bu.security.authentication.provider.EmailPasswordAuthenticationProvider;
+import com.wequan.bu.security.authentication.provider.UserNamePasswordAuthenticationProvider;
 import com.wequan.bu.security.component.TokenAuthenticationEntryPoint;
-import com.wequan.bu.security.component.UserDetailsServiceImpl;
 import com.wequan.bu.security.filter.TokenAuthenticationFilter;
 import com.wequan.bu.security.oauth2.CustomOAuth2UserService;
 import com.wequan.bu.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
@@ -46,8 +47,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private TokenAuthenticationFilter tokenAuthenticationFilter;
     @Autowired
-    private UserDetailsServiceImpl userDetailsServiceImpl;
-    @Autowired
     private CustomOAuth2UserService customOAuth2UserService;
     @Autowired
     private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
@@ -57,10 +56,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .userDetailsService(userDetailsServiceImpl)
-                .passwordEncoder(passwordEncoder());
-//                    .and()
-//                .authenticationProvider();
+                .authenticationProvider(emailPasswordAuthenticationProvider())
+                .authenticationProvider(userNamePasswordAuthenticationProvider());
     }
 
     @Override
@@ -115,6 +112,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         .and()
                     .csrf()
                         .disable()
+                    .formLogin()
+                        .disable()
+                    .httpBasic()
+                        .disable()
+                    .exceptionHandling()
+                        .authenticationEntryPoint(tokenAuthenticationEntryPoint)
+                        .and()
                     .authorizeRequests()
                     .anyRequest()
                         .permitAll()
@@ -147,6 +151,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+    }
+
+    @Bean
+    public UserNamePasswordAuthenticationProvider userNamePasswordAuthenticationProvider() {
+        return new UserNamePasswordAuthenticationProvider();
+    }
+
+    @Bean
+    public EmailPasswordAuthenticationProvider emailPasswordAuthenticationProvider() {
+        return new EmailPasswordAuthenticationProvider();
     }
 
     @Bean

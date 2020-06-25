@@ -265,4 +265,10 @@
     from ${schema}.wq_user_profile
     where email = #{email}
   </select>
+  <select id="selectByUserName" resultMap="BaseResultMap">
+    select <include refid="simple_columns" />
+    from ${schema}.wq_user_profile
+    where user_name = #{userName}
+  </select>
+
 </mapper>
