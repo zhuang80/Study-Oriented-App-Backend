@@ -1,17 +1,25 @@
 package com.wequan.bu.controller;
 
+import com.wequan.bu.config.handler.MessageHandler;
+import com.wequan.bu.controller.vo.DiscussionGroup;
+import com.wequan.bu.controller.vo.OnlineEvent;
 import com.wequan.bu.controller.vo.Thread;
-import com.wequan.bu.controller.vo.*;
+import com.wequan.bu.controller.vo.TutorInquiryVo;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.*;
-import com.wequan.bu.security.CurrentUser;
+import com.wequan.bu.repository.model.extend.AppointmentBriefInfo;
+import com.wequan.bu.repository.model.extend.UserStats;
+import com.wequan.bu.service.AppointmentService;
+import com.wequan.bu.service.UserService;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author ChrisChen
@@ -22,15 +30,26 @@ public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private AppointmentService appointmentService;
+    @Autowired
+    private MessageHandler messageHandler;
+
     @GetMapping("/user/{id}/profile")
     @ApiOperation(value = "user basic info", notes = "返回用户基本信息")
     @ApiResponses(
             @ApiResponse(code = 200, message = "name, username, school name, school id, subjects, subject id, avatar, " +
                     "brief intro, # of threads, # of following, # of followers, # of groups")
     )
-    public Result<User> getUserProfile(@PathVariable("id") Integer userId, @CurrentUser String currentUserId) {
-        User result = null;
-        return ResultGenerator.success(result);
+    public Result<UserStats> getUserProfile(@PathVariable("id") Integer userId) {
+        UserStats userStats;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        userStats = userService.getUserProfile(userId);
+        return ResultGenerator.success(userStats);
     }
 
     @GetMapping("/user/{id}/appointments")
@@ -38,11 +57,21 @@ public class UserController {
     @ApiResponses(
             @ApiResponse(code = 200, message = "a list of appointments (name, if tutor, appointment id, scheduled time) sorted by incoming time")
     )
-    public Result<List<Appointment>> getAppointments(@PathVariable("id") Integer userId,
-                                                     @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                                     @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<Appointment> result = null;
-        return ResultGenerator.success(result);
+    public Result<List<AppointmentBriefInfo>> getAppointments(@PathVariable("id") Integer userId,
+                                                              @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<AppointmentBriefInfo> appointments;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        appointments = appointmentService.getUserAppointments(userId, pageNum, pageSize);
+        return ResultGenerator.success(appointments);
     }
 
     @GetMapping("/user/{id}/online_events")

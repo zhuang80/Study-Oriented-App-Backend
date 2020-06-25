@@ -1,6 +1,7 @@
 package com.wequan.bu.repository.dao;
 
 import com.wequan.bu.repository.model.User;
+import com.wequan.bu.repository.model.extend.UserStats;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -37,4 +38,10 @@ public interface UserMapper extends GeneralMapper<User> {
      */
     User selectByUserName(String userName);
 
+    /**
+     * 根据用户id查询User
+     * @param userId 用户id
+     * @return UserStats实体
+     */
+    UserStats selectById(Integer userId);
 }

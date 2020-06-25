@@ -2,6 +2,7 @@ package com.wequan.bu.service.impl;
 
 import com.wequan.bu.repository.dao.UserMapper;
 import com.wequan.bu.repository.model.User;
+import com.wequan.bu.repository.model.extend.UserStats;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.UserService;
 import com.wequan.bu.vendor.AwsEmailService;
@@ -52,9 +53,15 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean confirmEmail(String email) {
         int result = userMapper.updateEmailVerifiedByEmail(email, true);
         return result > 0;
+    }
+
+    @Override
+    public UserStats getUserProfile(Integer userId) {
+        return userMapper.selectById(userId);
     }
 
 

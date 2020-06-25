@@ -1,6 +1,7 @@
 package com.wequan.bu.service;
 
 import com.wequan.bu.repository.model.User;
+import com.wequan.bu.repository.model.extend.UserStats;
 
 /**
  * @author ChrisChen
@@ -39,4 +40,12 @@ public interface UserService extends Service<User> {
      * @return 更新数据库成功与否
      */
     boolean confirmEmail(String email);
+
+    /**
+     * 获取用户profile
+     * @param userId 用户id
+     * @return 用户实体
+     */
+    UserStats getUserProfile(Integer userId);
+
 }

@@ -1,5 +1,6 @@
 package com.wequan.bu.security.authentication.provider;
 
+import com.wequan.bu.exception.EmailNotVerifiedException;
 import com.wequan.bu.repository.dao.UserMapper;
 import com.wequan.bu.repository.model.User;
 import com.wequan.bu.security.authentication.token.UserNamePasswordAuthenticationToken;
@@ -34,6 +35,9 @@ public class UserNamePasswordAuthenticationProvider implements AuthenticationPro
             //认证逻辑
             User user = userMapper.selectByUserName(userName);
             if (user != null) {
+                if (!user.getEmailVerified()) {
+                    throw new EmailNotVerifiedException();
+                }
                 String credential = user.getCredential();
                 if (!StringUtils.isBlank(credential) && passwordEncoder.matches(password, credential)) {
                     token = new UserNamePasswordAuthenticationToken(user.getId(), authentication.getCredentials(), listGrantedAuthorities(userName));
