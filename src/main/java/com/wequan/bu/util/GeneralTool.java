@@ -25,7 +25,6 @@ public class GeneralTool {
     private static final String salt = "wequan@bu";
     private static final String secretKey = "https://bubbs.cc";
     private static final Pattern emailPattern = Pattern.compile("^([a-zA-Z0-9]+[_|.]?)+[a-zA-Z0-9]@([a-zA-Z0-9]+(-[a-zA-Z0-9]+)?\\.)+[a-zA-Z]{2,}$");
-                                                                //"^([a-zA-Z0-9]+[_|.]?)+[a-zA-Z0-9]@binghamton.edu$" for bu email
     private static final Pattern passwordPattern = Pattern.compile("");
 
     public static String encrypt(String text) {
@@ -82,10 +81,4 @@ public class GeneralTool {
         return StringUtils.hasText(password);
     }
 
-    public static void main(String[] args) {
-        String email = "dav@gmail.com";
-        System.out.println(GeneralTool.checkEmail(email));
-        email = "1a@163.com";
-        System.out.println(GeneralTool.checkEmail(email));
-    }
 }
