@@ -1,8 +1,8 @@
 package com.wequan.bu.service.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.wequan.bu.controller.vo.OnlineEvent;
-import com.wequan.bu.repository.dao.OnlineEvenMapper;
+import com.wequan.bu.repository.model.OnlineEvent;
+import com.wequan.bu.repository.dao.OnlineEventMapper;
 import com.wequan.bu.repository.dao.TutorMapper;
 import com.wequan.bu.repository.dao.TutorViewHistoryMapper;
 import com.wequan.bu.repository.model.Tutor;
@@ -35,7 +35,7 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
     private TutorMapper tutorMapper;
 
     @Autowired
-    private OnlineEvenMapper onlineEvenMapper;
+    private OnlineEventMapper onlineEventMapper;
 
     @Autowired
     private TutorViewHistoryMapper tutorViewHistoryMapper;
@@ -95,7 +95,7 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
 
     @Override
     public List<OnlineEvent> findOnlineEventByUserId(Integer userId) {
-        return onlineEvenMapper.selectByUserId(userId);
+        return onlineEventMapper.selectByUserId(userId);
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.controller.vo.DiscussionGroup;
-import com.wequan.bu.controller.vo.OnlineEvent;
 import com.wequan.bu.controller.vo.Thread;
 import com.wequan.bu.controller.vo.TutorInquiryVo;
 import com.wequan.bu.controller.vo.result.Result;
@@ -11,6 +10,7 @@ import com.wequan.bu.repository.model.*;
 import com.wequan.bu.repository.model.extend.AppointmentBriefInfo;
 import com.wequan.bu.repository.model.extend.UserStats;
 import com.wequan.bu.service.AppointmentService;
+import com.wequan.bu.service.OnlineEventService;
 import com.wequan.bu.service.UserService;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -34,6 +34,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private AppointmentService appointmentService;
+    @Autowired
+    private OnlineEventService onlineEventService;
     @Autowired
     private MessageHandler messageHandler;
 
@@ -83,8 +85,18 @@ public class UserController {
                                                      @RequestParam(value = "type", required = false) Integer type,
                                                      @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                      @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<OnlineEvent> result = null;
-        return ResultGenerator.success(result);
+        List<OnlineEvent> onlineEvents = null;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        onlineEvents = onlineEventService.getUserOnlineEvents(userId, pageNum, pageSize, type);
+        return ResultGenerator.success(onlineEvents);
     }
 
     @PostMapping("/user/{id}/online_event")
@@ -104,6 +116,7 @@ public class UserController {
     public Result<List<DiscussionGroup>> getDiscussionGroups(@PathVariable("id") Integer userId,
                                                              @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+
         List<DiscussionGroup> result = null;
         return ResultGenerator.success(result);
     }

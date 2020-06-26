@@ -1,6 +1,6 @@
 package com.wequan.bu.service;
 
-import com.wequan.bu.controller.vo.OnlineEvent;
+import com.wequan.bu.repository.model.OnlineEvent;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.repository.model.TutorApplication;
 import com.wequan.bu.repository.model.TutorViewHistory;

@@ -3,7 +3,7 @@ package com.wequan.bu.controller;
 import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.controller.vo.Condition;
 import com.wequan.bu.controller.vo.DiscussionGroup;
-import com.wequan.bu.controller.vo.OnlineEvent;
+import com.wequan.bu.repository.model.OnlineEvent;
 import com.wequan.bu.controller.vo.TutorInquiryVo;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
