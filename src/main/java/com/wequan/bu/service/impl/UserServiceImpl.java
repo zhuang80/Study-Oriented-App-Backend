@@ -6,6 +6,8 @@ import com.wequan.bu.repository.model.extend.UserStats;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.UserService;
 import com.wequan.bu.vendor.AwsEmailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,8 @@ import javax.annotation.PostConstruct;
  */
 @Service
 public class UserServiceImpl extends AbstractService<User> implements UserService {
+
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     private UserMapper userMapper;

@@ -1,7 +1,7 @@
 package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
-import com.wequan.bu.controller.vo.OnlineEvent;
+import com.wequan.bu.repository.model.OnlineEvent;
 import com.wequan.bu.controller.vo.SubjectGroup;
 import com.wequan.bu.controller.vo.TutorReview;
 import com.wequan.bu.controller.vo.result.Result;

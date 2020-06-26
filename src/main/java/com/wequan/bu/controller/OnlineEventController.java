@@ -1,6 +1,6 @@
 package com.wequan.bu.controller;
 
-import com.wequan.bu.controller.vo.OnlineEvent;
+import com.wequan.bu.repository.model.OnlineEvent;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import io.swagger.annotations.Api;
