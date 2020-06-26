@@ -27,6 +27,11 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
     }
 
     @Override
+    public List<Appointment> findByTutorId(Integer tutorId) {
+        return appointmentMapper.selectByTutorId(tutorId);
+    }
+
+    @Override
     public List<AppointmentBriefInfo> getUserAppointments(Integer userId, Integer pageNum, Integer pageSize) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
         return appointmentMapper.selectByUserId(userId, rowBounds);

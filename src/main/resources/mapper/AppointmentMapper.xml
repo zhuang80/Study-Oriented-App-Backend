@@ -22,17 +22,23 @@
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="tutor_name" jdbcType="VARCHAR" property="tutorName" />
   </resultMap>
-  
+
   <sql id="Base_Column_List">
-    id, tutor_id, user_id, create_time, update_time, status, brief_description, start_time, 
+    id, tutor_id, user_id, create_time, update_time, status, brief_description, start_time,
     end_time, subject_id, topic_id, title, fee, transaction_id
   </sql>
-  
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from ${schema}.wq_appointment
     where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByTutorId" resultType="com.wequan.bu.controller.vo.Appointment">
+    SELECT *
+    FROM ${schema}.wq_appointment
+    WHERE tutor_id = #{tutor_id, jdbcType=INTEGER}
   </select>
 
   <select id="selectByUserId" resultMap="ResultMapWithNames">
@@ -53,7 +59,7 @@
     delete from ${schema}.wq_appointment
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  
+
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.Appointment" useGeneratedKeys="true">
     insert into ${schema}.wq_appointment
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -145,7 +151,7 @@
       </if>
     </trim>
   </insert>
-  
+
   <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.Appointment">
     update ${schema}.wq_appointment
     <set>

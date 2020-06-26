@@ -46,6 +46,10 @@ public class TutorInquiryController {
     public Result<List<TutorInquiryGroup>> getTutorInquiries(@RequestParam(value = "subjectId", required = false) Integer subjectId,
                                                              @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        if(subjectId != null && subjectId < 0 ){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
         List<TutorInquiry> tutorInquiryList = tutorInquiryService.findBySubject(subjectId, pageNum, pageSize);
         List<TutorInquiryGroup> tutorInquiryGroupList = TutorInquiryTool.groupTutorInquiryBySubject(tutorInquiryList);
         return ResultGenerator.success(tutorInquiryGroupList);
