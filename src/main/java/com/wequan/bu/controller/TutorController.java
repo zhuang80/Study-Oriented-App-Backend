@@ -1,15 +1,15 @@
 package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
-import com.wequan.bu.controller.vo.Appointment;
 import com.wequan.bu.controller.vo.OnlineEvent;
 import com.wequan.bu.controller.vo.SubjectGroup;
 import com.wequan.bu.controller.vo.TutorReview;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
+import com.wequan.bu.repository.model.Appointment;
 import com.wequan.bu.repository.model.Tutor;
-import com.wequan.bu.repository.model.extend.TutorRateInfo;
 import com.wequan.bu.repository.model.TutorViewHistory;
+import com.wequan.bu.repository.model.extend.TutorRateInfo;
 import com.wequan.bu.service.AppointmentService;
 import com.wequan.bu.service.TutorReviewService;
 import com.wequan.bu.service.TutorService;

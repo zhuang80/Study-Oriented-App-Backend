@@ -35,7 +35,7 @@
     where id = #{id,jdbcType=INTEGER}
   </select>
 
-  <select id="selectByTutorId" resultType="com.wequan.bu.controller.vo.Appointment">
+  <select id="selectByTutorId" resultType="com.wequan.bu.repository.model.Appointment">
     SELECT *
     FROM ${schema}.wq_appointment
     WHERE tutor_id = #{tutor_id, jdbcType=INTEGER}
