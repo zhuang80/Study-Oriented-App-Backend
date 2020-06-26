@@ -2,7 +2,7 @@ package com.wequan.bu.controller.vo;
 
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * @author ChrisChen
@@ -15,17 +15,17 @@ public class Appointment {
 
     private Integer userId;
 
-    private Date createTime;
+    private LocalDateTime createTime;
 
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     private Short status;
 
     private String briefDescription;
 
-    private Date startTime;
+    private LocalDateTime startTime;
 
-    private Date endTime;
+    private LocalDateTime endTime;
 
     private Short subjectId;
 
@@ -37,6 +37,5 @@ public class Appointment {
 
     private String transactionId;
 
-    private Integer reviewId;
 
 }

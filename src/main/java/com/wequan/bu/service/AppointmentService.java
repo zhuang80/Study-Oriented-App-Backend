@@ -6,9 +6,11 @@ import com.wequan.bu.repository.model.extend.AppointmentBriefInfo;
 import java.util.List;
 
 /**
- * @author ChrisChen
+ * @author Zhaochao Huang
  */
 public interface AppointmentService extends Service<Appointment> {
+
+    public List<Appointment> findByTutorId(Integer tutorId);
 
     /**
      * 根据用户id获取AppointmentBriefInfo列表

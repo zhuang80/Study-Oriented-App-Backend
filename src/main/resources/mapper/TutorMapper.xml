@@ -19,13 +19,10 @@
         <association property="user"
                      column="user_id"
                      select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey" />
-    </resultMap>
-
-    <resultMap id="ViewHistoryResultMap" type="com.wequan.bu.repository.model.TutorViewHistory">
-        <id property="id" jdbcType="INTEGER" column="id" />
-        <result property="userId" jdbcType="INTEGER" column="user_id" />
-        <result property="tutorId" jdbcType="INTEGER" column="tutor_id" />
-        <result property="viewTime" jdbcType="TIMESTAMP" column="view_time" />
+        <collection property="subjectList"
+                    column="id"
+                    ofType="com.wequan.bu.repository.model.Subject"
+                    select="com.wequan.bu.repository.dao.SubjectsMapper.selectByTutorId" />
     </resultMap>
 
     <select id="selectTutors" resultMap="TutorRateResultMap">
@@ -42,8 +39,8 @@
             tr.score
         FROM ${schema}.wq_tutor_profile tp
         LEFT JOIN temp_rate tr on tr.tutor_id = tp.id
-        LEFT JOIN ${schema}.wq_tutor_subject ts on tp.id = ts.tutor_id
         <if test="subject_id != null">
+            LEFT JOIN ${schema}.wq_tutor_subject ts on tp.id = ts.tutor_id
             WHERE ts.subject_id = #{subject_id}
         </if>
         ORDER BY score DESC, tp.create_time DESC
@@ -63,8 +60,8 @@
             tr.score
         FROM ${schema}.wq_tutor_profile tp
         LEFT JOIN temp_rate tr on tr.tutor_id = tp.id
-        LEFT JOIN ${schema}.wq_tutor_subject ts on tp.id = ts.tutor_id
         <if test="subject_id != null">
+            LEFT JOIN ${schema}.wq_tutor_subject ts on tp.id = ts.tutor_id
             WHERE ts.subject_id = #{subject_id}
         </if>
         ORDER BY score DESC
@@ -76,9 +73,65 @@
         WHERE tp.id = #{id, jdbcType=INTEGER}
     </select>
 
-    <select id="selectViewHistoryByTutorId" resultMap="ViewHistoryResultMap">
-        SELECT *
-        FROM ${schema}.wq_tutor_view_history tvh
-        WHERE tvh.tutor_id = #{tutor_id}
-    </select>
+    <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.Tutor">
+        INSERT INTO ${schema}.wq_tutor_profile (user_id, brief_introduction, create_time,
+            update_time, status, late_policy_id,
+            cancellation_policy_id, tutor_available, tutor_application_id,
+            current_city, current_state, teach_method,
+            hourly_rate)
+        VALUES (#{userId,jdbcType=INTEGER}, #{briefIntroduction,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+            #{updateTime,jdbcType=TIMESTAMP}, #{status,jdbcType=SMALLINT}, #{latePolicyId,jdbcType=SMALLINT},
+            #{cancellationPolicyId,jdbcType=SMALLINT}, #{tutorAvailable,jdbcType=BIT}, #{tutorApplicationId,jdbcType=INTEGER},
+            #{currentCity,jdbcType=VARCHAR}, #{currentState,jdbcType=VARCHAR}, #{teachMethod,jdbcType=VARCHAR},
+            #{hourlyRate,jdbcType=REAL})
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.Tutor">
+        UPDATE ${schema}.wq_tutor_profile
+        <set>
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="briefIntroduction != null">
+                brief_introduction = #{briefIntroduction,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=SMALLINT},
+            </if>
+            <if test="latePolicyId != null">
+                late_policy_id = #{latePolicyId,jdbcType=SMALLINT},
+            </if>
+            <if test="cancellationPolicyId != null">
+                cancellation_policy_id = #{cancellationPolicyId,jdbcType=SMALLINT},
+            </if>
+            <if test="tutorAvailable != null">
+                tutor_available = #{tutorAvailable,jdbcType=BIT},
+            </if>
+            <if test="tutorApplicationId != null">
+                tutor_application_id = #{tutorApplicationId,jdbcType=INTEGER},
+            </if>
+            <if test="currentCity != null">
+                current_city = #{currentCity,jdbcType=VARCHAR},
+            </if>
+            <if test="currentState != null">
+                current_state = #{currentState,jdbcType=VARCHAR},
+            </if>
+            <if test="teachMethod != null">
+                teach_method = #{teachMethod,jdbcType=VARCHAR},
+            </if>
+            <if test="hourlyRate != null">
+                hourly_rate = #{hourlyRate,jdbcType=REAL},
+            </if>
+        </set>
+        WHERE id = #{id, jdbcType=INTEGER}
+    </update>
 </mapper>

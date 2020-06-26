@@ -1,19 +1,21 @@
-package com.wequan.bu.controller.vo;
+package com.wequan.bu.repository.model;
 
-import com.wequan.bu.repository.model.User;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * @author Zhaochao Huang
+ */
 @Data
 public class TutorReview {
-    private int id;
-    private int createBy;
+    private Integer id;
+    private Float rating;
+    private String comment;
+    private User createBy;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-    private double rating;
-    private String tags;
-    private String comment;
     private Integer tutorId;
+    private List<Tag> tagList;
 }
