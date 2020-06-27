@@ -185,4 +185,12 @@ public interface ThreadMapper extends GeneralMapper<Thread>{
      */
     void reportReplyToThread(Integer threadId, Integer replyId, Integer userId, String reason, Date reportDate);
 
+    /**
+     * 6/26
+     * @param userId
+     * @param subjectIds
+     * @return
+     */
+    List<Thread> getUserInterestedStudyHelpThreadsByIds(Integer userId, List<Integer> subjectIds, RowBounds rowBounds);
+
 }

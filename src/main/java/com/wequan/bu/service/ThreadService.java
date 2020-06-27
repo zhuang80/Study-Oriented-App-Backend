@@ -155,4 +155,14 @@ public interface ThreadService extends Service<Thread> {
      * @param reason
      */
     public void reportReplyToThread(Integer threadId, Integer replyId, Integer userId, String reason);
+
+    /**
+     * 6/26
+     * @param userId
+     * @param subjectIds
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    public List<Thread> getUserInterestedStudyHelpThreads(Integer userId, String subjectIds, Integer pageNum, Integer pageSize);
 }

@@ -337,6 +337,14 @@ public class ThreadController {
         return ResultGenerator.success();
     }
 
+    /**
+     * 6/26
+     * @param userId
+     * @param subjectIds
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @GetMapping("/thread/study_help")
     @ApiOperation(value = "a list of threads according to user interested subjects", notes = "根据用户选择的subject ids，获取帖子列表")
     @ApiImplicitParams({
@@ -350,7 +358,7 @@ public class ThreadController {
                                                                   @RequestParam("subjectIds") String subjectIds,
                                                                   @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                                   @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<Thread> result = null;
+        List<Thread> result = threadService.getUserInterestedStudyHelpThreads(userId, subjectIds, pageNum, pageSize);
         return ResultGenerator.success(result);
     }
 

@@ -49,73 +49,85 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from bu.wq_thread
+    from ${schema}.wq_thread
     where id = #{id,jdbcType=INTEGER}
   </select>
 
   <select id="selectBySchoolId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select bu.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
+    select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
     update_time, likes, dislikes
-    from bu.wq_thread join bu.wq_user_profile
-    on bu.wq_thread.create_by = bu.wq_user_profile.id
+    from ${schema}.wq_thread join ${schema}.wq_user_profile
+    on ${schema}.wq_thread.create_by = ${schema}.wq_user_profile.id
     where school_id = #{schoolId, jdbcType=INTEGER}
   </select>
 
   <select id="selectBySchoolIdAndTag" resultMap="BaseResultMap">
-    select bu.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
+    select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
     update_time, likes, dislikes
-    from bu.wq_thread join bu.wq_user_profile
-    on bu.wq_thread.create_by = bu.wq_user_profile.id
+    from ${schema}.wq_thread join ${schema}.wq_user_profile
+    on ${schema}.wq_thread.create_by = ${schema}.wq_user_profile.id
     where school_id = #{school_id, jdbcType=INTEGER} and tag_id = #{tag_id, jdbcType=SMALLINT}
-    order by bu.wq_thread.create_time desc
+    order by ${schema}.wq_thread.create_time desc
   </select>
 
   <select id="selectDirectRepliesById" parameterType="java.lang.Integer" resultMap="StreamResultMap">
     select *
-    from bu.wq_thread_stream
+    from ${schema}.wq_thread_stream
     where thread_id = #{thread_id,jdbcType=INTEGER}
   </select>
 
   <select id="selectIndirectRepliesById" parameterType="java.lang.Integer" resultMap="StreamResultMap">
     select *
-    from bu.wq_thread_stream
+    from ${schema}.wq_thread_stream
     where thread_id = #{thread_id,jdbcType=INTEGER}
   </select>
 
   <select id="selectByUserFollowingId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select bu.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
+    select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
     update_time, likes, dislikes
-    from bu.wq_thread join bu.wq_user_follow on bu.wq_thread.create_by = bu.wq_user_follow.follow_id
-    where bu.wq_user_follow.user_id = #{userId,jdbcType=INTEGER}
+    from ${schema}.wq_thread join ${schema}.wq_user_follow on ${schema}.wq_thread.create_by = ${schema}.wq_user_follow.follow_id
+    where ${schema}.wq_user_follow.user_id = #{userId,jdbcType=INTEGER}
   </select>
 
   <select id="selectUserSelectedSubjectsById" parameterType="java.lang.Integer" resultMap="SubjectsResultMap">
     select subjects_ids
-    from bu.wq_user_selected_subjects
+    from ${schema}.wq_user_selected_subjects
     where id = #{userId,jdbcType=INTEGER}
   </select>
 
   <select id="selectedBySchoolIdOrderedByView" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select bu.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
+    select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
     update_time, likes, dislikes
-    from bu.wq_thread join bu.wq_user_profile
-    on bu.wq_thread.create_by = bu.wq_user_profile.id
+    from ${schema}.wq_thread join ${schema}.wq_user_profile
+    on ${schema}.wq_thread.create_by = ${schema}.wq_user_profile.id
     where school_id = #{schoolId, jdbcType=INTEGER}
     order by num_of_view desc
   </select>
 
+  <select id="getUserInterestedStudyHelpThreadsByIds" resultMap="BaseResultMap">
+    select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
+    update_time, likes, dislikes
+    from ((${schema}.wq_thread_user_selected_subjects ss join ${schema}.wq_thread_subject s on ss.subject_ids = s.subject_id)
+    join ${schema}.wq_thread t on s.thread_id = t.id)
+    where s.subject_id in
+    <foreach item="subject_id" index="index" collection="list" open="(" separator="," close=")">
+    #{subjectIds}
+  </foreach>
+    and t.create_by = #{userId,jdbcType=INTEGER}
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from bu.wq_thread
+    delete from ${schema}.wq_thread
     where id = #{id,jdbcType=INTEGER}
   </delete>
 
   <delete id="deleteUserSelectedSubjectsById" parameterType="java.lang.Integer">
-    delete from bu.wq_thread_user_selected_subjects
+    delete from ${schema}.wq_thread_user_selected_subjects
     where id = #{userId,jdbcType=INTEGER}
   </delete>
 
   <insert id="insertThread" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.Thread" useGeneratedKeys="true">
-    insert into bu.wq_thread (create_by, title, category, 
+    insert into ${schema}.wq_thread (create_by, title, category,
       tag_id, content, study_points_bonus, 
       create_time, update_time, likes, 
       dislikes)
@@ -126,13 +138,13 @@
   </insert>
 
   <insert id="insertReply" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.ThreadStream" useGeneratedKeys="true">
-    insert into bu.wq_thread_stream(user_id, thread_id, comment, to_stream_id, create_time, update_time, likes, dislikes)
+    insert into ${schema}.wq_thread_stream(user_id, thread_id, comment, to_stream_id, create_time, update_time, likes, dislikes)
     values (#{userId,jdbcType=INTEGER},#{threadId,jdbcType=INTEGER},#{comment,jdbcType=VARCHAR},#{toStreamId,jdbcType=INTEGER},
     #{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},#{likes,jdbcType=INTEGER},#{dislikes,jdbcType=INTEGER},)
   </insert>
 
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.Thread" useGeneratedKeys="true">
-    insert into bu.wq_thread
+    insert into ${schema}.wq_thread
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="createBy != null">
         create_by,
@@ -200,18 +212,18 @@
   </insert>
 
   <insert id="addUserInterestedSubjects" keyColumn="user_id" keyProperty="userId" parameterType="com.wequan.bu.repository.model.ThreadUserSelectedSubjects" useGeneratedKeys="true">
-    insert into bu.wq_thread_user_selected_subjects(user_id, subject_ids)
+    insert into ${schema}.wq_thread_user_selected_subjects(user_id, subject_ids)
     values (#{userId, jdbcType=INTEGER}, #{subject_ids, jdbcType=VARCHAR})
   </insert>
 
   <insert id="reportThread" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
-    insert into bu.wq_report_record(id, user_id, resource_type, resource_id, report_time, reason)
+    insert into ${schema}.wq_report_record(id, user_id, resource_type, resource_id, report_time, reason)
     values (#{id, jdbcType=INTEGER},#{userId, jdbcType=INTEGER},#{1, jdbcType=SMALLINT},#{threadId, jdbcType=INTEGER},
     #{reportDate, jdbcType=TIMESTAMP},#{reason, jdbcType=VARCHAR},)
   </insert>
 
   <insert id="reportReplyToThread" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
-    insert into bu.wq_report_record(id, user_id, resource_type, resource_id, report_time, reason)
+    insert into ${schema}.wq_report_record(id, user_id, resource_type, resource_id, report_time, reason)
     values (#{id, jdbcType=INTEGER},#{userId, jdbcType=INTEGER},#{2, jdbcType=SMALLINT},#{replyId, jdbcType=INTEGER},
     #{reportDate, jdbcType=TIMESTAMP},#{reason, jdbcType=VARCHAR},)
   </insert>
@@ -221,7 +233,7 @@
       WARNING - @mbg.generated
       This element is automatically generated by MyBatis Generator, do not modify.
     -->
-    update bu.wq_thread
+    update ${schema}.wq_thread
     <set>
       <if test="createBy != null">
         create_by = #{createBy,jdbcType=INTEGER},
@@ -257,7 +269,7 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.wequan.bu.repository.model.Thread">
-    update bu.wq_thread
+    update ${schema}.wq_thread
     set create_by = #{createBy,jdbcType=INTEGER},
       title = #{title,jdbcType=VARCHAR},
       category = #{category,jdbcType=SMALLINT},
@@ -272,25 +284,25 @@
   </update>
 
   <update id="likeThread" parameterType="java.lang.Integer">
-    update bu.wq_thread
+    update ${schema}.wq_thread
     set likes = likes+1
     where id = #{threadId, jdbcType=INTEGER} and created_by = #{userId, jdbcType=INTEGER}
   </update>
 
   <update id="dislikeThread" parameterType="java.lang.Integer">
-    update bu.wq_thread
+    update ${schema}.wq_thread
     set dislikes = dislikes+1
     where id = #{threadId, jdbcType=INTEGER} and created_by = #{userId, jdbcType=INTEGER}
   </update>
 
   <update id="likeReplyOfThread" parameterType="java.lang.Integer">
-    update bu.wq_thread_stream
+    update ${schema}.wq_thread_stream
     set likes = likes+1
     where id = #{threadId, jdbcType=INTEGER} and user_id=#{userId, jdbcType=INTEGER} and to_stream_id = #{replyId, jdbcType=INTEGER}
   </update>
 
   <update id="dislikeReplyOfThread" parameterType="java.lang.Integer">
-    update bu.wq_thread_stream
+    update ${schema}.wq_thread_stream
     set dislikes = dislikes+1
     where id = #{threadId, jdbcType=INTEGER} and user_id=#{userId, jdbcType=INTEGER} and to_stream_id = #{replyId, jdbcType=INTEGER}
   </update>

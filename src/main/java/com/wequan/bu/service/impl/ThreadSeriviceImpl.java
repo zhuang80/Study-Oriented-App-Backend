@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.sql.Date;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ThreadSeriviceImpl extends AbstractService<Thread> implements ThreadService {
@@ -341,5 +343,36 @@ public class ThreadSeriviceImpl extends AbstractService<Thread> implements Threa
             Date reportDate = new Date(new java.util.Date().getTime());
             threadMapper.reportReplyToThread(threadId, replyId, userId, reason, reportDate);
         }
+    }
+
+    /**
+     * 6/26
+     * @param userId
+     * @param subjectIds
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    public List<Thread> getUserInterestedStudyHelpThreads(Integer userId, String subjectIds, Integer pageNum, Integer pageSize){
+        if(userId!=null && subjectIds !=null){
+            if(pageNum==null){
+                pageNum=1;
+            }
+            if(pageSize==null){
+                pageSize=10;
+            }
+            RowBounds rowBounds = new RowBounds(pageNum,pageSize);
+            try{
+                List<String> result = Arrays.asList(subjectIds.split(","));
+                List<Integer> res = new LinkedList<Integer>();
+                for(String subjectId : result){
+                    res.add(Integer.valueOf(subjectId));
+                }
+                return threadMapper.getUserInterestedStudyHelpThreadsByIds(userId, res, rowBounds);
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 }
