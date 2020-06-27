@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import org.apache.ibatis.javassist.util.proxy.ProxyFactory;
 
 /**
  * @author Zhaochao Huang
@@ -52,8 +53,14 @@ public class JacksonJsonFilter extends FilterProvider{
             @Override
             public void serializeAsField(Object pojo, JsonGenerator jgen, SerializerProvider prov, PropertyWriter writer)
                     throws Exception {
-                System.out.println("=======================================" + writer.getName());
-                if (apply(pojo.getClass(), writer.getName())) {
+                Class clazz;
+                if(ProxyFactory.isProxyClass(pojo.getClass())){
+                    clazz =  pojo.getClass().getSuperclass();
+                }else {
+                    clazz = pojo.getClass();
+                }
+
+                if (apply(clazz, writer.getName())) {
                     writer.serializeAsField(pojo, jgen, prov);
                 } else if (!jgen.canOmitFields()) {
                     writer.serializeAsOmittedField(pojo, jgen, prov);

@@ -1,5 +1,6 @@
 package com.wequan.bu.service;
 
+import com.wequan.bu.controller.vo.UploadFileWrapper;
 import com.wequan.bu.repository.model.Material;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +21,8 @@ public interface MaterialService extends Service<Material> {
      */
     public List<File> uploadFiles(MultipartFile[] files, String basePath) throws IOException;
 
+    public File uploadFile(MultipartFile file, String basePath) throws IOException;
+
     /**
      *
      * @param files a list of files of pdf MIME type
@@ -36,4 +39,8 @@ public interface MaterialService extends Service<Material> {
      * @return a list of material uploaded for a certain course taught by a certain professor
      */
     public List<Material> findByCourseIdAndProfessorId(Integer c_id, Integer p_id, Integer pageNum, Integer pageSize);
+
+    public List<Integer> uploadSupportMaterial(UploadFileWrapper files) throws IOException;
+
+
 }

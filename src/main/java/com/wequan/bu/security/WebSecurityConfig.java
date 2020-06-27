@@ -1,9 +1,14 @@
 package com.wequan.bu.security;
 
 import com.wequan.bu.config.WeQuanConstants;
-import com.wequan.bu.security.component.JwtAuthenticationEntryPoint;
-import com.wequan.bu.security.component.UserDetailsServiceImpl;
-import com.wequan.bu.security.filter.JwtAuthenticationFilter;
+import com.wequan.bu.security.authentication.provider.EmailPasswordAuthenticationProvider;
+import com.wequan.bu.security.authentication.provider.UserNamePasswordAuthenticationProvider;
+import com.wequan.bu.security.component.TokenAuthenticationEntryPoint;
+import com.wequan.bu.security.filter.TokenAuthenticationFilter;
+import com.wequan.bu.security.oauth2.CustomOAuth2UserService;
+import com.wequan.bu.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.wequan.bu.security.oauth2.OAuth2AuthenticationFailureHandler;
+import com.wequan.bu.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -38,45 +43,101 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${spring.profiles.active}")
     private String activeProfile;
     @Autowired
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private TokenAuthenticationEntryPoint tokenAuthenticationEntryPoint;
     @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private TokenAuthenticationFilter tokenAuthenticationFilter;
     @Autowired
-    private UserDetailsServiceImpl userDetailsServiceImpl;
+    private CustomOAuth2UserService customOAuth2UserService;
+    @Autowired
+    private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    @Autowired
+    private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsServiceImpl).passwordEncoder(passwordEncoder());
+        auth
+                .authenticationProvider(emailPasswordAuthenticationProvider())
+                .authenticationProvider(userNamePasswordAuthenticationProvider());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         if (!DEV_PROFILE_NAME.equals(activeProfile)) {
             http
-                    .cors().and()
-                    .csrf().disable()
+                    .cors()
+                        .and()
+                    .csrf()
+                        .disable()
+                    .formLogin()
+                        .disable()
+                    .httpBasic()
+                        .disable()
                     .exceptionHandling()
-                    .authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
+                        .authenticationEntryPoint(tokenAuthenticationEntryPoint)
+                        .and()
                     .authorizeRequests()
-                    .antMatchers("/",
-                            "/favicon.ico",
-                            "/**/*.png",
-                            "/**/*.gif",
-                            "/**/*.svg",
-                            "/**/*.jpg",
-                            "/**/*.html",
-                            "/**/*.css",
-                            "/**/*.js").permitAll()
-                    .antMatchers(HttpMethod.POST, WeQuanConstants.REGISTER_URL, WeQuanConstants.LOGIN_URL).permitAll()
-                    .anyRequest().authenticated().and()
-                    .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                        .antMatchers("/",
+                                "/favicon.ico",
+                                "/**/*.png",
+                                "/**/*.gif",
+                                "/**/*.svg",
+                                "/**/*.jpg",
+                                "/**/*.html",
+                                "/**/*.css",
+                                "/**/*.js").permitAll()
+                        .antMatchers(HttpMethod.POST, WeQuanConstants.REGISTER_URL, WeQuanConstants.LOGIN_URL).permitAll()
+                        .antMatchers(WeQuanConstants.EMAIL_CONFIRM_URL, "/oauth2/**").permitAll()
+                        .anyRequest()
+                            .authenticated()
+                        .and()
+                    .oauth2Login()
+                        .authorizationEndpoint()
+                            .baseUri("/oauth2/authorize")
+                            .authorizationRequestRepository(cookieAuthorizationRequestRepository())
+                            .and()
+                        .redirectionEndpoint()
+                            .baseUri("/oauth2/callback/*")
+                            .and()
+                        .userInfoEndpoint()
+                            .userService(customOAuth2UserService)
+                            .and()
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler(oAuth2AuthenticationFailureHandler)
+                        .and()
+                    .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         } else {
             http
-                    .cors().and()
-                    .csrf().disable()
+                    .cors()
+                        .and()
+                    .csrf()
+                        .disable()
+                    .formLogin()
+                        .disable()
+                    .httpBasic()
+                        .disable()
+                    .exceptionHandling()
+                        .authenticationEntryPoint(tokenAuthenticationEntryPoint)
+                        .and()
                     .authorizeRequests()
-                    .anyRequest().permitAll().and()
+                    .anyRequest()
+                        .permitAll()
+                        .and()
+                    .oauth2Login()
+                        .authorizationEndpoint()
+                            .baseUri("/oauth2/authorize")
+                            .authorizationRequestRepository(cookieAuthorizationRequestRepository())
+                            .and()
+                        .redirectionEndpoint()
+                            .baseUri("/oauth2/callback/*")
+                            .and()
+                        .userInfoEndpoint()
+                            .userService(customOAuth2UserService)
+                            .and()
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler(oAuth2AuthenticationFailureHandler)
+                        .and()
+                    .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         }
     }
@@ -90,6 +151,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+    }
+
+    @Bean
+    public UserNamePasswordAuthenticationProvider userNamePasswordAuthenticationProvider() {
+        return new UserNamePasswordAuthenticationProvider();
+    }
+
+    @Bean
+    public EmailPasswordAuthenticationProvider emailPasswordAuthenticationProvider() {
+        return new EmailPasswordAuthenticationProvider();
+    }
+
+    @Bean
+    public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
+        return new HttpCookieOAuth2AuthorizationRequestRepository();
     }
 
     @Bean

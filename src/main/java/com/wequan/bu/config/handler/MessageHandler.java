@@ -59,7 +59,7 @@ public class MessageHandler {
      */
     public String getSuccessResponseMessage(Object data) {
         Map<String, Object> resp = new HashMap<>(3);
-        resp.put("statusCode", "200");
+        resp.put("code", "200");
         resp.put("message", DEFAULT_SUCCESS_MESSAGE);
         resp.put("data", data);
         return getResponseMessage(resp);
@@ -71,7 +71,7 @@ public class MessageHandler {
      */
     public String getSuccessResponseMessage() {
         Map<String, Object> resp = new HashMap<>(2);
-        resp.put("statusCode", "200");
+        resp.put("code", "200");
         resp.put("message", DEFAULT_SUCCESS_MESSAGE);
         return getResponseMessage(resp);
     }
@@ -84,7 +84,7 @@ public class MessageHandler {
      */
     public String getFailResponseMessage(String statusCode, Object... params) {
         Map<String, Object> resp = new HashMap<>(2);
-        resp.put("statusCode", statusCode);
+        resp.put("code", statusCode);
         resp.put("message", getMessage(statusCode, params));
         return getResponseMessage(resp);
     }
