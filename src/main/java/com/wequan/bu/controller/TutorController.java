@@ -141,6 +141,12 @@ public class TutorController {
         return ResultGenerator.success(result);
     }
 
+    @PostMapping("/tutor/{id}/appointment")
+    @ApiOperation(value = "make a new appointment", notes = "用户预约一位tutor来辅导他，一开始预约的状态为pending，直到tutor确认接受该预约，就会生成transaction，用户通过Stripe完成这个transaction后，预约才真正地完成")
+    public Result makeAppointment(){
+        return ResultGenerator.success();
+    }
+
     @GetMapping("/tutor/{id}/public_class")
     @ApiOperation(value = "a list of tutor’s public class", notes = "返回Tutor创建的public class列表")
     public Result<List<OnlineEvent>> getOnlineEvents(@PathVariable("id") Integer tutorId) {
