@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.TutorApplicationMapper">
+    <resultMap id="baseResultMap" type="com.wequan.bu.repository.model.extend.TutorApplicationFullInfo">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="brief_introduction" jdbcType="VARCHAR" property="briefIntroduction" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="status" jdbcType="SMALLINT" property="status" />
+        <result column="current_city" jdbcType="VARCHAR" property="currentCity" />
+        <result column="current_state" jdbcType="VARCHAR" property="currentState" />
+        <result column="teach_method" jdbcType="VARCHAR" property="teachMethod" />
+        <result column="hourly_rate" jdbcType="REAL" property="hourlyRate" />
+        <result column="late_policy_id" jdbcType="SMALLINT" property="latePolicyId" />
+        <result column="cancellation_policy_id" jdbcType="SMALLINT" property="cancellationPolicyId" />
+        <result column="education_background_ids" jdbcType="VARCHAR" property="educationBackgroundIds" />
+        <result column="subject_topics_ids" jdbcType="VARCHAR" property="subjectTopicsIds" />
+        <result column="support_material_ids" jdbcType="VARCHAR" property="supportMaterialIds" />
+        <collection property="topicList" ofType="com.wequan.bu.repository.model.Topic"
+                    select="com.wequan.bu.repository.dao.TopicMapper.selectByIds" column="subject_topics_ids" />
+        <collection property="educationBackgroundList"
+                    ofType="com.wequan.bu.repository.model.TutorApplicationEducationBackground"
+                    select="com.wequan.bu.repository.dao.TutorApplicationEducationBackgroundMapper.selectByIds"
+                    column="education_background_ids" />
+        <collection property="supportMaterialList"
+                    ofType="com.wequan.bu.repository.model.TutorApplicationSupportMaterial"
+                    select="com.wequan.bu.repository.dao.TutorApplicationSupportMaterialMapper.selectByIds"
+                    column="support_material_ids" />
+    </resultMap>
+
+    <resultMap id="statusResultMap" type="com.wequan.bu.repository.model.TutorApplication">
+        <id property="id" jdbcType="INTEGER" column="id"/>
+        <result  property="status" jdbcType="SMALLINT" column="status"/>
+    </resultMap>
+
+    <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.TutorApplication">
+        INSERT INTO ${schema}.wq_tutor_application(user_id, brief_introduction, create_time, update_time, status, current_city, current_state, teach_method, hourly_rate, late_policy_id, cancellation_policy_id, education_background_ids, subject_topics_ids, support_material_ids)
+        VALUES (#{userId}, #{briefIntroduction}, #{createTime}, #{updateTime}, #{status}, #{currentCity}, #{currentState}, #{teachMethod}, #{hourlyRate}, #{latePolicyId}, #{cancellationPolicyId}, #{educationBackgroundIds}, #{subjectTopicsIds}, #{supportMaterialIds});
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.TutorApplication">
+        UPDATE ${schema}.wq_tutor_application
+        <set>
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="briefIntroduction != null">
+                brief_introduction = #{briefIntroduction,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=SMALLINT},
+            </if>
+            <if test="currentCity != null">
+                current_city = #{currentCity,jdbcType=VARCHAR},
+            </if>
+            <if test="currentState != null">
+                current_state = #{currentState,jdbcType=VARCHAR},
+            </if>
+            <if test="teachMethod != null">
+                teach_method = #{teachMethod,jdbcType=VARCHAR},
+            </if>
+            <if test="hourlyRate != null">
+                hourly_rate = #{hourlyRate,jdbcType=REAL},
+            </if>
+            <if test="latePolicyId != null">
+                late_policy_id = #{latePolicyId,jdbcType=SMALLINT},
+            </if>
+            <if test="cancellationPolicyId != null">
+                cancellation_policy_id = #{cancellationPolicyId,jdbcType=SMALLINT},
+            </if>
+            <if test="educationBackgroundIds != null">
+                education_background_ids = #{educationBackgroundIds,jdbcType=VARCHAR},
+            </if>
+            <if test="subjectTopicsIds != null">
+                subject_topics_ids = #{subjectTopicsIds,jdbcType=VARCHAR},
+            </if>
+            <if test="supportMaterialIds != null">
+                support_material_ids = #{supportMaterialIds,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE id = #{id, jdbcType=INTEGER}
+    </update>
+    <select id="selectByUserId" resultMap="baseResultMap">
+        SELECT *
+        FROM ${schema}.wq_tutor_application
+        WHERE user_id = #{user_id}
+    </select>
+
+    <select id="selectStatusByUserId" resultMap="statusResultMap">
+        SELECT id, status
+        FROM ${schema}.wq_tutor_application
+        WHERE user_id = #{user_id, jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByPrimaryKey" resultType="com.wequan.bu.repository.model.TutorApplication">
+        SELECT *
+        FROM ${schema}.wq_tutor_application
+        WHERE id = #{id, jdbcType=INTEGER}
+    </select>
+</mapper>

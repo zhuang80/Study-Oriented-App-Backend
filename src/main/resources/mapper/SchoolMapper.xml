@@ -19,4 +19,10 @@
         SELECT *
         FROM ${schema}.wq_school
     </select>
+
+    <select id="selectByPrimaryKey" resultMap="schoolResultMap">
+        SELECT *
+        FROM ${schema}.wq_school
+        WHERE id = #{id}
+    </select>
 </mapper>

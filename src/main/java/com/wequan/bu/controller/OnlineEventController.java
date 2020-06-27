@@ -1,6 +1,5 @@
 package com.wequan.bu.controller;
 
-import com.wequan.bu.controller.vo.DiscussionGroup;
 import com.wequan.bu.controller.vo.OnlineEvent;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
@@ -30,10 +29,10 @@ public class OnlineEventController {
 
     @GetMapping("/online_events/school/{id}")
     @ApiOperation(value = "Show a list of online event in user’s school", notes = "返回与school对应的online event列表")
-    public Result<List<DiscussionGroup>> getOnlineEventBySchool(@PathVariable("id") Integer id,
+    public Result<List<OnlineEvent>> getOnlineEventBySchool(@PathVariable("id") Integer id,
                                                                 @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                                 @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<DiscussionGroup> result = null;
+        List<OnlineEvent> result = null;
         return ResultGenerator.success(result);
     }
 
@@ -63,6 +62,8 @@ public class OnlineEventController {
     @PostMapping("/online_event")
     @ApiOperation(value = "Create an online event", notes = "返回创建online event成功与否")
     public Result addOnlineEvent(@RequestBody OnlineEvent onlineEvent) {
+        // only tutor can create public class
+        // user can create activities
         return ResultGenerator.success();
     }
 

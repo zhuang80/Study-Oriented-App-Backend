@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.SubjectsMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.Subject">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="create_by" jdbcType="INTEGER" property="createBy" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="category" jdbcType="SMALLINT" property="category" />
+    <result column="school_id" jdbcType="SMALLINT" property="schoolId" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, name, create_by, create_time, category, school_id
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    SELECT
+      <include refid="Base_Column_List" />
+    FROM ${schema}.wq_subjects
+    WHERE id = #{id}
+  </select>
+
+  <select id="selectByTutorId" resultMap="BaseResultMap">
+    SELECT
+      s.*
+    FROM ${schema}.wq_subjects s
+    LEFT JOIN ${schema}.wq_tutor_subject ts ON ts.subject_id = s.id
+    WHERE ts.tutor_id = #{tutor_id}
+  </select>
+
+
+</mapper>

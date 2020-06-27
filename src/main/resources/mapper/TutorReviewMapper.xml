@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.TutorReviewMapper">
+
+    <resultMap id="baseResultMap" type="com.wequan.bu.repository.model.TutorReview">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="rating" jdbcType="REAL" property="rating" />
+        <result column="comment" jdbcType="VARCHAR" property="comment" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="tutor_id" jdbcType="INTEGER" property="tutorId" />
+        <association property="createBy"
+                     column="create_by"
+                     select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey" />
+        <collection property="tagList"
+                    column="id"
+                    ofType="com.wequan.bu.repository.model.Tag"
+                    select="com.wequan.bu.repository.dao.TagMapper.selectByTutorReviewId" />
+    </resultMap>
+    <insert id="insertSelective" parameterType="com.wequan.bu.controller.vo.TutorReview"
+            keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO ${schema}.wq_tutor_review
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="rating != null">
+                rating,
+            </if>
+            <if test="comment != null">
+                comment,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="tutorId != null">
+                tutor_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="rating != null">
+                #{rating,jdbcType=REAL},
+            </if>
+            <if test="comment != null">
+                #{comment,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="tutorId != null">
+                #{tutorId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="selectByTutorId" resultMap="baseResultMap">
+        SELECT *
+        FROM ${schema}.wq_tutor_review
+        WHERE tutor_id = #{tutor_id, jdbcType=INTEGER}
+    </select>
+</mapper>

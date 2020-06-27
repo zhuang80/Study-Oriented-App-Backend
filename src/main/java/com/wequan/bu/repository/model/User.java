@@ -1,82 +1,146 @@
 package com.wequan.bu.repository.model;
 
-import java.util.HashSet;
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
+
+import java.util.Date;
+import java.util.List;
 
 /**
- * @author ChrisChen
+ *
+ * This class corresponds to the database table bu.wq_user_profile
  */
+@Data
 public class User {
+    /**
+     * Database Column Remarks:
+     *   主键
+     */
     private Integer id;
-    private String nickname;
+
+    /**
+     * Database Column Remarks:
+     *   用户昵称
+     */
+    private String userName;
+
+    /**
+     * Database Column Remarks:
+     *   用户邮箱
+     */
     private String email;
+
+    /**
+     * Database Column Remarks:
+     *   用户电话号码
+     */
     private String phone;
+
+    /**
+     * Database Column Remarks:
+     *   用户通信地址
+     */
     private String address;
+
+    /**
+     * Database Column Remarks:
+     *   邮政编码
+     */
     private String zipCode;
+
+    /**
+     * Database Column Remarks:
+     *   用户密码
+     */
+    @JsonIgnore
     private String credential;
-    private Set<Role> roles = new HashSet<>();
 
-    public Integer getId() {
-        return id;
-    }
+    /**
+     * Database Column Remarks:
+     *   所在学校id
+     */
+    private Short schoolId;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    /**
+     * Database Column Remarks:
+     *   用户学习积分
+     */
+    private Short studyPoints;
 
-    public String getNickname() {
-        return nickname;
-    }
+    /**
+     * Database Column Remarks:
+     *   用户token
+     */
+    private String accessToken;
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
+    /**
+     * Database Column Remarks:
+     *   用户的名
+     */
+    private String firstName;
 
-    public String getEmail() {
-        return email;
-    }
+    /**
+     * Database Column Remarks:
+     *   用户的姓
+     */
+    private String lastName;
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    /**
+     * Database Column Remarks:
+     *   邀请码
+     */
+    private String invitationCode;
 
-    public String getPhone() {
-        return phone;
-    }
+    /**
+     * Database Column Remarks:
+     *    简介
+     */
+    private String briefIntroduction;
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+    /**
+     * Database Column Remarks:
+     *   邮箱是否经过验证
+     */
+    private Boolean emailVerified;
 
-    public String getAddress() {
-        return address;
-    }
+    /**
+     * Database Column Remarks:
+     *   第三方名称
+     */
+    private String provider;
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+    /**
+     * Database Column Remarks:
+     *   第三方id
+     */
+    private String providerId;
 
-    public String getZipCode() {
-        return zipCode;
-    }
+    /**
+     * Database Column Remarks:
+     *   用户在第三方应用上的头像url
+     */
+    private String avatarUrlInProvider;
 
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
-    }
+    /**
+     * Database Column Remarks:
+     *   用户头像
+     */
+    private byte[] avatar;
 
-    public String getCredential() {
-        return credential;
-    }
+    /**
+     * Database Column Remarks:
+     *   创建时间
+     */
+    private Date createTime;
 
-    public void setCredential(String credential) {
-        this.credential = credential;
-    }
+    /**
+     * Database Column Remarks:
+     *   更新时间
+     */
+    private Date updateTime;
 
-    public Set<Role> getRoles() {
-        return roles;
-    }
+    private List<UserFollow> following;
+    private List<UserFollow> followed;
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
+
 }

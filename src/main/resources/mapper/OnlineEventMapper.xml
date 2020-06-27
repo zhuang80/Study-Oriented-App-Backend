@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.OnlineEvenMapper">
+    <resultMap id="BaseResultMap" type="com.wequan.bu.controller.vo.OnlineEvent">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="type" jdbcType="SMALLINT" property="type" />
+        <result column="brief_description" jdbcType="VARCHAR" property="briefDescription" />
+        <result column="create_by" jdbcType="INTEGER" property="createBy" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="status" jdbcType="SMALLINT" property="status" />
+        <result column="fee" jdbcType="REAL" property="fee" />
+        <result column="method" jdbcType="VARCHAR" property="method" />
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+        <result column="visible" jdbcType="BIT" property="visible" />
+        <result column="belong_school_id" jdbcType="SMALLINT" property="belongSchoolId" />
+        <result column="guid" jdbcType="VARCHAR" property="guid" />
+        <result column="method_detail" jdbcType="VARCHAR" property="methodDetail" />
+        <result column="tag_id" jdbcType="INTEGER" property="tagId" />
+    </resultMap>
+
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT *
+        FROM ${schema}.wq_online_event oe
+        WHERE oe.create_by = #{user_id}
+    </select>
+</mapper>
