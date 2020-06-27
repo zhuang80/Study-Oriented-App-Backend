@@ -22,6 +22,7 @@ spring:
   messages:
     basename: i18n/messages
   jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
     parser:
       ALLOW_SINGLE_QUOTES: true
       ALLOW_UNQUOTED_FIELD_NAMES: true
