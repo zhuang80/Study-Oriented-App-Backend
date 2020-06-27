@@ -10,9 +10,8 @@ import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.ThreadService;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import java.util.Date;
 import javax.annotation.PostConstruct;
-import java.sql.Date;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -340,7 +339,7 @@ public class ThreadSeriviceImpl extends AbstractService<Thread> implements Threa
     @Override
     public void reportReplyToThread(Integer threadId, Integer replyId, Integer userId, String reason){
         if(threadId!=null && replyId!=null && userId!=null && reason!=null){
-            Date reportDate = new Date(new java.util.Date().getTime());
+            Date reportDate = new Date(new Date().getTime());
             threadMapper.reportReplyToThread(threadId, replyId, userId, reason, reportDate);
         }
     }

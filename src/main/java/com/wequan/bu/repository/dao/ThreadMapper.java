@@ -8,7 +8,7 @@ import com.wequan.bu.repository.model.extend.ThreadBriefInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.RowBounds;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 @Mapper
