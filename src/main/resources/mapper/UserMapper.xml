@@ -23,8 +23,17 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.wequan.bu.repository.model.User">
+
+  <resultMap id="ResultMapWithAvatar" extends="BaseResultMap" type="com.wequan.bu.repository.model.User">
     <result column="avatar" jdbcType="BINARY" property="avatar" />
+  </resultMap>
+
+  <resultMap id="ResultMapWithStat" extends="ResultMapWithAvatar" type="com.wequan.bu.repository.model.extend.UserStats">
+    <result column="subject_ids" jdbcType="VARCHAR" property="subjectIds" />
+    <result column="number_of_threads" jdbcType="INTEGER" property="numberOfThreads" />
+    <result column="number_of_following" jdbcType="INTEGER" property="numberOfFollowing" />
+    <result column="number_of_followed" jdbcType="INTEGER" property="numberOfFollowed" />
+    <result column="number_of_groups" jdbcType="INTEGER" property="numberOfGroups" />
   </resultMap>
 
   <sql id="Base_Column_List">
@@ -32,17 +41,18 @@
     access_token, first_name, last_name, invitation_code, brief_introduction, email_verified,
     provider, provider_id, avatar_url_in_provider, create_time, update_time
   </sql>
-  <sql id="Blob_Column_List">
+  <sql id="Avatar_Column_List">
     avatar
   </sql>
   <sql id="simple_columns">
-    id, user_name, email, credential, first_name, last_name, create_time, update_time, provider, provider_id
+    id, user_name, email, credential, create_time, update_time, email_verified, provider, provider_id
   </sql>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from ${schema}.wq_user_profile
     where id = #{id,jdbcType=INTEGER}
   </delete>
+
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.User" useGeneratedKeys="true">
     insert into ${schema}.wq_user_profile
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -238,6 +248,12 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
+  <update id="updateEmailVerifiedByEmail">
+    update ${schema}.wq_user_profile
+    set email_verified = #{verified,jdbcType=BIT}
+    where email = #{email,jdbcType=VARCHAR}
+  </update>
+
   <select id="selectByPrimaryKey" resultMap="BaseResultMap">
     select <include refid="Base_Column_List" />
     from ${schema}.wq_user_profile
@@ -260,4 +276,23 @@
     from ${schema}.wq_user_profile
     where email = #{email}
   </select>
+
+  <select id="selectByUserName" resultMap="BaseResultMap">
+    select <include refid="simple_columns" />
+    from ${schema}.wq_user_profile
+    where user_name = #{userName}
+  </select>
+
+  <select id="selectById" resultMap="ResultMapWithStat">
+    select
+      t.id, t.first_name, t.last_name, t.user_name, t.email, t.school_id, t.brief_introduction, t.avatar, t.avatar_url_in_provider, t.provider,
+      (select string_agg(subject_id::character varying, ',') from ${schema}.wq_user_subject where user_id = t.id) as subject_ids,
+      (select count(1) from ${schema}.wq_thread where create_by = t.id) as number_of_thread,
+      (select count(1) from ${schema}.wq_user_follow where user_id = t.id) as number_of_following,
+      (select count(1) from ${schema}.wq_user_follow where follow_id = t.id) as number_of_followed,
+      (select count(1) from ${schema}.wq_discussion_group_member where member_id = t.id and action = 'join') as number_of_group
+    from ${schema}.wq_user_profile t
+    where t.id = #{userId}
+  </select>
+
 </mapper>
