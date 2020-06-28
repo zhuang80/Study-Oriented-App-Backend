@@ -1,8 +1,8 @@
 package com.wequan.bu.controller;
 
-import com.wequan.bu.controller.vo.DiscussionGroup;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
+import com.wequan.bu.repository.model.DiscussionGroup;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;

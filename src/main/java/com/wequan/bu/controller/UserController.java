@@ -1,17 +1,13 @@
 package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
-import com.wequan.bu.controller.vo.DiscussionGroup;
 import com.wequan.bu.controller.vo.Thread;
-import com.wequan.bu.controller.vo.TutorInquiryVo;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.*;
 import com.wequan.bu.repository.model.extend.AppointmentBriefInfo;
 import com.wequan.bu.repository.model.extend.UserStats;
-import com.wequan.bu.service.AppointmentService;
-import com.wequan.bu.service.OnlineEventService;
-import com.wequan.bu.service.UserService;
+import com.wequan.bu.service.*;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +32,10 @@ public class UserController {
     private AppointmentService appointmentService;
     @Autowired
     private OnlineEventService onlineEventService;
+    @Autowired
+    private DiscussionGroupService discussionGroupService;
+    @Autowired
+    private TutorInquiryService tutorInquiryService;
     @Autowired
     private MessageHandler messageHandler;
 
@@ -108,6 +108,7 @@ public class UserController {
     public Result doOnlineEvent(@PathVariable("id") Integer userId,
                                 @RequestParam("oeId") Integer oeId,
                                 @RequestParam("action") Integer action) {
+
         return ResultGenerator.success();
     }
 
@@ -116,30 +117,56 @@ public class UserController {
     public Result<List<DiscussionGroup>> getDiscussionGroups(@PathVariable("id") Integer userId,
                                                              @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-
-        List<DiscussionGroup> result = null;
-        return ResultGenerator.success(result);
+        List<DiscussionGroup> discussionGroups = null;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        discussionGroups = discussionGroupService.getUserDiscussionGroups(userId, pageNum, pageSize);
+        return ResultGenerator.success(discussionGroups);
     }
 
     @PostMapping("/user/{id}/discussion_group")
     @ApiOperation(value = "join/quit discussion group", notes = "加入/退出discussion group成功与否")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "dgId", value = "discussion group id"),
-            @ApiImplicitParam(name = "action", value = "1 -> join; -1 -> quit")
+            @ApiImplicitParam(name = "action", value = "join; quit")
     })
     public Result doDiscussionGroup(@PathVariable("id") Integer userId,
                                     @RequestParam("dgId") Integer dgId,
-                                    @RequestParam("action") Integer action) {
+                                    @RequestParam("action") String action) {
+        if (userId <= 0 || dgId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (!"join".equals(action) && !"quit".equals(action)) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        discussionGroupService.doUserAction(userId, dgId, action);
         return ResultGenerator.success();
     }
 
     @GetMapping("/user/{id}/tutor_inquiries")
     @ApiOperation(value = "a list of user’s tutor inquiry", notes = "返回用户的tutor inquiry列表")
-    public Result<List<TutorInquiryVo>> getTutorInquiries(@PathVariable("id") Integer userId,
+    public Result<List<TutorInquiry>> getTutorInquiries(@PathVariable("id") Integer userId,
                                                           @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                           @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<TutorInquiryVo> result = null;
-        return ResultGenerator.success(result);
+        List<TutorInquiry> tutorInquiries = null;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        tutorInquiries = tutorInquiryService.getUserTutorInquiries(userId, pageNum, pageSize);
+        return ResultGenerator.success(tutorInquiries);
     }
 
     @GetMapping("/user/{id}/threads")
