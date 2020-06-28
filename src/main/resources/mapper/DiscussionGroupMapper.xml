@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.DiscussionGroupMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.DiscussionGroup">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="create_by" jdbcType="INTEGER" property="createBy" />
+    <result column="brief_description" jdbcType="VARCHAR" property="briefDescription" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="SMALLINT" property="status" />
+    <result column="group_message" jdbcType="VARCHAR" property="groupMessage" />
+    <result column="group_manager_id" jdbcType="INTEGER" property="groupManagerId" />
+    <result column="group_capacity" jdbcType="INTEGER" property="groupCapacity" />
+    <result column="visible" jdbcType="BIT" property="visible" />
+    <result column="belong_school_id" jdbcType="SMALLINT" property="belongSchoolId" />
+    <result column="guid" jdbcType="VARCHAR" property="guid" />
+    <result column="tag_id" jdbcType="SMALLINT" property="tagId" />
+    <result column="create_by_name" jdbcType="VARCHAR" property="createByName" />
+    <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
+  </resultMap>
+
+  <resultMap id="ResultMapWithBLOBs" extends="BaseResultMap" type="com.wequan.bu.repository.model.DiscussionGroup">
+    <result column="logo" jdbcType="BINARY" property="logo" />
+    <result column="image" jdbcType="BINARY" property="image" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, name, create_by, brief_description, create_time, update_time, status, group_message, 
+    group_manager_id, group_capacity, visible, belong_school_id, guid, tag_id
+  </sql>
+
+  <sql id="Blob_Column_List">
+    logo, image
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ${schema}.wq_discussion_group
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByUserId" resultMap="ResultMapWithBLOBs">
+    select
+      t.*, u.user_name as create_by_name, ts.name as tag_name
+    from (
+      select dg.*
+      from ${schema}.wq_discussion_group dg
+      where exists (
+        select 1 from ${schema}.wq_discussion_group_member dgm
+        where dgm.member_id = #{userId}
+        and dgm.discussion_group_id = dg.id
+        and action = 'join'
+      )
+    ) t
+    inner join ${schema}.wq_user_profile u on t.create_by = u.id
+    inner join ${schema}.wq_tags ts on t.tag_id = ts.id
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ${schema}.wq_discussion_group
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.DiscussionGroup" useGeneratedKeys="true">
+    insert into ${schema}.wq_discussion_group
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="name != null and name != ''">
+        name,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="briefDescription != null and briefDescription != ''">
+        brief_description,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="groupMessage != null and groupMessage != ''">
+        group_message,
+      </if>
+      <if test="groupManagerId != null">
+        group_manager_id,
+      </if>
+      <if test="groupCapacity != null">
+        group_capacity,
+      </if>
+      <if test="visible != null">
+        visible,
+      </if>
+      <if test="belongSchoolId != null">
+        belong_school_id,
+      </if>
+      <if test="guid != null and guid != ''">
+        guid,
+      </if>
+      <if test="tagId != null">
+        tag_id,
+      </if>
+      <if test="logo != null">
+        logo,
+      </if>
+      <if test="image != null">
+        image,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="name != null and name != ''">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=INTEGER},
+      </if>
+      <if test="briefDescription != null and briefDescription != ''">
+        #{briefDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=SMALLINT},
+      </if>
+      <if test="groupMessage != null and groupMessage != ''">
+        #{groupMessage,jdbcType=VARCHAR},
+      </if>
+      <if test="groupManagerId != null">
+        #{groupManagerId,jdbcType=INTEGER},
+      </if>
+      <if test="groupCapacity != null">
+        #{groupCapacity,jdbcType=INTEGER},
+      </if>
+      <if test="visible != null">
+        #{visible,jdbcType=BIT},
+      </if>
+      <if test="belongSchoolId != null">
+        #{belongSchoolId,jdbcType=SMALLINT},
+      </if>
+      <if test="guid != null and guid != ''">
+        #{guid,jdbcType=VARCHAR},
+      </if>
+      <if test="tagId != null">
+        #{tagId,jdbcType=SMALLINT},
+      </if>
+      <if test="logo != null">
+        #{logo,jdbcType=BINARY},
+      </if>
+      <if test="image != null">
+        #{image,jdbcType=BINARY},
+      </if>
+    </trim>
+  </insert>
+
+  <insert id="insertOrUpdateActionByUserId" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.DiscussionGroupMember" useGeneratedKeys="true">
+    insert into ${schema}.wq_discussion_group_member (discussion_group_id, member_id, action, action_time)
+    values (
+      #{discussionGroupId,jdbcType=INTEGER}, #{memberId,jdbcType=INTEGER}, #{action,jdbcType=VARCHAR}, #{actionTime,jdbcType=TIMESTAMP}
+    )
+    on conflict (discussion_group_id, member_id)
+    do update set action = EXCLUDED.action, action_time = EXCLUDED.action_time
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.DiscussionGroup">
+    update ${schema}.wq_discussion_group
+    <set>
+      <if test="name != null and name != ''">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=INTEGER},
+      </if>
+      <if test="briefDescription != null and briefDescription != ''">
+        brief_description = #{briefDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=SMALLINT},
+      </if>
+      <if test="groupMessage != null and groupMessage != ''">
+        group_message = #{groupMessage,jdbcType=VARCHAR},
+      </if>
+      <if test="groupManagerId != null">
+        group_manager_id = #{groupManagerId,jdbcType=INTEGER},
+      </if>
+      <if test="groupCapacity != null">
+        group_capacity = #{groupCapacity,jdbcType=INTEGER},
+      </if>
+      <if test="visible != null">
+        visible = #{visible,jdbcType=BIT},
+      </if>
+      <if test="belongSchoolId != null">
+        belong_school_id = #{belongSchoolId,jdbcType=SMALLINT},
+      </if>
+      <if test="guid != null and guid != ''">
+        guid = #{guid,jdbcType=VARCHAR},
+      </if>
+      <if test="tagId != null">
+        tag_id = #{tagId,jdbcType=SMALLINT},
+      </if>
+      <if test="logo != null">
+        logo = #{logo,jdbcType=BINARY},
+      </if>
+      <if test="image != null">
+        image = #{image,jdbcType=BINARY},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+</mapper>

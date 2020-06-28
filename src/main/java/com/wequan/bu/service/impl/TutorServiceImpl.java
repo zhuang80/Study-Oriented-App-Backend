@@ -29,7 +29,7 @@ import java.util.Map;
 @Service
 public class TutorServiceImpl extends AbstractService<Tutor> implements TutorService {
 
-    private static final Logger logger = LoggerFactory.getLogger(TutorServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(TutorServiceImpl.class);
 
     @Autowired
     private TutorMapper tutorMapper;

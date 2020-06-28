@@ -2,14 +2,10 @@ package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.controller.vo.Condition;
-import com.wequan.bu.controller.vo.DiscussionGroup;
-import com.wequan.bu.repository.model.OnlineEvent;
 import com.wequan.bu.controller.vo.TutorInquiryVo;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
-import com.wequan.bu.repository.model.Course;
-import com.wequan.bu.repository.model.Professor;
-import com.wequan.bu.repository.model.Tutor;
+import com.wequan.bu.repository.model.*;
 import com.wequan.bu.service.TutorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
