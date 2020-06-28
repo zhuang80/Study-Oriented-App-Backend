@@ -37,6 +37,8 @@ public class UserController {
     @Autowired
     private TutorInquiryService tutorInquiryService;
     @Autowired
+    private ThreadService threadService;
+    @Autowired
     private MessageHandler messageHandler;
 
     @GetMapping("/user/{id}/profile")
@@ -178,8 +180,18 @@ public class UserController {
     public Result<List<Thread>> getThreads(@PathVariable("id") Integer userId,
                                            @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                            @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<Thread> result = null;
-        return ResultGenerator.success(result);
+        List<Thread> threads = null;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+//        threads = threadService.getUserThreads(userId, pageNum, pageSize);
+        return ResultGenerator.success(threads);
     }
 
     @GetMapping("/user/{id}/replies")
