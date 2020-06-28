@@ -38,7 +38,7 @@ import java.util.Map;
 public class StripeServiceImpl extends AbstractService<TutorStripe> implements StripeService {
     private String secretKey = "sk_test_51GvSqhEWcWYP1PyNkbOqe9ccNkeR1Fwyqra7tCvsgwY9H8pNvcSpNoqxwgirFsHfD96LRLiRI9k9Gylb3O7Qx6se009LZHlhhm";
     private String clientId = "ca_HUSn3TlzUSpqzLeK4JHl3EIh6BKjVFeM";
-    private String webhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
+    private String webhookSecret = "whsec_8W0LB8PW1hKslvsdgG4zIp9WQC5q36fg";
 
     @Autowired
     private TutorStripeMapper tutorStripeMapper;
