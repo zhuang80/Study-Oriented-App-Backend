@@ -4,6 +4,9 @@
     <insert id="insertSelective" parameterType="com.wequan.bu.controller.vo.Transaction">
         INSERT INTO ${schema}.wq_transaction
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
             <if test="type != null">
                 type,
             </if>
@@ -30,6 +33,9 @@
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
             <if test="type != null">
                 #{type,jdbcType=SMALLINT},
             </if>

@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 public class Transaction {
 
-    private String uuid;
+    private String id;
 
     /**
      * Database Column Remarks:

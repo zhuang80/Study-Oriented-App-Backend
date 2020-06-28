@@ -1,5 +1,6 @@
 package com.wequan.bu.repository.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
  * @author Zhen Lin
  */
 @Data
+@JsonIgnoreProperties("handler")
 public class Tutor {
 
     private Integer id;
