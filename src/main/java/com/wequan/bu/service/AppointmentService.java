@@ -18,4 +18,6 @@ public interface AppointmentService extends Service<Appointment> {
      * @return AppointmentBriefInfo列表
      */
     List<AppointmentBriefInfo> getUserAppointments(Integer userId, Integer pageNum, Integer pageSize);
+
+    public void makeAppointment(Appointment appointment);
 }
