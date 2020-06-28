@@ -13,6 +13,7 @@ import com.stripe.net.RequestOptions;
 import com.stripe.net.Webhook;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.wequan.bu.controller.vo.Transaction;
+import com.wequan.bu.repository.dao.AppointmentMapper;
 import com.wequan.bu.repository.dao.TransactionMapper;
 import com.wequan.bu.repository.dao.TutorStripeMapper;
 import com.wequan.bu.repository.model.Appointment;
@@ -37,13 +38,16 @@ import java.util.Map;
 public class StripeServiceImpl extends AbstractService<TutorStripe> implements StripeService {
     private String secretKey = "sk_test_51GvSqhEWcWYP1PyNkbOqe9ccNkeR1Fwyqra7tCvsgwY9H8pNvcSpNoqxwgirFsHfD96LRLiRI9k9Gylb3O7Qx6se009LZHlhhm";
     private String clientId = "ca_HUSn3TlzUSpqzLeK4JHl3EIh6BKjVFeM";
-    private String webhookSecret = null;
+    private String webhookSecret = "whsec_8W0LB8PW1hKslvsdgG4zIp9WQC5q36fg";
 
     @Autowired
     private TutorStripeMapper tutorStripeMapper;
 
    @Autowired
    private TransactionService transactionService;
+
+   @Autowired
+   private AppointmentMapper appointmentMapper;
 
     @PostConstruct
     public void postConstruct(){
@@ -70,7 +74,8 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     }
 
     @Override
-    public PaymentIntent createPaymentIntent(Appointment appointment) throws StripeException {
+    public PaymentIntent createPaymentIntent(Integer appointmentId) throws StripeException {
+        Appointment appointment = appointmentMapper.selectByPrimaryKey(appointmentId);
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
                 .setAmount((long)(int) appointment.getFee())
                 .setCurrency("usd")

@@ -9,7 +9,7 @@ import com.wequan.bu.repository.model.TutorStripe;
 public interface StripeService extends Service<TutorStripe> {
     public void storeConnectedId(String code, Integer tutorId);
 
-    public PaymentIntent createPaymentIntent(Appointment appointment) throws StripeException;
+    public PaymentIntent createPaymentIntent(Integer appointmentId) throws StripeException;
 
     public void fulfillPurchase(String sigHeader, String webhookEndpoint);
 }
