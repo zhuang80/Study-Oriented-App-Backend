@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.UUID;
 
 /**
  * @author Zhaochao Huang
@@ -42,14 +43,17 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     @Override
     public void saveAppointmentTransaction(PaymentIntent paymentIntent) {
         Map<String, String> metadata = paymentIntent.getMetadata();
-        Integer appointmentId = Integer.parseInt(metadata.get("appointment_id"));
+
+       Integer appointmentId = Integer.parseInt(metadata.get("appointment_id"));
+       // Integer appointmentId = 0;
         Appointment appointment = appointmentMapper.selectByPrimaryKey(appointmentId);
         Tutor tutor = tutorMapper.selectByPrimaryKey(appointment.getTutorId());
 
         Transaction transaction = new Transaction();
+        transaction.setId(String.valueOf(UUID.randomUUID()));
         transaction.setType((short) TransactionType.APPOINTMENT.getValue());
         transaction.setPayFrom(appointment.getUserId());
-        transaction.setPayTo(tutor.getUserId());
+        transaction.setPayTo(tutor.getUser().getId());
         transaction.setPayAmount(appointment.getFee());
         transaction.setPaymentMethod((short) 0);
         transaction.setThirdPartyTransactionId(paymentIntent.getId());

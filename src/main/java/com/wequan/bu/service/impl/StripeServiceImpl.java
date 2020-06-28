@@ -38,7 +38,7 @@ import java.util.Map;
 public class StripeServiceImpl extends AbstractService<TutorStripe> implements StripeService {
     private String secretKey = "sk_test_51GvSqhEWcWYP1PyNkbOqe9ccNkeR1Fwyqra7tCvsgwY9H8pNvcSpNoqxwgirFsHfD96LRLiRI9k9Gylb3O7Qx6se009LZHlhhm";
     private String clientId = "ca_HUSn3TlzUSpqzLeK4JHl3EIh6BKjVFeM";
-    private String webhookSecret = "whsec_8W0LB8PW1hKslvsdgG4zIp9WQC5q36fg";
+    private String webhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
 
     @Autowired
     private TutorStripeMapper tutorStripeMapper;
@@ -80,7 +80,7 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
                 .setAmount((long)(int) appointment.getFee())
                 .setCurrency("usd")
                 .setApplicationFeeAmount(123L)
-                .setPaymentMethod("card")
+                .addPaymentMethodType("card")
                 .putMetadata("appointment_id", String.valueOf(appointment.getId()))
                 .build();
 
@@ -107,15 +107,17 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
         if ("payment_intent.succeeded".equals(event.getType())) {
             // Deserialize the nested object inside the event
+            System.out.println("==================== payment intent succeed");
             EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
             PaymentIntent paymentIntent = null;
             if (dataObjectDeserializer.getObject().isPresent()) {
                 paymentIntent = (PaymentIntent) dataObjectDeserializer.getObject().get();
                 String connectedAccountId = event.getAccount();
                 Map<String, String> metadata = paymentIntent.getMetadata();
-                if(metadata.containsKey("appointment_id")){
+               // if(metadata.containsKey("appointment_id")){
+                    System.out.println("=================== save transaction ");
                     transactionService.saveAppointmentTransaction(paymentIntent);
-                }
+              //  }
                // handleSuccessfulPaymentIntent(connectedAccountId, paymentIntent);
             } else {
                 // Deserialization failed, probably due to an API version mismatch.
