@@ -1,6 +1,7 @@
 package com.wequan.bu.service;
 
 import com.wequan.bu.controller.vo.OnlineEvent;
+import com.wequan.bu.repository.model.Appointment;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.repository.model.TutorApplication;
 import com.wequan.bu.repository.model.TutorViewHistory;
@@ -37,4 +38,5 @@ public interface TutorService extends Service<Tutor> {
     public void updateAvailability(Integer tutorId, Short action);
 
     public void logTutorViewHistory(Tutor tutor, Integer userId);
+
 }

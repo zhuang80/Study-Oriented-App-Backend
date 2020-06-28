@@ -11,10 +11,16 @@ import com.stripe.model.oauth.TokenResponse;
 import com.stripe.net.OAuth;
 import com.stripe.net.RequestOptions;
 import com.stripe.net.Webhook;
+import com.stripe.param.PaymentIntentCreateParams;
+import com.wequan.bu.controller.vo.Transaction;
+import com.wequan.bu.repository.dao.TransactionMapper;
 import com.wequan.bu.repository.dao.TutorStripeMapper;
+import com.wequan.bu.repository.model.Appointment;
 import com.wequan.bu.repository.model.TutorStripe;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.StripeService;
+import com.wequan.bu.service.TransactionService;
+import com.wequan.bu.util.TransactionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +41,9 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
     @Autowired
     private TutorStripeMapper tutorStripeMapper;
+
+   @Autowired
+   private TransactionService transactionService;
 
     @PostConstruct
     public void postConstruct(){
@@ -61,22 +70,23 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     }
 
     @Override
-    public PaymentIntent createPaymentIntent(Integer tutorId) throws StripeException {
-        ArrayList paymentMethodTypes = new ArrayList<>();
-        paymentMethodTypes.add("card");
+    public PaymentIntent createPaymentIntent(Appointment appointment) throws StripeException {
+        PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                .setAmount((long)(int) appointment.getFee())
+                .setCurrency("usd")
+                .setApplicationFeeAmount(123L)
+                .setPaymentMethod("card")
+                .putMetadata("appointment_id", String.valueOf(appointment.getId()))
+                .build();
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("payment_method_types", paymentMethodTypes);
-        params.put("amount", 1000);
-        params.put("currency", "usd");
-        params.put("application_fee_amount", 123);
+        TutorStripe tutorStripe = tutorStripeMapper.selectByTutorId(appointment.getTutorId());
 
-
-        TutorStripe tutorStripe = tutorStripeMapper.selectByTutorId(tutorId);
         RequestOptions requestOptions = RequestOptions.builder()
                  .setStripeAccount(tutorStripe.getStripeAccount())
-                .build();
+                 .build();
+
         PaymentIntent paymentIntent = PaymentIntent.create(params, requestOptions);
+
         return paymentIntent;
     }
 
@@ -97,6 +107,10 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
             if (dataObjectDeserializer.getObject().isPresent()) {
                 paymentIntent = (PaymentIntent) dataObjectDeserializer.getObject().get();
                 String connectedAccountId = event.getAccount();
+                Map<String, String> metadata = paymentIntent.getMetadata();
+                if(metadata.containsKey("appointment_id")){
+                    transactionService.saveAppointmentTransaction(paymentIntent);
+                }
                // handleSuccessfulPaymentIntent(connectedAccountId, paymentIntent);
             } else {
                 // Deserialization failed, probably due to an API version mismatch.

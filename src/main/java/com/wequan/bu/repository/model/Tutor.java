@@ -24,5 +24,5 @@ public class Tutor {
     private String currentCity;
     private String currentState;
     private String teachMethod;
-    private Float hourlyRate;
+    private Integer hourlyRate;
 }

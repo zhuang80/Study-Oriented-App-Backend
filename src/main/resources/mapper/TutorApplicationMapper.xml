@@ -11,7 +11,7 @@
         <result column="current_city" jdbcType="VARCHAR" property="currentCity" />
         <result column="current_state" jdbcType="VARCHAR" property="currentState" />
         <result column="teach_method" jdbcType="VARCHAR" property="teachMethod" />
-        <result column="hourly_rate" jdbcType="REAL" property="hourlyRate" />
+        <result column="hourly_rate" jdbcType="INTEGER" property="hourlyRate" />
         <result column="late_policy_id" jdbcType="SMALLINT" property="latePolicyId" />
         <result column="cancellation_policy_id" jdbcType="SMALLINT" property="cancellationPolicyId" />
         <result column="education_background_ids" jdbcType="VARCHAR" property="educationBackgroundIds" />

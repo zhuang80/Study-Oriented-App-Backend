@@ -6,8 +6,10 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.model.WebhookEndpoint;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
+import com.wequan.bu.repository.model.Appointment;
 import com.wequan.bu.service.StripeService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,8 +33,9 @@ public class ChargeController {
     }
 
     @GetMapping("/client_secret")
-    public Result<String> getClientSecret(@RequestParam("tutorId") Integer tutorId) throws StripeException {
-        PaymentIntent paymentIntent = stripeService.createPaymentIntent(tutorId);
+    @ApiOperation(value="return client secret", notes="根据appointment生成一个client secret 前端使用client secret完成交易")
+    public Result<String> getClientSecret(@RequestBody Appointment appointment) throws StripeException {
+        PaymentIntent paymentIntent = stripeService.createPaymentIntent(appointment);
         return ResultGenerator.success(paymentIntent.getClientSecret());
     }
 
