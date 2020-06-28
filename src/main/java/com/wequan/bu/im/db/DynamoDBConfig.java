@@ -14,8 +14,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.wequan.bu.im.protocal.Protocal;
+import org.springframework.context.annotation.Primary;
+
 @Configuration
-@EnableDynamoDBRepositories(basePackageClasses = UserRepository.class)
+//@EnableDynamoDBRepositories(basePackages = "com.wequan.bu.im.db")
 public class DynamoDBConfig {
 
     @Value("${amazon.aws.accesskey}")
@@ -34,6 +37,7 @@ public class DynamoDBConfig {
     }
 
     @Bean
+    @Primary
     public DynamoDBMapperConfig dynamoDBMapperConfig() {
         return DynamoDBMapperConfig.DEFAULT;
     }

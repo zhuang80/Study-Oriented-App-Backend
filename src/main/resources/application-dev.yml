@@ -29,3 +29,11 @@ swagger:
     email: yli241@binghamton.edu
   version: 1.0
   base-package: com.wequan.bu.controller
+
+im:
+  port: 8989
+
+amazon:
+  aws:
+    accesskey: AKIAT3UCHJRBB7WS5BUB
+    secretkey: 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

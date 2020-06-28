@@ -1,5 +1,7 @@
 package com.wequan.bu.im;
 
+import com.wequan.bu.im.event.MessageQoSEventS2CListnerImpl;
+import com.wequan.bu.im.event.ServerEventListenerImpl;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -23,16 +25,26 @@ import com.wequan.bu.im.qos.QoS4SendDaemonS2C;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * @author zhen
  */
-public abstract class ServerLauncher {
+@Service
+public class ServerLauncher {
     private static Logger logger = LoggerFactory.getLogger(ServerLauncher.class);
 
     public static boolean debug = true;
-    public static String appKey = null;
-    public static int PORT = 7901;
+
+    @Value("${im.port}")
+    private Integer PORT;
     public static int SESION_RECYCLER_EXPIRE = 10;
     public static boolean bridgeEnabled = false;
 
@@ -42,6 +54,29 @@ public abstract class ServerLauncher {
     private final EventLoopGroup __bossGroup4Netty = new NioEventLoopGroup();
     private final EventLoopGroup __workerGroup4Netty = new DefaultEventLoopGroup();
     private Channel __serverChannel4Netty = null;
+
+    static {
+
+
+        QoS4SendDaemonS2C.getInstance().setDebugable(true);
+        QoS4ReciveDaemonC2S.getInstance().setDebugable(true);
+        ServerLauncher.debug = true;
+
+        ServerLauncher.bridgeEnabled = false;
+    }
+
+//    public static void main(String[] args) throws Exception {
+//        SpringApplication.run(ServerLauncher.class, args);
+//    }
+
+//    @Override
+//    public void run(String... args) {
+//        try {
+//            startup();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public ServerLauncher() throws IOException {
         // default do nothing
@@ -110,7 +145,10 @@ public abstract class ServerLauncher {
         return new ServerCoreHandler();
     }
 
-    protected abstract void initListeners();
+    protected void initListeners() throws IOException {
+        this.setServerEventListener(new ServerEventListenerImpl());
+        this.setServerMessageQoSEventListener(new MessageQoSEventS2CListnerImpl());
+    }
 
     protected ServerBootstrap initServerBootstrap4Netty() {
         return new ServerBootstrap()
