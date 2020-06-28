@@ -2,6 +2,10 @@ package com.wequan.bu.im;
 
 import com.wequan.bu.im.core.LocalUDPDataReciever;
 import com.wequan.bu.im.core.LocalUDPDataSender;
+import com.wequan.bu.im.protocal.Protocal;
+import com.wequan.bu.im.protocal.ProtocalFactory;
+
+import java.util.UUID;
 
 /**
  * @author zhen
@@ -19,10 +23,18 @@ public class Launch {
             LocalUDPDataReciever.getInstance().startup();
         }
 
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        while(true) {
+
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if(ClientCore.getInstance().isLoginHasInit()) {
+                Protocal p = ProtocalFactory.createCommonData("hello", ClientCore.getInstance().getCurrentLoginUserId(), "1", true, UUID.randomUUID().toString(), -1);
+                LocalUDPDataSender.getInstance().sendCommonData(p);
+            }
         }
     }
 

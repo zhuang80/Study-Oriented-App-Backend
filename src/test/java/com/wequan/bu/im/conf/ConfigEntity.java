@@ -8,7 +8,7 @@ import com.wequan.bu.im.core.KeepAliveDaemon;
 public class ConfigEntity {
     public static String appKey = null;
     public static String serverIP = "";
-    public static int serverUDPPort = 7901;
+    public static int serverUDPPort = 9000;
     public static int localUDPPort = 0;
 
     public static void setSenseMode(SenseMode mode) {

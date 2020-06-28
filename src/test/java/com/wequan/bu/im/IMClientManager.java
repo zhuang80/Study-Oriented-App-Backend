@@ -37,7 +37,7 @@ public class IMClientManager {
 
             // 设置服务器ip和服务器端口
             ConfigEntity.serverIP = "127.0.0.1";
-            ConfigEntity.serverUDPPort = 7901;
+            ConfigEntity.serverUDPPort = 8989;
 
 //			ConfigEntity.setSenseMode(SenseMode.MODE_10S);
 
