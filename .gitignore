@@ -38,3 +38,6 @@ src/main/resources/mapper/mbg/**
 
 ### .DS_Store
 **/.DS_Store
+
+### log
+log.path_IS_UNDEFINED
