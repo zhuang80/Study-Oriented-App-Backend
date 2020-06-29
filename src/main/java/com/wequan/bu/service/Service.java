@@ -81,4 +81,13 @@ public interface Service<T> {
         return new ArrayList<>();
     }
 
+    /**
+     * 用户对资源收藏或取消收藏
+     * @param userId 用户id
+     * @param favoriteId 资源id
+     * @param action 收藏或取消收藏
+     */
+    default void postFavorite(Integer userId, Integer favoriteId, Integer action) {
+    }
+
 }
