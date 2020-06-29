@@ -101,4 +101,10 @@
         delete from bu.wq_transaction
         where third_party_transaction_id = #{payment_intent_id,jdbcType=VARCHAR}
     </delete>
+
+    <select id="selectByPrimaryKey" resultType="com.wequan.bu.controller.vo.Transaction">
+        SELECT *
+        FROM ${schema}.wq_transaction
+        WHERE id = #{id, jdbcType=VARCHAR}
+    </select>
 </mapper>

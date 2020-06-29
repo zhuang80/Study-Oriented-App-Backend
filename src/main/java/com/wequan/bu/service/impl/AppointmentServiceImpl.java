@@ -79,12 +79,18 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
         if(oldRecord == null) {
             throw new Exception("no such appointment");
         }
+        System.out.println("========================> "+ oldRecord.getTransactionId());
         Transaction transaction = transactionMapper.selectByPrimaryKey(oldRecord.getTransactionId());
+        System.out.println("========================================= find old transaction ");
+        System.out.println("====="+ transaction.getStatus());
+        System.out.println("======" + transaction.getStatus().equals(TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue()));
+        System.out.println("=========================================================");
         if(transaction.getStatus().equals(TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue())){
             /**delete old payment intent (third_party_transaction_id)
              * delete old transaction info in table (transaction_id)
              * handled by webhook payment_intent.canceled event
              */
+            System.out.println("============================== enter if statement");
             stripeService.cancelPaymentIntent(transaction.getThirdPartyTransactionId());
             //calculate fee
             appointment.setFee((int)(long) calculateFee(appointment));
