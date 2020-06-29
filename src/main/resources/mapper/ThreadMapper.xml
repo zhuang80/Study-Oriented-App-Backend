@@ -13,6 +13,8 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="likes" jdbcType="INTEGER" property="likes" />
     <result column="dislikes" jdbcType="INTEGER" property="dislikes" />
+    <result column="status" jdbcType="INTEGER" property="status"/>
+    <result column="school_id" jdbcType="INTEGER" property="schoolId"/>
   </resultMap>
 
   <resultMap id="StreamResultMap" type="com.wequan.bu.repository.model.ThreadStream">
@@ -43,7 +45,7 @@
 
   <sql id="Base_Column_List">
     id, create_by, title, category, tag_id, content, study_points_bonus, create_time, 
-    update_time, likes, dislikes
+    update_time, likes, dislikes, status, school_id
   </sql>
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -55,17 +57,15 @@
 
   <select id="selectBySchoolId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
-    update_time, likes, dislikes
-    from ${schema}.wq_thread join ${schema}.wq_user_profile
-    on ${schema}.wq_thread.create_by = ${schema}.wq_user_profile.id
+    update_time, likes, dislikes, status, school_id
+    from ${schema}.wq_thread
     where school_id = #{schoolId, jdbcType=INTEGER}
   </select>
 
-  <select id="selectBySchoolIdAndTag" resultMap="BaseResultMap">
+  <select id="selectBySchoolIdAndTag" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
-    update_time, likes, dislikes
-    from ${schema}.wq_thread join ${schema}.wq_user_profile
-    on ${schema}.wq_thread.create_by = ${schema}.wq_user_profile.id
+    update_time, likes, dislikes, status, school_id
+    from ${schema}.wq_thread
     where school_id = #{school_id, jdbcType=INTEGER} and tag_id = #{tag_id, jdbcType=SMALLINT}
     order by ${schema}.wq_thread.create_time desc
   </select>
@@ -84,7 +84,7 @@
 
   <select id="selectByUserFollowingId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
-    update_time, likes, dislikes
+    update_time, likes, dislikes, status, school_id
     from ${schema}.wq_thread join ${schema}.wq_user_follow on ${schema}.wq_thread.create_by = ${schema}.wq_user_follow.follow_id
     where ${schema}.wq_user_follow.user_id = #{userId,jdbcType=INTEGER}
   </select>
@@ -97,16 +97,15 @@
 
   <select id="selectedBySchoolIdOrderedByView" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
-    update_time, likes, dislikes
-    from ${schema}.wq_thread join ${schema}.wq_user_profile
-    on ${schema}.wq_thread.create_by = ${schema}.wq_user_profile.id
+    update_time, likes, dislikes, status, school_id
+    from ${schema}.wq_thread
     where school_id = #{schoolId, jdbcType=INTEGER}
     order by num_of_view desc
   </select>
 
   <select id="getUserInterestedStudyHelpThreadsByIds" resultMap="BaseResultMap">
     select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
-    update_time, likes, dislikes
+    update_time, likes, dislikes, status, school_id
     from ((${schema}.wq_thread_user_selected_subjects ss join ${schema}.wq_thread_subject s on ss.subject_ids = s.subject_id)
     join ${schema}.wq_thread t on s.thread_id = t.id)
     where s.subject_id in
@@ -130,11 +129,11 @@
     insert into ${schema}.wq_thread (create_by, title, category,
       tag_id, content, study_points_bonus, 
       create_time, update_time, likes, 
-      dislikes)
+      dislikes, status, school_id)
     values (#{createBy,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{category,jdbcType=SMALLINT}, 
       #{tagId,jdbcType=SMALLINT}, #{content,jdbcType=VARCHAR}, #{studyPointsBonus,jdbcType=SMALLINT}, 
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{likes,jdbcType=INTEGER}, 
-      #{dislikes,jdbcType=INTEGER})
+      #{dislikes,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{schoolId,jdbcType=INTEGER})
   </insert>
 
   <insert id="insertReply" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.ThreadStream" useGeneratedKeys="true">
@@ -279,7 +278,9 @@
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
       likes = #{likes,jdbcType=INTEGER},
-      dislikes = #{dislikes,jdbcType=INTEGER}
+      dislikes = #{dislikes,jdbcType=INTEGER},
+      status = #{status, jdbcType=INTEGER},
+      school_id = #{schoolId, jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 
