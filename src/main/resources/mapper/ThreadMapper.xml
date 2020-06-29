@@ -130,7 +130,7 @@
       tag_id, content, study_points_bonus, 
       create_time, update_time, likes, 
       dislikes, status, school_id)
-    values (#{createBy,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{category,jdbcType=SMALLINT}, 
+    values (#{createBy,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{category,jdbcType=SMALLINT},
       #{tagId,jdbcType=SMALLINT}, #{content,jdbcType=VARCHAR}, #{studyPointsBonus,jdbcType=SMALLINT}, 
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{likes,jdbcType=INTEGER}, 
       #{dislikes,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{schoolId,jdbcType=INTEGER})
