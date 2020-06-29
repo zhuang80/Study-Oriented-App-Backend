@@ -145,7 +145,9 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     }
 
     @Override
-    public PaymentIntent cancelPaymentIntent(String paymentIntentId) {
-        return null;
+    public PaymentIntent cancelPaymentIntent(String paymentIntentId) throws StripeException {
+        PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
+        PaymentIntent updatedPaymentIntent = paymentIntent.cancel();
+        return updatedPaymentIntent;
     }
 }
