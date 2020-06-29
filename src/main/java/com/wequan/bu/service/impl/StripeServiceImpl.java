@@ -23,6 +23,7 @@ import com.wequan.bu.service.StripeService;
 import com.wequan.bu.service.TransactionService;
 import com.wequan.bu.util.TransactionType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -36,9 +37,17 @@ import java.util.Map;
  */
 @Service
 public class StripeServiceImpl extends AbstractService<TutorStripe> implements StripeService {
-    private String secretKey = "sk_test_51GvSqhEWcWYP1PyNkbOqe9ccNkeR1Fwyqra7tCvsgwY9H8pNvcSpNoqxwgirFsHfD96LRLiRI9k9Gylb3O7Qx6se009LZHlhhm";
-    private String clientId = "ca_HUSn3TlzUSpqzLeK4JHl3EIh6BKjVFeM";
-    private String webhookSecret = "whsec_8W0LB8PW1hKslvsdgG4zIp9WQC5q36fg";
+    @Value("${SECRET_KEY}")
+    private String secretKey;
+
+    @Value("${CLIENT_ID}")
+    private String clientId;
+
+    //@Value("${WEBHOOK_SECRET}")
+    //private String webhookSecret;
+
+    //local test webhook secret
+    private String webhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
 
     @Autowired
     private TutorStripeMapper tutorStripeMapper;
@@ -51,6 +60,7 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
     @PostConstruct
     public void postConstruct(){
+        System.out.println("==================="+ secretKey);
         Stripe.apiKey = secretKey;
         this.setMapper(tutorStripeMapper);
     }
@@ -81,6 +91,7 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
                 .setCurrency("usd")
                 .setApplicationFeeAmount(123L)
                 .addPaymentMethodType("card")
+                .putMetadata("type", String.valueOf(TransactionType.APPOINTMENT.getValue()))
                 .putMetadata("appointment_id", String.valueOf(appointment.getId()))
                 .build();
 
@@ -91,13 +102,17 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
                  .build();
 
         PaymentIntent paymentIntent = PaymentIntent.create(params, requestOptions);
-
         return paymentIntent;
     }
 
     @Override
     public void fulfillPurchase(String sigHeader, String webhookEndpoint) {
+        System.out.println("================================================");
+        System.out.println(sigHeader);
+        System.out.println(webhookEndpoint);
+
         Event event = null;
+        PaymentIntent paymentIntent = null;
 
         try{
             event = Webhook.constructEvent(webhookEndpoint, sigHeader, webhookSecret);
@@ -106,23 +121,25 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
         }
 
         if ("payment_intent.succeeded".equals(event.getType())) {
+            System.out.println("=============================> payment intent succeeded event webhook");
             // Deserialize the nested object inside the event
-            System.out.println("==================== payment intent succeed");
             EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
-            PaymentIntent paymentIntent = null;
             if (dataObjectDeserializer.getObject().isPresent()) {
                 paymentIntent = (PaymentIntent) dataObjectDeserializer.getObject().get();
-                String connectedAccountId = event.getAccount();
-                Map<String, String> metadata = paymentIntent.getMetadata();
-               // if(metadata.containsKey("appointment_id")){
-                    System.out.println("=================== save transaction ");
-                    transactionService.saveAppointmentTransaction(paymentIntent);
-              //  }
-               // handleSuccessfulPaymentIntent(connectedAccountId, paymentIntent);
+                transactionService.update(paymentIntent);
             } else {
                 // Deserialization failed, probably due to an API version mismatch.
                 // Refer to the Javadoc documentation on `EventDataObjectDeserializer` for
                 // instructions on how to handle this case, or return an error here.
+            }
+        }
+        if("payment_intent.created".equals(event.getType())){
+            System.out.println("=============================> payment intent created event webhook");
+            // Deserialize the nested object inside the event
+            EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
+            if (dataObjectDeserializer.getObject().isPresent()) {
+                paymentIntent = (PaymentIntent) dataObjectDeserializer.getObject().get();
+                transactionService.saveAppointmentTransaction(paymentIntent);
             }
         }
     }

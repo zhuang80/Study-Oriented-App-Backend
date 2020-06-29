@@ -8,4 +8,6 @@ import com.wequan.bu.controller.vo.Transaction;
  */
 public interface TransactionService extends Service<Transaction> {
     public void saveAppointmentTransaction(PaymentIntent paymentIntent);
+
+    public void update(PaymentIntent paymentIntent);
 }

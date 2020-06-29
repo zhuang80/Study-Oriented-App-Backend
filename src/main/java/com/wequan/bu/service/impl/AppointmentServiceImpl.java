@@ -1,6 +1,8 @@
 package com.wequan.bu.service.impl;
 
+import com.wequan.bu.controller.vo.Transaction;
 import com.wequan.bu.repository.dao.AppointmentMapper;
+import com.wequan.bu.repository.dao.TransactionMapper;
 import com.wequan.bu.repository.dao.TutorMapper;
 import com.wequan.bu.repository.model.Appointment;
 import com.wequan.bu.repository.model.Tutor;
@@ -28,6 +30,9 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
 
     @Autowired
     private TutorMapper tutorMapper;
+
+    @Autowired
+    private TransactionMapper transactionMapper;
 
     @PostConstruct
     public void postConstruct() {
@@ -71,4 +76,6 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
         }
         return hours * tutor.getHourlyRate();
     }
+
+
 }

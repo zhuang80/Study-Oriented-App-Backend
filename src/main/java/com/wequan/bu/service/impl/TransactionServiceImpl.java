@@ -9,6 +9,7 @@ import com.wequan.bu.repository.model.Appointment;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.TransactionService;
+import com.wequan.bu.util.TransactionStatus;
 import com.wequan.bu.util.TransactionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,13 +46,14 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         Map<String, String> metadata = paymentIntent.getMetadata();
 
        Integer appointmentId = Integer.parseInt(metadata.get("appointment_id"));
+       short type = Short.parseShort(metadata.get("type"));
        // Integer appointmentId = 0;
         Appointment appointment = appointmentMapper.selectByPrimaryKey(appointmentId);
         Tutor tutor = tutorMapper.selectByPrimaryKey(appointment.getTutorId());
 
         Transaction transaction = new Transaction();
         transaction.setId(String.valueOf(UUID.randomUUID()));
-        transaction.setType((short) TransactionType.APPOINTMENT.getValue());
+        transaction.setType(type);
         transaction.setPayFrom(appointment.getUserId());
         transaction.setPayTo(tutor.getUser().getId());
         transaction.setPayAmount(appointment.getFee());
@@ -65,6 +67,15 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         transactionMapper.insertSelective(transaction);
     }
 
+    @Override
+    public void update(PaymentIntent paymentIntent) {
+        Transaction transaction = new Transaction();
+        short status = getStatus(paymentIntent.getStatus());
+        transaction.setStatus(status);
+        transaction.setThirdPartyTransactionId(paymentIntent.getId());
+        transactionMapper.updateByThirdPartyTransactionId(transaction);
+    }
+
     private LocalDateTime convertTimestampToLocalDateTime(Long timestamp){
         return LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp),
                 TimeZone.getDefault().toZoneId());
@@ -72,7 +83,16 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 
     private short getStatus(String status){
         if(status.equals("succeeded")) {
-            return 1;
+            return TransactionStatus.SUCCEEDED.getValue();
+        }
+        if(status.equals("requires_payment_method")){
+            return TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue();
+        }
+        if(status.equals("canceled")){
+            return TransactionStatus.CANCELED.getValue();
+        }
+        if(status.equals("processing")){
+            return TransactionStatus.PROCESSING.getValue();
         }
         return -1;
     }
