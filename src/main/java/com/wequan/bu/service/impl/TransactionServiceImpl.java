@@ -63,6 +63,11 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         transactionMapper.updateByThirdPartyTransactionId(transaction);
     }
 
+    @Override
+    public void delete(PaymentIntent paymentIntent) {
+        transactionMapper.deleteByThirdPartyTransactionId(paymentIntent.getId());
+    }
+
     private LocalDateTime convertTimestampToLocalDateTime(Long timestamp){
         return LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp),
                 TimeZone.getDefault().toZoneId());

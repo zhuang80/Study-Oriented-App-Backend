@@ -41,7 +41,7 @@ public class ChargeController {
 
     @PostMapping("/webhook")
     public Result handlePaymentIntent(HttpServletRequest request,
-                                  @RequestBody String webhookEndpoint){
+                                  @RequestBody String webhookEndpoint) throws Exception {
         System.out.println("============================ enter webhook");
         System.out.println(webhookEndpoint);
         System.out.println(request.getHeader("Stripe-Signature"));

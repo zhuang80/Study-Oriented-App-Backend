@@ -96,4 +96,9 @@
         </set>
        WHERE t.third_party_transaction_id = #{thirdPartyTransactionId, jdbcType=VARCHAR}
     </update>
+
+    <delete id="deleteByThirdPartyTransactionId" parameterType="java.lang.String">
+        delete from bu.wq_transaction
+        where third_party_transaction_id = #{payment_intent_id,jdbcType=VARCHAR}
+    </delete>
 </mapper>
