@@ -105,7 +105,7 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     }
 
     @Override
-    public void fulfillPurchase(String sigHeader, String webhookEndpoint) {
+    public void handlePaymentIntent(String sigHeader, String webhookEndpoint) {
         System.out.println("================================================");
         System.out.println(sigHeader);
         System.out.println(webhookEndpoint);
@@ -141,5 +141,11 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
                 transactionService.saveAppointmentTransaction(paymentIntent);
             }
         }
+
+    }
+
+    @Override
+    public PaymentIntent cancelPaymentIntent(String paymentIntentId) {
+        return null;
     }
 }

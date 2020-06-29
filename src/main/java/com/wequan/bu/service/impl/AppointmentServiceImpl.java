@@ -9,6 +9,8 @@ import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.repository.model.extend.AppointmentBriefInfo;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.AppointmentService;
+import com.wequan.bu.service.StripeService;
+import com.wequan.bu.util.TransactionStatus;
 import org.apache.ibatis.session.RowBounds;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,6 +36,9 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
 
     @Autowired
     private TransactionMapper transactionMapper;
+
+    @Autowired
+    private StripeService stripeService;
 
     @PostConstruct
     public void postConstruct() {
@@ -66,6 +72,33 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
         appointmentMapper.updateByPrimaryKeySelective(appointment);
     }
 
+
+    @Override
+    public void updateAppointmentAndGenerateNewTransaction(Appointment appointment) throws Exception{
+        Appointment oldRecord = appointmentMapper.selectByPrimaryKey(appointment.getId());
+        if(oldRecord == null) {
+            throw new Exception("no such appointment");
+        }
+        Transaction transaction = transactionMapper.selectByPrimaryKey(oldRecord.getTransactionId());
+        if(transaction.getStatus().equals(TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue())){
+            /**delete old payment intent (third_party_transaction_id)
+             * delete old transaction info in table (transaction_id)
+             * handled by webhook payment_intent.canceled event
+             */
+            stripeService.cancelPaymentIntent(transaction.getThirdPartyTransactionId());
+            //calculate fee
+            appointment.setFee((int)(long) calculateFee(appointment));
+            appointment.setUpdateTime(LocalDateTime.now());
+            appointment.setTransactionId("-1");
+            //update appointment
+            appointmentMapper.updateByPrimaryKeySelective(appointment);
+            //generate new payment intent (appointment_id, type)
+            stripeService.createPaymentIntent(appointment.getId());
+        }else{
+            throw new Exception("can't update the appointment after customer has paid money");
+        }
+    }
+
     /**
      * calculate the total fee of an appointment
      * @param appointment
@@ -84,6 +117,4 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
         }
         return hours * tutor.getHourlyRate();
     }
-
-
 }

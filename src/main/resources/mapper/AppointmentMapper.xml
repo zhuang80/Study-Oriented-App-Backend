@@ -102,9 +102,6 @@
       <if test="transactionId != null">
         transaction_id,
       </if>
-      <if test="reviewId != null">
-        review_id,
-      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="tutorId != null">
@@ -145,9 +142,6 @@
       </if>
       <if test="transactionId != null">
         #{transactionId,jdbcType=VARCHAR},
-      </if>
-      <if test="reviewId != null">
-        #{reviewId,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -193,9 +187,6 @@
       </if>
       <if test="transactionId != null">
         transaction_id = #{transactionId,jdbcType=VARCHAR},
-      </if>
-      <if test="reviewId != null">
-        review_id = #{reviewId,jdbcType=INTEGER},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
