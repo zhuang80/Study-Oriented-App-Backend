@@ -27,6 +27,12 @@
     where fts.user_id = #{userId}
   </select>
 
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from ${schema}.wq_favorite_thread_stream
+    where user_id = #{userId,jdbcType=INTEGER}
+    and thread_stream_id = #{threadStreamId,jdbcType=INTEGER}
+  </delete>
+
   <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.FavoriteThreadStream">
     insert into ${schema}.wq_favorite_thread_stream
     <trim prefix="(" suffix=")" suffixOverrides=",">

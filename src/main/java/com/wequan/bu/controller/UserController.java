@@ -261,6 +261,15 @@ public class UserController {
                            @RequestParam("categoryId") Integer categoryId,
                            @RequestParam("favoriteId") Integer favoriteId,
                            @RequestParam("action") Integer action) {
+        if (userId <= 0 || favoriteId <= 0 || (action != 1 && action != -1)) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        Class<? extends Service> favoriteServiceClazz = FavoriteCategory.getFavoriteService(categoryId);
+        if (Objects.isNull(favoriteServiceClazz)) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        Service favoriteService = applicationContext.getBean(favoriteServiceClazz);
+        favoriteService.postFavorite(userId, favoriteId, action);
         return ResultGenerator.success();
     }
 

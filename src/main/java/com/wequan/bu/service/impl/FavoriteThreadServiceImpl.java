@@ -11,7 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author ChrisChen
@@ -28,5 +31,22 @@ public class FavoriteThreadServiceImpl extends AbstractService<FavoriteThread> i
     public List<FavoriteThreadBriefInfo> findFavorites(Integer userId, Integer pageNum, Integer pageSize) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
         return favoriteThreadMapper.selectByUserId(userId, rowBounds);
+    }
+
+    @Override
+    public void postFavorite(Integer userId, Integer favoriteId, Integer action) {
+        if (action == 1) {
+            FavoriteThread favoriteThread = new FavoriteThread();
+            favoriteThread.setUserId(userId);
+            favoriteThread.setThreadId(favoriteId);
+            favoriteThread.setCreateTime(new Date());
+            favoriteThreadMapper.insertSelective(favoriteThread);
+        }
+        if (action == -1) {
+            Map<String, Integer> params = new HashMap<>(2);
+            params.put("userId", userId);
+            params.put("threadId", favoriteId);
+            favoriteThreadMapper.deleteByPrimaryKey(params);
+        }
     }
 }
