@@ -105,7 +105,7 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     }
 
     @Override
-    public void handlePaymentIntent(String sigHeader, String webhookEndpoint) {
+    public void handlePaymentIntent(String sigHeader, String webhookEndpoint) throws Exception {
         System.out.println("================================================");
         System.out.println(sigHeader);
         System.out.println(webhookEndpoint);
@@ -118,28 +118,19 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
         } catch (SignatureVerificationException e) {
             e.printStackTrace();
         }
+        paymentIntent = deserializePaymentIntentFromEvent(event);
 
         if ("payment_intent.succeeded".equals(event.getType())) {
             System.out.println("=============================> payment intent succeeded event webhook");
-            // Deserialize the nested object inside the event
-            EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
-            if (dataObjectDeserializer.getObject().isPresent()) {
-                paymentIntent = (PaymentIntent) dataObjectDeserializer.getObject().get();
-                transactionService.update(paymentIntent);
-            } else {
-                // Deserialization failed, probably due to an API version mismatch.
-                // Refer to the Javadoc documentation on `EventDataObjectDeserializer` for
-                // instructions on how to handle this case, or return an error here.
-            }
+            transactionService.update(paymentIntent);
         }
         if("payment_intent.created".equals(event.getType())){
             System.out.println("=============================> payment intent created event webhook");
-            // Deserialize the nested object inside the event
-            EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
-            if (dataObjectDeserializer.getObject().isPresent()) {
-                paymentIntent = (PaymentIntent) dataObjectDeserializer.getObject().get();
-                transactionService.saveAppointmentTransaction(paymentIntent);
-            }
+            transactionService.saveAppointmentTransaction(paymentIntent);
+        }
+        if("payment_intent.canceled".equals(event.getType())){
+            System.out.println("=============================> payment intent canceled event webhook");
+            transactionService.delete(paymentIntent);
         }
 
     }
@@ -149,5 +140,17 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
         PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
         PaymentIntent updatedPaymentIntent = paymentIntent.cancel();
         return updatedPaymentIntent;
+    }
+
+    private PaymentIntent deserializePaymentIntentFromEvent(Event event) throws Exception{
+        EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
+        if (dataObjectDeserializer.getObject().isPresent()) {
+            return (PaymentIntent) dataObjectDeserializer.getObject().get();
+        } else {
+            // Deserialization failed, probably due to an API version mismatch.
+            // Refer to the Javadoc documentation on `EventDataObjectDeserializer` for
+            // instructions on how to handle this case, or return an error here.
+            throw new Exception("fail to deserialize payment intent from event");
+        }
     }
 }

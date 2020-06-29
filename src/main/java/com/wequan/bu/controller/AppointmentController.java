@@ -52,9 +52,8 @@ public class AppointmentController {
         try{
             appointmentService.updateAppointmentAndGenerateNewTransaction(appointment);
         }catch (Exception e){
-
+            return ResultGenerator.fail(e.getMessage());
         }
-
         return ResultGenerator.success();
     }
 }

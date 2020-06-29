@@ -2,6 +2,7 @@ package com.wequan.bu.repository.dao;
 
 import com.wequan.bu.controller.vo.Transaction;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @author Zhaochao Huang
@@ -10,4 +11,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface TransactionMapper extends GeneralMapper<Transaction> {
 
     public void updateByThirdPartyTransactionId(Transaction transaction);
+
+    public void deleteByThirdPartyTransactionId(@Param("payment_intent_id") String paymentIntentId);
 }
