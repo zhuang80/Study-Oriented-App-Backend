@@ -12,6 +12,7 @@ import com.stripe.net.OAuth;
 import com.stripe.net.RequestOptions;
 import com.stripe.net.Webhook;
 import com.stripe.param.PaymentIntentCreateParams;
+import com.stripe.param.PaymentIntentUpdateParams;
 import com.wequan.bu.controller.vo.Transaction;
 import com.wequan.bu.repository.dao.AppointmentMapper;
 import com.wequan.bu.repository.dao.TransactionMapper;
@@ -85,6 +86,13 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     @Override
     public PaymentIntent createPaymentIntent(Integer appointmentId) throws StripeException {
         Appointment appointment = appointmentMapper.selectByPrimaryKey(appointmentId);
+        TutorStripe tutorStripe = tutorStripeMapper.selectByTutorId(appointment.getTutorId());
+
+        PaymentIntentCreateParams.TransferData transferData = PaymentIntentCreateParams.TransferData
+                .builder()
+                .setDestination(tutorStripe.getStripeAccount())
+                .build();
+
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
                 .setAmount((long)(int) appointment.getFee())
                 .setCurrency("usd")
@@ -92,15 +100,10 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
                 .addPaymentMethodType("card")
                 .putMetadata("type", String.valueOf(TransactionType.APPOINTMENT.getValue()))
                 .putMetadata("appointment_id", String.valueOf(appointment.getId()))
+                .setTransferData(transferData)
                 .build();
 
-        TutorStripe tutorStripe = tutorStripeMapper.selectByTutorId(appointment.getTutorId());
-
-        RequestOptions requestOptions = RequestOptions.builder()
-                 .setStripeAccount(tutorStripe.getStripeAccount())
-                 .build();
-
-        PaymentIntent paymentIntent = PaymentIntent.create(params, requestOptions);
+        PaymentIntent paymentIntent = PaymentIntent.create(params);
         return paymentIntent;
     }
 
