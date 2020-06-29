@@ -8,9 +8,9 @@ import com.wequan.bu.repository.dao.TutorMapper;
 import com.wequan.bu.repository.model.Appointment;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.service.AbstractService;
+import com.wequan.bu.service.AppointmentService;
 import com.wequan.bu.service.TransactionService;
 import com.wequan.bu.util.TransactionStatus;
-import com.wequan.bu.util.TransactionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +34,9 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     private AppointmentMapper appointmentMapper;
 
     @Autowired
+    private AppointmentService appointmentService;
+
+    @Autowired
     private TutorMapper tutorMapper;
 
     @PostConstruct
@@ -44,27 +47,11 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     @Override
     public void saveAppointmentTransaction(PaymentIntent paymentIntent) {
         Map<String, String> metadata = paymentIntent.getMetadata();
+        Integer appointmentId = Integer.parseInt(metadata.get("appointment_id"));
 
-       Integer appointmentId = Integer.parseInt(metadata.get("appointment_id"));
-       short type = Short.parseShort(metadata.get("type"));
-       // Integer appointmentId = 0;
-        Appointment appointment = appointmentMapper.selectByPrimaryKey(appointmentId);
-        Tutor tutor = tutorMapper.selectByPrimaryKey(appointment.getTutorId());
-
-        Transaction transaction = new Transaction();
-        transaction.setId(String.valueOf(UUID.randomUUID()));
-        transaction.setType(type);
-        transaction.setPayFrom(appointment.getUserId());
-        transaction.setPayTo(tutor.getUser().getId());
-        transaction.setPayAmount(appointment.getFee());
-        transaction.setPaymentMethod((short) 0);
-        transaction.setThirdPartyTransactionId(paymentIntent.getId());
-        LocalDateTime createdTime = convertTimestampToLocalDateTime(paymentIntent.getCreated());
-
-        transaction.setCreateTime(createdTime);
-        short status = getStatus(paymentIntent.getStatus());
-        transaction.setStatus(status);
+        Transaction transaction = generateTransaction(paymentIntent);
         transactionMapper.insertSelective(transaction);
+        appointmentService.updateTransactionIdByPrimaryKey(appointmentId, transaction.getId());
     }
 
     @Override
@@ -95,5 +82,36 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
             return TransactionStatus.PROCESSING.getValue();
         }
         return -1;
+    }
+
+    /**
+     * generate the transaction of an appointment
+     * @param paymentIntent
+     * @return
+     */
+    private Transaction generateTransaction(PaymentIntent paymentIntent){
+        //fetch meta data appointment Id and transaction type
+        Map<String, String> metadata = paymentIntent.getMetadata();
+        Integer appointmentId = Integer.parseInt(metadata.get("appointment_id"));
+        short type = Short.parseShort(metadata.get("type"));
+
+        Appointment appointment = appointmentMapper.selectByPrimaryKey(appointmentId);
+        Tutor tutor = tutorMapper.selectByPrimaryKey(appointment.getTutorId());
+
+        Transaction transaction = new Transaction();
+        transaction.setId(String.valueOf(UUID.randomUUID()));
+        transaction.setType(type);
+        transaction.setPayFrom(appointment.getUserId());
+        transaction.setPayTo(tutor.getUser().getId());
+        transaction.setPayAmount(appointment.getFee());
+        transaction.setPaymentMethod((short) 0);
+        transaction.setThirdPartyTransactionId(paymentIntent.getId());
+        LocalDateTime createdTime = convertTimestampToLocalDateTime(paymentIntent.getCreated());
+
+        transaction.setCreateTime(createdTime);
+        short status = getStatus(paymentIntent.getStatus());
+        transaction.setStatus(status);
+
+        return transaction;
     }
 }

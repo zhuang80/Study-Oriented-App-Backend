@@ -20,4 +20,6 @@ public interface AppointmentService extends Service<Appointment> {
     List<AppointmentBriefInfo> getUserAppointments(Integer userId, Integer pageNum, Integer pageSize);
 
     public void makeAppointment(Appointment appointment);
+
+    public void updateTransactionIdByPrimaryKey(Integer appointmentId, String transactionId);
 }
