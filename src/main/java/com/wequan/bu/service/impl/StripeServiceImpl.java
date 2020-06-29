@@ -60,7 +60,6 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
     @PostConstruct
     public void postConstruct(){
-        System.out.println("==================="+ secretKey);
         Stripe.apiKey = secretKey;
         this.setMapper(tutorStripeMapper);
     }

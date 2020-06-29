@@ -58,6 +58,14 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
         appointmentMapper.insertSelective(appointment);
     }
 
+    @Override
+    public void updateTransactionIdByPrimaryKey(Integer appointmentId, String transactionId) {
+        Appointment appointment = new Appointment();
+        appointment.setId(appointmentId);
+        appointment.setTransactionId(transactionId);
+        appointmentMapper.updateByPrimaryKeySelective(appointment);
+    }
+
     /**
      * calculate the total fee of an appointment
      * @param appointment
