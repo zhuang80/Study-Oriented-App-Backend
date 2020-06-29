@@ -40,12 +40,12 @@ public class ChargeController {
     }
 
     @PostMapping("/webhook")
-    public Result fulfillPurchase(HttpServletRequest request,
+    public Result handlePaymentIntent(HttpServletRequest request,
                                   @RequestBody String webhookEndpoint){
         System.out.println("============================ enter webhook");
         System.out.println(webhookEndpoint);
         System.out.println(request.getHeader("Stripe-Signature"));
-        stripeService.fulfillPurchase(request.getHeader("Stripe-Signature"), webhookEndpoint);
+        stripeService.handlePaymentIntent(request.getHeader("Stripe-Signature"), webhookEndpoint);
         return ResultGenerator.success();
     }
 }

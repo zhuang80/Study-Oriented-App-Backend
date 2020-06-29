@@ -11,5 +11,7 @@ public interface StripeService extends Service<TutorStripe> {
 
     public PaymentIntent createPaymentIntent(Integer appointmentId) throws StripeException;
 
-    public void fulfillPurchase(String sigHeader, String webhookEndpoint);
+    public void handlePaymentIntent(String sigHeader, String webhookEndpoint);
+
+    public PaymentIntent cancelPaymentIntent(String paymentIntentId);
 }

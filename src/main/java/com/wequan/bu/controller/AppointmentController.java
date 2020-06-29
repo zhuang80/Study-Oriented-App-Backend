@@ -35,7 +35,7 @@ public class AppointmentController {
     @GetMapping("/appointment/{id}")
     @ApiOperation(value = "Appointment detail", notes = "Appointment详情")
     public Result<Appointment> getAppointment(@PathVariable("id") Integer id) {
-        Appointment result = null;
+        Appointment result = appointmentService.findById(id);
         return ResultGenerator.success(result);
     }
 
@@ -46,4 +46,15 @@ public class AppointmentController {
         return ResultGenerator.success();
     }
 
+    @PutMapping("/appointment")
+    @ApiOperation(value= "update an appointment by tutor", notes = "如果订单还未付款，tutor可以改动appointment，若订单已经付款，tutor将不能再改动appointment.改动appointment后，会删除原订单，生成一个新的订单")
+    public Result updateAppointment(@RequestBody Appointment appointment) {
+        try{
+            appointmentService.updateAppointmentAndGenerateNewTransaction(appointment);
+        }catch (Exception e){
+
+        }
+
+        return ResultGenerator.success();
+    }
 }
