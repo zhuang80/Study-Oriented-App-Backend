@@ -1,6 +1,8 @@
 package com.wequan.bu.repository.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -101,6 +103,7 @@ public class Thread {
      *
      * @mbg.generated
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
@@ -112,6 +115,7 @@ public class Thread {
      *
      * @mbg.generated
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     /**
