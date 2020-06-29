@@ -1,10 +1,10 @@
 package com.wequan.bu.service.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.wequan.bu.repository.model.OnlineEvent;
 import com.wequan.bu.repository.dao.OnlineEventMapper;
 import com.wequan.bu.repository.dao.TutorMapper;
 import com.wequan.bu.repository.dao.TutorViewHistoryMapper;
+import com.wequan.bu.repository.model.OnlineEvent;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.repository.model.TutorApplication;
 import com.wequan.bu.repository.model.TutorViewHistory;
@@ -33,10 +33,8 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
 
     @Autowired
     private TutorMapper tutorMapper;
-
     @Autowired
     private OnlineEventMapper onlineEventMapper;
-
     @Autowired
     private TutorViewHistoryMapper tutorViewHistoryMapper;
 

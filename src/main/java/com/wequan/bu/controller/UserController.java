@@ -1,17 +1,19 @@
 package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
-import com.wequan.bu.controller.vo.Thread;
+import com.wequan.bu.controller.vo.FavoriteCategory;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.*;
 import com.wequan.bu.repository.model.extend.AppointmentBriefInfo;
+import com.wequan.bu.repository.model.extend.ThreadStats;
 import com.wequan.bu.repository.model.extend.UserStats;
 import com.wequan.bu.service.*;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,7 +41,11 @@ public class UserController {
     @Autowired
     private ThreadService threadService;
     @Autowired
+    private ThreadStreamService threadStreamService;
+    @Autowired
     private MessageHandler messageHandler;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @GetMapping("/user/{id}/profile")
     @ApiOperation(value = "user basic info", notes = "返回用户基本信息")
@@ -177,10 +183,10 @@ public class UserController {
             @ApiResponse(code = 200, message = "a list of thread card (title, thread id, user name, user id, tag, created time, first 100 words, \n" +
                     "first 3 photos, # of likes, # of dislikes, # of views, school id, study points reward, status) sorted by created time")
     )
-    public Result<List<Thread>> getThreads(@PathVariable("id") Integer userId,
-                                           @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                           @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<Thread> threads = null;
+    public Result<List<ThreadStats>> getThreads(@PathVariable("id") Integer userId,
+                                                @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<ThreadStats> threads = null;
         if (userId <= 0) {
             return ResultGenerator.fail(messageHandler.getMessage("40098"));
         }
@@ -190,7 +196,7 @@ public class UserController {
         if (Objects.isNull(pageSize)) {
             pageSize = 0;
         }
-//        threads = threadService.getUserThreads(userId, pageNum, pageSize);
+        threads = threadService.getUserThreads(userId, pageNum, pageSize);
         return ResultGenerator.success(threads);
     }
 
@@ -199,8 +205,18 @@ public class UserController {
     public Result<List<ThreadStream>> getThreadReplies(@PathVariable("id") Integer userId,
                                                        @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                        @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<ThreadStream> result = null;
-        return ResultGenerator.success(result);
+        List<ThreadStream> threadReplies = null;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        threadReplies = threadStreamService.getUserThreadReplies(userId, pageNum, pageSize);
+        return ResultGenerator.success(threadReplies);
     }
 
     @GetMapping("/user/{id}/favorites")
@@ -211,12 +227,26 @@ public class UserController {
             @ApiImplicitParam(name = "categoryId", value = "1 -> tutor; 2 -> course; 3 -> material;" +
                     " 4 -> thread; 5 -> professor; 6 -> activity; 7 -> public class; 8 -> thread reply")
     })
-    public Result<List<Object>> getFavorites(@PathVariable("id") Integer userId,
+    public Result getFavorites(@PathVariable("id") Integer userId,
                                              @RequestParam("categoryId") Integer categoryId,
                                              @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<Object> result = null;
-        return ResultGenerator.success(result);
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        Class<? extends Service> favoriteServiceClazz = FavoriteCategory.getFavoriteService(categoryId);
+        if (Objects.isNull(favoriteServiceClazz)) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        Service favoriteService = applicationContext.getBean(favoriteServiceClazz);
+        List favorites = favoriteService.findFavorites(userId, pageNum, pageSize);
+        return ResultGenerator.success(favorites);
     }
 
     @PostMapping("/user/{id}/favorite")
