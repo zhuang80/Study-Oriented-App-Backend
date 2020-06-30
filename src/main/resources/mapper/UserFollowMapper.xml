@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.UserFollowMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.UserFollow">
+    <id column="user_id" jdbcType="INTEGER" property="userId" />
+    <id column="follow_id" jdbcType="INTEGER" property="followId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+
+  <resultMap id="ResultMapForUserFollowBriefInfo" type="com.wequan.bu.repository.model.extend.UserFollowBriefInfo">
+    <id column="user_id" jdbcType="INTEGER" property="userId"/>
+    <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+    <result column="first_name" jdbcType="VARCHAR" property="firstName"/>
+    <result column="last_name" jdbcType="VARCHAR" property="lastName"/>
+    <result column="avatar" jdbcType="BINARY" property="avatar"/>
+    <result column="avatar_url_in_provider" jdbcType="VARCHAR" property="avatarUrlInProvider"/>
+    <result column="mutual" jdbcType="BIT" property="mutual"/>
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    user_id, follow_id, create_time
+  </sql>
+
+  <select id="selectFollowingByUserId" resultMap="ResultMapForUserFollowBriefInfo">
+    select
+      t.follow_id user_id,
+      u.user_name,
+      u.first_name,
+      u.last_name,
+      u.avatar,
+      u.avatar_url_in_provider,
+      (t1.user_id != null) as mutual
+    from ${schema}.wq_user_follow t
+    inner join ${schema}.wq_user_profile u on u.id = t.follow_id
+    left join ${schema}.wq_user_follow t1 on (t1.user_id = t.follow_id and t1.follow_id = t.user_id)
+    where t.user_id = #{userId}
+  </select>
+
+  <select id="selectFollowerByUserId" resultType="com.wequan.bu.repository.model.extend.UserFollowBriefInfo">
+    select
+      t.user_id,
+      u.user_name,
+      u.first_name,
+      u.last_name,
+      u.avatar,
+      u.avatar_url_in_provider,
+      (t1.user_id != null) as mutual
+    from ${schema}.wq_user_follow t
+    inner join ${schema}.wq_user_profile u on u.id = t.user_id
+    left join ${schema}.wq_user_follow t1 on (t1.user_id = t.follow_id and t1.follow_id = t.user_id)
+    where t.follow_id = #{userId}
+  </select>
+
+  <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.UserFollow">
+    insert into ${schema}.wq_user_follow
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="followId != null">
+        follow_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="followId != null">
+        #{followId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from ${schema}.wq_user_follow
+    where user_id = #{userId,jdbcType=INTEGER}
+    and follow_id = #{followId,jdbcType=INTEGER}
+  </delete>
+
+</mapper>

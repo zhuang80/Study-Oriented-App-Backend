@@ -7,6 +7,7 @@ import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.*;
 import com.wequan.bu.repository.model.extend.AppointmentBriefInfo;
 import com.wequan.bu.repository.model.extend.ThreadStats;
+import com.wequan.bu.repository.model.extend.UserFollowBriefInfo;
 import com.wequan.bu.repository.model.extend.UserStats;
 import com.wequan.bu.service.*;
 import io.swagger.annotations.*;
@@ -228,9 +229,9 @@ public class UserController {
                     " 4 -> thread; 5 -> professor; 6 -> activity; 7 -> public class; 8 -> thread reply")
     })
     public Result getFavorites(@PathVariable("id") Integer userId,
-                                             @RequestParam("categoryId") Integer categoryId,
-                                             @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                             @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+                               @RequestParam("categoryId") Integer categoryId,
+                               @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                               @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         if (userId <= 0) {
             return ResultGenerator.fail(messageHandler.getMessage("40098"));
         }
@@ -281,6 +282,13 @@ public class UserController {
     public Result followOtherUser(@PathVariable("id") Integer userId,
                                   @RequestParam("otherUserId") Integer otherUserId,
                                   @RequestParam("action") Integer action) {
+        if (userId <= 0 || otherUserId <= 0 || (action != 1 && action != -1)) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (userId - otherUserId == 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40097"));
+        }
+        userService.followOtherUser(userId, otherUserId, action);
         return ResultGenerator.success();
     }
 
@@ -289,15 +297,39 @@ public class UserController {
     @ApiResponses(
             @ApiResponse(code = 200, message = "a list of user cards (name, username, user id, avatar, status)")
     )
-    public Result<List<UserFollow>> getUserFollowing(@PathVariable("id") Integer userId) {
-        List<UserFollow> result = null;
+    public Result<List<UserFollowBriefInfo>> getUserFollowing(@PathVariable("id") Integer userId,
+                                                              @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<UserFollowBriefInfo> result = null;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        result = userService.getUserFollowing(userId, pageNum, pageSize);
         return ResultGenerator.success(result);
     }
 
     @GetMapping("/user/{id}/followers")
     @ApiOperation(value = "a list of followers", notes = "返回被关注用户列表")
-    public Result<List<UserFollow>> getUserFollowers(@PathVariable("id") Integer userId) {
-        List<UserFollow> result = null;
+    public Result<List<UserFollowBriefInfo>> getUserFollowers(@PathVariable("id") Integer userId,
+                                                     @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                     @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<UserFollowBriefInfo> result = null;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        result = userService.getUserFollower(userId, pageNum, pageSize);
         return ResultGenerator.success(result);
     }
 
