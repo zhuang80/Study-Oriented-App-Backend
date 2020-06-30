@@ -242,4 +242,10 @@
     </set>
     where transaction_id = #{transactionId,jdbcType=VARCHAR}
   </update>
+
+  <select id="selectByTransactionId" resultType="com.wequan.bu.repository.model.Appointment">
+    SELECT *
+    FROM ${schema}.wq_appointment
+    WHERE transaction_id = #{transaction_id, jdbcType=VARCHAR}
+  </select>
 </mapper>

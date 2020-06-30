@@ -6,14 +6,11 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.*;
 import com.stripe.model.oauth.TokenResponse;
 import com.stripe.net.OAuth;
-import com.stripe.net.RequestOptions;
 import com.stripe.net.Webhook;
 import com.stripe.param.PaymentIntentCreateParams;
-import com.stripe.param.PaymentIntentUpdateParams;
 import com.stripe.param.RefundCreateParams;
 import com.wequan.bu.controller.vo.Transaction;
 import com.wequan.bu.repository.dao.AppointmentMapper;
-import com.wequan.bu.repository.dao.TransactionMapper;
 import com.wequan.bu.repository.dao.TutorStripeMapper;
 import com.wequan.bu.repository.model.Appointment;
 import com.wequan.bu.repository.model.TutorStripe;
@@ -32,7 +29,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -127,19 +123,21 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
             e.printStackTrace();
         }
         if(event != null) {
-            paymentIntent = deserializePaymentIntentFromEvent(event);
-
             if ("payment_intent.succeeded".equals(event.getType())) {
-                log.debug("=============================> payment intent succeeded event webhook");
+                paymentIntent = (PaymentIntent) deserializeObject(event);
+                log.info("=============================> payment intent succeeded event webhook");
                 transactionService.update(paymentIntent);
             }
             if("payment_intent.created".equals(event.getType())){
-                log.debug("=============================> payment intent created event webhook");
+                paymentIntent = (PaymentIntent) deserializeObject(event);
+                log.info("=============================> payment intent created event webhook");
                 transactionService.saveAppointmentTransaction(paymentIntent);
             }
             if("payment_intent.canceled".equals(event.getType())){
-                log.debug("=============================> payment intent canceled event webhook");
-                transactionService.delete(paymentIntent);
+                paymentIntent = (PaymentIntent) deserializeObject(event);
+                log.info("=============================> payment intent canceled event webhook");
+                transactionService.updateStatus(paymentIntent.getId(), TransactionStatus.CANCELED);
+                appointmentService.updateStatus(paymentIntent.getId(), AppointmentStatus.CANCELED);
             }
         }
     }
@@ -171,6 +169,7 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     public void handleRefund(String sigHeader, String webhookEndpoint) throws Exception {
         Event event = null;
         Charge charge = null;
+        Transfer transfer = null;
 
         try{
             event = Webhook.constructEvent(webhookEndpoint, sigHeader, webhookSecret);
@@ -178,34 +177,23 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
             e.printStackTrace();
         }
         if(event != null) {
-            charge = deserializeCharge(event);
-
             if ("charge.refunded".equals(event.getType())) {
-                log.debug("=============================> charge refunded event webhook");
-                transactionService.updateStatus(charge.getPaymentIntent(), TransactionStatus.REFUNDED);
-                appointmentService.updateStatus(charge.getPaymentIntent(), AppointmentStatus.CANCELED);
+                charge = (Charge) deserializeObject(event);
+                log.info("=============================> charge refunded event webhook");
+                String paymentIntentId= charge.getPaymentIntent();
+                transactionService.updateStatus(paymentIntentId, TransactionStatus.REFUNDED);
+                transactionService.addRefundRecord(charge);
+                appointmentService.updateStatus(paymentIntentId, AppointmentStatus.REFUNDED);
             }
         }
     }
 
-    private PaymentIntent deserializePaymentIntentFromEvent(Event event) throws Exception{
+    private Object deserializeObject(Event event) throws Exception {
         EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
         if (dataObjectDeserializer.getObject().isPresent()) {
-            return (PaymentIntent) dataObjectDeserializer.getObject().get();
+            return dataObjectDeserializer.getObject().get();
         } else {
-            // Deserialization failed, probably due to an API version mismatch.
-            // Refer to the Javadoc documentation on `EventDataObjectDeserializer` for
-            // instructions on how to handle this case, or return an error here.
-            throw new Exception("fail to deserialize payment intent from event");
-        }
-    }
-
-    private Charge deserializeCharge(Event event) throws Exception {
-        EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
-        if (dataObjectDeserializer.getObject().isPresent()) {
-            return (Charge) dataObjectDeserializer.getObject().get();
-        } else {
-            throw new Exception("fail to deserialize refund from event");
+            throw new Exception("fail to deserialize object data from event");
         }
     }
 }

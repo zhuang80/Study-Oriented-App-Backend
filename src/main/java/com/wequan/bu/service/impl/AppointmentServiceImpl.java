@@ -109,7 +109,13 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
         Appointment appointment = new Appointment();
         appointment.setStatus(status.getValue());
         appointment.setTransactionId(transaction.getId());
+        appointment.setUpdateTime(LocalDateTime.now());
         appointmentMapper.updateByTransactionIdSelective(appointment);
+    }
+
+    @Override
+    public Appointment findByTransactionId(String transactionId) {
+        return appointmentMapper.selectByTransactionId(transactionId);
     }
 
     /**

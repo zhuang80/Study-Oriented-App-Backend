@@ -34,11 +34,15 @@ public class TransactionController {
         return ResultGenerator.success(transactions);
     }
 
-    @DeleteMapping("/user/{id}/transaction/{transaction_id}")
-    @ApiOperation(value = "delete transaction", notes = "用户在付款前，可以任意取消订单，若付款后，在辅导还没开始前，取消订单，返还部分金额")
+    @PostMapping("/user/{id}/transaction/{transaction_id}")
+    @ApiOperation(value = "cancel transaction", notes = "用户在付款前，可以任意取消订单，若付款后，在辅导开始前的12小时，取消订单，返还部分金额, 如果离辅导开始不足12小时，需要提交退款申请")
     public Result deleteTransaction(@PathVariable("id") Integer id,
                                     @PathVariable("transaction_id") String transactionId) throws StripeException {
-        transactionService.deleteTransaction(id, transactionId);
+        try {
+            transactionService.cancelTransaction(id, transactionId);
+        }catch (Exception e){
+            return ResultGenerator.fail(e.getMessage());
+        }
         return ResultGenerator.success();
     }
 }

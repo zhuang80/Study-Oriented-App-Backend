@@ -28,4 +28,6 @@ public interface AppointmentMapper extends GeneralMapper<Appointment> {
 
     public void updateByTransactionIdSelective(Appointment appointment);
 
+    public Appointment selectByTransactionId(@Param("transaction_id") String transactionId);
+
 }
