@@ -28,4 +28,5 @@ public interface AppointmentService extends Service<Appointment> {
 
     public void updateStatus(String paymentIntentId, AppointmentStatus status);
 
+    public Appointment findByTransactionId(String transactionId);
 }
