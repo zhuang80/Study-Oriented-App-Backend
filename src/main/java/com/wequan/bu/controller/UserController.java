@@ -4,6 +4,8 @@ import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.controller.vo.FavoriteCategory;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
+import com.wequan.bu.exception.NotImplementedException;
+import com.wequan.bu.json.JSON;
 import com.wequan.bu.repository.model.*;
 import com.wequan.bu.repository.model.extend.AppointmentBriefInfo;
 import com.wequan.bu.repository.model.extend.ThreadStats;
@@ -317,8 +319,8 @@ public class UserController {
     @GetMapping("/user/{id}/followers")
     @ApiOperation(value = "a list of followers", notes = "返回被关注用户列表")
     public Result<List<UserFollowBriefInfo>> getUserFollowers(@PathVariable("id") Integer userId,
-                                                     @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                                     @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+                                                              @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         List<UserFollowBriefInfo> result = null;
         if (userId <= 0) {
             return ResultGenerator.fail(messageHandler.getMessage("40098"));
@@ -337,13 +339,27 @@ public class UserController {
     @ApiOperation(value = "a list of user's review for professor", notes = "返回用户对授课教师评价列表")
     public Result<List<ProfessorCourseRate>> getUserProfessorReviews(@PathVariable("id") Integer userId) {
         List<ProfessorCourseRate> result = null;
-        return ResultGenerator.success(result);
+        throw new NotImplementedException("Not implemented yet in Phase I");
     }
 
     @GetMapping("/user/{id}/appointment/reviews")
     @ApiOperation(value = "a list of user's review for appointment ", notes = "返回用户对appointment评价列表")
-    public Result<List<AppointmentReview>> getUserAppointmentReviews(@PathVariable("id") Integer userId) {
-        List<AppointmentReview> result = null;
-        return ResultGenerator.success(result);
+    @JSON(type = AppointmentBriefInfo.class, include = {"id", "title", "briefDescription", "startTime", "endTime",
+            "subjectId", "topicId", "fee", "tutorName"})
+    public Result<List<AppointmentReview>> getUserAppointmentReviews(@PathVariable("id") Integer userId,
+                                                                     @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                                     @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<AppointmentReview> appointmentReviews = null;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        appointmentReviews = userService.getUserAppointmentReviews(userId, pageNum, pageSize);
+        return ResultGenerator.success(appointmentReviews);
     }
 }

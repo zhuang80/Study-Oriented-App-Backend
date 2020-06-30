@@ -1,7 +1,9 @@
 package com.wequan.bu.service.impl;
 
+import com.wequan.bu.repository.dao.AppointmentReviewMapper;
 import com.wequan.bu.repository.dao.UserFollowMapper;
 import com.wequan.bu.repository.dao.UserMapper;
+import com.wequan.bu.repository.model.AppointmentReview;
 import com.wequan.bu.repository.model.User;
 import com.wequan.bu.repository.model.UserFollow;
 import com.wequan.bu.repository.model.extend.UserFollowBriefInfo;
@@ -34,6 +36,8 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
     private UserMapper userMapper;
     @Autowired
     private UserFollowMapper userFollowMapper;
+    @Autowired
+    private AppointmentReviewMapper appointmentReviewMapper;
     @Autowired
     private AwsEmailService emailService;
 
@@ -105,6 +109,12 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
     public List<UserFollowBriefInfo> getUserFollower(Integer userId, Integer pageNum, Integer pageSize) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
         return userFollowMapper.selectFollowerByUserId(userId, rowBounds);
+    }
+
+    @Override
+    public List<AppointmentReview> getUserAppointmentReviews(Integer userId, Integer pageNum, Integer pageSize) {
+        RowBounds rowBounds = new RowBounds(pageNum, pageSize);
+        return appointmentReviewMapper.selectByUserId(userId, rowBounds);
     }
 
 
