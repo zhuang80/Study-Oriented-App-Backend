@@ -1,5 +1,6 @@
 package com.wequan.bu.service;
 
+import com.wequan.bu.repository.model.AppointmentReview;
 import com.wequan.bu.repository.model.User;
 import com.wequan.bu.repository.model.extend.UserFollowBriefInfo;
 import com.wequan.bu.repository.model.extend.UserStats;
@@ -76,4 +77,13 @@ public interface UserService extends Service<User> {
      * @return 用户粉丝列表
      */
     List<UserFollowBriefInfo> getUserFollower(Integer userId, Integer pageNum, Integer pageSize);
+
+    /**
+     * 获取用户appointment评价列表
+     * @param userId 用户id
+     * @param pageNum pageNum
+     * @param pageSize pageSize
+     * @return 用户appointment评价列表
+     */
+    List<AppointmentReview> getUserAppointmentReviews(Integer userId, Integer pageNum, Integer pageSize);
 }
