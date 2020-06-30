@@ -3,16 +3,14 @@ package com.wequan.bu.service.impl;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
-import com.stripe.model.Event;
-import com.stripe.model.EventDataObjectDeserializer;
-import com.stripe.model.PaymentIntent;
-import com.stripe.model.WebhookEndpoint;
+import com.stripe.model.*;
 import com.stripe.model.oauth.TokenResponse;
 import com.stripe.net.OAuth;
 import com.stripe.net.RequestOptions;
 import com.stripe.net.Webhook;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.PaymentIntentUpdateParams;
+import com.stripe.param.RefundCreateParams;
 import com.wequan.bu.controller.vo.Transaction;
 import com.wequan.bu.repository.dao.AppointmentMapper;
 import com.wequan.bu.repository.dao.TransactionMapper;
@@ -20,9 +18,14 @@ import com.wequan.bu.repository.dao.TutorStripeMapper;
 import com.wequan.bu.repository.model.Appointment;
 import com.wequan.bu.repository.model.TutorStripe;
 import com.wequan.bu.service.AbstractService;
+import com.wequan.bu.service.AppointmentService;
 import com.wequan.bu.service.StripeService;
 import com.wequan.bu.service.TransactionService;
+import com.wequan.bu.util.AppointmentStatus;
+import com.wequan.bu.util.TransactionStatus;
 import com.wequan.bu.util.TransactionType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -38,17 +41,20 @@ import java.util.Map;
  */
 @Service
 public class StripeServiceImpl extends AbstractService<TutorStripe> implements StripeService {
+
+    private static final Logger log = LoggerFactory.getLogger(StripeServiceImpl.class);
+
     @Value("${SECRET_KEY}")
     private String secretKey;
 
     @Value("${CLIENT_ID}")
     private String clientId;
 
-    @Value("${WEBHOOK_SECRET}")
-    private String webhookSecret;
+    //@Value("${WEBHOOK_SECRET}")
+   // private String webhookSecret;
 
     //local test webhook secret
-    //private String webhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
+    private String webhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
 
     @Autowired
     private TutorStripeMapper tutorStripeMapper;
@@ -58,6 +64,9 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
    @Autowired
    private AppointmentMapper appointmentMapper;
+
+   @Autowired
+   private AppointmentService appointmentService;
 
     @PostConstruct
     public void postConstruct(){
@@ -109,10 +118,6 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
     @Override
     public void handlePaymentIntent(String sigHeader, String webhookEndpoint) throws Exception {
-        System.out.println("================================================");
-        System.out.println(sigHeader);
-        System.out.println(webhookEndpoint);
-
         Event event = null;
         PaymentIntent paymentIntent = null;
 
@@ -121,21 +126,22 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
         } catch (SignatureVerificationException e) {
             e.printStackTrace();
         }
-        paymentIntent = deserializePaymentIntentFromEvent(event);
+        if(event != null) {
+            paymentIntent = deserializePaymentIntentFromEvent(event);
 
-        if ("payment_intent.succeeded".equals(event.getType())) {
-            System.out.println("=============================> payment intent succeeded event webhook");
-            transactionService.update(paymentIntent);
+            if ("payment_intent.succeeded".equals(event.getType())) {
+                log.debug("=============================> payment intent succeeded event webhook");
+                transactionService.update(paymentIntent);
+            }
+            if("payment_intent.created".equals(event.getType())){
+                log.debug("=============================> payment intent created event webhook");
+                transactionService.saveAppointmentTransaction(paymentIntent);
+            }
+            if("payment_intent.canceled".equals(event.getType())){
+                log.debug("=============================> payment intent canceled event webhook");
+                transactionService.delete(paymentIntent);
+            }
         }
-        if("payment_intent.created".equals(event.getType())){
-            System.out.println("=============================> payment intent created event webhook");
-            transactionService.saveAppointmentTransaction(paymentIntent);
-        }
-        if("payment_intent.canceled".equals(event.getType())){
-            System.out.println("=============================> payment intent canceled event webhook");
-            transactionService.delete(paymentIntent);
-        }
-
     }
 
     @Override
@@ -143,6 +149,43 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
         PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
         PaymentIntent updatedPaymentIntent = paymentIntent.cancel();
         return updatedPaymentIntent;
+    }
+
+    @Override
+    public Refund createRefund(String transactionId) throws StripeException {
+        Transaction transaction = transactionService.findById(transactionId);
+        //hardcode 80% refund rate, need to be changed later
+        RefundCreateParams params = RefundCreateParams.builder()
+                .setPaymentIntent(transaction.getThirdPartyTransactionId())
+                .setAmount(Math.round(0.8 * transaction.getPayAmount()))
+                .setReason(RefundCreateParams.Reason.REQUESTED_BY_CUSTOMER)
+                .setRefundApplicationFee(true)
+                .setReverseTransfer(true)
+                .putMetadata("transaction_id", transactionId)
+                .build();
+
+        return Refund.create(params);
+    }
+
+    @Override
+    public void handleRefund(String sigHeader, String webhookEndpoint) throws Exception {
+        Event event = null;
+        Charge charge = null;
+
+        try{
+            event = Webhook.constructEvent(webhookEndpoint, sigHeader, webhookSecret);
+        } catch (SignatureVerificationException e) {
+            e.printStackTrace();
+        }
+        if(event != null) {
+            charge = deserializeCharge(event);
+
+            if ("charge.refunded".equals(event.getType())) {
+                log.debug("=============================> charge refunded event webhook");
+                transactionService.updateStatus(charge.getPaymentIntent(), TransactionStatus.REFUNDED);
+                appointmentService.updateStatus(charge.getPaymentIntent(), AppointmentStatus.CANCELED);
+            }
+        }
     }
 
     private PaymentIntent deserializePaymentIntentFromEvent(Event event) throws Exception{
@@ -154,6 +197,15 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
             // Refer to the Javadoc documentation on `EventDataObjectDeserializer` for
             // instructions on how to handle this case, or return an error here.
             throw new Exception("fail to deserialize payment intent from event");
+        }
+    }
+
+    private Charge deserializeCharge(Event event) throws Exception {
+        EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
+        if (dataObjectDeserializer.getObject().isPresent()) {
+            return (Charge) dataObjectDeserializer.getObject().get();
+        } else {
+            throw new Exception("fail to deserialize refund from event");
         }
     }
 }

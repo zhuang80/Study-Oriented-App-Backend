@@ -48,4 +48,19 @@ public class ChargeController {
         stripeService.handlePaymentIntent(request.getHeader("Stripe-Signature"), webhookEndpoint);
         return ResultGenerator.success();
     }
+
+    @GetMapping("/refund/{id}")
+    public void refund(@PathVariable String id) throws StripeException {
+        stripeService.createRefund(id);
+    }
+
+    @PostMapping("/refund_webhook")
+    public Result handleRefund(HttpServletRequest request,
+                                      @RequestBody String webhookEndpoint) throws Exception {
+        System.out.println("============================ enter webhook");
+        System.out.println(webhookEndpoint);
+        System.out.println(request.getHeader("Stripe-Signature"));
+        stripeService.handleRefund(request.getHeader("Stripe-Signature"), webhookEndpoint);
+        return ResultGenerator.success();
+    }
 }
