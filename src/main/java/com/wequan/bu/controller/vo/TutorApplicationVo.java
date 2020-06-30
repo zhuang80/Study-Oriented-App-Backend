@@ -17,7 +17,7 @@ public class TutorApplicationVo {
     private String currentCity;
     private String currentState;
     private String teachMethod;
-    private Float hourlyRate;
+    private Integer hourlyRate;
     private Short latePolicyId;
     private Short cancellationPolicyId;
 

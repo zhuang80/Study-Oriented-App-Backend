@@ -15,7 +15,7 @@
         <result column="current_city" jdbcType="VARCHAR" property="currentCity" />
         <result column="current_state" jdbcType="VARCHAR" property="currentState" />
         <result column="teach_method" jdbcType="VARCHAR" property="teachMethod" />
-        <result column="hourly_rate" jdbcType="REAL" property="hourlyRate" />
+        <result column="hourly_rate" jdbcType="INTEGER" property="hourlyRate" />
         <association property="user"
                      column="user_id"
                      select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey" />
