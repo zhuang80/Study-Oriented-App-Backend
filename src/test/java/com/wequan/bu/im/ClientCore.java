@@ -24,7 +24,7 @@ public class ClientCore {
     private boolean _init = false;
     private boolean connectedToServer = true;
     private boolean loginHasInit = false;
-    private String currentLoginUserId = null;
+    private long currentLoginUserId = -1;
     private String currentLoginToken = null;
     private String currentLoginExtra = null;
 
@@ -64,11 +64,11 @@ public class ClientCore {
         this.setConnectedToServer(false);
     }
 
-    public String getCurrentLoginUserId() {
+    public long getCurrentLoginUserId() {
         return currentLoginUserId;
     }
 
-    public ClientCore setCurrentLoginUserId(String currentLoginUserId) {
+    public ClientCore setCurrentLoginUserId(long currentLoginUserId) {
         this.currentLoginUserId = currentLoginUserId;
         return this;
     }

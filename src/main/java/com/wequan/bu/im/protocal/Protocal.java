@@ -12,27 +12,27 @@ public class Protocal {
     private boolean bridge = false;
     private int type = 0;
     private String dataContent = null;
-    private String from = "-1";
-    private String to = "-1";
+    private long from = -1;
+    private long to = -1;
     private String fp = null;
     private boolean QoS = false;
     private int typeu = -1;
     private transient int retryCount = 0;
 
-    public Protocal(int type, String dataContent, String from, String to) {
+    public Protocal(int type, String dataContent, long from, long to) {
         this(type, dataContent, from, to, -1);
     }
 
-    public Protocal(int type, String dataContent, String from, String to, int typeu) {
+    public Protocal(int type, String dataContent, long from, long to, int typeu) {
         this(type, dataContent, from, to, false, null, typeu);
     }
 
-    public Protocal(int type, String dataContent, String from, String to
+    public Protocal(int type, String dataContent, long from, long to
             , boolean QoS, String fingerPrint) {
         this(type, dataContent, from, to, QoS, fingerPrint, -1);
     }
 
-    public Protocal(int type, String dataContent, String from, String to
+    public Protocal(int type, String dataContent, long from, long to
             , boolean QoS, String fingerPrint, int typeu) {
         this.type = type;
         this.dataContent = dataContent;
@@ -72,19 +72,19 @@ public class Protocal {
         this.dataContent = dataContent;
     }
 
-    public String getFrom() {
+    public long getFrom() {
         return this.from;
     }
 
-    public void setFrom(String from) {
+    public void setFrom(long from) {
         this.from = from;
     }
 
-    public String getTo() {
+    public long getTo() {
         return this.to;
     }
 
-    public void setTo(String to) {
+    public void setTo(long to) {
         this.to = to;
     }
 

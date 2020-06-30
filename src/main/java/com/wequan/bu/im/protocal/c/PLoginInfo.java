@@ -4,25 +4,25 @@ package com.wequan.bu.im.protocal.c;
  * @author zhen
  */
 public class PLoginInfo {
-    private String loginUserId = null;
+    private long loginUserId = -1;
     private String loginToken = null;
     private String extra = null;
 
-    public PLoginInfo(String loginUserId, String loginToken) {
+    public PLoginInfo(long loginUserId, String loginToken) {
         this(loginUserId, loginToken, null);
     }
 
-    public PLoginInfo(String loginUserId, String loginToken, String extra) {
+    public PLoginInfo(long loginUserId, String loginToken, String extra) {
         this.loginUserId = loginUserId;
         this.loginToken = loginToken;
         this.extra = extra;
     }
 
-    public String getLoginUserId() {
+    public long getLoginUserId() {
         return loginUserId;
     }
 
-    public void setLoginUserId(String loginUserId) {
+    public void setLoginUserId(long loginUserId) {
         this.loginUserId = loginUserId;
     }
 

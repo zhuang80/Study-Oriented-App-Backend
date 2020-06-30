@@ -35,7 +35,7 @@ public class SnowflakeIDGenImpl implements IDGen {
     private static SnowflakeIDGenImpl instance;
 
     public static SnowflakeIDGenImpl getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             //Thu Nov 04 2010 09:42:54 GMT+0800 (中国标准时间)
             instance = new SnowflakeIDGenImpl(1288834974657L);
         }
@@ -75,7 +75,8 @@ public class SnowflakeIDGenImpl implements IDGen {
     public SnowflakeIDGenImpl(long twepoch) {
         this.twepoch = twepoch;
         Preconditions.checkArgument(timeGen() > twepoch, "Snowflake not support twepoch gt currentTime");
-        workerId = WorkerIdDistributor.getWorkerId();
+//        workerId = WorkerIdDistributor.getWorkerId();
+        workerId = 0;
         Preconditions.checkArgument(workerId >= 0 && workerId <= maxWorkerId, "workerID must gte 0 and lte 1023");
         LOGGER.info("START SUCCESS USE twepoch:{}, workerId:{}", twepoch, workerId);
     }

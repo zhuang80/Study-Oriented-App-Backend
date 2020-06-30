@@ -31,7 +31,7 @@ public class LocalUDPDataSender {
     private LocalUDPDataSender() {
     }
 
-    public int sendLogin(String loginUserId, String loginToken, String extra) {
+    public int sendLogin(long loginUserId, String loginToken, String extra) {
         byte[] b = ProtocalFactory.createPLoginInfo(loginUserId, loginToken, extra).toBytes();
         int code = send(b, b.length);
         if (code == 0) {
@@ -63,20 +63,20 @@ public class LocalUDPDataSender {
         return send(b, b.length);
     }
 
-    public int sendCommonData(String dataContentWidthStr, String to_user_id) {
+    public int sendCommonData(String dataContentWidthStr, long to_user_id) {
         return sendCommonData(dataContentWidthStr, to_user_id, -1);
     }
 
-    public int sendCommonData(String dataContentWidthStr, String to_user_id, int typeu) {
+    public int sendCommonData(String dataContentWidthStr, long to_user_id, int typeu) {
         return sendCommonData(dataContentWidthStr, to_user_id, null, typeu);
     }
 
-    public int sendCommonData(String dataContentWidthStr, String to_user_id
+    public int sendCommonData(String dataContentWidthStr, long to_user_id
             , String fingerPrint, int typeu) {
         return sendCommonData(dataContentWidthStr, to_user_id, true, fingerPrint, typeu);
     }
 
-    public int sendCommonData(String dataContentWidthStr, String to_user_id
+    public int sendCommonData(String dataContentWidthStr, long to_user_id
             , boolean QoS, String fingerPrint, int typeu) {
         return sendCommonData(ProtocalFactory.createCommonData(dataContentWidthStr
                 , ClientCore.getInstance().getCurrentLoginUserId(), to_user_id, QoS, fingerPrint, typeu));

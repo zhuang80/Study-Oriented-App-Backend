@@ -71,13 +71,6 @@ public class UDPServerChannel extends AbstractNioMessageChannel implements Serve
         return config;
     }
 
-    /**
-     * 判断监听是否已启动。
-     *
-     * @return true表示已已启动监听，否则未启动
-     * @see DatagramChannel#isOpen()
-     * @see DatagramSocket#isBound()
-     */
     @Override
     public boolean isActive() {
         return this.javaChannel().isOpen() && this.javaChannel().socket().isBound();

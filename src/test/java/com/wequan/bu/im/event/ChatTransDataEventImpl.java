@@ -13,7 +13,7 @@ public class ChatTransDataEventImpl implements ChatTransDataEvent {
 //	private MainGUI mainGUI = null;
 
     @Override
-    public void onTransBuffer(String fingerPrintOfProtocal, String userid, String dataContent, int typeu) {
+    public void onTransBuffer(String fingerPrintOfProtocal, long userid, String dataContent, int typeu) {
         Log.d(TAG, "【DEBUG_UI】[typeu=" + typeu + "]收到来自用户" + userid + "的消息:" + dataContent);
 //
 //		if(mainGUI != null)

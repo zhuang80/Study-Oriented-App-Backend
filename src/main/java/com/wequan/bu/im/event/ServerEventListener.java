@@ -7,11 +7,11 @@ import com.wequan.bu.im.protocal.Protocal;
  * @author zhen
  */
 public interface ServerEventListener {
-    public int onVerifyUserCallBack(String userId, String token, String extra, Channel session);
+    public int onVerifyUserCallBack(long userId, String token, String extra, Channel session);
 
-    public void onUserLoginAction_CallBack(String userId, String extra, Channel session);
+    public void onUserLoginAction_CallBack(long userId, String extra, Channel session);
 
-    public void onUserLogoutAction_CallBack(String userId, Object obj, Channel session);
+    public void onUserLogoutAction_CallBack(long userId, Object obj, Channel session);
 
     //	public boolean onTransBuffer_CallBack(String userId, String from_user_id
 //			, String dataContent, String fingerPrint, int typeu, Channel session);

@@ -73,12 +73,13 @@ public class ServerCoreHandler {
 
     public void messageReceived(Channel session, ByteBuf bytebuf) throws Exception {
         Protocal pFromClient = ServerToolKits.fromIOBuffer(bytebuf);
-        if(pFromClient.getMsgId() == -1) {
+        if (pFromClient.getMsgId() == -1) {
             pFromClient.setMsgId(SnowflakeIDGenImpl.getInstance().get(null).getId());
         }
         String remoteAddress = ServerToolKits.clientInfoToString(session);
 //    	logger.info("---------------------------------------------------------");
-//    	logger.info("[IMCORE-netty] << 收到客户端"+remoteAddress+"的消息:::"+pFromClient.toGsonString());
+    	logger.info("[IMCORE-netty] << 收到客户端"+remoteAddress+"的消息:::"+pFromClient.toGsonString());
+//        logger.info("[IMCORE] << type" + pFromClient.getType());
 
         switch (pFromClient.getType()) {
             case ProtocalType.C.FROM_CLIENT_TYPE_OF_RECIVED: {
@@ -101,7 +102,7 @@ public class ServerCoreHandler {
                         return;
                     }
 
-                    if ("0".equals(pFromClient.getTo())) {
+                    if (pFromClient.getTo() == 0) {
                         logicProcessor.processC2SMessage(session, pFromClient, remoteAddress);
                     } else {
                         logicProcessor.processC2CMessage(bridgeProcessor, session
@@ -144,8 +145,8 @@ public class ServerCoreHandler {
     }
 
     public void sessionClosed(Channel session) throws Exception {
-        String user_id = OnlineProcessor.getUserIdFromSession(session);
-        if (user_id != null) {
+        long user_id = OnlineProcessor.getUserIdFromSession(session);
+        if (user_id != -1) {
             Channel sessionInOnlinelist = OnlineProcessor.getInstance().getOnlineSession(user_id);
 
             logger.info("[IMCORE-netty]" + ServerToolKits.clientInfoToString(session) + "的会话已关闭(user_id=" + user_id + ")了...");

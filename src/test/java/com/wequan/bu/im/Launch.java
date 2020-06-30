@@ -32,13 +32,13 @@ public class Launch {
             }
 
             if(ClientCore.getInstance().isLoginHasInit()) {
-                Protocal p = ProtocalFactory.createCommonData("hello", ClientCore.getInstance().getCurrentLoginUserId(), "1", true, UUID.randomUUID().toString(), -1);
+                Protocal p = ProtocalFactory.createCommonData("hello", ClientCore.getInstance().getCurrentLoginUserId(), 2, true, UUID.randomUUID().toString(), -1);
                 LocalUDPDataSender.getInstance().sendCommonData(p);
             }
         }
     }
 
     private int doLoginImpl() {
-        return LocalUDPDataSender.getInstance().sendLogin("tom", "123", "111");
+        return LocalUDPDataSender.getInstance().sendLogin(1, "123", "111");
     }
 }

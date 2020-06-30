@@ -23,36 +23,36 @@ import org.slf4j.LoggerFactory;
 public class LocalSendHelper {
     private static Logger logger = LoggerFactory.getLogger(ServerCoreHandler.class);
 
-    public static void sendData(String to_user_id
+    public static void sendData(long to_user_id
             , String dataContent, Observer resultObserver) throws Exception {
         sendData(to_user_id, dataContent, true, null, -1, resultObserver);
     }
 
-    public static void sendData(String to_user_id, String dataContent
+    public static void sendData(long to_user_id, String dataContent
             , int typeu, Observer resultObserver) throws Exception {
         sendData(to_user_id, dataContent, true, null, typeu, resultObserver);
     }
 
-    public static void sendData(String to_user_id, String dataContent
+    public static void sendData(long to_user_id, String dataContent
             , boolean QoS, int typeu, Observer resultObserver) throws Exception {
         sendData(to_user_id, dataContent, QoS, null, typeu, resultObserver);
     }
 
-    public static void sendData(String to_user_id, String dataContent
+    public static void sendData(long to_user_id, String dataContent
             , boolean QoS, String fingerPrint, Observer resultObserver) throws Exception {
         sendData(to_user_id, dataContent, QoS, fingerPrint, -1, resultObserver);
     }
 
-    public static void sendData(String to_user_id, String dataContent
+    public static void sendData(long to_user_id, String dataContent
             , boolean QoS, String fingerPrint, int typeu, Observer resultObserver) throws Exception {
         sendData(
-                ProtocalFactory.createCommonData(dataContent, "0", to_user_id, QoS, fingerPrint, typeu)
+                ProtocalFactory.createCommonData(dataContent, -1, to_user_id, QoS, fingerPrint, typeu)
                 , resultObserver);
     }
 
     public static void sendData(Protocal p, Observer resultObserver) throws Exception {
         if (p != null) {
-            if (!"0".equals(p.getTo())) {
+            if (p.getTo() != 0) {
                 sendData(OnlineProcessor.getInstance().getOnlineSession(p.getTo()), p, resultObserver);
             } else {
                 logger.warn("[IMCORE-netty]【注意】此Protocal对象中的接收方是服务器(user_id==0)（而此方法本来就是由Server调用，自已发自已不可能！），数据发送没有继续！" + p.toGsonString());
@@ -88,7 +88,7 @@ public class LocalSendHelper {
 //		 		    			logger.info("[IMCORE-netty] >> 给客户端："+ServerToolKits.clientInfoToString(session)
 //		 		    					+"的数据->"+p.toGsonString()+",已成功发出["+res.length+"].");
 
-                                if ("0".equals(p.getFrom())) {
+                                if (p.getFrom() == 0) {
                                     if (p.isQoS() && !QoS4SendDaemonS2C.getInstance().exist(p.getFp())) {
                                         QoS4SendDaemonS2C.getInstance().put(p);
                                     }
@@ -129,7 +129,7 @@ public class LocalSendHelper {
         logger.warn("[IMCORE-netty]>> 客户端" + ServerToolKits.clientInfoToString(session) + "尚未登陆，" + p.getDataContent() + "处理未继续.");
 
         Protocal perror = ProtocalFactory.createPErrorResponse(
-                ErrorCode.ForS.RESPONSE_FOR_UNLOGIN, p.toGsonString(), "-1"); // 尚未登陆则user_id就不存在了,用-1表示吧，目前此情形下该参数无意义
+                ErrorCode.ForS.RESPONSE_FOR_UNLOGIN, p.toGsonString(), -1); // 尚未登陆则user_id就不存在了,用-1表示吧，目前此情形下该参数无意义
         sendData(session, perror, resultObserver);
     }
 

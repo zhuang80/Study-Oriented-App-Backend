@@ -37,14 +37,15 @@ public class DynamoDBConfig {
     }
 
     @Bean
-    @Primary
+
     public DynamoDBMapperConfig dynamoDBMapperConfig() {
         return DynamoDBMapperConfig.DEFAULT;
     }
 
     @Bean
+    @Primary
     public DynamoDBMapper dynamoDBMapper(AmazonDynamoDB amazonDynamoDB, DynamoDBMapperConfig config) {
-        return new DynamoDBMapper(amazonDynamoDB, config);
+        return new DynamoDBMapper(amazonDynamoDB);
     }
 
     @Bean
