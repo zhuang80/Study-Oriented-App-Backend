@@ -46,8 +46,11 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     @Value("${CLIENT_ID}")
     private String clientId;
 
-    @Value("${WEBHOOK_SECRET}")
-    private String webhookSecret;
+    @Value("${PAYMENT_INTENT_WEBHOOK_SECRET}")
+    private String paymentIntentWebhookSecret;
+
+    @Value("${REFUND_WEBHOOK_SECRET}")
+    private String refundWebhookSecret;
 
     //local test webhook secret
     //private String webhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
@@ -118,7 +121,7 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
         PaymentIntent paymentIntent = null;
 
         try{
-            event = Webhook.constructEvent(webhookEndpoint, sigHeader, webhookSecret);
+            event = Webhook.constructEvent(webhookEndpoint, sigHeader, paymentIntentWebhookSecret);
         } catch (SignatureVerificationException e) {
             e.printStackTrace();
         }
@@ -172,7 +175,7 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
         Transfer transfer = null;
 
         try{
-            event = Webhook.constructEvent(webhookEndpoint, sigHeader, webhookSecret);
+            event = Webhook.constructEvent(webhookEndpoint, sigHeader, refundWebhookSecret);
         } catch (SignatureVerificationException e) {
             e.printStackTrace();
         }
