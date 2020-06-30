@@ -10,6 +10,7 @@ import com.wequan.bu.repository.model.extend.AppointmentBriefInfo;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.AppointmentService;
 import com.wequan.bu.service.StripeService;
+import com.wequan.bu.util.AppointmentStatus;
 import com.wequan.bu.util.TransactionStatus;
 import org.apache.ibatis.session.RowBounds;
 import org.checkerframework.checker.units.qual.A;
@@ -79,12 +80,8 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
         if(oldRecord == null) {
             throw new Exception("no such appointment");
         }
-        System.out.println("========================> "+ oldRecord.getTransactionId());
+
         Transaction transaction = transactionMapper.selectByPrimaryKey(oldRecord.getTransactionId());
-        System.out.println("========================================= find old transaction ");
-        System.out.println("====="+ transaction.getStatus());
-        System.out.println("======" + transaction.getStatus().equals(TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue()));
-        System.out.println("=========================================================");
         if(transaction.getStatus().equals(TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue())){
             /**delete old payment intent (third_party_transaction_id)
              * delete old transaction info in table (transaction_id)
@@ -93,7 +90,7 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
             System.out.println("============================== enter if statement");
             stripeService.cancelPaymentIntent(transaction.getThirdPartyTransactionId());
             //calculate fee
-            appointment.setFee((int)(long) calculateFee(appointment));
+            appointment.setFee((int)(long) calculateFee(oldRecord));
             appointment.setUpdateTime(LocalDateTime.now());
             appointment.setTransactionId("-1");
             //update appointment
@@ -103,6 +100,16 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
         }else{
             throw new Exception("can't update the appointment after customer has paid money");
         }
+    }
+
+    @Override
+    public void updateStatus(String paymentIntentId, AppointmentStatus status) {
+        Transaction transaction = transactionMapper.selectByThirdPartyTransactionId(paymentIntentId);
+
+        Appointment appointment = new Appointment();
+        appointment.setStatus(status.getValue());
+        appointment.setTransactionId(transaction.getId());
+        appointmentMapper.updateByTransactionIdSelective(appointment);
     }
 
     /**

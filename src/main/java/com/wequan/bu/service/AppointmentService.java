@@ -2,6 +2,7 @@ package com.wequan.bu.service;
 
 import com.wequan.bu.repository.model.Appointment;
 import com.wequan.bu.repository.model.extend.AppointmentBriefInfo;
+import com.wequan.bu.util.AppointmentStatus;
 
 import java.util.List;
 
@@ -24,4 +25,7 @@ public interface AppointmentService extends Service<Appointment> {
     public void updateTransactionIdByPrimaryKey(Integer appointmentId, String transactionId);
 
     public void updateAppointmentAndGenerateNewTransaction(Appointment appointment) throws Exception;
+
+    public void updateStatus(String paymentIntentId, AppointmentStatus status);
+
 }
