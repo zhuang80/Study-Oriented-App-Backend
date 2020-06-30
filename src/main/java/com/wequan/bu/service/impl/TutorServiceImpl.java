@@ -5,6 +5,7 @@ import com.wequan.bu.controller.vo.OnlineEvent;
 import com.wequan.bu.repository.dao.OnlineEvenMapper;
 import com.wequan.bu.repository.dao.TutorMapper;
 import com.wequan.bu.repository.dao.TutorViewHistoryMapper;
+import com.wequan.bu.repository.model.Appointment;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.repository.model.TutorApplication;
 import com.wequan.bu.repository.model.TutorViewHistory;
@@ -19,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -142,5 +145,4 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
         tutor.setHourlyRate(tutorApplication.getHourlyRate());
         return tutor;
     }
-
 }
