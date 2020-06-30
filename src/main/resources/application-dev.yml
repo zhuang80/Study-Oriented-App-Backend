@@ -74,3 +74,7 @@ app:
       - http://localhost:3000/oauth2/redirect
       - myandroidapp://oauth2/redirect
       - myiosapp://oauth2/redirect
+
+SECRET_KEY: sk_test_51GvSqhEWcWYP1PyNkbOqe9ccNkeR1Fwyqra7tCvsgwY9H8pNvcSpNoqxwgirFsHfD96LRLiRI9k9Gylb3O7Qx6se009LZHlhhm
+CLIENT_ID: ca_HUSn3TlzUSpqzLeK4JHl3EIh6BKjVFeM
+WEBHOOK_SECRET: whsec_8W0LB8PW1hKslvsdgG4zIp9WQC5q36fg
