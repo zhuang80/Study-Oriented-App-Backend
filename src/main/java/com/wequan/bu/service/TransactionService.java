@@ -33,4 +33,6 @@ public interface TransactionService extends Service<Transaction> {
 
     public void refundApply(RefundApplication refundApplication);
 
+    public List<Transaction> findAll(Integer pageNum, Integer pageSize);
+
 }

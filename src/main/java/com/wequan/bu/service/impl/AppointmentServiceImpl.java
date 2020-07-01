@@ -1,5 +1,6 @@
 package com.wequan.bu.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.wequan.bu.controller.vo.Transaction;
 import com.wequan.bu.repository.dao.AppointmentMapper;
 import com.wequan.bu.repository.dao.TransactionMapper;
@@ -116,6 +117,18 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
     @Override
     public Appointment findByTransactionId(String transactionId) {
         return appointmentMapper.selectByTransactionId(transactionId);
+    }
+
+    @Override
+    public List<Appointment> findAll(Integer pageNum, Integer pageSize) {
+        if(pageNum == null || pageNum <= 0 ) {
+            pageNum = 1;
+        }
+        if(pageSize == null || pageSize <= 0){
+            pageSize = 10;
+        }
+        PageHelper.startPage(pageNum, pageSize);
+        return appointmentMapper.selectAll();
     }
 
     /**

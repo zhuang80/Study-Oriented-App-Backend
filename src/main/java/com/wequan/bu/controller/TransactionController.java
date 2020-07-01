@@ -75,4 +75,11 @@ public class TransactionController {
         transactionService.refundApply(refundApplication);
         return ResultGenerator.success();
     }
+
+    @GetMapping("/transactions")
+    @ApiOperation(value = "get all transactions", notes = "返回所有的交易记录, 服务于管理员")
+    public Result<List<Transaction>> getAllTransactions( @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                         @RequestParam(value = "pageSize", required = false) Integer pageSize){
+        return ResultGenerator.success(transactionService.findAll(pageNum, pageSize));
+    }
 }
