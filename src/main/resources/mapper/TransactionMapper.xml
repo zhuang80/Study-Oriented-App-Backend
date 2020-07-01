@@ -142,4 +142,10 @@
         FROM ${schema}.wq_transaction
         WHERE pay_to = #{user_id} OR pay_from = #{user_id}
     </select>
+
+    <select id="selectAll" resultType="com.wequan.bu.controller.vo.Transaction">
+        SELECT *
+        FROM ${schema}.wq_transaction
+        ORDER BY create_time DESC
+    </select>
 </mapper>

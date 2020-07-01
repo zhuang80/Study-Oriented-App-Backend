@@ -1,5 +1,6 @@
 package com.wequan.bu.controller;
 
+import com.stripe.exception.StripeException;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.AppointmentChangeRecord;
@@ -30,7 +31,7 @@ public class AppointmentChangeRecordController {
     @PutMapping("/pending_refund_application/{id}/approve")
     @ApiOperation(value = "admin approve refund application", notes = "管理员批准退款")
     public Result approveRefundApplication(@PathVariable("id") Integer id,
-                                           @RequestBody String comment){
+                                           @RequestBody String comment) throws StripeException {
         appointmentChangeRecordService.approve(id, comment);
         return ResultGenerator.success();
     }

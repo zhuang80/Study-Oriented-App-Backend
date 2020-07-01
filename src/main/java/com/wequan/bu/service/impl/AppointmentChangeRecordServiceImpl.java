@@ -1,16 +1,15 @@
 package com.wequan.bu.service.impl;
 
+import com.stripe.exception.StripeException;
 import com.wequan.bu.controller.vo.Transaction;
 import com.wequan.bu.repository.dao.AppointmentChangeRecordMapper;
 import com.wequan.bu.repository.model.Appointment;
 import com.wequan.bu.repository.model.AppointmentChangeRecord;
-import com.wequan.bu.service.AbstractService;
-import com.wequan.bu.service.AppointmentChangeRecordService;
-import com.wequan.bu.service.AppointmentService;
-import com.wequan.bu.service.TransactionService;
+import com.wequan.bu.service.*;
 import com.wequan.bu.util.AdminAction;
 import com.wequan.bu.util.ChangeType;
 import com.wequan.bu.util.TransactionStatus;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +30,9 @@ public class AppointmentChangeRecordServiceImpl extends AbstractService<Appointm
 
     @Autowired
     private TransactionService transactionService;
+
+    @Autowired
+    private StripeService stripeService;
 
     @PostConstruct
     public void postConstruct(){
@@ -94,11 +96,13 @@ public class AppointmentChangeRecordServiceImpl extends AbstractService<Appointm
     }
 
     @Override
-    public void approve(Integer id, String comment) {
+    public void approve(Integer id, String comment) throws StripeException {
         AppointmentChangeRecord record = appointmentChangeRecordMapper.selectByPrimaryKey(id);
         record.setAdminAction(AdminAction.APPROVE.getValue());
         record.setAdminComment(comment);
         record.setUpdateTime(LocalDateTime.now());
+
+        stripeService.createRefund(record.getTransactionId(), record.getRefundAmount());
 
         appointmentChangeRecordMapper.updateByPrimaryKeySelective(record);
     }

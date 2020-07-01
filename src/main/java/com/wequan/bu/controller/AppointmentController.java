@@ -29,7 +29,7 @@ public class AppointmentController {
     @ApiOperation(value = "Available appointment", notes = "返回appointment列表，按临近时间倒序")
     public Result<List<Appointment>> getAvailableAppointments(@RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                               @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        return null;
+        return ResultGenerator.success(appointmentService.findAll(pageNum, pageSize));
     }
 
     @GetMapping("/appointment/{id}")

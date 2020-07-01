@@ -193,6 +193,18 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         appointmentChangeRecordService.save(record);
     }
 
+    @Override
+    public List<Transaction> findAll(Integer pageNum, Integer pageSize) {
+        if(pageNum == null || pageNum <= 0 ) {
+            pageNum = 1;
+        }
+        if(pageSize == null || pageSize <= 0){
+            pageSize = 10;
+        }
+        PageHelper.startPage(pageNum, pageSize);
+        return transactionMapper.selectAll();
+    }
+
     private LocalDateTime convertTimestampToLocalDateTime(Long timestamp){
         return LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp),
                 TimeZone.getDefault().toZoneId());
@@ -236,7 +248,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         transaction.setPayFrom(appointment.getUserId());
         transaction.setPayTo(tutor.getUser().getId());
         transaction.setPayAmount(appointment.getFee());
-        transaction.setPaymentMethod((short) 0);
+        transaction.setPaymentMethod((short) PaymentMethod.CARD.getValue());
         transaction.setThirdPartyTransactionId(paymentIntent.getId());
         LocalDateTime createdTime = convertTimestampToLocalDateTime(paymentIntent.getCreated());
 
