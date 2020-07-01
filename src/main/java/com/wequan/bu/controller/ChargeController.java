@@ -49,11 +49,6 @@ public class ChargeController {
         return ResultGenerator.success();
     }
 
-    @GetMapping("/refund/{id}")
-    public void refund(@PathVariable String id) throws StripeException {
-        stripeService.createRefund(id);
-    }
-
     @PostMapping("/refund_webhook")
     public Result handleRefund(HttpServletRequest request,
                                       @RequestBody String webhookEndpoint) throws Exception {
