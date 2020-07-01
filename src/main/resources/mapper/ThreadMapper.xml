@@ -126,14 +126,83 @@
   </delete>
 
   <insert id="insertThread" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.Thread" useGeneratedKeys="true">
-    insert into ${schema}.wq_thread (create_by, title, category,
-      tag_id, content, study_points_bonus, 
-      create_time, update_time, likes, 
-      dislikes, status, school_id)
-    values (#{createBy,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{category,jdbcType=SMALLINT},
-      #{tagId,jdbcType=SMALLINT}, #{content,jdbcType=VARCHAR}, #{studyPointsBonus,jdbcType=SMALLINT}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{likes,jdbcType=INTEGER}, 
-      #{dislikes,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{schoolId,jdbcType=INTEGER})
+    insert into ${schema}.wq_thread
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="category != null">
+        category,
+      </if>
+      <if test="tagId != null">
+        tag_id,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="studyPointsBonus != null">
+        study_points_bonus,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="likes != null">
+        likes,
+      </if>
+      <if test="dislikes != null">
+        dislikes,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="schoolId != null">
+        school_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="createBy != null">
+        #{createBy,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        #{category,jdbcType=SMALLINT},
+      </if>
+      <if test="tagId != null">
+        #{tagId,jdbcType=SMALLINT},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="studyPointsBonus != null">
+        #{studyPointsBonus,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="likes != null">
+        #{likes,jdbcType=INTEGER},
+      </if>
+      <if test="dislikes != null">
+        #{dislikes,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="schoolId != null">
+        #{schoolId,jdbcType=INTEGER},
+      </if>
+    </trim>
   </insert>
 
   <insert id="insertReply" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.ThreadStream" useGeneratedKeys="true">
@@ -211,20 +280,99 @@
   </insert>
 
   <insert id="addUserInterestedSubjects" keyColumn="user_id" keyProperty="userId" parameterType="com.wequan.bu.repository.model.ThreadUserSelectedSubjects" useGeneratedKeys="true">
-    insert into ${schema}.wq_thread_user_selected_subjects(user_id, subject_ids)
-    values (#{userId, jdbcType=INTEGER}, #{subject_ids, jdbcType=VARCHAR})
+    insert into ${schema}.wq_thread_user_selected_subjects
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+     <if test="userId != null">
+      user_id,
+     </if>
+     <if test="subjectIds != null">
+      subject_ids,
+     </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="subjectIds != null">
+        #{subjectIds,jdbcType=VARCHAR},
+      </if>
+    </trim>
   </insert>
 
   <insert id="reportThread" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
-    insert into ${schema}.wq_report_record(id, user_id, resource_type, resource_id, report_time, reason)
-    values (#{id, jdbcType=INTEGER},#{userId, jdbcType=INTEGER},#{1, jdbcType=SMALLINT},#{threadId, jdbcType=INTEGER},
-    #{reportDate, jdbcType=TIMESTAMP},#{reason, jdbcType=VARCHAR},)
+    insert into ${schema}.wq_report_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="resourceType != null">
+        resource_type,
+      </if>
+      <if test="resourceId != null">
+        resource_id,
+      </if>
+      <if test="reportTime != null">
+        report_time,
+      </if>
+      <if test="reason != null">
+        reason,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="resourceType != null">
+        #{1,jdbcType=SMALLINT},
+      </if>
+      <if test="resourceId != null">
+        #{threadId,jdbcType=INTEGER},
+      </if>
+      <if test="reportTime != null">
+        #{reportTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reason != null">
+        #{reason,jdbcType=VARCHAR},
+      </if>
+    </trim>
   </insert>
 
   <insert id="reportReplyToThread" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
-    insert into ${schema}.wq_report_record(id, user_id, resource_type, resource_id, report_time, reason)
-    values (#{id, jdbcType=INTEGER},#{userId, jdbcType=INTEGER},#{2, jdbcType=SMALLINT},#{replyId, jdbcType=INTEGER},
-    #{reportDate, jdbcType=TIMESTAMP},#{reason, jdbcType=VARCHAR},)
+    insert into ${schema}.wq_report_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="resourceType != null">
+        resource_type,
+      </if>
+      <if test="resourceId != null">
+        resource_id,
+      </if>
+      <if test="reportTime != null">
+        report_time,
+      </if>
+      <if test="reason != null">
+        reason,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="resourceType != null">
+        #{2,jdbcType=SMALLINT},
+      </if>
+      <if test="resourceId != null">
+        #{replyId,jdbcType=INTEGER},
+      </if>
+      <if test="reportTime != null">
+        #{reportTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reason != null">
+        #{reason,jdbcType=VARCHAR},
+      </if>
+    </trim>
   </insert>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.Thread">
