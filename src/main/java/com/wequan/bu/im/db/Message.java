@@ -1,37 +1,54 @@
 package com.wequan.bu.im.db;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
 
 /**
  * @author zhen
  */
-@DynamoDBTable(tableName = "msg_sync")
+// Create the Customer table
+@DynamoDbBean
 public class Message {
-    private Long user_id;
-    private Long msg_id;
-    private String data_content;
 
-    public Message(Long user_id, Long msg_id, String data_content) {
-        this.user_id = user_id;
-        this.msg_id = msg_id;
-        this.data_content = data_content;
-    }
+    private Long userId;
+    private Long msgId;
+    private String dataContent;
 
-    @DynamoDBHashKey(attributeName = "user_id")
+
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("user_id")
     public Long getUserId() {
-        return this.user_id;
+        return this.userId;
     }
 
-    @DynamoDBRangeKey(attributeName = "msg_id")
+    ;
+
+    public void setUserId(Long userId) {
+
+        this.userId = userId;
+    }
+
+    @DynamoDbSortKey
+    @DynamoDbAttribute("msg_id")
     public Long getMsgId() {
-        return this.msg_id;
+        return this.msgId;
+
     }
 
-    @DynamoDBAttribute(attributeName = "data_content")
+    public void setMsgId(Long msgId) {
+
+        this.msgId = msgId;
+    }
+
+    @DynamoDbAttribute("data_content")
     public String getDataContent() {
-        return this.data_content;
+        return this.dataContent;
+    }
+
+    public void setDataContent(String dataContent) {
+
+        this.dataContent = dataContent;
     }
 }

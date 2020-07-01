@@ -37,18 +37,18 @@ public class LogicProcessor {
                                   Channel session, Protocal pFromClient, String remoteAddress) throws Exception {
 
         if (pFromClient != null && pFromClient.getTo() > 0) {
-            logger.info("" + pFromClient.getTo());
-            logger.info("" + pFromClient.getMsgId());
-            logger.info("" + pFromClient.getDataContent());
-            Message m = new Message(pFromClient.getTo(), pFromClient.getMsgId(), pFromClient.getDataContent());
-            logger.info("yes!!!1");
-            mapper.save(m);
-            logger.info("yes!!!2");
-            Message savedM = mapper.load(Message.class, pFromClient.getTo(), pFromClient.getMsgId());
-            if (savedM == null)
-                return;
-
-            logger.info("yes!!!3");
+//            logger.info("" + pFromClient.getTo());
+//            logger.info("" + pFromClient.getMsgId());
+//            logger.info("" + pFromClient.getDataContent());
+//            Message m = new Message(pFromClient.getTo(), pFromClient.getMsgId(), pFromClient.getDataContent());
+//            logger.info("yes!!!1");
+//            mapper.save(m);
+//            logger.info("yes!!!2");
+//            Message savedM = mapper.load(Message.class, pFromClient.getTo(), pFromClient.getMsgId());
+//            if (savedM == null)
+//                return;
+//
+//            logger.info("yes!!!3");
 
             GlobalSendHelper.sendDataC2C(bridgeProcessor, session, pFromClient
                     , remoteAddress, this.serverCoreHandler);
