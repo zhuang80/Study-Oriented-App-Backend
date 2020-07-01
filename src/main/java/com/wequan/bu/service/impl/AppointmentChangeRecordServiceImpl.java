@@ -8,6 +8,7 @@ import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.AppointmentChangeRecordService;
 import com.wequan.bu.service.AppointmentService;
 import com.wequan.bu.service.TransactionService;
+import com.wequan.bu.util.AdminAction;
 import com.wequan.bu.util.ChangeType;
 import com.wequan.bu.util.TransactionStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author Zhaochao Huang
@@ -84,5 +86,30 @@ public class AppointmentChangeRecordServiceImpl extends AbstractService<Appointm
             }
             appointmentChangeRecordMapper.insertSelective(record);
         }
+    }
+
+    @Override
+    public List<AppointmentChangeRecord> findPendingRefundApplication() {
+        return appointmentChangeRecordMapper.selectPendingRefundApplication();
+    }
+
+    @Override
+    public void approve(Integer id, String comment) {
+        AppointmentChangeRecord record = appointmentChangeRecordMapper.selectByPrimaryKey(id);
+        record.setAdminAction(AdminAction.APPROVE.getValue());
+        record.setAdminComment(comment);
+        record.setUpdateTime(LocalDateTime.now());
+
+        appointmentChangeRecordMapper.updateByPrimaryKeySelective(record);
+    }
+
+    @Override
+    public void reject(Integer id, String comment) {
+        AppointmentChangeRecord record = appointmentChangeRecordMapper.selectByPrimaryKey(id);
+        record.setAdminAction(AdminAction.REJECT.getValue());
+        record.setAdminComment(comment);
+        record.setUpdateTime(LocalDateTime.now());
+
+        appointmentChangeRecordMapper.updateByPrimaryKeySelective(record);
     }
 }
