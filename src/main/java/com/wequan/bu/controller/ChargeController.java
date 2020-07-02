@@ -34,9 +34,24 @@ public class ChargeController {
 
     @GetMapping("/client_secret")
     @ApiOperation(value="return client secret", notes="根据appointment生成一个client secret 前端使用client secret完成交易")
-    public Result<String> getClientSecret(@RequestParam("appointment_id") Integer appointmentId) throws StripeException {
-        PaymentIntent paymentIntent = stripeService.createPaymentIntent(appointmentId);
-        return ResultGenerator.success(paymentIntent.getClientSecret());
+    public Result<String> getClientSecret(@RequestParam("appointment_id") Integer appointmentId){
+        try {
+            PaymentIntent paymentIntent = stripeService.createPaymentIntent(appointmentId);
+            return ResultGenerator.success(paymentIntent.getClientSecret());
+        }catch (StripeException e){
+            return ResultGenerator.fail(e.getMessage());
+        }
+
+    }
+
+    @GetMapping("/client_secret/retrieve")
+    @ApiOperation(value="retrieve client secret by appointment id", notes="根据appointment id来取回client secret")
+    public Result<String> retrieveClientSecret(@RequestParam("appointment_id") Integer appointmentId){
+        try{
+            return ResultGenerator.success(stripeService.retrieveClientSecret(appointmentId));
+        } catch (StripeException e) {
+            return ResultGenerator.fail(e.getMessage());
+        }
     }
 
     @PostMapping("/webhook")
