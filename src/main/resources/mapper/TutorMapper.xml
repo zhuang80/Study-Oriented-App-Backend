@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wequan.bu.repository.dao.TutorMapper">
-    
-    <resultMap id="TutorRateResultMap" type="com.wequan.bu.repository.model.extend.TutorRateInfo">
+    <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.Tutor">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="brief_introduction" jdbcType="VARCHAR" property="briefIntroduction" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -16,6 +15,9 @@
         <result column="current_state" jdbcType="VARCHAR" property="currentState" />
         <result column="teach_method" jdbcType="VARCHAR" property="teachMethod" />
         <result column="hourly_rate" jdbcType="INTEGER" property="hourlyRate" />
+    </resultMap>
+
+    <resultMap id="TutorRateResultMap" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.TutorRateInfo">
         <association property="user"
                      column="user_id"
                      select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey" />
@@ -23,6 +25,13 @@
                     column="id"
                     ofType="com.wequan.bu.repository.model.Subject"
                     select="com.wequan.bu.repository.dao.SubjectsMapper.selectByTutorId" />
+    </resultMap>
+
+    <resultMap id="ResultMapUsingInSearch" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.TutorRateInfo">
+        <result column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="t_score" jdbcType="DOUBLE" property="score" />
+        <association property="user" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithAvatar" />
+        <collection property="subjectList" columnPrefix="s_" resultMap="com.wequan.bu.repository.dao.SubjectsMapper.BaseResultMap" />
     </resultMap>
 
     <select id="selectTutors" resultMap="TutorRateResultMap">
@@ -71,6 +80,17 @@
         SELECT *
         FROM ${schema}.wq_tutor_profile tp
         WHERE tp.id = #{id, jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByConditions" resultMap="ResultMapUsingInSearch">
+        select *
+        from ${schema}.wq_tutor_info
+        <if test="where != null and where != ''">
+            where ${where}
+        </if>
+        <if test="orderBy != null and orderBy != ''">
+            order by ${orderBy}
+        </if>
     </select>
 
     <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.Tutor">

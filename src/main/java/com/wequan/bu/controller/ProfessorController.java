@@ -27,6 +27,7 @@ import java.util.List;
  */
 @Controller
 @Api(tags = "Professor")
+@ApiIgnore
 public class ProfessorController{
 
     private static final Logger log = LoggerFactory.getLogger(ProfessorController.class);

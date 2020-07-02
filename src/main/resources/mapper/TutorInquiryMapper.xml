@@ -22,6 +22,24 @@
                     column="id"/>
     </resultMap>
 
+    <resultMap id="ResultMapWithSubjectTopics" type="com.wequan.bu.repository.model.TutorInquiry">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="brief_description" jdbcType="VARCHAR" property="briefDescription" />
+        <result column="online" jdbcType="BIT" property="online" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="status" jdbcType="SMALLINT" property="status" />
+        <result column="request_start_time" jdbcType="TIMESTAMP" property="requestStartTime" />
+        <result column="request_end_time" jdbcType="TIMESTAMP" property="requestEndTime" />
+        <result column="acceptable_pay_rate" jdbcType="REAL" property="acceptablePayRate" />
+        <association property="subject" columnPrefix="s_" resultMap="subjectResultMap"/>
+        <collection property="topicList" columnPrefix="t_" resultMap="com.wequan.bu.repository.dao.TopicMapper.BaseResultMap"/>
+    </resultMap>
+
+    <resultMap id="ResultMapUsingInSearch" extends="ResultMapWithSubjectTopics" type="com.wequan.bu.repository.model.TutorInquiry">
+        <association property="createBy" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithAvatar" />
+    </resultMap>
+
     <resultMap id="subjectResultMap" type="com.wequan.bu.repository.model.Subject">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="name" jdbcType="VARCHAR" property="name" />
@@ -32,6 +50,11 @@
         <result property="name" jdbcType="VARCHAR" column="name" />
         <result property="subjectId" jdbcType="INTEGER" column="subject_id" />
     </resultMap>
+
+    <sql id="Base_Column_List">
+        id, brief_description, online, create_time, update_time, status,
+        request_start_time, request_end_time, acceptable_pay_rate
+    </sql>
 
     <select id="selectTopic" resultMap="topicResultMap">
         SELECT
@@ -86,6 +109,31 @@
         LEFT JOIN ${schema}.wq_tutor_inquiry_topic tit ON ti.id = tit.tutor_inquiry_id
         LEFT JOIN ${schema}.wq_topic t ON tit.topic_id = t.id
         WHERE ti.id = #{id}
+    </select>
+
+    <select id="selectByUserId" resultMap="ResultMapWithSubjectTopics">
+        select
+            ti.*,
+            s.id s_id,
+            s.name s_name,
+            t.id t_id,
+            t.name t_name
+        from ${schema}.wq_tutor_inquiry ti
+        inner join ${schema}.wq_subjects s on s.id = ti.subject_id
+        inner join ${schema}.wq_tutor_inquiry_topic tit on ti.id = tit.tutor_inquiry_id
+        inner join ${schema}.wq_topic t on tit.topic_id = t.id
+        where ti.create_by = #{userId}
+    </select>
+
+    <select id="selectByConditions" resultMap="ResultMapUsingInSearch">
+        select *
+        from ${schema}.wq_tutor_inquiry_info
+        <if test="where != null and where != ''">
+            where ${where}
+        </if>
+        <if test="orderBy != null and orderBy != ''">
+            order by ${orderBy}
+        </if>
     </select>
 
     <insert id="save" parameterType="com.wequan.bu.controller.vo.TutorInquiryVo">

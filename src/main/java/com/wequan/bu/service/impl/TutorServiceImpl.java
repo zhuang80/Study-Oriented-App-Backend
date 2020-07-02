@@ -1,18 +1,16 @@
 package com.wequan.bu.service.impl;
 
 import com.github.pagehelper.PageHelper;
-import com.wequan.bu.controller.vo.OnlineEvent;
-import com.wequan.bu.repository.dao.OnlineEvenMapper;
+import com.wequan.bu.repository.dao.OnlineEventMapper;
 import com.wequan.bu.repository.dao.TutorMapper;
 import com.wequan.bu.repository.dao.TutorViewHistoryMapper;
-import com.wequan.bu.repository.model.Appointment;
+import com.wequan.bu.repository.model.OnlineEvent;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.repository.model.TutorApplication;
 import com.wequan.bu.repository.model.TutorViewHistory;
 import com.wequan.bu.repository.model.extend.TutorRateInfo;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.TutorService;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -32,14 +28,12 @@ import java.util.Map;
 @Service
 public class TutorServiceImpl extends AbstractService<Tutor> implements TutorService {
 
-    private static final Logger logger = LoggerFactory.getLogger(TutorServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(TutorServiceImpl.class);
 
     @Autowired
     private TutorMapper tutorMapper;
-
     @Autowired
-    private OnlineEvenMapper onlineEvenMapper;
-
+    private OnlineEventMapper onlineEventMapper;
     @Autowired
     private TutorViewHistoryMapper tutorViewHistoryMapper;
 
@@ -49,17 +43,13 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
     }
 
     @Override
-    public List<Tutor> search(String whereCondition, String groupCondition, String orderCondition, Map<String, Integer> pageCondition) {
-        List<Tutor> tutors = null;
-        if (StringUtils.isBlank(groupCondition)) {
-            tutors = tutorMapper.selectByConditions(whereCondition, orderCondition,
-                    new RowBounds(pageCondition.get("pageNo"), pageCondition.get("pageSize")));
-        } else {
-            String[] columns = groupCondition.split(",");
-            // to do
-        }
+    public List<TutorRateInfo> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition) {
+        List<TutorRateInfo> tutors = null;
+        tutors = tutorMapper.selectByConditions(whereCondition, orderCondition,
+                new RowBounds(pageCondition.get("pageNo"), pageCondition.get("pageSize")));
         return tutors;
     }
+
     @Override
     public List<Tutor> findTutors(Integer subjectId, Integer pageNum, Integer pageSize) {
         if(pageNum == null || pageNum <= 0 ) {
@@ -98,7 +88,7 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
 
     @Override
     public List<OnlineEvent> findOnlineEventByUserId(Integer userId) {
-        return onlineEvenMapper.selectByUserId(userId);
+        return onlineEventMapper.selectByUserId(userId);
     }
 
     @Override
@@ -145,4 +135,5 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
         tutor.setHourlyRate(tutorApplication.getHourlyRate());
         return tutor;
     }
+
 }

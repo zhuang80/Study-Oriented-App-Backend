@@ -1,21 +1,22 @@
 package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
-import com.wequan.bu.controller.vo.DiscussionGroup;
-import com.wequan.bu.controller.vo.OnlineEvent;
-import com.wequan.bu.controller.vo.Thread;
-import com.wequan.bu.controller.vo.TutorInquiryVo;
+import com.wequan.bu.controller.vo.FavoriteCategory;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
+import com.wequan.bu.exception.NotImplementedException;
+import com.wequan.bu.json.JSON;
 import com.wequan.bu.repository.model.*;
 import com.wequan.bu.repository.model.extend.AppointmentBriefInfo;
+import com.wequan.bu.repository.model.extend.ThreadStats;
+import com.wequan.bu.repository.model.extend.UserFollowBriefInfo;
 import com.wequan.bu.repository.model.extend.UserStats;
-import com.wequan.bu.service.AppointmentService;
-import com.wequan.bu.service.UserService;
+import com.wequan.bu.service.*;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,7 +36,19 @@ public class UserController {
     @Autowired
     private AppointmentService appointmentService;
     @Autowired
+    private OnlineEventService onlineEventService;
+    @Autowired
+    private DiscussionGroupService discussionGroupService;
+    @Autowired
+    private TutorInquiryService tutorInquiryService;
+    @Autowired
+    private ThreadService threadService;
+    @Autowired
+    private ThreadStreamService threadStreamService;
+    @Autowired
     private MessageHandler messageHandler;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @GetMapping("/user/{id}/profile")
     @ApiOperation(value = "user basic info", notes = "返回用户基本信息")
@@ -83,8 +96,18 @@ public class UserController {
                                                      @RequestParam(value = "type", required = false) Integer type,
                                                      @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                      @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<OnlineEvent> result = null;
-        return ResultGenerator.success(result);
+        List<OnlineEvent> onlineEvents = null;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        onlineEvents = onlineEventService.getUserOnlineEvents(userId, pageNum, pageSize, type);
+        return ResultGenerator.success(onlineEvents);
     }
 
     @PostMapping("/user/{id}/online_event")
@@ -96,6 +119,7 @@ public class UserController {
     public Result doOnlineEvent(@PathVariable("id") Integer userId,
                                 @RequestParam("oeId") Integer oeId,
                                 @RequestParam("action") Integer action) {
+
         return ResultGenerator.success();
     }
 
@@ -104,29 +128,56 @@ public class UserController {
     public Result<List<DiscussionGroup>> getDiscussionGroups(@PathVariable("id") Integer userId,
                                                              @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<DiscussionGroup> result = null;
-        return ResultGenerator.success(result);
+        List<DiscussionGroup> discussionGroups = null;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        discussionGroups = discussionGroupService.getUserDiscussionGroups(userId, pageNum, pageSize);
+        return ResultGenerator.success(discussionGroups);
     }
 
     @PostMapping("/user/{id}/discussion_group")
     @ApiOperation(value = "join/quit discussion group", notes = "加入/退出discussion group成功与否")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "dgId", value = "discussion group id"),
-            @ApiImplicitParam(name = "action", value = "1 -> join; -1 -> quit")
+            @ApiImplicitParam(name = "action", value = "join; quit")
     })
     public Result doDiscussionGroup(@PathVariable("id") Integer userId,
                                     @RequestParam("dgId") Integer dgId,
-                                    @RequestParam("action") Integer action) {
+                                    @RequestParam("action") String action) {
+        if (userId <= 0 || dgId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (!"join".equals(action) && !"quit".equals(action)) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        discussionGroupService.doUserAction(userId, dgId, action);
         return ResultGenerator.success();
     }
 
     @GetMapping("/user/{id}/tutor_inquiries")
     @ApiOperation(value = "a list of user’s tutor inquiry", notes = "返回用户的tutor inquiry列表")
-    public Result<List<TutorInquiryVo>> getTutorInquiries(@PathVariable("id") Integer userId,
+    public Result<List<TutorInquiry>> getTutorInquiries(@PathVariable("id") Integer userId,
                                                           @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                           @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<TutorInquiryVo> result = null;
-        return ResultGenerator.success(result);
+        List<TutorInquiry> tutorInquiries = null;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        tutorInquiries = tutorInquiryService.getUserTutorInquiries(userId, pageNum, pageSize);
+        return ResultGenerator.success(tutorInquiries);
     }
 
     @GetMapping("/user/{id}/threads")
@@ -135,11 +186,21 @@ public class UserController {
             @ApiResponse(code = 200, message = "a list of thread card (title, thread id, user name, user id, tag, created time, first 100 words, \n" +
                     "first 3 photos, # of likes, # of dislikes, # of views, school id, study points reward, status) sorted by created time")
     )
-    public Result<List<Thread>> getThreads(@PathVariable("id") Integer userId,
-                                           @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                           @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<Thread> result = null;
-        return ResultGenerator.success(result);
+    public Result<List<ThreadStats>> getThreads(@PathVariable("id") Integer userId,
+                                                @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<ThreadStats> threads = null;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        threads = threadService.getUserThreads(userId, pageNum, pageSize);
+        return ResultGenerator.success(threads);
     }
 
     @GetMapping("/user/{id}/replies")
@@ -147,8 +208,18 @@ public class UserController {
     public Result<List<ThreadStream>> getThreadReplies(@PathVariable("id") Integer userId,
                                                        @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                        @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<ThreadStream> result = null;
-        return ResultGenerator.success(result);
+        List<ThreadStream> threadReplies = null;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        threadReplies = threadStreamService.getUserThreadReplies(userId, pageNum, pageSize);
+        return ResultGenerator.success(threadReplies);
     }
 
     @GetMapping("/user/{id}/favorites")
@@ -159,12 +230,26 @@ public class UserController {
             @ApiImplicitParam(name = "categoryId", value = "1 -> tutor; 2 -> course; 3 -> material;" +
                     " 4 -> thread; 5 -> professor; 6 -> activity; 7 -> public class; 8 -> thread reply")
     })
-    public Result<List<Object>> getFavorites(@PathVariable("id") Integer userId,
-                                             @RequestParam("categoryId") Integer categoryId,
-                                             @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                             @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<Object> result = null;
-        return ResultGenerator.success(result);
+    public Result getFavorites(@PathVariable("id") Integer userId,
+                               @RequestParam("categoryId") Integer categoryId,
+                               @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                               @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        Class<? extends Service> favoriteServiceClazz = FavoriteCategory.getFavoriteService(categoryId);
+        if (Objects.isNull(favoriteServiceClazz)) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        Service favoriteService = applicationContext.getBean(favoriteServiceClazz);
+        List favorites = favoriteService.findFavorites(userId, pageNum, pageSize);
+        return ResultGenerator.success(favorites);
     }
 
     @PostMapping("/user/{id}/favorite")
@@ -179,6 +264,15 @@ public class UserController {
                            @RequestParam("categoryId") Integer categoryId,
                            @RequestParam("favoriteId") Integer favoriteId,
                            @RequestParam("action") Integer action) {
+        if (userId <= 0 || favoriteId <= 0 || (action != 1 && action != -1)) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        Class<? extends Service> favoriteServiceClazz = FavoriteCategory.getFavoriteService(categoryId);
+        if (Objects.isNull(favoriteServiceClazz)) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        Service favoriteService = applicationContext.getBean(favoriteServiceClazz);
+        favoriteService.postFavorite(userId, favoriteId, action);
         return ResultGenerator.success();
     }
 
@@ -190,6 +284,13 @@ public class UserController {
     public Result followOtherUser(@PathVariable("id") Integer userId,
                                   @RequestParam("otherUserId") Integer otherUserId,
                                   @RequestParam("action") Integer action) {
+        if (userId <= 0 || otherUserId <= 0 || (action != 1 && action != -1)) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (userId - otherUserId == 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40097"));
+        }
+        userService.followOtherUser(userId, otherUserId, action);
         return ResultGenerator.success();
     }
 
@@ -198,15 +299,39 @@ public class UserController {
     @ApiResponses(
             @ApiResponse(code = 200, message = "a list of user cards (name, username, user id, avatar, status)")
     )
-    public Result<List<UserFollow>> getUserFollowing(@PathVariable("id") Integer userId) {
-        List<UserFollow> result = null;
+    public Result<List<UserFollowBriefInfo>> getUserFollowing(@PathVariable("id") Integer userId,
+                                                              @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<UserFollowBriefInfo> result = null;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        result = userService.getUserFollowing(userId, pageNum, pageSize);
         return ResultGenerator.success(result);
     }
 
     @GetMapping("/user/{id}/followers")
     @ApiOperation(value = "a list of followers", notes = "返回被关注用户列表")
-    public Result<List<UserFollow>> getUserFollowers(@PathVariable("id") Integer userId) {
-        List<UserFollow> result = null;
+    public Result<List<UserFollowBriefInfo>> getUserFollowers(@PathVariable("id") Integer userId,
+                                                              @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<UserFollowBriefInfo> result = null;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        result = userService.getUserFollower(userId, pageNum, pageSize);
         return ResultGenerator.success(result);
     }
 
@@ -214,13 +339,27 @@ public class UserController {
     @ApiOperation(value = "a list of user's review for professor", notes = "返回用户对授课教师评价列表")
     public Result<List<ProfessorCourseRate>> getUserProfessorReviews(@PathVariable("id") Integer userId) {
         List<ProfessorCourseRate> result = null;
-        return ResultGenerator.success(result);
+        throw new NotImplementedException("Not implemented yet in Phase I");
     }
 
     @GetMapping("/user/{id}/appointment/reviews")
     @ApiOperation(value = "a list of user's review for appointment ", notes = "返回用户对appointment评价列表")
-    public Result<List<AppointmentReview>> getUserAppointmentReviews(@PathVariable("id") Integer userId) {
-        List<AppointmentReview> result = null;
-        return ResultGenerator.success(result);
+    @JSON(type = AppointmentBriefInfo.class, include = {"id", "title", "briefDescription", "startTime", "endTime",
+            "subjectId", "topicId", "fee", "tutorName"})
+    public Result<List<AppointmentReview>> getUserAppointmentReviews(@PathVariable("id") Integer userId,
+                                                                     @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                                     @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        List<AppointmentReview> appointmentReviews = null;
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        appointmentReviews = userService.getUserAppointmentReviews(userId, pageNum, pageSize);
+        return ResultGenerator.success(appointmentReviews);
     }
 }
