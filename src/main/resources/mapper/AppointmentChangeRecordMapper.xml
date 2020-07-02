@@ -81,6 +81,11 @@
     WHERE change_type = 3 AND admin_action = 0
   </select>
 
+  <select id="selectAll" resultType="com.wequan.bu.repository.model.AppointmentChangeRecord">
+    SELECT *
+    FROM ${schema}.wq_appointment_change_record
+  </select>
+
   <select id="selectByPrimaryKey" resultType="com.wequan.bu.repository.model.AppointmentChangeRecord">
     SELECT *
     FROM ${schema}.wq_appointment_change_record

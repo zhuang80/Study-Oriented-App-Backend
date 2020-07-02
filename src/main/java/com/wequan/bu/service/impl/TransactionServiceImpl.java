@@ -76,6 +76,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         short status = getStatus(paymentIntent.getStatus());
         transaction.setStatus(status);
         transaction.setThirdPartyTransactionId(paymentIntent.getId());
+        transaction.setPayAmount((int)(long) paymentIntent.getAmount());
         transactionMapper.updateByThirdPartyTransactionId(transaction);
     }
 
@@ -87,6 +88,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     @Override
     public void cancelTransactionByUser(Integer userId, String transactionId) throws Exception {
         Transaction transaction = transactionMapper.selectByPrimaryKey(transactionId);
+        Integer refundAmount = 0;
 
         if(transaction == null) {
             throw new Exception("no such transaction");
@@ -99,15 +101,15 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
             //check if the start time of appointment is after current time
             if(appointment.getStartTime().isAfter(LocalDateTime.now())){
                 //refund part of fee
-                Integer amount = calculateRefundAmount(transactionId);
+                refundAmount = calculateRefundAmount(transactionId);
 
-                stripeService.createRefund(transactionId, amount);
+                stripeService.createRefund(transactionId, refundAmount);
             }else {
                 throw new Exception("Please apply for refund request.");
             }
         }
 
-        Integer refundAmount = 0;
+
         appointmentChangeRecordService.addRecordByUser(transactionId, userId, refundAmount);
     }
 
