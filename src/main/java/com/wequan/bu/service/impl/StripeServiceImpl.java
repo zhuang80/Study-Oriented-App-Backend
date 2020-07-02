@@ -46,16 +46,16 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
     @Value("${CLIENT_ID}")
     private String clientId;
-/*
+
     @Value("${PAYMENT_INTENT_WEBHOOK_SECRET}")
     private String paymentIntentWebhookSecret;
 
     @Value("${REFUND_WEBHOOK_SECRET}")
     private String refundWebhookSecret;
-*/
+
     //local test webhook secret
-    private String paymentIntentWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
-    private String refundWebhookSecret="whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
+    //private String paymentIntentWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
+    //private String refundWebhookSecret="whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
 
     @Autowired
     private TutorStripeMapper tutorStripeMapper;
@@ -118,9 +118,15 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     }
 
     @Override
-    public String retrieveClientSecret(Integer appointmentId) throws StripeException {
+    public String retrieveClientSecret(Integer appointmentId) throws StripeException, Exception {
         Appointment appointment = appointmentService.findById(appointmentId);
+        if(appointment == null) {
+            throw new Exception("No such appointment.");
+        }
         Transaction transaction = transactionService.findById(appointment.getTransactionId());
+        if(transaction == null) {
+            throw new Exception("No transaction exists for this appointment.");
+        }
         PaymentIntent paymentIntent = PaymentIntent.retrieve(transaction.getThirdPartyTransactionId());
 
         return paymentIntent.getClientSecret();
@@ -173,6 +179,8 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
                 .setAmount((long)(int)appointment.getFee())
                 .build();
         PaymentIntent updatedPaymentIntent = paymentIntent.update(params);
+
+        transactionService.update(updatedPaymentIntent);
         return updatedPaymentIntent;
     }
 

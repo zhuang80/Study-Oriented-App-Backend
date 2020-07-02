@@ -51,6 +51,8 @@ public class ChargeController {
             return ResultGenerator.success(stripeService.retrieveClientSecret(appointmentId));
         } catch (StripeException e) {
             return ResultGenerator.fail(e.getMessage());
+        } catch (Exception e) {
+            return ResultGenerator.fail(e.getMessage());
         }
     }
 

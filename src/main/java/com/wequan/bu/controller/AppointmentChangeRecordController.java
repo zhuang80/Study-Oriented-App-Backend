@@ -28,6 +28,12 @@ public class AppointmentChangeRecordController {
         return ResultGenerator.success(appointmentChangeRecordService.findPendingRefundApplication());
     }
 
+    @GetMapping("/appointment_change_records")
+    @ApiOperation(value = "get all appointment change records", notes = "返回所有取消预约的记录")
+    public Result<List<AppointmentChangeRecord>> getAll(){
+        return ResultGenerator.success(appointmentChangeRecordService.findAll());
+    }
+
     @PutMapping("/pending_refund_application/{id}/approve")
     @ApiOperation(value = "admin approve refund application", notes = "管理员批准退款")
     public Result approveRefundApplication(@PathVariable("id") Integer id,
