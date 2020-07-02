@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
  */
 @RestController
 @Api(tags = "Online Event")
+@ApiIgnore
 public class OnlineEventController {
 
     private static final Logger log = LoggerFactory.getLogger(OnlineEventController.class);

@@ -31,5 +31,5 @@ public interface TutorInquiryService extends Service<TutorInquiry> {
      * @param pageCondition page
      * @return Tutor inquiry列表
      */
-    List<TutorInquiryVo> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition);
+    List<TutorInquiry> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition);
 }

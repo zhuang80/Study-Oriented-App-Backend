@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Zhaochao Huang
@@ -61,5 +62,13 @@ public class TutorInquiryServiceImpl extends AbstractService<TutorInquiry> imple
     public List<TutorInquiry> getUserTutorInquiries(Integer userId, Integer pageNum, Integer pageSize) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
         return tutorInquiryMapper.selectByUserId(userId, rowBounds);
+    }
+
+    @Override
+    public List<TutorInquiry> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition) {
+        List<TutorInquiry> tutorInquiries = null;
+        tutorInquiries = tutorInquiryMapper.selectByConditions(whereCondition, orderCondition,
+                new RowBounds(pageCondition.get("pageNo"), pageCondition.get("pageSize")));
+        return tutorInquiries;
     }
 }
