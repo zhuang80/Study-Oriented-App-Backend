@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ public class FavoriteThreadStreamServiceImpl extends AbstractService<FavoriteThr
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void postFavorite(Integer userId, Integer favoriteId, Integer action) {
         if (action == 1) {
             FavoriteThreadStream favoriteThreadStream = new FavoriteThreadStream();

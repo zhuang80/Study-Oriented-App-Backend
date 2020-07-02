@@ -14,7 +14,6 @@ public class Condition {
 
     private Expression expression;
     private List<Sort> sort;
-    private List<String> group;
     private Page page;
 
     public Expression getExpression() {
@@ -31,14 +30,6 @@ public class Condition {
 
     public void setSort(List<Sort> sort) {
         this.sort = sort;
-    }
-
-    public List<String> getGroup() {
-        return group;
-    }
-
-    public void setGroup(List<String> group) {
-        this.group = group;
     }
 
     public Page getPage() {
@@ -62,24 +53,22 @@ public class Condition {
 
     public String getOrderCondition() {
         StringBuilder builder = new StringBuilder();
-        for (Sort s : sort) {
-            String field = s.getField();
-            String value = s.getValue();
-            if (Objects.nonNull(field) && Objects.nonNull(value)) {
-                // escape ' in postgresql
-                value = value.replaceAll("'","''");
-                if (builder.length() == 0) {
-                    builder.append(field).append(" ").append(value);
-                } else {
-                    builder.append(",").append(field).append(" ").append(value);
+        if (Objects.nonNull(sort)) {
+            for (Sort s : sort) {
+                String field = s.getField();
+                String value = s.getValue();
+                if (Objects.nonNull(field) && Objects.nonNull(value)) {
+                    // escape ' in postgresql
+                    value = value.replaceAll("'","''");
+                    if (builder.length() == 0) {
+                        builder.append(field).append(" ").append(value);
+                    } else {
+                        builder.append(",").append(field).append(" ").append(value);
+                    }
                 }
             }
         }
         return builder.toString();
-    }
-
-    public String getGroupCondition() {
-        return group != null ? String.join(", ", group) : "";
     }
 
     public Map<String, Integer> getPageCondition() {
@@ -133,17 +122,75 @@ public class Condition {
             return orSb;
         } else if (field != null && value != null && type != null && op != null) {
             StringBuilder sb = new StringBuilder();
-            // escape ' in postgresql
-            value = value.replaceAll("'","''");
-            return sb.append("(").append(field).append(" ").append(op).append(" '").append(value).append("')");
+            if ("string".equalsIgnoreCase(type)) {
+                // escape ' in postgresql
+                value = value.replaceAll("'","''");
+                return sb.append("(").append(field).append(" ").append(op).append(" '").append(value).append("')");
+            }
+            if ("numeric".equalsIgnoreCase(type)) {
+                return sb.append("(").append(field).append(" ").append(op).append(" ").append(value).append(")");
+            }
+
         }
         return null;
     }
 
     public boolean selfCheck() {
-        // check condition json - in future
-        return true;
+        return checkWhereCondition(expression) && checkOrderCondition(sort);
     }
+
+    private boolean checkWhereCondition(Expression expression) {
+        boolean valid = true;
+        if (Objects.isNull(expression)) {
+            valid = false;
+        } else {
+            List<Expression> andList = expression.getAnd();
+            List<Expression> orList = expression.getOr();
+            String field = expression.getField();
+            String value = expression.getValue();
+            String type = expression.getType();
+            String op = expression.getOp();
+            if (andList != null) {
+                for (Expression and : andList) {
+                    if (!checkWhereCondition(and)) {
+                        valid = false;
+                        break;
+                    }
+                }
+            } else if (orList != null) {
+                for (Expression or : orList) {
+                    if (!checkWhereCondition(or)) {
+                        valid = false;
+                        break;
+                    }
+                }
+            } else {
+                valid = field != null && value != null  && op != null
+                        && ("string".equalsIgnoreCase(type) || "numeric".equalsIgnoreCase(type));
+            }
+        }
+        return valid;
+    }
+
+    private boolean checkOrderCondition(List<Sort> sorts) {
+        boolean valid = true;
+        if (Objects.nonNull(sorts)) {
+            for (Sort s : sorts) {
+                String field = s.getField();
+                String value = s.getValue();
+                if (Objects.isNull(field) || Objects.isNull(value)) {
+                    valid = false;
+                    break;
+                }
+                if (!"asc".equalsIgnoreCase(value) && !"desc".equalsIgnoreCase(value)) {
+                    valid = false;
+                    break;
+                }
+            }
+        }
+        return valid;
+    }
+
 }
 
 class Expression {
