@@ -29,4 +29,13 @@ public interface TutorInquiryMapper extends GeneralMapper<TutorInquiry> {
      * @return tutor inquiry列表
      */
     List<TutorInquiry> selectByUserId(@Param("userId") Integer userId, RowBounds rowBounds);
+
+    /**
+     * 按条件获取Tutor inquiry列表
+     * @param whereCondition where
+     * @param orderCondition order by
+     * @param rowBounds 分页
+     * @return tutor inquiries列表
+     */
+    List<TutorInquiry> selectByConditions(@Param("where") String whereCondition, @Param("orderBy") String orderCondition, RowBounds rowBounds);
 }

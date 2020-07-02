@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author ChrisChen
@@ -47,5 +48,13 @@ public class DiscussionGroupServiceImpl extends AbstractService<DiscussionGroup>
         discussionGroupMember.setAction(action);
         discussionGroupMember.setActionTime(new Date());
         discussionGroupMapper.insertOrUpdateActionByUserId(discussionGroupMember);
+    }
+
+    @Override
+    public List<DiscussionGroup> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition) {
+        List<DiscussionGroup> discussionGroups = null;
+        discussionGroups = discussionGroupMapper.selectByConditions(whereCondition, orderCondition,
+                new RowBounds(pageCondition.get("pageNo"), pageCondition.get("pageSize")));
+        return discussionGroups;
     }
 }
