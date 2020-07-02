@@ -83,6 +83,7 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void followOtherUser(Integer userId, Integer otherUserId, Integer action) {
         if (action == 1) {
             UserFollow userFollow = new UserFollow();

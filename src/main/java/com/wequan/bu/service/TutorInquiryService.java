@@ -4,6 +4,7 @@ import com.wequan.bu.controller.vo.TutorInquiryVo;
 import com.wequan.bu.repository.model.TutorInquiry;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Zhaochao Huang
@@ -22,4 +23,13 @@ public interface TutorInquiryService extends Service<TutorInquiry> {
      * @return tutor inquiry列表
      */
     List<TutorInquiry> getUserTutorInquiries(Integer userId, Integer pageNum, Integer pageSize);
+
+    /**
+     * 按搜索条件搜索tutor inquiry
+     * @param whereCondition where
+     * @param orderCondition order by
+     * @param pageCondition page
+     * @return Tutor inquiry列表
+     */
+    List<TutorInquiryVo> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition);
 }
