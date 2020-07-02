@@ -192,4 +192,60 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
+  <delete id="deleteByTransactionId" parameterType="java.lang.String">
+    DELETE FROM ${schema}.wq_appointment
+    WHERE transaction_id = #{transaction_id, jdbcType=VARCHAR}
+  </delete>
+
+  <update id="updateByTransactionIdSelective" parameterType="com.wequan.bu.repository.model.Appointment">
+    UPDATE ${schema}.wq_appointment
+    <set>
+      <if test="tutorId != null">
+        tutor_id = #{tutorId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=SMALLINT},
+      </if>
+      <if test="briefDescription != null and briefDescription != ''">
+        brief_description = #{briefDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null">
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="subjectId != null">
+        subject_id = #{subjectId,jdbcType=SMALLINT},
+      </if>
+      <if test="topicId != null">
+        topic_id = #{topicId,jdbcType=SMALLINT},
+      </if>
+      <if test="title != null and title != ''">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="fee != null">
+        fee = #{fee,jdbcType=INTEGER},
+      </if>
+      <if test="transactionId != null">
+        transaction_id = #{transactionId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where transaction_id = #{transactionId,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectByTransactionId" resultType="com.wequan.bu.repository.model.Appointment">
+    SELECT *
+    FROM ${schema}.wq_appointment
+    WHERE transaction_id = #{transaction_id, jdbcType=VARCHAR}
+  </select>
 </mapper>
