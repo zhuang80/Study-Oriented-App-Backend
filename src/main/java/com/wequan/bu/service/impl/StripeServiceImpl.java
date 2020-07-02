@@ -118,6 +118,15 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     }
 
     @Override
+    public String retrieveClientSecret(Integer appointmentId) throws StripeException {
+        Appointment appointment = appointmentService.findById(appointmentId);
+        Transaction transaction = transactionService.findById(appointment.getTransactionId());
+        PaymentIntent paymentIntent = PaymentIntent.retrieve(transaction.getThirdPartyTransactionId());
+
+        return paymentIntent.getClientSecret();
+    }
+
+    @Override
     public void handlePaymentIntent(String sigHeader, String webhookEndpoint) throws Exception {
         Event event = null;
         PaymentIntent paymentIntent = null;
