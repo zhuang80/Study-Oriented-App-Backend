@@ -24,7 +24,7 @@ public interface AppointmentService extends Service<Appointment> {
 
     public void updateTransactionIdByPrimaryKey(Integer appointmentId, String transactionId);
 
-    public void updateAppointmentAndGenerateNewTransaction(Appointment appointment) throws Exception;
+    public void updateAppointment(Appointment appointment, Integer tutorId, Integer appointmentId) throws Exception;
 
     public void updateStatus(String paymentIntentId, AppointmentStatus status);
 

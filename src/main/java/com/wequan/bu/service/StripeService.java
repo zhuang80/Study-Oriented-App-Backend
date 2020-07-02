@@ -16,6 +16,8 @@ public interface StripeService extends Service<TutorStripe> {
 
     public PaymentIntent cancelPaymentIntent(String paymentIntentId) throws StripeException;
 
+    public PaymentIntent updatePaymentIntent(Integer appointmentId) throws StripeException;
+
     public Refund createRefund(String transactionId, Integer refundAmount) throws StripeException;
 
     public void handleRefund(String sigHeader, String webhookEndpoint) throws Exception;
