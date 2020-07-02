@@ -8,6 +8,7 @@ import com.stripe.model.oauth.TokenResponse;
 import com.stripe.net.OAuth;
 import com.stripe.net.Webhook;
 import com.stripe.param.PaymentIntentCreateParams;
+import com.stripe.param.PaymentIntentUpdateParams;
 import com.stripe.param.RefundCreateParams;
 import com.wequan.bu.controller.vo.Transaction;
 import com.wequan.bu.repository.dao.AppointmentMapper;
@@ -150,6 +151,19 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     public PaymentIntent cancelPaymentIntent(String paymentIntentId) throws StripeException {
         PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
         PaymentIntent updatedPaymentIntent = paymentIntent.cancel();
+        return updatedPaymentIntent;
+    }
+
+    @Override
+    public PaymentIntent updatePaymentIntent(Integer appointmentId) throws StripeException {
+        Appointment appointment = appointmentService.findById(appointmentId);
+        Transaction transaction = transactionService.findById(appointment.getTransactionId());
+
+        PaymentIntent paymentIntent = PaymentIntent.retrieve(transaction.getThirdPartyTransactionId());
+        PaymentIntentUpdateParams params = PaymentIntentUpdateParams.builder()
+                .setAmount((long)(int)appointment.getFee())
+                .build();
+        PaymentIntent updatedPaymentIntent = paymentIntent.update(params);
         return updatedPaymentIntent;
     }
 
