@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ import java.util.List;
  */
 @Controller
 @Api(tags = "Course")
+@ApiIgnore
 public class CourseController {
 
     private static final Logger log = LoggerFactory.getLogger(CourseController.class);
