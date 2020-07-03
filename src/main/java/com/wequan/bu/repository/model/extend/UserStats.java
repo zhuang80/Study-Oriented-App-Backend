@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties({"phone", "address", "zipCode", "accessToken",
-        "invitationCode", "following", "followed"})
+        "invitationCode", "following", "followed", "providerId"})
 public class UserStats extends User {
 
     private String subjectIds;

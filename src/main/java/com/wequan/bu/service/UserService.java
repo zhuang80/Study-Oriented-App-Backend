@@ -1,5 +1,6 @@
 package com.wequan.bu.service;
 
+import com.wequan.bu.controller.vo.UserVo;
 import com.wequan.bu.repository.model.AppointmentReview;
 import com.wequan.bu.repository.model.User;
 import com.wequan.bu.repository.model.extend.UserFollowBriefInfo;
@@ -86,4 +87,11 @@ public interface UserService extends Service<User> {
      * @return 用户appointment评价列表
      */
     List<AppointmentReview> getUserAppointmentReviews(Integer userId, Integer pageNum, Integer pageSize);
+
+    /**
+     * 更新用户基本信息
+     * @param userId 用户id
+     * @param userVo 用户基本信息
+     */
+    void updateUserProfile(Integer userId, UserVo userVo);
 }

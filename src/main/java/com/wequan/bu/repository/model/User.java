@@ -9,6 +9,7 @@ import java.util.List;
 /**
  *
  * This class corresponds to the database table bu.wq_user_profile
+ * @author ChrisChen
  */
 @Data
 public class User {

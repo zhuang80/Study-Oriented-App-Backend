@@ -285,7 +285,8 @@
 
   <select id="selectById" resultMap="ResultMapWithStat">
     select
-      t.id, t.first_name, t.last_name, t.user_name, t.email, t.school_id, t.brief_introduction, t.avatar, t.avatar_url_in_provider, t.provider,
+      t.id, t.first_name, t.last_name, t.user_name, t.email, t.school_id, t.brief_introduction,
+      t.avatar, t.avatar_url_in_provider, t.provider, t.create_time, t.update_time,
       (select string_agg(subject_id::character varying, ',') from ${schema}.wq_user_subject where user_id = t.id) as subject_ids,
       (select count(1) from ${schema}.wq_thread where create_by = t.id) as number_of_thread,
       (select count(1) from ${schema}.wq_user_follow where user_id = t.id) as number_of_following,
