@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.AppointmentChangeRecordMapper">
+  <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.AppointmentChangeRecord">
+    INSERT INTO ${schema}.wq_appointment_change_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="appointmentId != null">
+        appointment_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="isTutor != null">
+        is_tutor,
+      </if>
+      <if test="changeType != null">
+        change_type,
+      </if>
+      <if test="changeReason != null">
+        change_reason,
+      </if>
+      <if test="refundAmount != null">
+        refund_amount,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="adminAction != null">
+        admin_action,
+      </if>
+      <if test="adminComment != null">
+        admin_comment,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="transactionId != null">
+        transaction_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="appointmentId != null">
+        #{appointmentId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="isTutor != null">
+        #{isTutor,jdbcType=BIT},
+      </if>
+      <if test="changeType != null">
+        #{changeType,jdbcType=SMALLINT},
+      </if>
+      <if test="changeReason != null">
+        #{changeReason,jdbcType=VARCHAR},
+      </if>
+      <if test="refundAmount != null">
+        #{refundAmount,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adminAction != null">
+        #{adminAction,jdbcType=SMALLINT},
+      </if>
+      <if test="adminComment != null">
+        #{adminComment,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="transactionId != null">
+        #{transactionId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectPendingRefundApplication" resultType="com.wequan.bu.repository.model.AppointmentChangeRecord">
+    SELECT *
+    FROM ${schema}.wq_appointment_change_record
+    WHERE change_type = 3 AND admin_action = 0
+  </select>
+
+  <select id="selectAll" resultType="com.wequan.bu.repository.model.AppointmentChangeRecord">
+    SELECT *
+    FROM ${schema}.wq_appointment_change_record
+  </select>
+
+  <select id="selectByPrimaryKey" resultType="com.wequan.bu.repository.model.AppointmentChangeRecord">
+    SELECT *
+    FROM ${schema}.wq_appointment_change_record
+    WHERE id = #{id, jdbcType=INTEGER}
+  </select>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.AppointmentChangeRecord">
+    UPDATE ${schema}.wq_appointment_change_record
+    <set>
+      <if test="appointmentId != null">
+        appointment_id = #{appointmentId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="isTutor != null">
+        is_tutor = #{isTutor,jdbcType=BIT},
+      </if>
+      <if test="changeType != null">
+        change_type = #{changeType,jdbcType=SMALLINT},
+      </if>
+      <if test="changeReason != null">
+        change_reason = #{changeReason,jdbcType=VARCHAR},
+      </if>
+      <if test="refundAmount != null">
+        refund_amount = #{refundAmount,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adminAction != null">
+        admin_action = #{adminAction,jdbcType=SMALLINT},
+      </if>
+      <if test="adminComment != null">
+        admin_comment = #{adminComment,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="transactionId != null">
+        transaction_id = #{transactionId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    WHERE id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

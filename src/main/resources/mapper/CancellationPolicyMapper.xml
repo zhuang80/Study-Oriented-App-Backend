@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.CancellationPolicyMapper">
+  <select id="selectByPrimaryKey" resultType="com.wequan.bu.repository.model.CancellationPolicy">
+    SELECT *
+    FROM ${schema}.wq_cancellation_policy
+    WHERE id = #{id, jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByTutorId" resultType="com.wequan.bu.repository.model.CancellationPolicy">
+    SELECT refund_ratio
+    FROM ${schema}.wq_cancellation_policy
+    WHERE id = (
+      SELECT cancellation_policy_id
+      FROM ${schema}.wq_tutor_profile
+      WHERE id = #{tutor_id, jdbcType=INTEGER}
+    )
+  </select>
+
+</mapper>
