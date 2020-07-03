@@ -61,6 +61,8 @@
         #{item.createTime,jdbcType=TIMESTAMP}
       )
     </foreach>
+    on conflict on constraint "user_subject_pk_user_subject_id"
+    do nothing
   </insert>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.UserSubject">

@@ -94,4 +94,19 @@ public interface UserService extends Service<User> {
      * @param userVo 用户基本信息
      */
     void updateUserProfile(Integer userId, UserVo userVo);
+
+    /**
+     * 返回用户学习积分
+     * @param userId 用户id
+     * @return study point
+     */
+    Integer getUserStudyPoint(Integer userId);
+
+    /**
+     * 更新学习积分
+     * @param userId 用户id
+     * @param amount 积分变动数值
+     * @return 影响行数
+     */
+    int updateUserStudyPoint(Integer userId, Short amount);
 }
