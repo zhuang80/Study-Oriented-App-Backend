@@ -1,19 +1,20 @@
 package com.wequan.bu.service.impl;
 
-import com.stripe.exception.StripeException;
+import com.github.pagehelper.PageHelper;
 import com.stripe.model.Charge;
 import com.stripe.model.PaymentIntent;
+import com.wequan.bu.controller.vo.RefundApplication;
 import com.wequan.bu.controller.vo.Transaction;
 import com.wequan.bu.repository.dao.AppointmentMapper;
 import com.wequan.bu.repository.dao.TransactionMapper;
 import com.wequan.bu.repository.dao.TutorMapper;
 import com.wequan.bu.repository.model.Appointment;
+import com.wequan.bu.repository.model.AppointmentChangeRecord;
+import com.wequan.bu.repository.model.CancellationPolicy;
 import com.wequan.bu.repository.model.Tutor;
-import com.wequan.bu.service.AbstractService;
-import com.wequan.bu.service.AppointmentService;
-import com.wequan.bu.service.StripeService;
-import com.wequan.bu.service.TransactionService;
-import com.wequan.bu.util.AppointmentStatus;
+import com.wequan.bu.service.*;
+import com.wequan.bu.util.AdminAction;
+import com.wequan.bu.util.ChangeType;
 import com.wequan.bu.util.PaymentMethod;
 import com.wequan.bu.util.TransactionStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -47,6 +49,12 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     @Autowired
     private StripeService stripeService;
 
+    @Autowired
+    private CancellationPolicyService cancellationPolicyService;
+
+    @Autowired
+    private AppointmentChangeRecordService appointmentChangeRecordService;
+
     @PostConstruct
     public void postConstruct(){
         this.setMapper(transactionMapper);
@@ -68,6 +76,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         short status = getStatus(paymentIntent.getStatus());
         transaction.setStatus(status);
         transaction.setThirdPartyTransactionId(paymentIntent.getId());
+        transaction.setPayAmount((int)(long) paymentIntent.getAmount());
         transactionMapper.updateByThirdPartyTransactionId(transaction);
     }
 
@@ -77,22 +86,46 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     }
 
     @Override
-    public void cancelTransaction(Integer userId, String transactionId) throws Exception {
+    public void cancelTransactionByUser(Integer userId, String transactionId) throws Exception {
         Transaction transaction = transactionMapper.selectByPrimaryKey(transactionId);
+        Integer refundAmount = 0;
 
+        if(transaction == null) {
+            throw new Exception("no such transaction");
+        }
         if(TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue() == transaction.getStatus()){
             stripeService.cancelPaymentIntent(transaction.getThirdPartyTransactionId());
         }else if(TransactionStatus.SUCCEEDED.getValue() == transaction.getStatus()){
             Appointment appointment = appointmentService.findByTransactionId(transactionId);
 
-            //check if the start time of appointment is after 12 hours later
-            if(appointment.getStartTime().isAfter(LocalDateTime.now().plusHours(12L))){
+            //check if the start time of appointment is after current time
+            if(appointment.getStartTime().isAfter(LocalDateTime.now())){
                 //refund part of fee
-                stripeService.createRefund(transactionId);
+                refundAmount = calculateRefundAmount(transactionId);
+
+                stripeService.createRefund(transactionId, refundAmount);
             }else {
                 throw new Exception("Please apply for refund request.");
             }
         }
+
+
+        appointmentChangeRecordService.addRecordByUser(transactionId, userId, refundAmount);
+    }
+
+    @Override
+    public void cancelTransactionByTutor(Integer tutorId, String transactionId) throws Exception {
+        Transaction transaction = transactionMapper.selectByPrimaryKey(transactionId);
+
+        if(TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue() == transaction.getStatus()){
+            stripeService.cancelPaymentIntent(transaction.getThirdPartyTransactionId());
+        }else if(TransactionStatus.SUCCEEDED.getValue() == transaction.getStatus()){
+
+            Integer amount = transaction.getPayAmount();
+            stripeService.createRefund(transactionId, amount);
+        }
+
+        appointmentChangeRecordService.addRecordByTutor(transactionId, tutorId);
     }
 
     @Override
@@ -129,6 +162,49 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         transaction.setToTransactionId(appointment.getTransactionId());
 
         transactionMapper.insertSelective(transaction);
+    }
+
+    @Override
+    public List<Transaction> findByUserId(Integer userId, Integer pageNum, Integer pageSize) {
+        if(pageNum == null || pageNum <= 0 ) {
+            pageNum = 1;
+        }
+        if(pageSize == null || pageSize <= 0){
+            pageSize = 10;
+        }
+        PageHelper.startPage(pageNum, pageSize);
+        return transactionMapper.selectByUserId(userId);
+    }
+
+    @Override
+    public void refundApply(RefundApplication refundApplication) {
+        String transactionId = refundApplication.getTransactionId();
+        Appointment appointment = appointmentService.findByTransactionId(transactionId);
+        AppointmentChangeRecord record = new AppointmentChangeRecord();
+
+        record.setAppointmentId(appointment.getId());
+        record.setUserId(appointment.getUserId());
+        record.setIsTutor(false);
+        record.setChangeType(ChangeType.AFTER_APPOINTMENT.getValue());
+        record.setChangeReason(refundApplication.getRefundReason());
+        record.setRefundAmount(appointment.getFee());
+        record.setCreateTime(LocalDateTime.now());
+        record.setAdminAction(AdminAction.PEDNING.getValue());
+        record.setTransactionId(transactionId);
+
+        appointmentChangeRecordService.save(record);
+    }
+
+    @Override
+    public List<Transaction> findAll(Integer pageNum, Integer pageSize) {
+        if(pageNum == null || pageNum <= 0 ) {
+            pageNum = 1;
+        }
+        if(pageSize == null || pageSize <= 0){
+            pageSize = 10;
+        }
+        PageHelper.startPage(pageNum, pageSize);
+        return transactionMapper.selectAll();
     }
 
     private LocalDateTime convertTimestampToLocalDateTime(Long timestamp){
@@ -174,7 +250,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         transaction.setPayFrom(appointment.getUserId());
         transaction.setPayTo(tutor.getUser().getId());
         transaction.setPayAmount(appointment.getFee());
-        transaction.setPaymentMethod((short) 0);
+        transaction.setPaymentMethod((short) PaymentMethod.CARD.getValue());
         transaction.setThirdPartyTransactionId(paymentIntent.getId());
         LocalDateTime createdTime = convertTimestampToLocalDateTime(paymentIntent.getCreated());
 
@@ -183,6 +259,14 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         transaction.setStatus(status);
 
         return transaction;
+    }
+
+    private Integer calculateRefundAmount(String transactionId){
+        Appointment appointment = appointmentService.findByTransactionId(transactionId);
+        CancellationPolicy cancellationPolicy = cancellationPolicyService.findByTutorId(appointment.getTutorId());
+
+        Float amount = cancellationPolicy.getRefundRatio() * appointment.getFee();
+        return Math.round(amount);
     }
 
 }

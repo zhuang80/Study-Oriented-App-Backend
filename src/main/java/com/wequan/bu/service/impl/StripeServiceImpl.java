@@ -8,6 +8,7 @@ import com.stripe.model.oauth.TokenResponse;
 import com.stripe.net.OAuth;
 import com.stripe.net.Webhook;
 import com.stripe.param.PaymentIntentCreateParams;
+import com.stripe.param.PaymentIntentUpdateParams;
 import com.stripe.param.RefundCreateParams;
 import com.wequan.bu.controller.vo.Transaction;
 import com.wequan.bu.repository.dao.AppointmentMapper;
@@ -53,7 +54,8 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     private String refundWebhookSecret;
 
     //local test webhook secret
-    //private String webhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
+    //private String paymentIntentWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
+    //private String refundWebhookSecret="whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
 
     @Autowired
     private TutorStripeMapper tutorStripeMapper;
@@ -116,6 +118,21 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     }
 
     @Override
+    public String retrieveClientSecret(Integer appointmentId) throws StripeException, Exception {
+        Appointment appointment = appointmentService.findById(appointmentId);
+        if(appointment == null) {
+            throw new Exception("No such appointment.");
+        }
+        Transaction transaction = transactionService.findById(appointment.getTransactionId());
+        if(transaction == null) {
+            throw new Exception("No transaction exists for this appointment.");
+        }
+        PaymentIntent paymentIntent = PaymentIntent.retrieve(transaction.getThirdPartyTransactionId());
+
+        return paymentIntent.getClientSecret();
+    }
+
+    @Override
     public void handlePaymentIntent(String sigHeader, String webhookEndpoint) throws Exception {
         Event event = null;
         PaymentIntent paymentIntent = null;
@@ -153,12 +170,27 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     }
 
     @Override
-    public Refund createRefund(String transactionId) throws StripeException {
+    public PaymentIntent updatePaymentIntent(Integer appointmentId) throws StripeException {
+        Appointment appointment = appointmentService.findById(appointmentId);
+        Transaction transaction = transactionService.findById(appointment.getTransactionId());
+
+        PaymentIntent paymentIntent = PaymentIntent.retrieve(transaction.getThirdPartyTransactionId());
+        PaymentIntentUpdateParams params = PaymentIntentUpdateParams.builder()
+                .setAmount((long)(int)appointment.getFee())
+                .build();
+        PaymentIntent updatedPaymentIntent = paymentIntent.update(params);
+
+        transactionService.update(updatedPaymentIntent);
+        return updatedPaymentIntent;
+    }
+
+    @Override
+    public Refund createRefund(String transactionId, Integer refundAmount) throws StripeException {
         Transaction transaction = transactionService.findById(transactionId);
-        //hardcode 80% refund rate, need to be changed later
+
         RefundCreateParams params = RefundCreateParams.builder()
                 .setPaymentIntent(transaction.getThirdPartyTransactionId())
-                .setAmount(Math.round(0.8 * transaction.getPayAmount()))
+                .setAmount((long) refundAmount)
                 .setReason(RefundCreateParams.Reason.REQUESTED_BY_CUSTOMER)
                 .setRefundApplicationFee(true)
                 .setReverseTransfer(true)
