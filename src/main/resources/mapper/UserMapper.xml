@@ -254,6 +254,12 @@
     where email = #{email,jdbcType=VARCHAR}
   </update>
 
+  <update id="updateStudyPointByUserId">
+    update ${schema}.wq_user_profile
+    set study_points = study_points + #{amount}
+    where id = #{userId}
+  </update>
+
   <select id="selectByPrimaryKey" resultMap="BaseResultMap">
     select <include refid="Base_Column_List" />
     from ${schema}.wq_user_profile
@@ -294,6 +300,12 @@
       (select count(1) from ${schema}.wq_discussion_group_member where member_id = t.id and action = 'join') as number_of_group
     from ${schema}.wq_user_profile t
     where t.id = #{userId}
+  </select>
+
+  <select id="selectStudyPointByUserId" resultType="java.lang.Integer">
+    select study_points
+    from ${schema}.wq_user_profile
+    where id = #{userId,jdbcType=INTEGER}
   </select>
 
 </mapper>

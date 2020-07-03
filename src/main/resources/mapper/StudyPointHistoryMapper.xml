@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.StudyPointHistoryMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.StudyPointHistory">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="action_log" jdbcType="VARCHAR" property="actionLog" />
+    <result column="change_amount" jdbcType="SMALLINT" property="changeAmount" />
+    <result column="action_time" jdbcType="TIMESTAMP" property="actionTime" />
+    <result column="remaining_amount" jdbcType="SMALLINT" property="remainingAmount" />
+    <result column="transaction_id" jdbcType="VARCHAR" property="transactionId" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, user_id, action_log, change_amount, action_time, remaining_amount, transaction_id
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ${schema}.wq_study_point_history
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByUserId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ${schema}.wq_study_point_history
+    where user_id = #{userId,jdbcType=INTEGER}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ${schema}.wq_study_point_history
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.StudyPointHistory" useGeneratedKeys="true">
+    insert into ${schema}.wq_study_point_history
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="actionLog != null and actionLog != ''">
+        action_log,
+      </if>
+      <if test="changeAmount != null">
+        change_amount,
+      </if>
+      <if test="actionTime != null">
+        action_time,
+      </if>
+      <if test="remainingAmount != null">
+        remaining_amount,
+      </if>
+      <if test="transactionId != null and transactionId != ''">
+        transaction_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="actionLog != null and actionLog != ''">
+        #{actionLog,jdbcType=VARCHAR},
+      </if>
+      <if test="changeAmount != null">
+        #{changeAmount,jdbcType=SMALLINT},
+      </if>
+      <if test="actionTime != null">
+        #{actionTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remainingAmount != null">
+        #{remainingAmount,jdbcType=SMALLINT},
+      </if>
+      <if test="transactionId != null and transactionId != ''">
+        #{transactionId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.StudyPointHistory" useGeneratedKeys="true">
+    insert into ${schema}.wq_study_point_history
+    (
+      user_id, action_log, change_amount, remaining_amount,
+      <if test="transactionId != null and transactionId != ''">
+        transaction_id,
+      </if>
+      action_time
+    )
+    select
+      #{userId,jdbcType=INTEGER},
+      #{actionLog,jdbcType=VARCHAR},
+      #{changeAmount,jdbcType=SMALLINT},
+      study_points,
+      <if test="transactionId != null and transactionId != ''">
+        #{transactionId,jdbcType=VARCHAR},
+      </if>
+      #{actionTime,jdbcType=TIMESTAMP}
+    from ${schema}.wq_user_profile
+    where id = #{userId,jdbcType=INTEGER}
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.StudyPointHistory">
+    update ${schema}.wq_study_point_history
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="actionLog != null and actionLog != ''">
+        action_log = #{actionLog,jdbcType=VARCHAR},
+      </if>
+      <if test="changeAmount != null">
+        change_amount = #{changeAmount,jdbcType=SMALLINT},
+      </if>
+      <if test="actionTime != null">
+        action_time = #{actionTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remainingAmount != null">
+        remaining_amount = #{remainingAmount,jdbcType=SMALLINT},
+      </if>
+      <if test="transactionId != null and transactionId != ''">
+        transaction_id = #{transactionId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+</mapper>

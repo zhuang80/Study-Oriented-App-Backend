@@ -1,6 +1,6 @@
 package com.wequan.bu.event;
 
-import com.wequan.bu.controller.vo.StudyPointHistory;
+import com.wequan.bu.repository.model.StudyPointHistory;
 import org.springframework.context.ApplicationEvent;
 
 /**

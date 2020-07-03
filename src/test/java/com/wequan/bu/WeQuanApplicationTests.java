@@ -1,7 +1,7 @@
 package com.wequan.bu;
 
-import com.wequan.bu.controller.vo.StudyPointHistory;
 import com.wequan.bu.event.StudyPointEvent;
+import com.wequan.bu.repository.model.StudyPointHistory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -17,8 +17,7 @@ class WeQuanApplicationTests extends BaseTester {
 
 	@Test
 	void eventTest() {
-		StudyPointHistory pointHistory = new StudyPointHistory();
-		pointHistory.setChangeAmount(-100);
+		StudyPointHistory pointHistory = StudyPointHistory.builder().changeAmount((short)-100).build();
 		StudyPointEvent studyPointEvent = new StudyPointEvent(pointHistory);
 		applicationContext.publishEvent(studyPointEvent);
 	}

@@ -145,5 +145,15 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
         }
     }
 
+    @Override
+    public Integer getUserStudyPoint(Integer userId) {
+        return userMapper.selectStudyPointByUserId(userId);
+    }
+
+    @Override
+    public int updateUserStudyPoint(Integer userId, Short amount) {
+        return userMapper.updateStudyPointByUserId(userId, amount);
+    }
+
 
 }
