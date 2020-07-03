@@ -2,6 +2,7 @@ package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.controller.vo.FavoriteCategory;
+import com.wequan.bu.controller.vo.UserVo;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.exception.NotImplementedException;
@@ -63,6 +64,17 @@ public class UserController {
         }
         userStats = userService.getUserProfile(userId);
         return ResultGenerator.success(userStats);
+    }
+
+    @PutMapping(value = "/user/{id}/profile")
+    @ApiOperation(value = "update user basic info", notes = "修改用户基本信息")
+    public Result updateUserProfile(@PathVariable("id") Integer userId,
+                                    @RequestBody UserVo userVo) {
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        userService.updateUserProfile(userId, userVo);
+        return ResultGenerator.success();
     }
 
     @GetMapping("/user/{id}/appointments")
