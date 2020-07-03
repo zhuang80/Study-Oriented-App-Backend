@@ -13,4 +13,6 @@ public interface TransactionMapper extends GeneralMapper<Transaction> {
     public void updateByThirdPartyTransactionId(Transaction transaction);
 
     public void deleteByThirdPartyTransactionId(@Param("payment_intent_id") String paymentIntentId);
+
+    public Transaction selectByThirdPartyTransactionId(@Param("third_party_transaction_id") String thirdPartyTransactionId);
 }
