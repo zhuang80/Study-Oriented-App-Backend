@@ -24,4 +24,10 @@ public interface AppointmentMapper extends GeneralMapper<Appointment> {
      */
     List<AppointmentBriefInfo> selectByUserId(Integer userId, RowBounds rowBounds);
 
+    public void deleteByTransactionId(@Param("transaction_id") String transactionId);
+
+    public void updateByTransactionIdSelective(Appointment appointment);
+
+    public Appointment selectByTransactionId(@Param("transaction_id") String transactionId);
+
 }

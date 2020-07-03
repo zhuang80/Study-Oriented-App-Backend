@@ -31,6 +31,12 @@
             <if test="status != null">
                 status,
             </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="toTransactionId != null">
+                to_transaction_id,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -59,6 +65,12 @@
             </if>
             <if test="status != null">
                 #{status,jdbcType=SMALLINT},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="toTransactionId != null">
+                #{toTransactionId, jdbcType=VARCHAR}
             </if>
         </trim>
     </insert>
@@ -93,18 +105,35 @@
             <if test="status != null">
                 status = #{status,jdbcType=SMALLINT},
             </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="toTransactionId != null">
+                to_transaction_id = #{toTransactionId,jdbcType=VARCHAR},
+            </if>
         </set>
        WHERE t.third_party_transaction_id = #{thirdPartyTransactionId, jdbcType=VARCHAR}
     </update>
 
     <delete id="deleteByThirdPartyTransactionId" parameterType="java.lang.String">
-        delete from bu.wq_transaction
+        delete from ${schema}.wq_transaction
         where third_party_transaction_id = #{payment_intent_id,jdbcType=VARCHAR}
+    </delete>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        DELETE FROM ${schema}.wq_transaction
+        WHERE id = #{id, jdbcType=VARCHAR}
     </delete>
 
     <select id="selectByPrimaryKey" resultType="com.wequan.bu.controller.vo.Transaction">
         SELECT *
         FROM ${schema}.wq_transaction
         WHERE id = #{id, jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByThirdPartyTransactionId" resultType="com.wequan.bu.controller.vo.Transaction">
+        SELECT *
+        FROM ${schema}.wq_transaction
+        WHERE third_party_transaction_id = #{third_party_transaction_id, jdbcType=VARCHAR}
     </select>
 </mapper>
