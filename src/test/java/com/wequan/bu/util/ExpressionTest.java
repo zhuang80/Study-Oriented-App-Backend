@@ -20,4 +20,5 @@ public class ExpressionTest {
         check = condition.selfCheck();
         Assert.assertTrue(check);
     }
+
 }
