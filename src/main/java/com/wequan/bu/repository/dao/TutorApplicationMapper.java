@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Mapper
 public interface TutorApplicationMapper extends GeneralMapper<TutorApplication> {
-    public List<TutorApplicationFullInfo> selectByUserId(@Param("user_id") Integer userId);
+    public TutorApplicationFullInfo selectCurrentApplicationByUserId(@Param("user_id") Integer userId);
 
-    public List<TutorApplication> selectStatusByUserId(@Param("user_id") Integer userId);
+    public TutorApplication selectCurrentStatusByUserId(@Param("user_id") Integer userId);
 }

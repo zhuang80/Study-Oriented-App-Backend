@@ -17,11 +17,11 @@ public interface TutorAdminService extends Service<TutorApplication> {
 
     public List<UploadFileWrapper> bufferUploadFile(TutorApplicationVo tutorApplicationVo) throws IOException;
 
-    public List<TutorApplicationFullInfo> findByUserId(Integer userId);
+    public TutorApplicationFullInfo findCurrentApplicationByUserId(Integer userId);
 
     public void update(TutorApplicationVo tutorApplicationVo, List<UploadFileWrapper> uploadFileWrapperList) throws IOException;
 
-    public List<TutorApplication> findStatusByUserId(Integer userId);
+    public TutorApplication findCurrentStatusByUserId(Integer userId);
 
     public void approve(Integer id);
 

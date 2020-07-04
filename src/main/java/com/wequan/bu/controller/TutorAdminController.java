@@ -10,6 +10,7 @@ import com.wequan.bu.repository.model.TutorApplicationEducationBackground;
 import com.wequan.bu.repository.model.TutorApplicationLog;
 import com.wequan.bu.repository.model.extend.TutorApplicationFullInfo;
 import com.wequan.bu.service.TutorAdminService;
+import com.wequan.bu.service.TutorApplicationLogService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -37,11 +38,14 @@ public class TutorAdminController {
     @Autowired
     private TutorAdminService tutorAdminService;
 
+    @Autowired
+    private TutorApplicationLogService tutorApplicationLogService;
+
     @GetMapping("/user/{id}/tutor_application/status")
     @JSON(type = TutorApplication.class, include = {"id", "status"})
     @ApiOperation(value = "get the status code for user's tutor application", notes = "返回用户申请tutor的当前状态")
-    public Result<List<TutorApplication>> getTutorApplicationStatus(@PathVariable("id") Integer userId) {
-        List<TutorApplication> result = tutorAdminService.findStatusByUserId(userId);
+    public Result<TutorApplication> getTutorApplicationStatus(@PathVariable("id") Integer userId) {
+        TutorApplication result = tutorAdminService.findCurrentStatusByUserId(userId);
         return ResultGenerator.success(result);
     }
 
@@ -49,7 +53,7 @@ public class TutorAdminController {
     @ResponseBody
     @ApiOperation(value = "get the logs for user's tutor application", notes = "返回用户申请tutor的全部日志，包括历史日志，按时间倒序")
     public Result<List<TutorApplicationLog>> getTutorApplicationLogs(@PathVariable("id") Integer userId) {
-        List<TutorApplicationLog> logs = null;
+        List<TutorApplicationLog> logs = tutorApplicationLogService.findByUserId(userId);
         return ResultGenerator.success(logs);
     }
 
@@ -76,8 +80,8 @@ public class TutorAdminController {
     @GetMapping("/user/{id}/tutor_applications/current")
     @ResponseBody
     @ApiOperation(value = "get current tutor application info for user", notes = "返回用户当前tutor申请信息")
-    public Result<List<TutorApplicationFullInfo>> getCurrentTutorApplicationInfo(@PathVariable("id") Integer userId) {
-        List<TutorApplicationFullInfo> result = tutorAdminService.findByUserId(userId);
+    public Result<TutorApplicationFullInfo> getCurrentTutorApplicationInfo(@PathVariable("id") Integer userId) {
+        TutorApplicationFullInfo result = tutorAdminService.findCurrentApplicationByUserId(userId);
         return ResultGenerator.success(result);
     }
 
