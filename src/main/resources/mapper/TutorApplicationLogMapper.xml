@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.TutorApplicationLogMapper">
+    <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.mbg.WqTutorApplicationLog">
+        INSERT INTO ${schema}.wq_tutor_application_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="action != null">
+                action,
+            </if>
+            <if test="actionTime != null">
+                action_time,
+            </if>
+            <if test="actionLog != null">
+                action_log,
+            </if>
+            <if test="tutorApplicationId != null">
+                tutor_application_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="action != null">
+                #{action,jdbcType=SMALLINT},
+            </if>
+            <if test="actionTime != null">
+                #{actionTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="actionLog != null">
+                #{actionLog,jdbcType=VARCHAR},
+            </if>
+            <if test="tutorApplicationId != null">
+                #{tutorApplicationId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="selectByUserId" resultType="com.wequan.bu.repository.model.mbg.WqTutorApplicationLog">
+        SELECT *
+        FROM ${schema}.wq_tutor_application_log
+        WHERE user_id = #{user_id, jdbcType=INTEGER}
+        ORDER BY action_time DESC
+    </select>
+
+</mapper>

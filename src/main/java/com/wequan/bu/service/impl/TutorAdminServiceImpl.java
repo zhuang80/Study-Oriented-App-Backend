@@ -3,14 +3,13 @@ package com.wequan.bu.service.impl;
 import com.wequan.bu.controller.vo.UploadFileWrapper;
 import com.wequan.bu.controller.vo.TutorApplicationVo;
 import com.wequan.bu.repository.dao.TutorApplicationEducationBackgroundMapper;
+import com.wequan.bu.repository.dao.TutorApplicationLogMapper;
 import com.wequan.bu.repository.dao.TutorApplicationMapper;
 import com.wequan.bu.repository.model.TutorApplication;
 import com.wequan.bu.repository.model.TutorApplicationEducationBackground;
 import com.wequan.bu.repository.model.extend.TutorApplicationFullInfo;
-import com.wequan.bu.service.AbstractService;
-import com.wequan.bu.service.MaterialService;
-import com.wequan.bu.service.TutorAdminService;
-import com.wequan.bu.service.TutorService;
+import com.wequan.bu.service.*;
+import com.wequan.bu.util.TutorApplicationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -36,6 +35,9 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
 
     @Autowired
     private TutorApplicationMapper tutorApplicationMapper;
+
+    @Autowired
+    private TutorApplicationLogService tutorApplicationLogService;
 
     @Autowired
     private TutorApplicationEducationBackgroundMapper educationBackgroundMapper;
@@ -81,8 +83,8 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
     }
 
     @Override
-    public List<TutorApplicationFullInfo> findByUserId(Integer userId) {
-        return tutorApplicationMapper.selectByUserId(userId);
+    public TutorApplicationFullInfo findCurrentApplicationByUserId(Integer userId) {
+        return tutorApplicationMapper.selectCurrentApplicationByUserId(userId);
     }
 
     @Async
@@ -109,16 +111,17 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
     }
 
     @Override
-    public List<TutorApplication> findStatusByUserId(Integer userId) {
-        return tutorApplicationMapper.selectStatusByUserId(userId);
+    public TutorApplication findCurrentStatusByUserId(Integer userId) {
+        return tutorApplicationMapper.selectCurrentStatusByUserId(userId);
     }
 
     @Override
     public void approve(Integer id) {
         TutorApplication tutorApplication = tutorApplicationMapper.selectByPrimaryKey(id);
-        tutorApplication.setStatus((short) 1);
+        tutorApplication.setStatus(TutorApplicationStatus.APPROVE.getValue());
         tutorApplication.setUpdateTime(LocalDateTime.now());
         tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
+        tutorApplicationLogService.addTutorApplicationLog(tutorApplication, TutorApplicationStatus.APPROVE, null);
         tutorService.approveTutorApplication(tutorApplication);
     }
 
@@ -126,9 +129,10 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
     public void disapprove(Integer id){
         TutorApplication tutorApplication = new TutorApplication();
         tutorApplication.setId(id);
-        tutorApplication.setStatus((short) -1);
+        tutorApplication.setStatus(TutorApplicationStatus.REJECT.getValue());
         tutorApplication.setUpdateTime(LocalDateTime.now());
         tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
+        tutorApplicationLogService.addTutorApplicationLog(tutorApplication, TutorApplicationStatus.REJECT, null);
     }
 
     private UploadFileWrapper transferAndWrap(MultipartFile[] multipartFiles, short type, Integer userId) throws IOException {
@@ -163,8 +167,9 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         tutorApplication.setCreateTime(LocalDateTime.now());
         tutorApplication.setSupportMaterialIds(smIds);
         tutorApplication.setEducationBackgroundIds(ebIds);
-        tutorApplication.setStatus((short) 0);
+        tutorApplication.setStatus(TutorApplicationStatus.PENDING.getValue());
         tutorApplicationMapper.insertSelective(tutorApplication);
+        tutorApplicationLogService.addTutorApplicationLog(tutorApplication, TutorApplicationStatus.PENDING, null);
     }
 
     private void updateTutorApplication(TutorApplicationVo tutorApplicationVo, String smIds, String ebIds){
@@ -173,7 +178,7 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         tutorApplication.setUpdateTime(LocalDateTime.now());
         tutorApplication.setSupportMaterialIds(tutorApplicationVo.getSupportMaterialIds() + "," + smIds);
         tutorApplication.setEducationBackgroundIds(tutorApplicationVo.getEducationBackgroundIds()+ "," + ebIds);
-        tutorApplication.setStatus((short) 0);
+        tutorApplication.setStatus(TutorApplicationStatus.PENDING.getValue());
         tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
     }
 }
