@@ -11,6 +11,7 @@ import com.wequan.bu.repository.model.TutorApplicationLog;
 import com.wequan.bu.repository.model.extend.TutorApplicationFullInfo;
 import com.wequan.bu.service.TutorAdminService;
 import com.wequan.bu.service.TutorApplicationLogService;
+import com.wequan.bu.util.TutorApplicationStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -60,7 +61,16 @@ public class TutorAdminController {
     @PostMapping("/user/{id}/tutor_application")
     @ResponseBody
     @ApiOperation(value = "raise tutor application", notes = "返回用户提交Tutor申请成功与否")
-    public Result postTutorApplication(TutorApplicationVo tutorApplicationVo) throws IOException {
+    public Result postTutorApplication(TutorApplicationVo tutorApplicationVo,
+                                       @PathVariable("id") Integer userId) throws IOException {
+
+        TutorApplication tutorApplication = tutorAdminService.findCurrentStatusByUserId(userId);
+        if(tutorApplication != null){
+            if(tutorApplication.getStatus() == TutorApplicationStatus.PENDING.getValue() ||
+                tutorApplication.getStatus() == TutorApplicationStatus.REQUIRE_AMEND.getValue()){
+                return ResultGenerator.fail("Only one active application is allowed.");
+            }
+        }
         //save the uploaded file on local
         List<UploadFileWrapper> uploadFiles = tutorAdminService.bufferUploadFile(tutorApplicationVo);
         tutorAdminService.apply(tutorApplicationVo, uploadFiles);
@@ -98,6 +108,15 @@ public class TutorAdminController {
     @ApiOperation(value = "disapprove the tutor application", notes = "管理员审核tutor申请信息和文件资料后，不批准申请")
     public Result disapproveTutorApplication(@PathVariable("id") Integer id){
         tutorAdminService.disapprove(id);
+        return ResultGenerator.success();
+    }
+
+    @PutMapping("/tutor_application/{id}/require_amend")
+    @ResponseBody
+    @ApiOperation(value = "require user to modify the tutor application in order to pass censorship", notes = "管理员要求user修改申请")
+    public Result requireAmend(@PathVariable("id") Integer id,
+                               String comment){
+        tutorAdminService.requireAmend(id, comment);
         return ResultGenerator.success();
     }
 }
