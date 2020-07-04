@@ -26,4 +26,6 @@ public interface TutorAdminService extends Service<TutorApplication> {
     public void approve(Integer id);
 
     public void disapprove(Integer id);
+
+    public void requireAmend(Integer id, String comment);
 }

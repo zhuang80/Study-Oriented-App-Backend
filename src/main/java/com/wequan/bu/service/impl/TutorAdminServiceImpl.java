@@ -135,6 +135,16 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         tutorApplicationLogService.addTutorApplicationLog(tutorApplication, TutorApplicationStatus.REJECT, null);
     }
 
+    @Override
+    public void requireAmend(Integer id, String comment) {
+        TutorApplication tutorApplication = new TutorApplication();
+        tutorApplication.setId(id);
+        tutorApplication.setStatus(TutorApplicationStatus.REQUIRE_AMEND.getValue());
+        tutorApplication.setUpdateTime(LocalDateTime.now());
+        tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
+        tutorApplicationLogService.addTutorApplicationLog(tutorApplication, TutorApplicationStatus.REQUIRE_AMEND, comment);
+    }
+
     private UploadFileWrapper transferAndWrap(MultipartFile[] multipartFiles, short type, Integer userId) throws IOException {
         List<File> files = materialService.uploadFiles(multipartFiles, OUTPUT_PATH);
         return (files == null ? null : new UploadFileWrapper(type, userId, files));
