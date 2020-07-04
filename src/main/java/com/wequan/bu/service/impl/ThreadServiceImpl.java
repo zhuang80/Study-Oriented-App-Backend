@@ -10,13 +10,16 @@ import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.ThreadService;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.Date;
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ThreadSeriviceImpl extends AbstractService<Thread> implements ThreadService {
+@Service
+public class ThreadServiceImpl extends AbstractService<Thread> implements ThreadService {
     @Autowired
     private ThreadMapper threadMapper;
 
