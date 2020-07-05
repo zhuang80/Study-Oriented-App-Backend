@@ -1,5 +1,6 @@
 package com.wequan.bu.repository.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
@@ -46,12 +47,14 @@ public class ThreadStream {
      * Database Column Remarks:
      *   回复帖子时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private Date createTime;
 
     /**
      * Database Column Remarks:
      *   更新帖子时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private Date updateTime;
 
     /**
@@ -65,5 +68,10 @@ public class ThreadStream {
      *   拍砖数
      */
     private Integer dislikes;
+
+    /**
+     * 同回复帖子关联的文件（图片，文件等）的S3链接id，多个id用逗号分隔，关联thread_resource(id)
+     */
+    private String resourceIds;
 
 }
