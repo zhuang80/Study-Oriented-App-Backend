@@ -34,7 +34,7 @@ public class ThreadStream {
      * Database Column Remarks:
      *   帖子评论
      */
-    private String comment;
+    private String content;
 
     /**
      * Database Column Remarks:

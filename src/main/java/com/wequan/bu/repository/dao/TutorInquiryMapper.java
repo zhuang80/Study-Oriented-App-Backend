@@ -3,6 +3,7 @@ package com.wequan.bu.repository.dao;
 import com.wequan.bu.controller.vo.TutorInquiryVo;
 import com.wequan.bu.repository.model.Topic;
 import com.wequan.bu.repository.model.TutorInquiry;
+import com.wequan.bu.repository.model.extend.TutorInquiryBriefInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
@@ -37,5 +38,5 @@ public interface TutorInquiryMapper extends GeneralMapper<TutorInquiry> {
      * @param rowBounds 分页
      * @return tutor inquiries列表
      */
-    List<TutorInquiry> selectByConditions(@Param("where") String whereCondition, @Param("orderBy") String orderCondition, RowBounds rowBounds);
+    List<TutorInquiryBriefInfo> selectByConditions(@Param("where") String whereCondition, @Param("orderBy") String orderCondition, RowBounds rowBounds);
 }
