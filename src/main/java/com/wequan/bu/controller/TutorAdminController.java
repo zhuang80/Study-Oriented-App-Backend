@@ -81,6 +81,13 @@ public class TutorAdminController {
     @ResponseBody
     @ApiOperation(value = "modify tutor application", notes = "返回用户修改Tutor申请成功与否")
     public Result modifyTutorApplication(TutorApplicationVo tutorApplicationVo) throws IOException {
+        TutorApplication tutorApplication = tutorAdminService.findById(tutorApplicationVo.getId());
+        if(tutorApplication != null){
+            if(tutorApplication.getStatus() != TutorApplicationStatus.PENDING.getValue() &&
+                    tutorApplication.getStatus() != TutorApplicationStatus.REQUIRE_AMEND.getValue()){
+                return ResultGenerator.fail("Only can modify active application");
+            }
+        }
         //save the uploaded file on local
         List<UploadFileWrapper> uploadFiles = tutorAdminService.bufferUploadFile(tutorApplicationVo);
         tutorAdminService.update(tutorApplicationVo, uploadFiles);
