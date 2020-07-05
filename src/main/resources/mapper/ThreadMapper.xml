@@ -91,7 +91,7 @@
   </select>
 
   <select id="selectByUserFollowingId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
+    select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, ${schema}.wq_thread.create_time,
     update_time, likes, dislikes, status, school_id
     from ${schema}.wq_thread join ${schema}.wq_user_follow on ${schema}.wq_thread.create_by = ${schema}.wq_user_follow.follow_id
     where ${schema}.wq_user_follow.user_id = #{userId,jdbcType=INTEGER}
