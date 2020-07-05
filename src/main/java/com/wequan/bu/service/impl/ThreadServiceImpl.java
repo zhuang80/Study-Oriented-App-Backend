@@ -1,11 +1,10 @@
 package com.wequan.bu.service.impl;
 
 import com.wequan.bu.repository.dao.ThreadMapper;
-import com.wequan.bu.repository.model.ReportRecord;
 import com.wequan.bu.repository.model.Thread;
 import com.wequan.bu.repository.model.ThreadStream;
 import com.wequan.bu.repository.model.ThreadUserSelectedSubjects;
-import com.wequan.bu.repository.model.extend.ThreadBriefInfo;
+import com.wequan.bu.repository.model.extend.ThreadStats;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.ThreadService;
 import org.apache.ibatis.session.RowBounds;
@@ -13,8 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import org.springframework.stereotype.Service;
+
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -365,6 +367,7 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
      * @param pageSize
      * @return
      */
+    @Override
     public List<Thread> getUserInterestedStudyHelpThreads(Integer userId, String subjectIds, Integer pageNum, Integer pageSize){
         if(userId!=null && subjectIds !=null){
             if(pageNum==null){
@@ -386,5 +389,11 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
             }
         }
         return null;
+    }
+
+    @Override
+    public List<ThreadStats> getUserThreads(Integer userId, Integer pageNum, Integer pageSize) {
+        RowBounds rowBounds = new RowBounds(pageNum, pageSize);
+        return threadMapper.selectByUserId(userId, rowBounds);
     }
 }

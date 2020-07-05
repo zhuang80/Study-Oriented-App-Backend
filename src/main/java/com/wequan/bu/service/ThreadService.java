@@ -3,7 +3,7 @@ package com.wequan.bu.service;
 import com.wequan.bu.repository.model.Thread;
 import com.wequan.bu.repository.model.ThreadStream;
 import com.wequan.bu.repository.model.ThreadUserSelectedSubjects;
-import com.wequan.bu.repository.model.extend.ThreadBriefInfo;
+import com.wequan.bu.repository.model.extend.ThreadStats;
 
 import java.util.List;
 
@@ -165,4 +165,13 @@ public interface ThreadService extends Service<Thread> {
      * @return
      */
     public List<Thread> getUserInterestedStudyHelpThreads(Integer userId, String subjectIds, Integer pageNum, Integer pageSize);
+
+    /**
+     * 获取用户创建的帖子列表
+     * @param userId 用户id
+     * @param pageNum pageNum
+     * @param pageSize pageSize
+     * @return 用户创建的帖子列表
+     */
+    List<ThreadStats> getUserThreads(Integer userId, Integer pageNum, Integer pageSize);
 }

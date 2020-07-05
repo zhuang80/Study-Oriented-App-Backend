@@ -2,6 +2,7 @@ package com.wequan.bu.service;
 
 import org.apache.ibatis.exceptions.TooManyResultsException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -68,5 +69,25 @@ public interface Service<T> {
      * @return T列表
      */
     List<T> findAll();
+
+    /**
+     * 返回用户favorite列表
+     * @param userId 用户id
+     * @param pageNum pageNum
+     * @param pageSize pageSize
+     * @return favorite列表
+     */
+    default List<? extends T> findFavorites(Integer userId, Integer pageNum, Integer pageSize) {
+        return new ArrayList<>();
+    }
+
+    /**
+     * 用户对资源收藏或取消收藏
+     * @param userId 用户id
+     * @param favoriteId 资源id
+     * @param action 收藏或取消收藏
+     */
+    default void postFavorite(Integer userId, Integer favoriteId, Integer action) {
+    }
 
 }
