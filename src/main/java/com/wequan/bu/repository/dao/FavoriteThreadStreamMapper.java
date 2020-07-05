@@ -1,0 +1,25 @@
+package com.wequan.bu.repository.dao;
+
+import com.wequan.bu.repository.model.FavoriteThreadStream;
+import com.wequan.bu.repository.model.extend.FavoriteThreadStreamBriefInfo;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.session.RowBounds;
+
+import java.util.List;
+
+/**
+ * @author ChrisChen
+ */
+@Mapper
+public interface FavoriteThreadStreamMapper extends GeneralMapper<FavoriteThreadStream> {
+
+    /**
+     * 获取用户收藏的帖子回复列表
+     * @param userId 用户id
+     * @param rowBounds 分页
+     * @return 用户收藏的帖子回复列表
+     */
+    List<FavoriteThreadStreamBriefInfo> selectByUserId(@Param("userId") Integer userId, RowBounds rowBounds);
+
+}
