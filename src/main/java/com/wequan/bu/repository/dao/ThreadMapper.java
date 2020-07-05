@@ -1,5 +1,6 @@
 package com.wequan.bu.repository.dao;
 
+import com.wequan.bu.repository.model.ReportRecord;
 import com.wequan.bu.repository.model.Thread;
 import com.wequan.bu.repository.model.ThreadStream;
 import com.wequan.bu.repository.model.ThreadUserSelectedSubjects;

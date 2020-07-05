@@ -1,6 +1,7 @@
 package com.wequan.bu.service.impl;
 
 import com.wequan.bu.repository.dao.ThreadMapper;
+import com.wequan.bu.repository.model.ReportRecord;
 import com.wequan.bu.repository.model.Thread;
 import com.wequan.bu.repository.model.ThreadStream;
 import com.wequan.bu.repository.model.ThreadUserSelectedSubjects;
