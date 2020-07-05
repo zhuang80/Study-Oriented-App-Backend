@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wequan.bu.repository.dao.TutorApplicationLogMapper">
-    <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.mbg.WqTutorApplicationLog">
+    <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.TutorApplicationLog">
         INSERT INTO ${schema}.wq_tutor_application_log
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userId != null">
@@ -39,7 +39,7 @@
         </trim>
     </insert>
 
-    <select id="selectByUserId" resultType="com.wequan.bu.repository.model.mbg.WqTutorApplicationLog">
+    <select id="selectByUserId" resultType="com.wequan.bu.repository.model.TutorApplicationLog">
         SELECT *
         FROM ${schema}.wq_tutor_application_log
         WHERE user_id = #{user_id, jdbcType=INTEGER}
