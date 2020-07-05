@@ -180,9 +180,9 @@ public interface ThreadMapper extends GeneralMapper<Thread>{
     /**
      * 6/26
      * @param userId
-     * @param subjectIds
+     * @param res
      * @return
      */
-    List<Thread> getUserInterestedStudyHelpThreadsByIds(Integer userId, List<Integer> subjectIds, RowBounds rowBounds);
+    List<Thread> getUserInterestedStudyHelpThreadsByIds(Integer userId, List<Integer> res, RowBounds rowBounds);
 
 }

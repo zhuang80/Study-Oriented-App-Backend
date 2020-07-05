@@ -67,20 +67,20 @@
     select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
     update_time, likes, dislikes, status, school_id
     from ${schema}.wq_thread
-    where school_id = #{school_id, jdbcType=INTEGER} and tag_id = #{tag_id, jdbcType=SMALLINT}
+    where school_id = #{schoolId, jdbcType=INTEGER} and tag_id = #{tagId, jdbcType=SMALLINT}
     order by ${schema}.wq_thread.create_time desc
   </select>
 
   <select id="selectDirectRepliesById" parameterType="java.lang.Integer" resultMap="StreamResultMap">
     select *
     from ${schema}.wq_thread_stream
-    where thread_id = #{thread_id,jdbcType=INTEGER}
+    where thread_id = #{threadId,jdbcType=INTEGER}
   </select>
 
   <select id="selectIndirectRepliesById" parameterType="java.lang.Integer" resultMap="StreamResultMap">
     select *
     from ${schema}.wq_thread_stream
-    where thread_id = #{thread_id,jdbcType=INTEGER}
+    where thread_id = #{threadId,jdbcType=INTEGER}
   </select>
 
   <select id="selectByUserFollowingId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -92,8 +92,8 @@
 
   <select id="selectUserSelectedSubjectsById" parameterType="java.lang.Integer" resultMap="SubjectsResultMap">
     select subject_ids
-    from ${schema}.wq_user_selected_subjects
-    where id = #{userId,jdbcType=INTEGER}
+    from ${schema}.wq_thread_user_selected_subjects
+    where user_id = #{userId,jdbcType=INTEGER}
   </select>
 
   <select id="selectedBySchoolIdOrderedByView" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -105,15 +105,14 @@
   </select>
 
   <select id="getUserInterestedStudyHelpThreadsByIds" resultMap="BaseResultMap">
-    select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
+    select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, ${schema}.wq_thread.create_time,
     update_time, likes, dislikes, status, school_id
-    from ((${schema}.wq_thread_user_selected_subjects ss join ${schema}.wq_thread_subject s on ss.subject_ids = s.subject_id)
-    join ${schema}.wq_thread t on s.thread_id = t.id)
-    where s.subject_id in
-    <foreach item="subject_id" index="index" collection="list" open="(" separator="," close=")">
-    #{subjectIds}
+    from ${schema}.wq_thread join ${schema}.wq_thread_subject on ${schema}.wq_thread.id = ${schema}.wq_thread_subject.thread_id
+    where ${schema}.wq_thread_subject.subject_id in
+    <foreach item="subjectId" collection="res" open="(" separator="," close=")">
+    #{subjectId}
   </foreach>
-    and t.create_by = #{userId,jdbcType=INTEGER}
+    and ${schema}.wq_thread.create_by = #{userId,jdbcType=INTEGER}
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
