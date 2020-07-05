@@ -29,7 +29,7 @@ public class AppointmentController {
     @ApiOperation(value = "Available appointment", notes = "返回appointment列表，按临近时间倒序")
     public Result<List<Appointment>> getAvailableAppointments(@RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                               @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        return null;
+        return ResultGenerator.success(appointmentService.findAll(pageNum, pageSize));
     }
 
     @GetMapping("/appointment/{id}")
@@ -46,11 +46,13 @@ public class AppointmentController {
         return ResultGenerator.success();
     }
 
-    @PutMapping("/appointment")
-    @ApiOperation(value= "update an appointment by tutor", notes = "如果订单还未付款，tutor可以改动appointment，若订单已经付款，tutor将不能再改动appointment.改动appointment后，会删除原订单，生成一个新的订单")
-    public Result updateAppointment(@RequestBody Appointment appointment) {
+    @PutMapping("tutor/{id}/appointment/{appointment_id}")
+    @ApiOperation(value= "update an appointment by tutor", notes = "如果订单还未付款，tutor可以改动appointment，若订单已经付款，tutor将不能再改动appointment.改动appointment的金额后，会删除原订单，生成一个新的订单")
+    public Result updateAppointment(@RequestBody Appointment appointment,
+                                    @PathVariable("id") Integer tutorId,
+                                    @PathVariable("appointment_id") Integer appointmentId) {
         try{
-            appointmentService.updateAppointmentAndGenerateNewTransaction(appointment);
+            appointmentService.updateAppointment(appointment, tutorId, appointmentId);
         }catch (Exception e){
             return ResultGenerator.fail(e.getMessage());
         }

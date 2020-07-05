@@ -9,14 +9,22 @@
             (#{item.schoolId}, #{item.degreeId}, #{item.majorId}, #{item.gpa}, #{item.dateFrom}, #{item.dateTo})
         </foreach>
     </insert>
+
     <select id="selectByIds" resultType="com.wequan.bu.repository.model.TutorApplicationEducationBackground">
         <bind name="ids" value="'('+ ids + ')'" />
         SELECT *
         FROM ${schema}.wq_tutor_application_education_background
         WHERE id IN ${ids}
     </select>
+
     <delete id="deleteByPrimaryKey">
         DELETE FROM ${schema}.wq_tutor_application_education_background
-        WHERE id = #{id, jdbcType=INTEGER}
+        WHERE id = ${id, jdbcType=INTEGER}
+    </delete>
+
+    <delete id="deleteByIds" parameterType="java.lang.String">
+        <bind name="ids" value="'('+ ids + ')'" />
+        DELETE FROM ${schema}.wq_tutor_application_education_background
+        WHERE id IN ${ids}
     </delete>
 </mapper>

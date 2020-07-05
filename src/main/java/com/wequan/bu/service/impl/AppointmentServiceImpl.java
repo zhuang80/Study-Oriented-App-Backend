@@ -1,5 +1,6 @@
 package com.wequan.bu.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.wequan.bu.controller.vo.Transaction;
 import com.wequan.bu.repository.dao.AppointmentMapper;
 import com.wequan.bu.repository.dao.TransactionMapper;
@@ -60,8 +61,10 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
     @Override
     public void makeAppointment(Appointment appointment) {
         appointment.setCreateTime(LocalDateTime.now());
-        appointment.setStatus((short) 0);
-        appointment.setFee((int)(long) calculateFee(appointment));
+        appointment.setStatus(AppointmentStatus.DEFAULT.getValue());
+        appointment.setUpdateTime(null);
+        appointment.setTransactionId(null);
+
         appointmentMapper.insertSelective(appointment);
     }
 
@@ -70,33 +73,36 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
         Appointment appointment = new Appointment();
         appointment.setId(appointmentId);
         appointment.setTransactionId(transactionId);
+        appointment.setUpdateTime(LocalDateTime.now());
         appointmentMapper.updateByPrimaryKeySelective(appointment);
     }
 
 
     @Override
-    public void updateAppointmentAndGenerateNewTransaction(Appointment appointment) throws Exception{
-        Appointment oldRecord = appointmentMapper.selectByPrimaryKey(appointment.getId());
+    public void updateAppointment(Appointment appointment, Integer tutorId, Integer appointmentId) throws Exception{
+        Appointment oldRecord = appointmentMapper.selectByPrimaryKey(appointmentId);
         if(oldRecord == null) {
             throw new Exception("no such appointment");
         }
 
         Transaction transaction = transactionMapper.selectByPrimaryKey(oldRecord.getTransactionId());
-        if(transaction.getStatus().equals(TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue())){
-            /**delete old payment intent (third_party_transaction_id)
-             * delete old transaction info in table (transaction_id)
-             * handled by webhook payment_intent.canceled event
-             */
-            System.out.println("============================== enter if statement");
-            stripeService.cancelPaymentIntent(transaction.getThirdPartyTransactionId());
-            //calculate fee
-            appointment.setFee((int)(long) calculateFee(oldRecord));
+        if(transaction == null) {
             appointment.setUpdateTime(LocalDateTime.now());
-            appointment.setTransactionId("-1");
-            //update appointment
             appointmentMapper.updateByPrimaryKeySelective(appointment);
-            //generate new payment intent (appointment_id, type)
-            stripeService.createPaymentIntent(appointment.getId());
+            return;
+        }
+
+        if(transaction.getStatus().equals(TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue())){
+            if(!appointment.getFee().equals(oldRecord.getFee())){
+                appointment.setUpdateTime(LocalDateTime.now());
+                appointmentMapper.updateByPrimaryKeySelective(appointment);
+                stripeService.updatePaymentIntent(appointmentId);
+                return;
+            }
+
+            appointment.setUpdateTime(LocalDateTime.now());
+            appointmentMapper.updateByPrimaryKeySelective(appointment);
+
         }else{
             throw new Exception("can't update the appointment after customer has paid money");
         }
@@ -116,6 +122,18 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
     @Override
     public Appointment findByTransactionId(String transactionId) {
         return appointmentMapper.selectByTransactionId(transactionId);
+    }
+
+    @Override
+    public List<Appointment> findAll(Integer pageNum, Integer pageSize) {
+        if(pageNum == null || pageNum <= 0 ) {
+            pageNum = 1;
+        }
+        if(pageSize == null || pageSize <= 0){
+            pageSize = 10;
+        }
+        PageHelper.startPage(pageNum, pageSize);
+        return appointmentMapper.selectAll();
     }
 
     /**
