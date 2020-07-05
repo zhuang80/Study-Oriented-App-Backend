@@ -1,6 +1,7 @@
 package com.wequan.bu.service.impl;
 
 import com.wequan.bu.repository.dao.ThreadMapper;
+import com.wequan.bu.repository.model.ReportRecord;
 import com.wequan.bu.repository.model.Thread;
 import com.wequan.bu.repository.model.ThreadStream;
 import com.wequan.bu.repository.model.ThreadUserSelectedSubjects;
@@ -9,6 +10,9 @@ import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.ThreadService;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -253,12 +257,12 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     /**
      * 6/22
      * @param userId
-     * @param subjectsId
+     * @param subjectIds
      */
     @Override
-    public void addUserSelectedSubjects(Integer userId, String subjectsId){
-        if(userId!=null && subjectsId!=null){
-            threadMapper.addUserInterestedSubjects(userId, subjectsId);
+    public void addUserSelectedSubjects(Integer userId, String subjectIds){
+        if(userId!=null && subjectIds!=null){
+            threadMapper.addUserInterestedSubjects(userId, subjectIds);
         }
     }
 
@@ -326,8 +330,13 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     @Override
     public void reportThread(Integer threadId, Integer userId, String reason){
         if(threadId!=null && userId!=null && reason!=null){
-            Date reportDate = new Date(new java.util.Date().getTime());
-            threadMapper.reportThread(threadId, userId, reason, reportDate);
+            ReportRecord reportRecord = new ReportRecord();
+            reportRecord.setResourceId(threadId);
+            reportRecord.setUserId(userId);
+            reportRecord.setResourceType((short) 1);
+            reportRecord.setReason(reason);
+            reportRecord.setReportTime(new Date());
+            threadMapper.reportThread(reportRecord);
         }
     }
 
@@ -341,8 +350,13 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     @Override
     public void reportReplyToThread(Integer threadId, Integer replyId, Integer userId, String reason){
         if(threadId!=null && replyId!=null && userId!=null && reason!=null){
-            Date reportDate = new Date(new Date().getTime());
-            threadMapper.reportReplyToThread(threadId, replyId, userId, reason, reportDate);
+            ReportRecord reportRecord = new ReportRecord();
+            reportRecord.setResourceId(replyId);
+            reportRecord.setUserId(userId);
+            reportRecord.setResourceType((short) 1);
+            reportRecord.setReason(reason);
+            reportRecord.setReportTime(new Date());
+            threadMapper.reportReplyToThread(reportRecord);
         }
     }
 

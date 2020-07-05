@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +28,6 @@ import java.util.concurrent.Executors;
 public class ThreadController {
 
     private static final Logger log = LoggerFactory.getLogger(ThreadController.class);
-
     @Autowired
     private ThreadService threadService;
 
@@ -136,6 +136,7 @@ public class ThreadController {
     @PostMapping("/thread")
     @ApiOperation(value = "add thread", notes = "返回创建帖子成功与否")
     public Result addThread(@RequestBody Thread thread) {
+        thread.setCreateTime(new Date());
         if(threadService.insert(thread)>0){
             return ResultGenerator.success();
         }
@@ -150,6 +151,7 @@ public class ThreadController {
     @PostMapping("/thread/reply")
     @ApiOperation(value = "reply to the thread", notes = "包括直接/间接回复，返回回帖成功与否")
     public Result addThreadReply(@RequestBody ThreadStream threadStream) {
+        threadStream.setCreateTime(new Date());
         int result = threadService.insertReply(threadStream);
         if(result>0){
             return ResultGenerator.success(result);

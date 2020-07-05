@@ -1,6 +1,8 @@
 package com.wequan.bu.repository.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -57,12 +59,14 @@ public class Thread {
      * Database Column Remarks:
      *   帖子创建时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private Date createTime;
 
     /**
      * Database Column Remarks:
      *   帖子更新时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private Date updateTime;
 
     /**
@@ -76,5 +80,16 @@ public class Thread {
      *   帖子拍砖数
      */
     private Integer dislikes;
+
+    /**
+     *帖子状态，0 - open; 1-closed
+     */
+    private Integer status;
+
+    /**
+     *学校id
+     */
+    private Integer schoolId;
+
 
 }
