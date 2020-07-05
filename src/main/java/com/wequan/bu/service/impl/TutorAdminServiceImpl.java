@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import javax.sound.midi.SysexMessage;
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +46,11 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
 
     @Autowired
     private TutorService tutorService;
+
+    @PostConstruct
+    public void postConstruct(){
+        this.setMapper(tutorApplicationMapper);
+    }
 
     @Async
     @Override
@@ -99,8 +105,8 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         String deletedEducationBackgroundIds = findDeletedIds(oldRecord.getEducationBackgroundIds(),
                 tutorApplicationVo.getEducationBackgroundIds());
 
-        System.out.println("================================ deleted support material ids "+ deletedSupportMaterialIds);
-        System.out.println("================================ deleted education background ids "+ deletedEducationBackgroundIds);
+        System.out.println("================================ deleted support material ids "+ deletedSupportMaterialIds+" " + deletedSupportMaterialIds.isEmpty());
+        System.out.println("================================ deleted education background ids "+ deletedEducationBackgroundIds+ " "+deletedEducationBackgroundIds.isEmpty());
         List<Integer> smList = new ArrayList<>();
         List<Integer> ebList = new ArrayList<>();
 
@@ -141,7 +147,7 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
 
     @Override
     public void disapprove(Integer id){
-        TutorApplication tutorApplication = new TutorApplication();
+        TutorApplication tutorApplication = tutorApplicationMapper.selectByPrimaryKey(id);
         tutorApplication.setId(id);
         tutorApplication.setStatus(TutorApplicationStatus.REJECT.getValue());
         tutorApplication.setUpdateTime(LocalDateTime.now());
@@ -151,7 +157,7 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
 
     @Override
     public void requireAmend(Integer id, String comment) {
-        TutorApplication tutorApplication = new TutorApplication();
+        TutorApplication tutorApplication = tutorApplicationMapper.selectByPrimaryKey(id);
         tutorApplication.setId(id);
         tutorApplication.setStatus(TutorApplicationStatus.REQUIRE_AMEND.getValue());
         tutorApplication.setUpdateTime(LocalDateTime.now());
@@ -190,14 +196,14 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
     }
 
     private String joinIds(String ids, String newIds){
-        if(ids == null){
-            if(newIds == null){
+        if(ids == null || ids.isEmpty()){
+            if(newIds == null || newIds.isEmpty()){
                 return "";
             }else{
                 return newIds;
             }
         }else{
-            if(newIds == null){
+            if(newIds == null || newIds.isEmpty()){
                 return ids;
             }else{
                 return ids + "," + newIds;
