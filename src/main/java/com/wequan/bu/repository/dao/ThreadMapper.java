@@ -116,9 +116,9 @@ public interface ThreadMapper extends GeneralMapper<Thread>{
     /**
      * 6/22
      * @param userId
-     * @param subjectsId
+     * @param subjectIds
      */
-    void addUserInterestedSubjects(Integer userId, String subjectsId);
+    void addUserInterestedSubjects(Integer userId, String subjectIds);
 
     /**
      * 6/19
