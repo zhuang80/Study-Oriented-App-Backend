@@ -21,12 +21,13 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="thread_id" jdbcType="INTEGER" property="threadId" />
-    <result column="comment" jdbcType="VARCHAR" property="comment" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
     <result column="to_stream_id" jdbcType="INTEGER" property="toStreamId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="likes" jdbcType="INTEGER" property="likes" />
     <result column="dislikes" jdbcType="INTEGER" property="dislikes" />
+    <result column="resource_ids" jdbcType="VARCHAR" property="resourceIds"/>
   </resultMap>
 
   <resultMap id="SubjectsResultMap" type="com.wequan.bu.repository.model.ThreadUserSelectedSubjects">
@@ -206,9 +207,9 @@
   </insert>
 
   <insert id="insertReply" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.ThreadStream" useGeneratedKeys="true">
-    insert into ${schema}.wq_thread_stream(user_id, thread_id, comment, to_stream_id, create_time, update_time, likes, dislikes)
-    values (#{userId,jdbcType=INTEGER},#{threadId,jdbcType=INTEGER},#{comment,jdbcType=VARCHAR},#{toStreamId,jdbcType=INTEGER},
-    #{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},#{likes,jdbcType=INTEGER},#{dislikes,jdbcType=INTEGER},)
+    insert into ${schema}.wq_thread_stream(user_id, thread_id, content, to_stream_id, create_time, update_time, likes, dislikes, resource_ids)
+    values (#{userId,jdbcType=INTEGER},#{threadId,jdbcType=INTEGER},#{content,jdbcType=VARCHAR},#{toStreamId,jdbcType=INTEGER},
+    #{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},#{likes,jdbcType=INTEGER},#{dislikes,jdbcType=INTEGER},#{resourceIds, jdbcType=VARCHAR})
   </insert>
 
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.Thread" useGeneratedKeys="true">

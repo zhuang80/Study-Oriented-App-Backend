@@ -1,5 +1,6 @@
 package com.wequan.bu.repository.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
@@ -57,7 +58,7 @@ public class ThreadStream {
      *
      * @mbg.generated
      */
-    private String comment;
+    private String content;
 
     /**
      * Database Column Remarks:
@@ -79,6 +80,7 @@ public class ThreadStream {
      *
      * @mbg.generated
      */
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private Date createTime;
 
     /**
@@ -90,6 +92,7 @@ public class ThreadStream {
      *
      * @mbg.generated
      */
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private Date updateTime;
 
     /**
@@ -139,7 +142,7 @@ public class ThreadStream {
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
             && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
             && (this.getThreadId() == null ? other.getThreadId() == null : this.getThreadId().equals(other.getThreadId()))
-            && (this.getComment() == null ? other.getComment() == null : this.getComment().equals(other.getComment()))
+            && (this.getContent() == null ? other.getContent() == null : this.getContent().equals(other.getContent()))
             && (this.getToStreamId() == null ? other.getToStreamId() == null : this.getToStreamId().equals(other.getToStreamId()))
             && (this.getCreateTime() == null ? other.getCreateTime() == null : this.getCreateTime().equals(other.getCreateTime()))
             && (this.getUpdateTime() == null ? other.getUpdateTime() == null : this.getUpdateTime().equals(other.getUpdateTime()))
@@ -160,7 +163,7 @@ public class ThreadStream {
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((getUserId() == null) ? 0 : getUserId().hashCode());
         result = prime * result + ((getThreadId() == null) ? 0 : getThreadId().hashCode());
-        result = prime * result + ((getComment() == null) ? 0 : getComment().hashCode());
+        result = prime * result + ((getContent() == null) ? 0 : getContent().hashCode());
         result = prime * result + ((getToStreamId() == null) ? 0 : getToStreamId().hashCode());
         result = prime * result + ((getCreateTime() == null) ? 0 : getCreateTime().hashCode());
         result = prime * result + ((getUpdateTime() == null) ? 0 : getUpdateTime().hashCode());
@@ -184,7 +187,7 @@ public class ThreadStream {
         sb.append(", id=").append(id);
         sb.append(", userId=").append(userId);
         sb.append(", threadId=").append(threadId);
-        sb.append(", comment=").append(comment);
+        sb.append(", content=").append(content);
         sb.append(", toStreamId=").append(toStreamId);
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);
