@@ -10,6 +10,11 @@
     <result column="school_id" jdbcType="SMALLINT" property="schoolId" />
   </resultMap>
 
+  <resultMap id="ResultMapWithBriefInfo" type="com.wequan.bu.repository.model.extend.SubjectBriefInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+  </resultMap>
+
   <sql id="Base_Column_List">
     id, name, create_by, create_time, category, school_id
   </sql>

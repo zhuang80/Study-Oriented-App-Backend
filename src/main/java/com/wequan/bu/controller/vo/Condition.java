@@ -125,7 +125,11 @@ public class Condition {
             if ("string".equalsIgnoreCase(type)) {
                 // escape ' in postgresql
                 value = value.replaceAll("'","''");
-                return sb.append("(").append(field).append(" ").append(op).append(" '").append(value).append("')");
+                if ("like".equalsIgnoreCase(op)) {
+                    return sb.append("(lower(").append(field).append(") ").append(op).append(" '%").append(value.toLowerCase()).append("%')");
+                } else {
+                    return sb.append("(").append(field).append(" ").append(op).append(" '").append(value).append("')");
+                }
             }
             if ("numeric".equalsIgnoreCase(type)) {
                 return sb.append("(").append(field).append(" ").append(op).append(" ").append(value).append(")");

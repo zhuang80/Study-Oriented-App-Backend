@@ -41,6 +41,6 @@ public class AppointmentReview {
      */
     private Short score;
 
-    private AppointmentBriefInfo appointmentBriefInfo;
+    private AppointmentBriefInfo appointment;
 
 }

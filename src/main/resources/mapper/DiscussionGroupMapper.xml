@@ -53,7 +53,7 @@
         select 1 from ${schema}.wq_discussion_group_member dgm
         where dgm.member_id = #{userId}
         and dgm.discussion_group_id = dg.id
-        and action = 'join'
+        and action = 1
       )
     ) t
     inner join ${schema}.wq_user_profile u on t.create_by = u.id
@@ -177,7 +177,7 @@
   <insert id="insertOrUpdateActionByUserId" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.DiscussionGroupMember" useGeneratedKeys="true">
     insert into ${schema}.wq_discussion_group_member (discussion_group_id, member_id, action, action_time)
     values (
-      #{discussionGroupId,jdbcType=INTEGER}, #{memberId,jdbcType=INTEGER}, #{action,jdbcType=VARCHAR}, #{actionTime,jdbcType=TIMESTAMP}
+      #{discussionGroupId,jdbcType=INTEGER}, #{memberId,jdbcType=INTEGER}, #{action,jdbcType=SMALLINT}, #{actionTime,jdbcType=TIMESTAMP}
     )
     on conflict (discussion_group_id, member_id)
     do update set action = EXCLUDED.action, action_time = EXCLUDED.action_time

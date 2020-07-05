@@ -9,6 +9,11 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     </resultMap>
 
+    <resultMap id="ResultMapWithBriefInfo" type="com.wequan.bu.repository.model.extend.TopicBriefInfo">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+    </resultMap>
+
     <select id="selectByIds" resultType="com.wequan.bu.repository.model.Topic">
         <bind name="ids" value="'('+ ids + ')'" />
         SELECT *

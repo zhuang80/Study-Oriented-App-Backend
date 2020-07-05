@@ -31,9 +31,9 @@ public class DiscussionGroupMember {
 
     /**
      * Database Column Remarks:
-     *   join; leave
+     *   1 -> join; -1 -> leave
      */
-    private String action;
+    private Short action;
 
     /**
      * Database Column Remarks:

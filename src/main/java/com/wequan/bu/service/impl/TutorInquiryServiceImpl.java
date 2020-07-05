@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.wequan.bu.controller.vo.TutorInquiryVo;
 import com.wequan.bu.repository.dao.TutorInquiryMapper;
 import com.wequan.bu.repository.model.TutorInquiry;
+import com.wequan.bu.repository.model.extend.TutorInquiryBriefInfo;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.TutorInquiryService;
 import org.apache.ibatis.session.RowBounds;
@@ -65,8 +66,8 @@ public class TutorInquiryServiceImpl extends AbstractService<TutorInquiry> imple
     }
 
     @Override
-    public List<TutorInquiry> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition) {
-        List<TutorInquiry> tutorInquiries = null;
+    public List<TutorInquiryBriefInfo> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition) {
+        List<TutorInquiryBriefInfo> tutorInquiries = null;
         tutorInquiries = tutorInquiryMapper.selectByConditions(whereCondition, orderCondition,
                 new RowBounds(pageCondition.get("pageNo"), pageCondition.get("pageSize")));
         return tutorInquiries;
