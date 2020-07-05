@@ -8,6 +8,7 @@ import com.wequan.bu.repository.model.OnlineEvent;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.repository.model.TutorApplication;
 import com.wequan.bu.repository.model.TutorViewHistory;
+import com.wequan.bu.repository.model.extend.TutorBriefInfo;
 import com.wequan.bu.repository.model.extend.TutorRateInfo;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.TutorService;
@@ -43,8 +44,8 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
     }
 
     @Override
-    public List<TutorRateInfo> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition) {
-        List<TutorRateInfo> tutors = null;
+    public List<TutorBriefInfo> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition) {
+        List<TutorBriefInfo> tutors = null;
         tutors = tutorMapper.selectByConditions(whereCondition, orderCondition,
                 new RowBounds(pageCondition.get("pageNo"), pageCondition.get("pageSize")));
         return tutors;

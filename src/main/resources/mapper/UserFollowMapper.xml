@@ -29,7 +29,7 @@
       u.last_name,
       u.avatar,
       u.avatar_url_in_provider,
-      (t1.user_id != null) as mutual
+      (t1.user_id is not null) as mutual
     from ${schema}.wq_user_follow t
     inner join ${schema}.wq_user_profile u on u.id = t.follow_id
     left join ${schema}.wq_user_follow t1 on (t1.user_id = t.follow_id and t1.follow_id = t.user_id)
@@ -44,7 +44,7 @@
       u.last_name,
       u.avatar,
       u.avatar_url_in_provider,
-      (t1.user_id != null) as mutual
+      (t1.user_id is not null) as mutual
     from ${schema}.wq_user_follow t
     inner join ${schema}.wq_user_profile u on u.id = t.user_id
     left join ${schema}.wq_user_follow t1 on (t1.user_id = t.follow_id and t1.follow_id = t.user_id)

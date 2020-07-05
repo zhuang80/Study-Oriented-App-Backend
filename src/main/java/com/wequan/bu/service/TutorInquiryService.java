@@ -2,6 +2,7 @@ package com.wequan.bu.service;
 
 import com.wequan.bu.controller.vo.TutorInquiryVo;
 import com.wequan.bu.repository.model.TutorInquiry;
+import com.wequan.bu.repository.model.extend.TutorInquiryBriefInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -31,5 +32,5 @@ public interface TutorInquiryService extends Service<TutorInquiry> {
      * @param pageCondition page
      * @return Tutor inquiry列表
      */
-    List<TutorInquiry> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition);
+    List<TutorInquiryBriefInfo> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition);
 }

@@ -25,7 +25,7 @@ public interface DiscussionGroupService extends Service<DiscussionGroup> {
      * @param dgId discussion group id
      * @param action join/quit
      */
-    void doUserAction(Integer userId, Integer dgId, String action);
+    void doUserAction(Integer userId, Integer dgId, Short action);
 
     /**
      * 搜索discussion group列表

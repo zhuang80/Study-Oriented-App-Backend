@@ -15,11 +15,11 @@
     user_id, thread_stream_id, create_time
   </sql>
 
-  <select id="selectByUserId" resultType="com.wequan.bu.repository.model.extend.FavoriteThreadStreamBriefInfo">
+  <select id="selectByUserId" resultMap="ResultMapWithThreadStream">
     select
       fts.*,
       ts.id _thread_stream_id, ts.user_id _thread_stream_user_id,
-      ts.thread_id _thread_stream_thread_id, ts.comment _thread_stream_comment,
+      ts.thread_id _thread_stream_thread_id, ts.content _thread_stream_content,
       ts.to_stream_id _thread_stream_to_stream_id, ts.create_time _thread_stream_create_time,
       ts.update_time _thread_stream_update_time, ts.likes _thread_stream_likes, ts.dislikes _thread_stream_dislikes
     from ${schema}.wq_favorite_thread_stream fts
