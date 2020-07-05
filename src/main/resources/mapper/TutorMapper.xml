@@ -27,11 +27,10 @@
                     select="com.wequan.bu.repository.dao.SubjectsMapper.selectByTutorId" />
     </resultMap>
 
-    <resultMap id="ResultMapUsingInSearch" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.TutorRateInfo">
-        <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <resultMap id="ResultMapUsingInSearch" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.TutorBriefInfo">
         <result column="t_score" jdbcType="DOUBLE" property="score" />
-        <association property="user" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithAvatar" />
-        <collection property="subjectList" columnPrefix="s_" resultMap="com.wequan.bu.repository.dao.SubjectsMapper.BaseResultMap" />
+        <association property="user" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithBriefInfo" />
+        <collection property="subjectList" columnPrefix="s_" resultMap="com.wequan.bu.repository.dao.SubjectsMapper.ResultMapWithBriefInfo" />
     </resultMap>
 
     <select id="selectTutors" resultMap="TutorRateResultMap">

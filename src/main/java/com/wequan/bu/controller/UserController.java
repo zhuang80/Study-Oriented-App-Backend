@@ -158,15 +158,12 @@ public class UserController {
     @ApiOperation(value = "join/quit discussion group", notes = "加入/退出discussion group成功与否")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "dgId", value = "discussion group id"),
-            @ApiImplicitParam(name = "action", value = "join; quit")
+            @ApiImplicitParam(name = "action", value = "1 -> join; -1 -> quit")
     })
     public Result doDiscussionGroup(@PathVariable("id") Integer userId,
                                     @RequestParam("dgId") Integer dgId,
-                                    @RequestParam("action") String action) {
-        if (userId <= 0 || dgId <= 0) {
-            return ResultGenerator.fail(messageHandler.getMessage("40098"));
-        }
-        if (!"join".equals(action) && !"quit".equals(action)) {
+                                    @RequestParam("action") Short action) {
+        if (userId <= 0 || dgId <= 0 || (action != 1 && action != -1)) {
             return ResultGenerator.fail(messageHandler.getMessage("40098"));
         }
         discussionGroupService.doUserAction(userId, dgId, action);

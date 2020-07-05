@@ -51,7 +51,7 @@
     and tutor_id = #{tutorId,jdbcType=INTEGER}
   </delete>
 
-  <select id="selectByUserId" resultType="com.wequan.bu.repository.model.extend.FavoriteTutorBriefInfo">
+  <select id="selectByUserId" resultMap="ResultMapWithTutor">
     select
       ft.*,
       u.user_name tutor_name,

@@ -36,6 +36,16 @@
     <result column="number_of_groups" jdbcType="INTEGER" property="numberOfGroups" />
   </resultMap>
 
+  <resultMap id="ResultMapWithBriefInfo" type="com.wequan.bu.repository.model.extend.UserBriefInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="school_id" jdbcType="SMALLINT" property="schoolId" />
+    <result column="first_name" jdbcType="VARCHAR" property="firstName" />
+    <result column="last_name" jdbcType="VARCHAR" property="lastName" />
+    <result column="avatar" jdbcType="BINARY" property="avatar" />
+    <result column="avatar_url_in_provider" jdbcType="VARCHAR" property="avatarUrlInProvider" />
+  </resultMap>
+
   <sql id="Base_Column_List">
     id, user_name, email, phone, address, zip_code, credential, school_id, study_points,
     access_token, first_name, last_name, invitation_code, brief_introduction, email_verified,

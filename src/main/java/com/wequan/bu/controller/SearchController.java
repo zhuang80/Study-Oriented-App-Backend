@@ -4,9 +4,13 @@ import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.controller.vo.Condition;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
-import com.wequan.bu.json.JSON;
-import com.wequan.bu.repository.model.*;
-import com.wequan.bu.repository.model.extend.TutorRateInfo;
+import com.wequan.bu.repository.model.Course;
+import com.wequan.bu.repository.model.DiscussionGroup;
+import com.wequan.bu.repository.model.OnlineEvent;
+import com.wequan.bu.repository.model.Professor;
+import com.wequan.bu.repository.model.extend.SubjectBriefInfo;
+import com.wequan.bu.repository.model.extend.TutorBriefInfo;
+import com.wequan.bu.repository.model.extend.TutorInquiryBriefInfo;
 import com.wequan.bu.service.DiscussionGroupService;
 import com.wequan.bu.service.TutorInquiryService;
 import com.wequan.bu.service.TutorService;
@@ -47,23 +51,21 @@ public class SearchController {
     @PostMapping("/tutor")
     @ApiOperation(value = "Search tutor with condition", notes = "返回Tutor列表, 根据subject分组，评分排序")
     @ApiModelProperty(value="condition", notes = "筛选条件json串")
-    @JSON(type = User.class, include = {"userName", "schoolId", "firstName", "lastName", "avatar", "avatarUrlInProvider"})
-    @JSON(type = Subject.class, include = {"id", "name"})
-    public Result<Map<String, List<TutorRateInfo>>> searchTutor(@RequestBody Condition condition) {
-        final Map<String, List<TutorRateInfo>> result = new HashMap<>();
+    public Result<Map<String, List<TutorBriefInfo>>> searchTutor(@RequestBody Condition condition) {
+        final Map<String, List<TutorBriefInfo>> result = new HashMap<>();
         if (condition != null && condition.selfCheck()) {
             String whereCondition = condition.getWhereCondition();
             Map<String, Integer> pageCondition = condition.getPageCondition();
-            List<TutorRateInfo> tutors = tutorService.search(whereCondition, null, pageCondition);
+            List<TutorBriefInfo> tutors = tutorService.search(whereCondition, null, pageCondition);
             //根据subject分组，评分排序
-            tutors.stream().sorted(Comparator.comparing(TutorRateInfo::getScore).reversed().thenComparing(Tutor::getId)).forEach(e -> {
-                List<Subject> subjectList = e.getSubjectList();
-                for (Subject s : subjectList) {
+            tutors.stream().sorted(Comparator.comparing(TutorBriefInfo::getScore).reversed().thenComparing(TutorBriefInfo::getId)).forEach(e -> {
+                List<SubjectBriefInfo> subjectList = e.getSubjectList();
+                for (SubjectBriefInfo s : subjectList) {
                     String name = s.getName();
                     if (!result.containsKey(name)) {
-                        List<TutorRateInfo> tutorRateInfoList = new ArrayList<>();
-                        tutorRateInfoList.add(e);
-                        result.put(name, tutorRateInfoList);
+                        List<TutorBriefInfo> tutorBriefInfoList = new ArrayList<>();
+                        tutorBriefInfoList.add(e);
+                        result.put(name, tutorBriefInfoList);
                     } else {
                         result.get(name).add(e);
                     }
@@ -78,21 +80,18 @@ public class SearchController {
     @PostMapping("/tutor_inquiry")
     @ApiOperation(value = "Search tutor inquiry with condition", notes = "返回Tutor inquires列表，根据subject分组，按时间倒序")
     @ApiModelProperty(value="condition", notes = "筛选条件json串")
-    @JSON(type = User.class, include = {"userName", "schoolId", "firstName", "lastName", "avatar", "avatarUrlInProvider"})
-    @JSON(type = Subject.class, include = {"id", "name"})
-    @JSON(type = Topic.class, include = {"id", "name"})
-    public Result<Map<String, List<TutorInquiry>>> searchTutorInquiry(@RequestBody Condition condition) {
-        final Map<String, List<TutorInquiry>> result = new HashMap<>();
+    public Result<Map<String, List<TutorInquiryBriefInfo>>> searchTutorInquiry(@RequestBody Condition condition) {
+        final Map<String, List<TutorInquiryBriefInfo>> result = new HashMap<>();
         if (condition != null && condition.selfCheck()) {
             String whereCondition = condition.getWhereCondition();
             Map<String, Integer> pageCondition = condition.getPageCondition();
-            List<TutorInquiry> inquiryList = tutorInquiryService.search(whereCondition, null, pageCondition);
+            List<TutorInquiryBriefInfo> inquiryList = tutorInquiryService.search(whereCondition, null, pageCondition);
             //根据subject分组，按时间倒序
-            inquiryList.stream().sorted(Comparator.comparing(TutorInquiry::getCreateTime).reversed()).forEach(e -> {
-                Subject subject = e.getSubject();
+            inquiryList.stream().sorted(Comparator.comparing(TutorInquiryBriefInfo::getCreateTime).reversed()).forEach(e -> {
+                SubjectBriefInfo subject = e.getSubject();
                 String name = subject.getName();
                 if (!result.containsKey(name)) {
-                    List<TutorInquiry> tutorInquiryList = new ArrayList<>();
+                    List<TutorInquiryBriefInfo> tutorInquiryList = new ArrayList<>();
                     tutorInquiryList.add(e);
                     result.put(name, tutorInquiryList);
                 } else {

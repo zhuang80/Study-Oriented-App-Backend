@@ -41,7 +41,7 @@ public class DiscussionGroupServiceImpl extends AbstractService<DiscussionGroup>
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void doUserAction(Integer userId, Integer dgId, String action) {
+    public void doUserAction(Integer userId, Integer dgId, Short action) {
         DiscussionGroupMember discussionGroupMember = new DiscussionGroupMember();
         discussionGroupMember.setDiscussionGroupId(dgId);
         discussionGroupMember.setMemberId(userId);

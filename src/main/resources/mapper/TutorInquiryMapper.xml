@@ -22,7 +22,7 @@
                     column="id"/>
     </resultMap>
 
-    <resultMap id="ResultMapWithSubjectTopics" type="com.wequan.bu.repository.model.TutorInquiry">
+    <resultMap id="ResultMapWithSubjectTopics" type="com.wequan.bu.repository.model.extend.TutorInquiryBriefInfo">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="brief_description" jdbcType="VARCHAR" property="briefDescription" />
         <result column="online" jdbcType="BIT" property="online" />
@@ -32,12 +32,12 @@
         <result column="request_start_time" jdbcType="TIMESTAMP" property="requestStartTime" />
         <result column="request_end_time" jdbcType="TIMESTAMP" property="requestEndTime" />
         <result column="acceptable_pay_rate" jdbcType="REAL" property="acceptablePayRate" />
-        <association property="subject" columnPrefix="s_" resultMap="subjectResultMap"/>
-        <collection property="topicList" columnPrefix="t_" resultMap="com.wequan.bu.repository.dao.TopicMapper.BaseResultMap"/>
+        <association property="subject" columnPrefix="s_" resultMap="com.wequan.bu.repository.dao.SubjectsMapper.ResultMapWithBriefInfo" />
+        <collection property="topicList" columnPrefix="t_" resultMap="com.wequan.bu.repository.dao.TopicMapper.ResultMapWithBriefInfo" />
     </resultMap>
 
-    <resultMap id="ResultMapUsingInSearch" extends="ResultMapWithSubjectTopics" type="com.wequan.bu.repository.model.TutorInquiry">
-        <association property="createBy" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithAvatar" />
+    <resultMap id="ResultMapUsingInSearch" extends="ResultMapWithSubjectTopics" type="com.wequan.bu.repository.model.extend.TutorInquiryBriefInfo">
+        <association property="createBy" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithBriefInfo" />
     </resultMap>
 
     <resultMap id="subjectResultMap" type="com.wequan.bu.repository.model.Subject">
