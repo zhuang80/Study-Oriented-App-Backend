@@ -327,8 +327,13 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     @Override
     public void reportThread(Integer threadId, Integer userId, String reason){
         if(threadId!=null && userId!=null && reason!=null){
-            Date reportDate = new Date(new java.util.Date().getTime());
-            threadMapper.reportThread(threadId, userId, reason, reportDate);
+            ReportRecord reportRecord = new ReportRecord();
+            reportRecord.setResourceId(threadId);
+            reportRecord.setUserId(userId);
+            reportRecord.setResourceType((short) 1);
+            reportRecord.setReason(reason);
+            reportRecord.setReportTime(new Date());
+            threadMapper.reportThread(reportRecord);
         }
     }
 
@@ -342,8 +347,13 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     @Override
     public void reportReplyToThread(Integer threadId, Integer replyId, Integer userId, String reason){
         if(threadId!=null && replyId!=null && userId!=null && reason!=null){
-            Date reportDate = new Date(new Date().getTime());
-            threadMapper.reportReplyToThread(threadId, replyId, userId, reason, reportDate);
+            ReportRecord reportRecord = new ReportRecord();
+            reportRecord.setResourceId(replyId);
+            reportRecord.setUserId(userId);
+            reportRecord.setResourceType((short) 1);
+            reportRecord.setReason(reason);
+            reportRecord.setReportTime(new Date());
+            threadMapper.reportReplyToThread(reportRecord);
         }
     }
 
