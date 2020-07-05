@@ -31,8 +31,8 @@
   </resultMap>
 
   <resultMap id="SubjectsResultMap" type="com.wequan.bu.repository.model.ThreadUserSelectedSubjects">
-    <id column="id" jdbcType="INTEGER" property="userId"/>
-    <result column="subjects_ids" jdbcType="VARCHAR" property="subjectIds"/>
+    <id column="user_id" jdbcType="INTEGER" property="userId"/>
+    <result column="subject_ids" jdbcType="VARCHAR" property="subjectIds"/>
   </resultMap>
 
   <resultMap id="ReportRecordResultMap" type="com.wequan.bu.repository.model.ReportRecord">
@@ -91,7 +91,7 @@
   </select>
 
   <select id="selectUserSelectedSubjectsById" parameterType="java.lang.Integer" resultMap="SubjectsResultMap">
-    select subjects_ids
+    select subject_ids
     from ${schema}.wq_user_selected_subjects
     where id = #{userId,jdbcType=INTEGER}
   </select>
@@ -123,7 +123,7 @@
 
   <delete id="deleteUserSelectedSubjectsById" parameterType="java.lang.Integer">
     delete from ${schema}.wq_thread_user_selected_subjects
-    where id = #{userId,jdbcType=INTEGER}
+    where user_id = #{userId,jdbcType=INTEGER}
   </delete>
 
   <insert id="insertThread" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.Thread" useGeneratedKeys="true">
@@ -280,24 +280,11 @@
     </trim>
   </insert>
 
-  <insert id="addUserInterestedSubjects" keyColumn="user_id" keyProperty="userId" parameterType="com.wequan.bu.repository.model.ThreadUserSelectedSubjects" useGeneratedKeys="true">
+  <insert id="addUserInterestedSubjects" parameterType="com.wequan.bu.repository.model.ThreadUserSelectedSubjects">
     insert into ${schema}.wq_thread_user_selected_subjects
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-     <if test="userId != null">
-      user_id,
-     </if>
-     <if test="subjectIds != null">
-      subject_ids,
-     </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="subjectIds != null">
-        #{subjectIds,jdbcType=VARCHAR},
-      </if>
-    </trim>
+      (user_id,
+      subject_ids)
+    values(#{userId,jdbcType=INTEGER},#{subjectIds,jdbcType=VARCHAR})
   </insert>
 
   <insert id="reportThread" keyColumn="id" keyProperty="id" useGeneratedKeys="true">

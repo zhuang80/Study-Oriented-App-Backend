@@ -254,12 +254,12 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     /**
      * 6/22
      * @param userId
-     * @param subjectsId
+     * @param subjectIds
      */
     @Override
-    public void addUserSelectedSubjects(Integer userId, String subjectsId){
-        if(userId!=null && subjectsId!=null){
-            threadMapper.addUserInterestedSubjects(userId, subjectsId);
+    public void addUserSelectedSubjects(Integer userId, String subjectIds){
+        if(userId!=null && subjectIds!=null){
+            threadMapper.addUserInterestedSubjects(userId, subjectIds);
         }
     }
 
