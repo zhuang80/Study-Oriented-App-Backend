@@ -1,12 +1,17 @@
 package com.wequan.bu.repository.model.extend;
 
-import com.wequan.bu.repository.model.Thread;
 import lombok.Data;
 
+/**
+ * @author ChrisChen
+ */
 @Data
-public class ThreadBriefInfo extends Thread {
+public class ThreadBriefInfo {
 
-    private Integer numberOfView;
-    private Integer numberOfReply;
+    private Integer id;
+    private Integer createBy;
+    private String title;
+    private Short category;
+    private Short tagId;
 
 }

@@ -44,4 +44,20 @@ public interface UserMapper extends GeneralMapper<User> {
      * @return UserStats实体
      */
     UserStats selectById(Integer userId);
+
+    /**
+     * 用户积分
+     * @param userId 用户id
+     * @return study point
+     */
+    Integer selectStudyPointByUserId(Integer userId);
+
+    /**
+     * 根据用户id更新学习积分
+     * @param userId 用户id
+     * @param amount 积分变动值
+     * @return 影响行数
+     */
+    int updateStudyPointByUserId(@Param("userId") Integer userId, @Param("amount") Short amount);
+
 }

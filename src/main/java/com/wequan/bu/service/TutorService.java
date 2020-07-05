@@ -1,9 +1,10 @@
 package com.wequan.bu.service;
 
-import com.wequan.bu.controller.vo.OnlineEvent;
+import com.wequan.bu.repository.model.OnlineEvent;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.repository.model.TutorApplication;
 import com.wequan.bu.repository.model.TutorViewHistory;
+import com.wequan.bu.repository.model.extend.TutorBriefInfo;
 import com.wequan.bu.repository.model.extend.TutorRateInfo;
 
 import java.util.List;
@@ -17,12 +18,11 @@ public interface TutorService extends Service<Tutor> {
     /**
      * 按搜索条件搜索tutor
      * @param whereCondition where
-     * @param groupCondition group by
      * @param orderCondition order by
      * @param pageCondition page
      * @return Tutor列表
      */
-    List<Tutor> search(String whereCondition, String groupCondition, String orderCondition, Map<String, Integer> pageCondition);
+    List<TutorBriefInfo> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition);
 
     public List<Tutor> findTutors(Integer subjectId, Integer pageNum, Integer pageSize);
 

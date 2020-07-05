@@ -3,6 +3,7 @@ package com.wequan.bu.security;
 import com.wequan.bu.config.WeQuanConstants;
 import com.wequan.bu.security.authentication.provider.EmailPasswordAuthenticationProvider;
 import com.wequan.bu.security.authentication.provider.UserNamePasswordAuthenticationProvider;
+import com.wequan.bu.security.component.RestApiWebSecurity;
 import com.wequan.bu.security.component.TokenAuthenticationEntryPoint;
 import com.wequan.bu.security.filter.TokenAuthenticationFilter;
 import com.wequan.bu.security.oauth2.CustomOAuth2UserService;
@@ -120,6 +121,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         .authenticationEntryPoint(tokenAuthenticationEntryPoint)
                         .and()
                     .authorizeRequests()
+                    .antMatchers(HttpMethod.GET, "/user/{id}/**").access("@restApiWebSecurity.checkUserId(authentication, request, #id)")
                     .anyRequest()
                         .permitAll()
                         .and()
@@ -161,6 +163,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public EmailPasswordAuthenticationProvider emailPasswordAuthenticationProvider() {
         return new EmailPasswordAuthenticationProvider();
+    }
+
+    @Bean
+    public RestApiWebSecurity restApiWebSecurity() {
+        return new RestApiWebSecurity();
     }
 
     @Bean

@@ -2,7 +2,8 @@ package com.wequan.bu.repository.model;
 
 import lombok.Data;
 
-import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * Database Table Remarks:
@@ -33,13 +34,13 @@ public class Appointment {
      * Database Column Remarks:
      *   辅导信息创建时间
      */
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      * Database Column Remarks:
      *   辅导信息更新时间
      */
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     /**
      * Database Column Remarks:
@@ -59,13 +60,13 @@ public class Appointment {
      * Database Column Remarks:
      *   辅导开始时间
      */
-    private Date startTime;
+    private LocalDateTime startTime;
 
     /**
      * Database Column Remarks:
      *   辅导结束时间
      */
-    private Date endTime;
+    private LocalDateTime endTime;
 
     /**
      * Database Column Remarks:
@@ -89,7 +90,7 @@ public class Appointment {
      * Database Column Remarks:
      *   交易费用
      */
-    private Float fee;
+    private Integer fee;
 
     /**
      * Database Column Remarks:
