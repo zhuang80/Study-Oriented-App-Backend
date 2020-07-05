@@ -6,7 +6,6 @@ import com.wequan.bu.controller.vo.UserVo;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.exception.NotImplementedException;
-import com.wequan.bu.json.JSON;
 import com.wequan.bu.repository.model.*;
 import com.wequan.bu.repository.model.extend.AppointmentBriefInfo;
 import com.wequan.bu.repository.model.extend.ThreadStats;
@@ -353,8 +352,6 @@ public class UserController {
 
     @GetMapping("/user/{id}/appointment/reviews")
     @ApiOperation(value = "a list of user's review for appointment ", notes = "返回用户对appointment评价列表")
-    @JSON(type = AppointmentBriefInfo.class, include = {"id", "title", "briefDescription", "startTime", "endTime",
-            "subjectId", "topicId", "fee", "tutorName"})
     public Result<List<AppointmentReview>> getUserAppointmentReviews(@PathVariable("id") Integer userId,
                                                                      @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                                      @RequestParam(value = "pageSize", required = false) Integer pageSize) {
