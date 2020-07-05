@@ -166,23 +166,16 @@ public interface ThreadMapper extends GeneralMapper<Thread>{
     List<Thread> selectedBySchoolIdOrderedByView(Integer schoolId, RowBounds rowBounds);
 
     /**
-     * 6/23
-     * @param threadId
-     * @param userId
-     * @param reason
-     * @param reportDate
+     * 7/4
+     * @param reportRecord
      */
-    void reportThread(Integer threadId, Integer userId, String reason, Date reportDate);
+    void reportThread(ReportRecord reportRecord);
 
     /**
-     * 6/23
-     * @param threadId
-     * @param replyId
-     * @param userId
-     * @param reason
-     * @param reportDate
+     * 7/4
+     * @param reportRecord
      */
-    void reportReplyToThread(Integer threadId, Integer replyId, Integer userId, String reason, Date reportDate);
+    void reportReplyToThread(ReportRecord reportRecord);
 
     /**
      * 6/26

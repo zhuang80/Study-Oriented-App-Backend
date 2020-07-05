@@ -301,79 +301,15 @@
   </insert>
 
   <insert id="reportThread" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
-    insert into ${schema}.wq_report_record
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        user_id,
-      </if>
-      <if test="resourceType != null">
-        resource_type,
-      </if>
-      <if test="resourceId != null">
-        resource_id,
-      </if>
-      <if test="reportTime != null">
-        report_time,
-      </if>
-      <if test="reason != null">
-        reason,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="resourceType != null">
-        #{1,jdbcType=SMALLINT},
-      </if>
-      <if test="resourceId != null">
-        #{threadId,jdbcType=INTEGER},
-      </if>
-      <if test="reportTime != null">
-        #{reportTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="reason != null">
-        #{reason,jdbcType=VARCHAR},
-      </if>
-    </trim>
+    insert into ${schema}.wq_report_records
+    (user_id,resource_type,resource_id,report_time, reason)
+    values(#{userId,jdbcType=INTEGER}, #{resourceType,jdbcType=SMALLINT}, #{resourceId,jdbcType=INTEGER}, #{reportTime,jdbcType=TIMESTAMP}, #{reason,jdbcType=VARCHAR})
   </insert>
 
   <insert id="reportReplyToThread" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
-    insert into ${schema}.wq_report_record
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        user_id,
-      </if>
-      <if test="resourceType != null">
-        resource_type,
-      </if>
-      <if test="resourceId != null">
-        resource_id,
-      </if>
-      <if test="reportTime != null">
-        report_time,
-      </if>
-      <if test="reason != null">
-        reason,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="resourceType != null">
-        #{2,jdbcType=SMALLINT},
-      </if>
-      <if test="resourceId != null">
-        #{replyId,jdbcType=INTEGER},
-      </if>
-      <if test="reportTime != null">
-        #{reportTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="reason != null">
-        #{reason,jdbcType=VARCHAR},
-      </if>
-    </trim>
+    insert into ${schema}.wq_report_records
+    (user_id, resource_type, resource_id, report_time, reason)
+    values(#{userId,jdbcType=INTEGER},#{resourceType,jdbcType=SMALLINT},#{resourceId,jdbcType=INTEGER},#{reportTime,jdbcType=TIMESTAMP},#{reason,jdbcType=VARCHAR})
   </insert>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.Thread">
@@ -436,13 +372,13 @@
   <update id="likeThread" parameterType="java.lang.Integer">
     update ${schema}.wq_thread
     set likes = likes+1
-    where id = #{threadId, jdbcType=INTEGER} and created_by = #{userId, jdbcType=INTEGER}
+    where id = #{threadId, jdbcType=INTEGER} and create_by = #{userId, jdbcType=INTEGER}
   </update>
 
   <update id="dislikeThread" parameterType="java.lang.Integer">
     update ${schema}.wq_thread
     set dislikes = dislikes+1
-    where id = #{threadId, jdbcType=INTEGER} and created_by = #{userId, jdbcType=INTEGER}
+    where id = #{threadId, jdbcType=INTEGER} and create_by = #{userId, jdbcType=INTEGER}
   </update>
 
   <update id="likeReplyOfThread" parameterType="java.lang.Integer">
