@@ -25,6 +25,12 @@
 
     <delete id="deleteByPrimaryKey">
         DELETE FROM ${schema}.wq_tutor_application_support_material
-        WHERE id = #{id, jdbcType=INTEGER}
+        WHERE id = ${id, jdbcType=INTEGER}
+    </delete>
+
+    <delete id="deleteByIds" parameterType="java.lang.String">
+        <bind name="ids" value="'('+ ids + ')'" />
+        DELETE FROM ${schema}.wq_tutor_application_support_material
+        WHERE id IN ${ids}
     </delete>
 </mapper>
