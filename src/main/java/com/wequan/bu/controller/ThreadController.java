@@ -151,6 +151,7 @@ public class ThreadController {
     @PostMapping("/thread/reply")
     @ApiOperation(value = "reply to the thread", notes = "包括直接/间接回复，返回回帖成功与否")
     public Result addThreadReply(@RequestBody ThreadStream threadStream) {
+        threadStream.setCreateTime(new Date());
         int result = threadService.insertReply(threadStream);
         if(result>0){
             return ResultGenerator.success(result);
