@@ -185,7 +185,7 @@ public class MaterialServiceImpl extends AbstractService<Material> implements Ma
     }
 
     @Override
-    public void deleteById(Integer id){
+    public void deleteSupportMaterialById(Integer id){
         //get the file meta data
         TutorApplicationSupportMaterial supportMaterial = supportMaterialMapper.selectByPrimaryKey(id);
         if(supportMaterial != null) {
@@ -193,6 +193,19 @@ public class MaterialServiceImpl extends AbstractService<Material> implements Ma
             storageService.deleteObject(supportMaterial.getStorePath());
             //delete file meta data from table
             supportMaterialMapper.deleteByPrimaryKey(id);
+        }
+    }
+
+    @Override
+    public void deleteSupportMaterialsByIds(String ids) {
+        //get the file meta data
+        if(ids != null && !ids.isEmpty()) {
+            List<TutorApplicationSupportMaterial> supportMaterials = supportMaterialMapper.selectByIds(ids);
+            for(TutorApplicationSupportMaterial supportMaterial : supportMaterials){
+                //delete file from S3
+                storageService.deleteObject(supportMaterial.getStorePath());
+            }
+            supportMaterialMapper.deleteByIds(ids);
         }
     }
 }
