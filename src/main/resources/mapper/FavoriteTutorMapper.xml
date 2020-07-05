@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.FavoriteTutorMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.FavoriteTutor">
+    <id column="user_id" jdbcType="INTEGER" property="userId" />
+    <id column="tutor_id" jdbcType="INTEGER" property="tutorId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+
+  <resultMap id="ResultMapWithTutor" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.FavoriteTutorBriefInfo">
+    <result column="tutor_name" jdbcType="VARCHAR" property="tutorName" />
+    <result column="tutor_first_name" jdbcType="VARCHAR" property="tutorFirstName" />
+    <result column="tutor_last_name" jdbcType="VARCHAR" property="tutorLastName" />
+    <result column="tutor_overall_rating" jdbcType="REAL" property="overallRating" />
+    <result column="tutor_subject_ids" jdbcType="VARCHAR" property="subjectIds" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    user_id, tutor_id, create_time
+  </sql>
+
+  <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.FavoriteTutor">
+    insert into ${schema}.wq_favorite_tutor
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="tutorId != null">
+        tutor_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="tutorId != null">
+        #{tutorId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from ${schema}.wq_favorite_tutor
+    where user_id = #{userId,jdbcType=INTEGER}
+    and tutor_id = #{tutorId,jdbcType=INTEGER}
+  </delete>
+
+  <select id="selectByUserId" resultMap="ResultMapWithTutor">
+    select
+      ft.*,
+      u.user_name tutor_name,
+      u.first_name tutor_first_name,
+      u.last_name tutor_last_name,
+      (select avg(tr.rating) from bu.wq_tutor_review tr where tr.tutor_id = ft.tutor_id) as tutor_overall_rating,
+      (select string_agg(ts.subject_id::character varying, ',') from bu.wq_tutor_subject ts where ts.tutor_id = ft.tutor_id) as tutor_subject_ids
+    from ${schema}.wq_favorite_tutor ft
+    inner join ${schema}.wq_tutor_profile t on t.id = ft.tutor_id
+    inner join ${schema}.wq_user_profile u on u.id = t.user_id
+    where ft.user_id = #{userId}
+  </select>
+
+</mapper>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.AppointmentReviewMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.AppointmentReview">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="appointment_id" jdbcType="INTEGER" property="appointmentId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="review" jdbcType="VARCHAR" property="review" />
+    <result column="score" jdbcType="SMALLINT" property="score" />
+  </resultMap>
+
+  <resultMap id="ResultMapWithAppointment" extends="BaseResultMap" type="com.wequan.bu.repository.model.AppointmentReview">
+    <association property="appointment" columnPrefix="_at_" resultMap="com.wequan.bu.repository.dao.AppointmentMapper.ResultMapWithNames" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, appointment_id, user_id, review, score
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ${schema}.wq_appointment_review
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByUserId" resultMap="ResultMapWithAppointment">
+    select
+      ar.*, a.id _at_id, a.title _at_title, a.brief_description _at_brief_description, a.start_time _at_start_time,
+      a.end_time _at_end_time, a.subject_id _at_subject_id, a.topic_id _at_topic_id, a.fee _at_fee, t.user_name _at_tutor_name,
+      a.user_id _at_user_id, a.tutor_id _at_tutor_id, a.create_time _at_create_time, a.update_time _at_update_time,
+      a.status _at_status, a.transaction_id _at_transaction_id
+    from ${schema}.wq_appointment_review ar
+    inner join ${schema}.wq_appointment a on a.id = ar.appointment_id
+    inner join (
+      select tp.id, up.user_name
+      from ${schema}.wq_tutor_profile tp
+      inner join ${schema}.wq_user_profile up on tp.user_id = up.id
+    ) t on t.id = a.tutor_id
+    where ar.user_id = #{userId}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ${schema}.wq_appointment_review
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.AppointmentReview" useGeneratedKeys="true">
+    insert into ${schema}.wq_appointment_review
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="appointmentId != null">
+        appointment_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="review != null and review != ''">
+        review,
+      </if>
+      <if test="score != null">
+        score,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="appointmentId != null">
+        #{appointmentId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="review != null and review != ''">
+        #{review,jdbcType=VARCHAR},
+      </if>
+      <if test="score != null">
+        #{score,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.AppointmentReview">
+    update ${schema}.wq_appointment_review
+    <set>
+      <if test="appointmentId != null">
+        appointment_id = #{appointmentId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="review != null and review != ''">
+        review = #{review,jdbcType=VARCHAR},
+      </if>
+      <if test="score != null">
+        score = #{score,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+</mapper>
