@@ -5,6 +5,7 @@ import com.wequan.bu.controller.vo.TutorApplicationVo;
 import com.wequan.bu.repository.dao.TutorApplicationEducationBackgroundMapper;
 import com.wequan.bu.repository.dao.TutorApplicationLogMapper;
 import com.wequan.bu.repository.dao.TutorApplicationMapper;
+import com.wequan.bu.repository.dao.TutorApplicationSupportMaterialMapper;
 import com.wequan.bu.repository.model.TutorApplication;
 import com.wequan.bu.repository.model.TutorApplicationEducationBackground;
 import com.wequan.bu.repository.model.extend.TutorApplicationFullInfo;
@@ -15,11 +16,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.sound.midi.SysexMessage;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -40,7 +41,7 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
     private TutorApplicationLogService tutorApplicationLogService;
 
     @Autowired
-    private TutorApplicationEducationBackgroundMapper educationBackgroundMapper;
+    private TutorApplicationEducationBackgroundService educationBackgroundService;
 
     @Autowired
     private TutorService tutorService;
@@ -90,24 +91,37 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
     @Async
     @Override
     public void update(TutorApplicationVo tutorApplicationVo, List<UploadFileWrapper> uploadFileWrapperList) throws IOException {
+        TutorApplication oldRecord = tutorApplicationMapper.selectByPrimaryKey(tutorApplicationVo.getId());
+
+        //find deleted ids
+        String deletedSupportMaterialIds = findDeletedIds(oldRecord.getSupportMaterialIds(),
+                tutorApplicationVo.getSupportMaterialIds());
+        String deletedEducationBackgroundIds = findDeletedIds(oldRecord.getEducationBackgroundIds(),
+                tutorApplicationVo.getEducationBackgroundIds());
+
+        System.out.println("================================ deleted support material ids "+ deletedSupportMaterialIds);
+        System.out.println("================================ deleted education background ids "+ deletedEducationBackgroundIds);
         List<Integer> smList = new ArrayList<>();
         List<Integer> ebList = new ArrayList<>();
 
         for(UploadFileWrapper file: uploadFileWrapperList){
             smList.addAll(materialService.uploadSupportMaterial(file));
         }
-        //support material ids list string
+        //added new support material ids list string
         String smIds = joinIds(smList);
 
-        //education background ids list string
+        //added new education background ids list string
         ebList.addAll(insertEducationBackground(tutorApplicationVo));
         String ebIds= joinIds(ebList);
 
-        materialService.deleteById(tutorApplicationVo.getDeletedSupportMaterialId());
-        educationBackgroundMapper.deleteByPrimaryKey(tutorApplicationVo.getDeletedEducationBackgroundId());
+        //delete support material (S3, database)
+        materialService.deleteSupportMaterialsByIds(deletedSupportMaterialIds);
 
+        //delete education background (database)
+        educationBackgroundService.deleteByIds(deletedEducationBackgroundIds);
+
+        //update tutor application table
         updateTutorApplication(tutorApplicationVo, smIds, ebIds);
-
     }
 
     @Override
@@ -145,6 +159,20 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         tutorApplicationLogService.addTutorApplicationLog(tutorApplication, TutorApplicationStatus.REQUIRE_AMEND, comment);
     }
 
+    @Override
+    public void deleteById(Integer applicationId){
+        TutorApplication tutorApplication = tutorApplicationMapper.selectByPrimaryKey(applicationId);
+        //delete education background
+        educationBackgroundService.deleteByIds(tutorApplication.getEducationBackgroundIds());
+        //delete support material (S3, database)
+        materialService.deleteSupportMaterialsByIds(tutorApplication.getSupportMaterialIds());
+        //update application log
+        tutorApplicationLogService.addTutorApplicationLog(tutorApplication, TutorApplicationStatus.DELETED, null);
+        //update application status
+        tutorApplication.setStatus(TutorApplicationStatus.DELETED.getValue());
+        tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
+    }
+
     private UploadFileWrapper transferAndWrap(MultipartFile[] multipartFiles, short type, Integer userId) throws IOException {
         List<File> files = materialService.uploadFiles(multipartFiles, OUTPUT_PATH);
         return (files == null ? null : new UploadFileWrapper(type, userId, files));
@@ -155,14 +183,30 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
      * @param ids the id list
      * @return a id list string, ids separated by commas
      */
-    private String joinIds(List<Integer> ids){
+    private <T> String joinIds(List<T> ids){
          return ids.stream()
                     .map(v->String.valueOf(v))
                     .collect(Collectors.joining(","));
     }
 
+    private String joinIds(String ids, String newIds){
+        if(ids == null){
+            if(newIds == null){
+                return "";
+            }else{
+                return newIds;
+            }
+        }else{
+            if(newIds == null){
+                return ids;
+            }else{
+                return ids + "," + newIds;
+            }
+        }
+    }
+
     private List<Integer> insertEducationBackground(List<TutorApplicationEducationBackground> educationBackgroundList){
-        educationBackgroundMapper.insertList(educationBackgroundList);
+        educationBackgroundService.save(educationBackgroundList);
         return educationBackgroundList
                 .stream()
                 .map(v -> v.getId())
@@ -186,9 +230,35 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         TutorApplication tutorApplication = new TutorApplication(tutorApplicationVo);
         tutorApplication.setCreateTime(tutorApplicationVo.getCreateTime());
         tutorApplication.setUpdateTime(LocalDateTime.now());
-        tutorApplication.setSupportMaterialIds(tutorApplicationVo.getSupportMaterialIds() + "," + smIds);
-        tutorApplication.setEducationBackgroundIds(tutorApplicationVo.getEducationBackgroundIds()+ "," + ebIds);
+
+        String supportMaterialIds = joinIds(tutorApplicationVo.getSupportMaterialIds(), smIds);
+        String educationBackgroundIds = joinIds(tutorApplicationVo.getEducationBackgroundIds(), ebIds);
+
+        tutorApplication.setSupportMaterialIds(supportMaterialIds);
+        tutorApplication.setEducationBackgroundIds(educationBackgroundIds);
+
         tutorApplication.setStatus(TutorApplicationStatus.PENDING.getValue());
         tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
+    }
+
+    /**
+     * to find deleted ids
+     * @param ids old ids
+     * @param newIds new ids
+     * @return deleted ids string
+     */
+    private String findDeletedIds(String ids, String newIds){
+        String[] idsArray = ids.split(",");
+        String[] newIdsArray = newIds.split(",");
+        List<String> result = new ArrayList<>();
+        Set<String> set = new HashSet<>(Arrays.asList(newIdsArray));
+
+        for(String id : idsArray){
+            if(!set.contains(id)){
+                result.add(id);
+            }
+        }
+
+        return joinIds(result);
     }
 }

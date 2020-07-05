@@ -42,5 +42,8 @@ public interface MaterialService extends Service<Material> {
 
     public List<Integer> uploadSupportMaterial(UploadFileWrapper files) throws IOException;
 
+    public void deleteSupportMaterialById(Integer id);
+
+    public void deleteSupportMaterialsByIds(String ids);
 
 }

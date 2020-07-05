@@ -87,6 +87,15 @@ public class TutorAdminController {
         return ResultGenerator.success();
     }
 
+    @DeleteMapping("/user/{id}/tutor_application/{application_id}")
+    @ResponseBody
+    @ApiOperation(value = "delete tutor application", notes = "删除tutor申请")
+    public Result deleteTutorApplication(@PathVariable("id") Integer userId,
+                                         @PathVariable("application_id") Integer applicationId){
+        tutorAdminService.deleteById(applicationId);
+        return ResultGenerator.success();
+    }
+
     @GetMapping("/user/{id}/tutor_applications/current")
     @ResponseBody
     @ApiOperation(value = "get current tutor application info for user", notes = "返回用户当前tutor申请信息")

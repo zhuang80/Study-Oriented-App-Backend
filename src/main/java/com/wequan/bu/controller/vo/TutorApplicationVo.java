@@ -36,8 +36,4 @@ public class TutorApplicationVo {
     private String subjectTopicsIds;
     private String supportMaterialIds;
     private List<TutorApplicationEducationBackground> educationBackgrounds;
-
-    private Integer deletedSupportMaterialId;
-    private Integer deletedEducationBackgroundId;
-
 }
