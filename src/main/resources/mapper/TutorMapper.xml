@@ -92,7 +92,8 @@
         </if>
     </select>
 
-    <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.Tutor">
+    <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.Tutor"
+        useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         INSERT INTO ${schema}.wq_tutor_profile (user_id, brief_introduction, create_time,
             update_time, status, late_policy_id,
             cancellation_policy_id, tutor_available, tutor_application_id,

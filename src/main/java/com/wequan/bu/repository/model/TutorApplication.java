@@ -54,6 +54,5 @@ public class TutorApplication {
         this.hourlyRate = t.getHourlyRate();
         this.latePolicyId = t.getLatePolicyId();
         this.cancellationPolicyId = t.getCancellationPolicyId();
-        this.subjectTopicsIds = t.getSubjectTopicsIds();
     }
 }
