@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.TutorApplicationSubjectTopicMapper">
+    <insert id="insertList" parameterType="com.wequan.bu.controller.vo.TutorApplicationSubjectTopic"
+        useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO ${schema}.wq_tutor_application_subject_topics (subject_id, topic_ids)
+        VALUES
+        <foreach item="item" collection="list" separator=",">
+            (#{item.subjectId}, #{item.topicIds})
+        </foreach>
+    </insert>
+
+    <select id="selectByIds" resultType="com.wequan.bu.controller.vo.TutorApplicationSubjectTopic">
+        <bind name="ids" value="'(' + ids + ')'" />
+        SELECT *
+        FROM ${schema}.wq_tutor_application_subject_topics
+        WHERE id IN ${ids}
+    </select>
+</mapper>
