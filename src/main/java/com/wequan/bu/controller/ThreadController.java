@@ -47,6 +47,7 @@ public class ThreadController {
                                                       @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                       @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         List<Thread> result = threadService.findBySchoolIdOrderByView(schoolId, pageNum, pageSize);
+
         return ResultGenerator.success(result);
     }
 
@@ -364,28 +365,6 @@ public class ThreadController {
                                                                   @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         List<Thread> result = threadService.getUserInterestedStudyHelpThreads(userId, subjectIds, pageNum, pageSize);
         return ResultGenerator.success(result);
-    }
-
-    @GetMapping("/thread/{id}/sse/likes")
-    @ApiOperation(value = "# of likes for thread in real time", notes = "实时显示帖子likes数")
-    public SseEmitter sseEmitterForThreadLikes(@PathVariable("id") Integer threadId) {
-        SseEmitter emitter = new SseEmitter();
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(() -> {
-            try {
-                for (int i = 0; true; i++) {
-                    SseEmitter.SseEventBuilder event = SseEmitter.event()
-                            .data(setData(threadId))
-                            .id(String.valueOf(i))
-                            .name("sse event - mvc");
-                    emitter.send(event);
-                    java.lang.Thread.sleep(1000);
-                }
-            } catch (Exception ex) {
-                emitter.completeWithError(ex);
-            }
-        });
-        return emitter;
     }
 
     private Object setData(Integer threadId) {
