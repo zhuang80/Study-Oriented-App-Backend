@@ -315,12 +315,11 @@
     </trim>
   </insert>
 
-  <insert id="addUserInterestedSubjects" parameterType="com.wequan.bu.repository.model.ThreadUserSelectedSubjects">
-    insert into ${schema}.wq_thread_user_selected_subjects
-      (user_id,
-      subject_ids)
-    values(#{userId,jdbcType=INTEGER},#{subjectIds,jdbcType=VARCHAR})
-  </insert>
+  <update id="addUserInterestedSubjects">
+    update ${schema}.wq_thread_user_selected_subjects
+    set subject_ids = #{subjectIds,jdbcType=VARCHAR}
+    where user_id = #{userId,jdbcType=INTEGER}
+  </update>
 
   <insert id="reportThread" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
     insert into ${schema}.wq_report_records
