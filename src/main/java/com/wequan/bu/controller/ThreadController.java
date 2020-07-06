@@ -47,6 +47,7 @@ public class ThreadController {
                                                       @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                       @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         List<Thread> result = threadService.findBySchoolIdOrderByView(schoolId, pageNum, pageSize);
+
         return ResultGenerator.success(result);
     }
 

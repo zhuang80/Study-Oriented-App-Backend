@@ -106,9 +106,9 @@
   <select id="selectedBySchoolIdOrderedByView" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
     update_time, likes, dislikes, status, school_id
-    from ${schema}.wq_thread
+    from ${schema}.wq_thread join ${schema}.wq_thread_view_history on ${schema}.wq_thread.id = ${schema}.wq_thread_view_history.thread_id
     where school_id = #{schoolId, jdbcType=INTEGER}
-    order by num_of_view desc
+    order by (select count(1) from ${schema}.wq_thread_view_history where ${schema}.wq_thread.id = ${schema}.wq_thread_view_history.thread_id) desc
   </select>
 
   <select id="getUserInterestedStudyHelpThreadsByIds" resultMap="BaseResultMap">
