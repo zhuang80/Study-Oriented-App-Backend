@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -58,6 +60,7 @@ public class TutorInquiryServiceImpl extends AbstractService<TutorInquiry> imple
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void save(TutorInquiryVo tutorInquiry) {
+        tutorInquiry.setCreateTime(new Date());
         tutorInquiryMapper.save(tutorInquiry);
     }
 
