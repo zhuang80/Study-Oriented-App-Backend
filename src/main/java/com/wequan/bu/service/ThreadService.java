@@ -14,14 +14,14 @@ public interface ThreadService extends Service<Thread> {
 
     public int deleteByPrimaryKey(Integer id);
 
-    public int insert(Thread record);
+    public void insert(Thread record);
 
     /**
      * 6/20
      * @param threadStream
      * @return
      */
-    public int insertReply(ThreadStream threadStream);
+    public void insertReply(ThreadStream threadStream);
 
     public int insertSelective(Thread record);
 
@@ -34,7 +34,7 @@ public interface ThreadService extends Service<Thread> {
      * @param threadStream
      * @return
      */
-    public int replyToThread(ThreadStream threadStream);
+    public void replyToThread(ThreadStream threadStream);
 
     /**
      * 6/19
