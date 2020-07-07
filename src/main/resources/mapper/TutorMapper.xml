@@ -19,6 +19,7 @@
 
     <resultMap id="TutorRateResultMap" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.TutorRateInfo">
         <result column="score" jdbcType="DOUBLE" property="score" />
+        <result column="view_number" jdbcType="INTEGER" property="viewNumber" />
         <association property="user"
                      column="user_id"
                      select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey" />
@@ -30,12 +31,11 @@
 
     <resultMap id="ResultMapUsingInSearch" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.TutorBriefInfo">
         <result column="score" jdbcType="DOUBLE" property="score" />
-        <result column="view_number" jdbcType="INTEGER" property="viewNumber" />
         <association property="user" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithBriefInfo" />
         <collection property="subjectList" columnPrefix="s_" resultMap="com.wequan.bu.repository.dao.SubjectsMapper.ResultMapWithBriefInfo" />
     </resultMap>
 
-    <select id="selectTutors" resultMap="ResultMapUsingInSearch">
+    <select id="selectTutors" resultMap="TutorRateResultMap">
         WITH temp_rate AS(
             SELECT
                 tutor_id,
@@ -66,7 +66,7 @@
         ORDER BY score DESC, tp.create_time DESC
     </select>
 
-    <select id="selectTopTutors" resultMap="ResultMapUsingInSearch">
+    <select id="selectTopTutors" resultMap="TutorRateResultMap">
         WITH temp_rate AS(
             SELECT
                 tutor_id,
@@ -97,7 +97,7 @@
         ORDER BY score DESC, view_number DESC
     </select>
 
-    <select id="selectByPrimaryKey" resultMap="ResultMapUsingInSearch">
+    <select id="selectByPrimaryKey" resultMap="TutorRateResultMap">
         WITH temp_rate AS(
             SELECT
                 tutor_id,
