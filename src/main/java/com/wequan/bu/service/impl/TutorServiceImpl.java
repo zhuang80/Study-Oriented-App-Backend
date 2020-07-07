@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -100,6 +101,7 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void approveTutorApplication(TutorApplication tutorApplication) {
         Tutor tutor = setTutorProfile(tutorApplication);
         tutorMapper.insertSelective(tutor);
@@ -107,6 +109,7 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateAvailability(Integer tutorId, Short action) {
         Tutor tutor = new Tutor();
         tutor.setId(tutorId);
@@ -115,6 +118,7 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void logTutorViewHistory(Tutor tutor, Integer userId) {
         /** check whether the user who view the tutor profile is the owner of the profile
          * only log view history when the user is not the owner of the profile
@@ -145,6 +149,7 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
         return tutor;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     private void saveTutorSubject(Tutor tutor, TutorApplication tutorApplication){
         List<TutorApplicationSubjectTopic> subjectTopics = subjectTopicService.findByIds(tutorApplication.getSubjectTopicsIds());
         List<TutorSubject> tutorSubjectList = new ArrayList<>();

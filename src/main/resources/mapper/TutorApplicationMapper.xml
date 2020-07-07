@@ -17,8 +17,8 @@
         <result column="education_background_ids" jdbcType="VARCHAR" property="educationBackgroundIds" />
         <result column="subject_topics_ids" jdbcType="VARCHAR" property="subjectTopicsIds" />
         <result column="support_material_ids" jdbcType="VARCHAR" property="supportMaterialIds" />
-        <collection property="topicList" ofType="com.wequan.bu.repository.model.Topic"
-                    select="com.wequan.bu.repository.dao.TopicMapper.selectByIds" column="subject_topics_ids" />
+        <collection property="topicList" ofType="com.wequan.bu.controller.vo.TutorApplicationSubjectTopic"
+                    select="com.wequan.bu.repository.dao.TutorApplicationSubjectTopicMapper.selectByIds" column="subject_topics_ids" />
         <collection property="educationBackgroundList"
                     ofType="com.wequan.bu.repository.model.TutorApplicationEducationBackground"
                     select="com.wequan.bu.repository.dao.TutorApplicationEducationBackgroundMapper.selectByIds"
