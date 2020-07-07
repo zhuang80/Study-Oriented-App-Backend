@@ -27,6 +27,6 @@ public class TutorBriefInfo {
     private Integer hourlyRate;
     private Double score;
     private List<SubjectBriefInfo> subjectList;
-    private Integer viewNumber;
+
 
 }
