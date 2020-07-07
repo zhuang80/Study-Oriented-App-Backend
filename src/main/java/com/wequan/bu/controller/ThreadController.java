@@ -11,14 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * @author ChrisChen
@@ -138,10 +134,8 @@ public class ThreadController {
     @ApiOperation(value = "add thread", notes = "返回创建帖子成功与否")
     public Result addThread(@RequestBody Thread thread) {
         thread.setCreateTime(new Date());
-        if(threadService.insert(thread)>0){
-            return ResultGenerator.success();
-        }
-        return null;
+        threadService.insert(thread);
+        return ResultGenerator.success();
     }
 
     /**
@@ -153,11 +147,9 @@ public class ThreadController {
     @ApiOperation(value = "reply to the thread", notes = "包括直接/间接回复，返回回帖成功与否")
     public Result addThreadReply(@RequestBody ThreadStream threadStream) {
         threadStream.setCreateTime(new Date());
-        int result = threadService.insertReply(threadStream);
-        if(result>0){
-            return ResultGenerator.success(result);
-        }
-        return null;
+        threadService.insertReply(threadStream);
+        Result result = ResultGenerator.success();
+        return ResultGenerator.success(result);
     }
 
     /**
