@@ -1,5 +1,6 @@
 package com.wequan.bu.service.impl;
 
+import com.wequan.bu.controller.vo.TutorApplicationSubjectTopic;
 import com.wequan.bu.controller.vo.UploadFileWrapper;
 import com.wequan.bu.controller.vo.TutorApplicationVo;
 import com.wequan.bu.repository.dao.TutorApplicationEducationBackgroundMapper;
@@ -47,6 +48,9 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
     @Autowired
     private TutorService tutorService;
 
+    @Autowired
+    private TutorApplicationSubjectTopicService subjectTopicService;
+
     @PostConstruct
     public void postConstruct(){
         this.setMapper(tutorApplicationMapper);
@@ -57,6 +61,7 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
     public void apply(TutorApplicationVo tutorApplicationVo, List<UploadFileWrapper> uploadFileWrapperList) throws IOException {
         List<Integer> smList = new ArrayList<>();
         List<Integer> ebList = new ArrayList<>();
+        List<Integer> stList = new ArrayList<>();
 
         for(UploadFileWrapper file: uploadFileWrapperList){
             smList.addAll(materialService.uploadSupportMaterial(file));
@@ -68,10 +73,15 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         ebList.addAll(insertEducationBackground(tutorApplicationVo));
         String ebIds= joinIds(ebList);
 
+        //subject topics ids list string
+        stList.addAll(insertSubjectTopics(tutorApplicationVo));
+        String stIds = joinIds(stList);
+
+
         for(TutorApplicationEducationBackground t: tutorApplicationVo.getEducationBackgrounds()){
             System.out.println(t.getId() + "    gpa "+t.getGpa());
         }
-        insertTutorApplication(tutorApplicationVo, smIds, ebIds);
+        insertTutorApplication(tutorApplicationVo, smIds, ebIds, stIds);
     }
 
     @Override
@@ -222,11 +232,12 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         return insertEducationBackground(tutorApplicationVo.getEducationBackgrounds());
     }
 
-    private void insertTutorApplication(TutorApplicationVo tutorApplicationVo, String smIds, String ebIds){
+    private void insertTutorApplication(TutorApplicationVo tutorApplicationVo, String smIds, String ebIds, String stIds){
         TutorApplication tutorApplication = new TutorApplication(tutorApplicationVo);
         tutorApplication.setCreateTime(LocalDateTime.now());
         tutorApplication.setSupportMaterialIds(smIds);
         tutorApplication.setEducationBackgroundIds(ebIds);
+        tutorApplication.setSubjectTopicsIds(stIds);
         tutorApplication.setStatus(TutorApplicationStatus.PENDING.getValue());
         tutorApplicationMapper.insertSelective(tutorApplication);
         tutorApplicationLogService.addTutorApplicationLog(tutorApplication, TutorApplicationStatus.PENDING, null);
@@ -266,5 +277,17 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         }
 
         return joinIds(result);
+    }
+
+    private List<Integer> insertSubjectTopics(List<TutorApplicationSubjectTopic> subjectTopics){
+        subjectTopicService.save(subjectTopics);
+        return subjectTopics
+                .stream()
+                .map(v -> v.getId())
+                .collect(Collectors.toList());
+    }
+
+    private List<Integer> insertSubjectTopics(TutorApplicationVo tutorApplicationVo){
+        return insertSubjectTopics(tutorApplicationVo.getSubjectTopics());
     }
 }

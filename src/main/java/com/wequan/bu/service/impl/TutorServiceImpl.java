@@ -1,17 +1,17 @@
 package com.wequan.bu.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.wequan.bu.controller.vo.TutorApplicationSubjectTopic;
 import com.wequan.bu.repository.dao.OnlineEventMapper;
 import com.wequan.bu.repository.dao.TutorMapper;
 import com.wequan.bu.repository.dao.TutorViewHistoryMapper;
-import com.wequan.bu.repository.model.OnlineEvent;
-import com.wequan.bu.repository.model.Tutor;
-import com.wequan.bu.repository.model.TutorApplication;
-import com.wequan.bu.repository.model.TutorViewHistory;
+import com.wequan.bu.repository.model.*;
 import com.wequan.bu.repository.model.extend.TutorBriefInfo;
 import com.wequan.bu.repository.model.extend.TutorRateInfo;
 import com.wequan.bu.service.AbstractService;
+import com.wequan.bu.service.TutorApplicationSubjectTopicService;
 import com.wequan.bu.service.TutorService;
+import com.wequan.bu.service.TutorSubjectService;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,12 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
     private OnlineEventMapper onlineEventMapper;
     @Autowired
     private TutorViewHistoryMapper tutorViewHistoryMapper;
+
+    @Autowired
+    private TutorApplicationSubjectTopicService subjectTopicService;
+
+    @Autowired
+    private TutorSubjectService tutorSubjectService;
 
     @PostConstruct
     public void postConstruct() {
@@ -96,6 +103,7 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
     public void approveTutorApplication(TutorApplication tutorApplication) {
         Tutor tutor = setTutorProfile(tutorApplication);
         tutorMapper.insertSelective(tutor);
+        saveTutorSubject(tutor, tutorApplication);
     }
 
     @Override
@@ -135,6 +143,19 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
         tutor.setTeachMethod(tutorApplication.getTeachMethod());
         tutor.setHourlyRate(tutorApplication.getHourlyRate());
         return tutor;
+    }
+
+    private void saveTutorSubject(Tutor tutor, TutorApplication tutorApplication){
+        List<TutorApplicationSubjectTopic> subjectTopics = subjectTopicService.findByIds(tutorApplication.getSubjectTopicsIds());
+        List<TutorSubject> tutorSubjectList = new ArrayList<>();
+        for(TutorApplicationSubjectTopic subjectTopic : subjectTopics){
+            TutorSubject tutorSubject = new TutorSubject();
+            tutorSubject.setTutorId(tutor.getId());
+            tutorSubject.setSubjectId(subjectTopic.getSubjectId());
+            tutorSubject.setCreateTime(LocalDateTime.now());
+            tutorSubjectList.add(tutorSubject);
+        }
+        tutorSubjectService.save(tutorSubjectList);
     }
 
 }
