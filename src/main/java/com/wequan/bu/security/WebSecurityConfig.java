@@ -121,7 +121,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         .authenticationEntryPoint(tokenAuthenticationEntryPoint)
                         .and()
                     .authorizeRequests()
-                    .antMatchers(HttpMethod.GET, "/user/{id}/**").access("@restApiWebSecurity.checkUserId(authentication, request, #id)")
+                    .antMatchers(HttpMethod.GET, "/user/{id}/*").access("@restApiWebSecurity.checkUserId(authentication, request, #id)")
                     .anyRequest()
                         .permitAll()
                         .and()
