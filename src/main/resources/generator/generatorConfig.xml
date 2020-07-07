@@ -29,9 +29,9 @@
         <plugin type="com.itfsw.mybatis.generator.plugins.ExampleTargetPlugin">
             <property name="targetPackage" value="com.wequan.bu.repository.dao.mbg.example"/>
         </plugin>
-        <plugin type="org.mybatis.generator.plugins.CachePlugin"/>
+<!--        <plugin type="org.mybatis.generator.plugins.CachePlugin"/>-->
         <plugin type="org.mybatis.generator.plugins.CaseInsensitiveLikePlugin"/>
-        <plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin"/>
+<!--        <plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin"/>-->
         <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
 
         <commentGenerator>
