@@ -51,11 +51,10 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
      * @return
      */
     @Override
-    public int insert(Thread record){
+    public void insert(Thread record){
         if(record!=null){
-            return threadMapper.insertThread(record);
+            threadMapper.insertThread(record);
         }
-        return -1;
     }
 
     /**
@@ -64,11 +63,10 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
      * @return
      */
     @Override
-    public int insertReply(ThreadStream threadStream){
+    public void insertReply(ThreadStream threadStream){
         if(threadStream!=null){
-            return threadMapper.insertReply(threadStream);
+            threadMapper.insertReply(threadStream);
         }
-        return -1;
     }
     @Override
     public int insertSelective(Thread record){
@@ -97,11 +95,10 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
      * @return
      */
     @Override
-    public int replyToThread(ThreadStream threadStream){
+    public void replyToThread(ThreadStream threadStream){
         if(threadStream!=null){
-            return threadMapper.insertReply(threadStream);
+            threadMapper.insertReply(threadStream);
         }
-        return -1;
     }
 
     /**
