@@ -17,6 +17,7 @@ import org.apache.ibatis.session.RowBounds;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.time.Duration;
@@ -59,6 +60,7 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void makeAppointment(Appointment appointment) {
         appointment.setCreateTime(LocalDateTime.now());
         appointment.setStatus(AppointmentStatus.DEFAULT.getValue());
@@ -69,6 +71,7 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateTransactionIdByPrimaryKey(Integer appointmentId, String transactionId) {
         Appointment appointment = new Appointment();
         appointment.setId(appointmentId);
@@ -79,6 +82,7 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateAppointment(Appointment appointment, Integer tutorId, Integer appointmentId) throws Exception{
         Appointment oldRecord = appointmentMapper.selectByPrimaryKey(appointmentId);
         if(oldRecord == null) {
@@ -109,6 +113,7 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateStatus(String paymentIntentId, AppointmentStatus status) {
         Transaction transaction = transactionMapper.selectByThirdPartyTransactionId(paymentIntentId);
 

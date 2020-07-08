@@ -16,4 +16,5 @@
         FROM ${schema}.wq_tutor_application_subject_topics
         WHERE id IN ${ids}
     </select>
+
 </mapper>
