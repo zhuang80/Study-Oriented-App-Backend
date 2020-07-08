@@ -95,4 +95,6 @@ public class Thread {
      * 同帖子关联的文件（图片，文件等）的S3链接id，多个id用逗号分隔，关联thread_resource(id)
      */
     private String resourceIds;
+
+    private ThreadResource threadResource;
 }
