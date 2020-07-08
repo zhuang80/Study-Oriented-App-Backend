@@ -28,4 +28,5 @@ public class TutorBriefInfo {
     private Double score;
     private List<SubjectBriefInfo> subjectList;
 
+
 }

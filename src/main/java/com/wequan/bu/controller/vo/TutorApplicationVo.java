@@ -35,5 +35,6 @@ public class TutorApplicationVo {
      */
     private List<TutorApplicationSubjectTopic> subjectTopics;
     private String supportMaterialIds;
+    private String subjectTopicsIds;
     private List<TutorApplicationEducationBackground> educationBackgrounds;
 }

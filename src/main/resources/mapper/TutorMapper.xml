@@ -18,6 +18,8 @@
     </resultMap>
 
     <resultMap id="TutorRateResultMap" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.TutorRateInfo">
+        <result column="score" jdbcType="DOUBLE" property="score" />
+        <result column="view_number" jdbcType="INTEGER" property="viewNumber" />
         <association property="user"
                      column="user_id"
                      select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey" />
@@ -28,7 +30,7 @@
     </resultMap>
 
     <resultMap id="ResultMapUsingInSearch" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.TutorBriefInfo">
-        <result column="t_score" jdbcType="DOUBLE" property="score" />
+        <result column="score" jdbcType="DOUBLE" property="score" />
         <association property="user" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithBriefInfo" />
         <collection property="subjectList" columnPrefix="s_" resultMap="com.wequan.bu.repository.dao.SubjectsMapper.ResultMapWithBriefInfo" />
     </resultMap>
@@ -36,17 +38,27 @@
     <select id="selectTutors" resultMap="TutorRateResultMap">
         WITH temp_rate AS(
             SELECT
-            tutor_id,
-            AVG(rating) as score
+                tutor_id,
+                AVG(rating) as score
             FROM ${schema}.wq_tutor_review
             GROUP BY tutor_id
+        ),
+
+        temp_view AS(
+        SELECT
+        tutor_id,
+        COUNT(id) as view_number
+        FROM ${schema}.wq_tutor_view_history
+        GROUP BY tutor_id
         )
 
         SELECT
             tp.*,
-            tr.score
+            COALESCE(tr.score,0) as score,
+            COALESCE(tv.view_number, 0) as view_number
         FROM ${schema}.wq_tutor_profile tp
         LEFT JOIN temp_rate tr on tr.tutor_id = tp.id
+        LEFT JOIN temp_view tv on tv.tutor_id = tp.id
         <if test="subject_id != null">
             LEFT JOIN ${schema}.wq_tutor_subject ts on tp.id = ts.tutor_id
             WHERE ts.subject_id = #{subject_id}
@@ -61,24 +73,56 @@
                 AVG(rating) as score
             FROM ${schema}.wq_tutor_review
             GROUP BY tutor_id
+        ),
+
+        temp_view AS(
+            SELECT
+                tutor_id,
+                COUNT(id) as view_number
+            FROM ${schema}.wq_tutor_view_history
+            GROUP BY tutor_id
         )
 
         SELECT
             tp.*,
-            tr.score
+            COALESCE(tr.score,0) as score,
+            COALESCE(tv.view_number, 0) as view_number
         FROM ${schema}.wq_tutor_profile tp
         LEFT JOIN temp_rate tr on tr.tutor_id = tp.id
+        LEFT JOIN temp_view tv on tv.tutor_id = tp.id
         <if test="subject_id != null">
             LEFT JOIN ${schema}.wq_tutor_subject ts on tp.id = ts.tutor_id
             WHERE ts.subject_id = #{subject_id}
         </if>
-        ORDER BY score DESC
+        ORDER BY score DESC, view_number DESC
     </select>
 
     <select id="selectByPrimaryKey" resultMap="TutorRateResultMap">
-        SELECT *
+        WITH temp_rate AS(
+            SELECT
+                tutor_id,
+                AVG(rating) as score
+            FROM ${schema}.wq_tutor_review
+            GROUP BY tutor_id
+        ),
+
+        temp_view AS(
+        SELECT
+        tutor_id,
+        COUNT(id) as view_number
+        FROM ${schema}.wq_tutor_view_history
+        GROUP BY tutor_id
+        )
+
+
+        SELECT
+            tp.*,
+            COALESCE(tr.score,0) as score,
+            COALESCE(tv.view_number, 0) as view_number
         FROM ${schema}.wq_tutor_profile tp
-        WHERE tp.id = #{id, jdbcType=INTEGER}
+        LEFT JOIN temp_rate tr on tr.tutor_id = tp.id
+        LEFT JOIN temp_view tv on tv.tutor_id = tp.id
+        WHERE id = #{id}
     </select>
 
     <select id="selectByConditions" resultMap="ResultMapUsingInSearch">

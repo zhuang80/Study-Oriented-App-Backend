@@ -252,5 +252,6 @@
   <select id="selectAll" resultType="com.wequan.bu.repository.model.Appointment">
     SELECT *
     FROM ${schema}.wq_appointment
+    ORDER BY start_time DESC
   </select>
 </mapper>

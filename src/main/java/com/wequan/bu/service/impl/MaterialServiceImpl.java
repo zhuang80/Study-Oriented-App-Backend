@@ -14,6 +14,7 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
@@ -142,6 +143,7 @@ public class MaterialServiceImpl extends AbstractService<Material> implements Ma
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<Integer> uploadSupportMaterial(UploadFileWrapper filesWrapper) throws IOException {
         if(filesWrapper == null) return null;
         List<Integer> idList = new ArrayList<>();
@@ -185,6 +187,7 @@ public class MaterialServiceImpl extends AbstractService<Material> implements Ma
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteSupportMaterialById(Integer id){
         //get the file meta data
         TutorApplicationSupportMaterial supportMaterial = supportMaterialMapper.selectByPrimaryKey(id);
@@ -197,6 +200,7 @@ public class MaterialServiceImpl extends AbstractService<Material> implements Ma
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteSupportMaterialsByIds(String ids) {
         //get the file meta data
         if(ids != null && !ids.isEmpty()) {
