@@ -13,15 +13,16 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="likes" jdbcType="INTEGER" property="likes" />
     <result column="dislikes" jdbcType="INTEGER" property="dislikes" />
-    <result column="status" jdbcType="INTEGER" property="status"/>
-    <result column="school_id" jdbcType="INTEGER" property="schoolId"/>
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="school_id" jdbcType="INTEGER" property="schoolId" />
   </resultMap>
 
   <resultMap id="ResultMapWithStats" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.ThreadStats">
-    <result column="create_by_name" jdbcType="VARCHAR" property="createByName" />
     <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
     <result column="number_of_view" jdbcType="INTEGER" property="numberOfView" />
     <result column="number_of_reply" jdbcType="INTEGER" property="numberOfReply" />
+    <association property="createByUser" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithBriefInfo" />
+    <collection property="threadResources" columnPrefix="tr_" resultMap="com.wequan.bu.repository.dao.ThreadResourceMapper.BaseResultMap" />
   </resultMap>
 
   <resultMap id="StreamResultMap" type="com.wequan.bu.repository.model.ThreadStream">
@@ -34,7 +35,6 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="likes" jdbcType="INTEGER" property="likes" />
     <result column="dislikes" jdbcType="INTEGER" property="dislikes" />
-    <result column="resource_ids" jdbcType="VARCHAR" property="resourceIds"/>
   </resultMap>
 
   <resultMap id="SubjectsResultMap" type="com.wequan.bu.repository.model.ThreadUserSelectedSubjects">
@@ -56,11 +56,21 @@
     update_time, likes, dislikes, status, school_id
   </sql>
 
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithStats">
     select 
-    <include refid="Base_Column_List" />
-    from ${schema}.wq_thread
-    where id = #{id,jdbcType=INTEGER}
+      t.*,
+      u.user_name as u_user_name, u.school_id as u_school_id, u.first_name as u_first_name, u.last_name as u_last_name,
+      u.avatar as u_avatar, u.avatar_url_in_provider as u_avatar_url_in_provider, u.id as u_id,
+      tg.name as tag_name,
+      (select count(1) from ${schema}.wq_thread_view_history v where v.thread_id = t.id) as number_of_view,
+      (select count(1) from ${schema}.wq_thread_stream s where s.thread_id = t.id) as number_of_reply,
+      tr.id tr_id, tr.type tr_type, tr.link tr_link, tr.file_type tr_file_type,
+      tr.file_name tr_file_name, tr.belong_id tr_belong_id
+    from ${schema}.wq_thread t
+    inner join ${schema}.wq_user_profile u on u.id = t.create_by
+    inner join ${schema}.wq_tags tg on tg.id = t.tag_id
+    inner join ${schema}.wq_thread_resource tr on t.id = tr.belong_id
+    where t.id = #{id,jdbcType=INTEGER}
   </select>
 
   <select id="selectBySchoolId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -104,12 +114,12 @@
   </select>
 
   <select id="selectedBySchoolIdOrderedByView" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
-    update_time, likes, dislikes, status, school_id
-    from ${schema}.wq_thread join ${schema}.wq_thread_view_history on ${schema}.wq_thread.id = ${schema}.wq_thread_view_history.thread_id
-    where school_id = #{schoolId, jdbcType=INTEGER}
-    order by
-    (select count(${schema}.wq_thread_view_history.thread_id) from ${schema}.wq_thread_view_history where ${schema}.wq_thread.id = ${schema}.wq_thread_view_history.thread_id) desc
+    select
+    t.*,
+    (select count(1) from ${schema}.wq_thread_view_history where thread_id = t.id) as view_of_number
+    from ${schema}.wq_thread t
+    where school_id = #{schoolId,jdbcType=INTEGER}
+    order by view_of_number desc
   </select>
 
   <select id="getUserInterestedStudyHelpThreadsByIds" resultMap="BaseResultMap">
@@ -118,15 +128,16 @@
     from ${schema}.wq_thread join ${schema}.wq_thread_subject on ${schema}.wq_thread.id = ${schema}.wq_thread_subject.thread_id
     where ${schema}.wq_thread_subject.subject_id in
     <foreach item="subjectId" collection="res" open="(" separator="," close=")">
-    #{subjectId}
-  </foreach>
+      #{subjectId}
+    </foreach>
     and ${schema}.wq_thread.create_by = #{userId,jdbcType=INTEGER}
   </select>
 
   <select id="selectByUserId" resultMap="ResultMapWithStats">
     select
       t.*,
-      u.user_name as create_by_name,
+      u.user_name as u_user_name, u.school_id as u_school_id, u.first_name as u_first_name, u.last_name as u_last_name,
+      u.avatar as u_avatar, u.avatar_url_in_provider as u_avatar_url_in_provider, u.id as u_id,
       tg.name as tag_name,
       (select count(1) from ${schema}.wq_thread_view_history v where v.thread_id = t.id) as number_of_view,
       (select count(1) from ${schema}.wq_thread_stream s where s.thread_id = t.id) as number_of_reply
@@ -139,7 +150,8 @@
   <select id="selectThreadStatsById" resultMap="ResultMapWithStats">
     select
       t.*,
-      u.user_name as create_by_name,
+      u.user_name as u_user_name, u.school_id as u_school_id, u.first_name as u_first_name, u.last_name as u_last_name,
+      u.avatar as u_avatar, u.avatar_url_in_provider as u_avatar_url_in_provider, u.id as u_id,
       tg.name as tag_name,
       (select count(1) from ${schema}.wq_thread_view_history v where v.thread_id = t.id) as number_of_view,
       (select count(1) from ${schema}.wq_thread_stream s where s.thread_id = t.id) as number_of_reply
@@ -159,44 +171,96 @@
     where user_id = #{userId,jdbcType=INTEGER}
   </delete>
 
+  <insert id="addRecordOfThreadView" useGeneratedKeys="true">
+    insert into ${schema}.wq_thread_view_history
+    (user_id, thread_id, view_time)
+    values(#{userId,jdbcType=INTEGER}, #{threadId,jdbcType=INTEGER}, #{viewTime,jdbcType=TIMESTAMP})
+  </insert>
+
   <insert id="insertThread" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.Thread" useGeneratedKeys="true">
     insert into ${schema}.wq_thread
-    ( create_by,
-    title,
-    category,
-    tag_id,
-    content,
-    study_points_bonus,
-    create_time,
-    update_time,
-    likes,
-    dislikes,
-    status,
-    school_id,
-    resource_ids)
-    values(
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="category != null">
+        category,
+      </if>
+      <if test="tagId != null">
+        tag_id,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="studyPointsBonus != null">
+        study_points_bonus,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="likes != null">
+        likes,
+      </if>
+      <if test="dislikes != null">
+        dislikes,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="schoolId != null">
+        school_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="createBy != null">
         #{createBy,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
         #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
         #{category,jdbcType=SMALLINT},
+      </if>
+      <if test="tagId != null">
         #{tagId,jdbcType=SMALLINT},
+      </if>
+      <if test="content != null">
         #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="studyPointsBonus != null">
         #{studyPointsBonus,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="likes != null">
         #{likes,jdbcType=INTEGER},
+      </if>
+      <if test="dislikes != null">
         #{dislikes,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
         #{status,jdbcType=INTEGER},
+      </if>
+      <if test="schoolId != null">
         #{schoolId,jdbcType=INTEGER},
-        #{resource_ids,jdbcType=VARCHAR})
+      </if>
+    </trim>
   </insert>
 
   <insert id="insertReply" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.ThreadStream" useGeneratedKeys="true">
     insert into ${schema}.wq_thread_stream(user_id, thread_id, content, to_stream_id, create_time, update_time, likes, dislikes)
     values (#{userId,jdbcType=INTEGER},#{threadId,jdbcType=INTEGER},#{content,jdbcType=VARCHAR},#{toStreamId,jdbcType=INTEGER},
     #{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},#{likes,jdbcType=INTEGER},#{dislikes,jdbcType=INTEGER})
-    insert into ${schema}.wq_thread_stream(user_id, thread_id, content, to_stream_id, create_time, update_time, likes, dislikes, resource_ids)
-    values (#{userId,jdbcType=INTEGER},#{threadId,jdbcType=INTEGER},#{content,jdbcType=VARCHAR},#{toStreamId,jdbcType=INTEGER},
-    #{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},#{likes,jdbcType=INTEGER},#{dislikes,jdbcType=INTEGER},#{resourceIds, jdbcType=VARCHAR})
   </insert>
 
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.Thread" useGeneratedKeys="true">
@@ -335,7 +399,7 @@
       dislikes = #{dislikes,jdbcType=INTEGER},
       status = #{status, jdbcType=INTEGER},
       school_id = #{schoolId, jdbcType=INTEGER}
-    where id = #{id,jdbcType=INTEGER}
+      where id = #{id,jdbcType=INTEGER}
   </update>
 
   <update id="likeThread" parameterType="java.lang.Integer">
