@@ -2,11 +2,12 @@ package com.wequan.bu.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wequan.bu.BaseTester;
 import com.wequan.bu.controller.vo.Condition;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ExpressionTest {
+public class SampleTest extends BaseTester {
 
     @Test
     public void testExpressionCheck() throws JsonProcessingException {
@@ -19,6 +20,11 @@ public class ExpressionTest {
         condition = objectMapper.readValue(json, Condition.class);
         check = condition.selfCheck();
         Assert.assertTrue(check);
+    }
+
+    @Test
+    public void testAwsS3() {
+
     }
 
 }
