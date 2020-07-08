@@ -1,6 +1,6 @@
 package com.wequan.bu.repository.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.wequan.bu.repository.model.extend.UserBriefInfo;
 import lombok.Data;
 
 import java.util.Date;
@@ -59,14 +59,12 @@ public class Thread {
      * Database Column Remarks:
      *   帖子创建时间
      */
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
      * Database Column Remarks:
      *   帖子更新时间
      */
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     /**
@@ -90,6 +88,8 @@ public class Thread {
      *学校id
      */
     private Integer schoolId;
+
+    private UserBriefInfo createByUser;
 
     private List<ThreadResource> threadResources;
 }
