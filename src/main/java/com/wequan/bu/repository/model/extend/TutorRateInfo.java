@@ -13,5 +13,6 @@ import java.util.List;
 @Data
 public class TutorRateInfo extends Tutor {
     private Double score;
+    private Integer viewNumber;
     private List<Subject> subjectList;
 }

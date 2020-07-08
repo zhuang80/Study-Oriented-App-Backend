@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.TutorSubjectMapper">
+    <insert id="insertList" parameterType="com.wequan.bu.repository.model.TutorSubject">
+        INSERT INTO ${schema}.wq_tutor_subject
+        VALUES
+        <foreach item="item" collection="list" separator=",">
+            (#{item.tutorId}, #{item.subjectId}, #{item.createTime})
+        </foreach>
+    </insert>
+</mapper>

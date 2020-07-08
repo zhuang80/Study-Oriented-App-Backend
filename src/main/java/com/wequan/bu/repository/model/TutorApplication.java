@@ -2,6 +2,7 @@ package com.wequan.bu.repository.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wequan.bu.controller.vo.TutorApplicationVo;
 import lombok.Data;
 
@@ -9,6 +10,7 @@ import lombok.Data;
  * @author Zhaochao Huang
  */
 @Data
+@JsonIgnoreProperties("handler")
 public class TutorApplication {
     private Integer id;
     private Integer userId;
@@ -54,6 +56,5 @@ public class TutorApplication {
         this.hourlyRate = t.getHourlyRate();
         this.latePolicyId = t.getLatePolicyId();
         this.cancellationPolicyId = t.getCancellationPolicyId();
-        this.subjectTopicsIds = t.getSubjectTopicsIds();
     }
 }

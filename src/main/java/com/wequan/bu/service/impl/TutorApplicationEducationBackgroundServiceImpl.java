@@ -6,6 +6,7 @@ import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.TutorApplicationEducationBackgroundService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 
@@ -25,6 +26,7 @@ public class TutorApplicationEducationBackgroundServiceImpl extends AbstractServ
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteByIds(String ids){
         if(ids != null && !ids.isEmpty()){
             educationBackgroundMapper.deleteByIds(ids);
