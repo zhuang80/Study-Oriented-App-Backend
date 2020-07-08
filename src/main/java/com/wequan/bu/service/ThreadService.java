@@ -10,6 +10,11 @@ import java.util.List;
 
 public interface ThreadService extends Service<Thread> {
 
+    /**
+     * 根据帖子id查找
+     * @param id 帖子id
+     * @return 帖子信息
+     */
     public Thread findByPrimaryKey(Integer id);
 
     public int deleteByPrimaryKey(Integer id);
