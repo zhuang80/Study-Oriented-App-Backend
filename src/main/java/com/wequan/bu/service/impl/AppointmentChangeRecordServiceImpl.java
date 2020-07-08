@@ -12,6 +12,7 @@ import com.wequan.bu.util.TransactionStatus;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -41,6 +42,7 @@ public class AppointmentChangeRecordServiceImpl extends AbstractService<Appointm
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addRecordByTutor(String transactionId, Integer tutorId) {
         Appointment appointment = appointmentService.findByTransactionId(transactionId);
         Transaction transaction = transactionService.findById(transactionId);
@@ -68,6 +70,7 @@ public class AppointmentChangeRecordServiceImpl extends AbstractService<Appointm
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addRecordByUser(String transactionId, Integer userId, Integer refundAmount) {
         Appointment appointment = appointmentService.findByTransactionId(transactionId);
         Transaction transaction = transactionService.findById(transactionId);
@@ -96,6 +99,7 @@ public class AppointmentChangeRecordServiceImpl extends AbstractService<Appointm
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void approve(Integer id, String comment) throws StripeException {
         AppointmentChangeRecord record = appointmentChangeRecordMapper.selectByPrimaryKey(id);
         record.setAdminAction(AdminAction.APPROVE.getValue());
@@ -108,6 +112,7 @@ public class AppointmentChangeRecordServiceImpl extends AbstractService<Appointm
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void reject(Integer id, String comment) {
         AppointmentChangeRecord record = appointmentChangeRecordMapper.selectByPrimaryKey(id);
         record.setAdminAction(AdminAction.REJECT.getValue());

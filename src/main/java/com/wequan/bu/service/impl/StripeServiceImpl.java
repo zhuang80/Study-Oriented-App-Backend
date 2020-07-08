@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -76,6 +77,7 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void storeConnectedId(String code, Integer tutorId) {
         Map<String, Object> params = new HashMap<>();
         params.put("grant_type", "authorization_code");
@@ -133,6 +135,7 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void handlePaymentIntent(String sigHeader, String webhookEndpoint) throws Exception {
         Event event = null;
         PaymentIntent paymentIntent = null;
@@ -170,6 +173,7 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public PaymentIntent updatePaymentIntent(Integer appointmentId) throws StripeException {
         Appointment appointment = appointmentService.findById(appointmentId);
         Transaction transaction = transactionService.findById(appointment.getTransactionId());
@@ -201,6 +205,7 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void handleRefund(String sigHeader, String webhookEndpoint) throws Exception {
         Event event = null;
         Charge charge = null;
