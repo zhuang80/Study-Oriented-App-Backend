@@ -9,10 +9,9 @@ import com.wequan.bu.repository.model.extend.ThreadStats;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.ThreadService;
 import org.apache.ibatis.session.RowBounds;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -23,6 +22,9 @@ import java.util.List;
 
 @Service
 public class ThreadServiceImpl extends AbstractService<Thread> implements ThreadService {
+
+    private static final Logger log = LoggerFactory.getLogger(ThreadServiceImpl.class);
+
     @Autowired
     private ThreadMapper threadMapper;
 
@@ -30,10 +32,13 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     public void postConstruct(){
         this.setMapper(threadMapper);
     }
+
     @Override
     public Thread findByPrimaryKey(Integer id){
         if(id!=null){
-            return threadMapper.selectByPrimaryKey(id);
+            Thread thread = threadMapper.selectByPrimaryKey(id);
+
+            return thread;
         }
         return null;
     }

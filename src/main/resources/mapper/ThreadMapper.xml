@@ -13,16 +13,12 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="likes" jdbcType="INTEGER" property="likes" />
     <result column="dislikes" jdbcType="INTEGER" property="dislikes" />
-    <result column="status" jdbcType="INTEGER" property="status"/>
-    <result column="school_id" jdbcType="INTEGER" property="schoolId"/>
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="school_id" jdbcType="INTEGER" property="schoolId" />
   </resultMap>
 
-  <resultMap id="ResourceResultMap" type="com.wequan.bu.repository.model.ThreadResource">
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="type" jdbcType="SMALLINT" property="type" />
-    <result column="links" jdbcType="VARCHAR" property="links" />
-    <result column="file_type" jdbcType="VARCHAR" property="fileType" />
-    <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+  <resultMap id="ResultMapWithResource" extends="BaseResultMap" type="com.wequan.bu.repository.model.Thread">
+    <collection property="threadResources" columnPrefix="tr_" resultMap="com.wequan.bu.repository.dao.ThreadResourceMapper.BaseResultMap" />
   </resultMap>
 
   <resultMap id="ResultMapWithStats" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.ThreadStats">
@@ -64,11 +60,13 @@
     update_time, likes, dislikes, status, school_id
   </sql>
 
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithResource">
     select 
-    <include refid="Base_Column_List" />
-    from ${schema}.wq_thread
-    where id = #{id,jdbcType=INTEGER}
+    t.*, tr.id tr_id, tr.type tr_type, tr.link tr_link, tr.file_type tr_file_type,
+    tr.file_name tr_file_name, tr.belong_id tr_belong_id
+    from ${schema}.wq_thread t
+    inner join ${schema}.wq_thread_resource tr on t.id = tr.belong_id
+    where t.id = #{id,jdbcType=INTEGER}
   </select>
 
   <select id="selectBySchoolId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -169,33 +167,34 @@
 
   <insert id="insertThread" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.Thread" useGeneratedKeys="true">
     insert into ${schema}.wq_thread
-    ( create_by,
-    title,
-    category,
-    tag_id,
-    content,
-    study_points_bonus,
-    create_time,
-    update_time,
-    likes,
-    dislikes,
-    status,
-    school_id,
-    resource_ids)
-    values(
-        #{createBy,jdbcType=INTEGER},
-        #{title,jdbcType=VARCHAR},
-        #{category,jdbcType=SMALLINT},
-        #{tagId,jdbcType=SMALLINT},
-        #{content,jdbcType=VARCHAR},
-        #{studyPointsBonus,jdbcType=SMALLINT},
-        #{createTime,jdbcType=TIMESTAMP},
-        #{updateTime,jdbcType=TIMESTAMP},
-        #{likes,jdbcType=INTEGER},
-        #{dislikes,jdbcType=INTEGER},
-        #{status,jdbcType=INTEGER},
-        #{schoolId,jdbcType=INTEGER},
-        #{resource_ids,jdbcType=VARCHAR})
+    (
+      create_by,
+      title,
+      category,
+      tag_id,
+      content,
+      study_points_bonus,
+      create_time,
+      update_time,
+      likes,
+      dislikes,
+      status,
+      school_id
+    ) values
+    (
+      #{createBy,jdbcType=INTEGER},
+      #{title,jdbcType=VARCHAR},
+      #{category,jdbcType=SMALLINT},
+      #{tagId,jdbcType=SMALLINT},
+      #{content,jdbcType=VARCHAR},
+      #{studyPointsBonus,jdbcType=SMALLINT},
+      #{createTime,jdbcType=TIMESTAMP},
+      #{updateTime,jdbcType=TIMESTAMP},
+      #{likes,jdbcType=INTEGER},
+      #{dislikes,jdbcType=INTEGER},
+      #{status,jdbcType=INTEGER},
+      #{schoolId,jdbcType=INTEGER}
+    )
   </insert>
 
   <insert id="insertReply" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.ThreadStream" useGeneratedKeys="true">
