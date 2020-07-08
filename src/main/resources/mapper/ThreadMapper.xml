@@ -91,7 +91,7 @@
   </select>
 
   <select id="selectByUserFollowingId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
+    select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, ${schema}.wq_thread.create_time,
     update_time, likes, dislikes, status, school_id
     from ${schema}.wq_thread join ${schema}.wq_user_follow on ${schema}.wq_thread.create_by = ${schema}.wq_user_follow.follow_id
     where ${schema}.wq_user_follow.user_id = #{userId,jdbcType=INTEGER}
@@ -106,9 +106,10 @@
   <select id="selectedBySchoolIdOrderedByView" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
     update_time, likes, dislikes, status, school_id
-    from ${schema}.wq_thread
+    from ${schema}.wq_thread join ${schema}.wq_thread_view_history on ${schema}.wq_thread.id = ${schema}.wq_thread_view_history.thread_id
     where school_id = #{schoolId, jdbcType=INTEGER}
-    order by num_of_view desc
+    order by
+    (select count(${schema}.wq_thread_view_history.thread_id) from ${schema}.wq_thread_view_history where ${schema}.wq_thread.id = ${schema}.wq_thread_view_history.thread_id) desc
   </select>
 
   <select id="getUserInterestedStudyHelpThreadsByIds" resultMap="BaseResultMap">
@@ -160,82 +161,33 @@
 
   <insert id="insertThread" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.Thread" useGeneratedKeys="true">
     insert into ${schema}.wq_thread
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="createBy != null">
-        create_by,
-      </if>
-      <if test="title != null">
-        title,
-      </if>
-      <if test="category != null">
-        category,
-      </if>
-      <if test="tagId != null">
-        tag_id,
-      </if>
-      <if test="content != null">
-        content,
-      </if>
-      <if test="studyPointsBonus != null">
-        study_points_bonus,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
-      <if test="likes != null">
-        likes,
-      </if>
-      <if test="dislikes != null">
-        dislikes,
-      </if>
-      <if test="status != null">
-        status,
-      </if>
-      <if test="schoolId != null">
-        school_id,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="createBy != null">
+    ( create_by,
+    title,
+    category,
+    tag_id,
+    content,
+    study_points_bonus,
+    create_time,
+    update_time,
+    likes,
+    dislikes,
+    status,
+    school_id,
+    resource_ids)
+    values(
         #{createBy,jdbcType=INTEGER},
-      </if>
-      <if test="title != null">
         #{title,jdbcType=VARCHAR},
-      </if>
-      <if test="category != null">
         #{category,jdbcType=SMALLINT},
-      </if>
-      <if test="tagId != null">
         #{tagId,jdbcType=SMALLINT},
-      </if>
-      <if test="content != null">
         #{content,jdbcType=VARCHAR},
-      </if>
-      <if test="studyPointsBonus != null">
         #{studyPointsBonus,jdbcType=SMALLINT},
-      </if>
-      <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="likes != null">
         #{likes,jdbcType=INTEGER},
-      </if>
-      <if test="dislikes != null">
         #{dislikes,jdbcType=INTEGER},
-      </if>
-      <if test="status != null">
         #{status,jdbcType=INTEGER},
-      </if>
-      <if test="schoolId != null">
         #{schoolId,jdbcType=INTEGER},
-      </if>
-    </trim>
+        #{resource_ids,jdbcType=VARCHAR})
   </insert>
 
   <insert id="insertReply" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.ThreadStream" useGeneratedKeys="true">
@@ -315,12 +267,11 @@
     </trim>
   </insert>
 
-  <insert id="addUserInterestedSubjects" parameterType="com.wequan.bu.repository.model.ThreadUserSelectedSubjects">
-    insert into ${schema}.wq_thread_user_selected_subjects
-      (user_id,
-      subject_ids)
-    values(#{userId,jdbcType=INTEGER},#{subjectIds,jdbcType=VARCHAR})
-  </insert>
+  <update id="addUserInterestedSubjects">
+    update ${schema}.wq_thread_user_selected_subjects
+    set subject_ids = #{subjectIds,jdbcType=VARCHAR}
+    where user_id = #{userId,jdbcType=INTEGER}
+  </update>
 
   <insert id="reportThread" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
     insert into ${schema}.wq_report_records
@@ -391,7 +342,6 @@
     update ${schema}.wq_thread
     set likes = likes+1
     where id = #{threadId, jdbcType=INTEGER} and create_by = #{userId, jdbcType=INTEGER}
-    where id = #{threadId, jdbcType=INTEGER}
   </update>
 
   <update id="dislikeThread" parameterType="java.lang.Integer">

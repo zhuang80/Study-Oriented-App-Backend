@@ -11,14 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * @author ChrisChen
@@ -47,6 +43,7 @@ public class ThreadController {
                                                       @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                       @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         List<Thread> result = threadService.findBySchoolIdOrderByView(schoolId, pageNum, pageSize);
+
         return ResultGenerator.success(result);
     }
 
@@ -137,10 +134,8 @@ public class ThreadController {
     @ApiOperation(value = "add thread", notes = "返回创建帖子成功与否")
     public Result addThread(@RequestBody Thread thread) {
         thread.setCreateTime(new Date());
-        if(threadService.insert(thread)>0){
-            return ResultGenerator.success();
-        }
-        return null;
+        threadService.insert(thread);
+        return ResultGenerator.success();
     }
 
     /**
@@ -152,11 +147,9 @@ public class ThreadController {
     @ApiOperation(value = "reply to the thread", notes = "包括直接/间接回复，返回回帖成功与否")
     public Result addThreadReply(@RequestBody ThreadStream threadStream) {
         threadStream.setCreateTime(new Date());
-        int result = threadService.insertReply(threadStream);
-        if(result>0){
-            return ResultGenerator.success(result);
-        }
-        return null;
+        threadService.insertReply(threadStream);
+        Result result = ResultGenerator.success();
+        return ResultGenerator.success(result);
     }
 
     /**
@@ -364,28 +357,6 @@ public class ThreadController {
                                                                   @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         List<Thread> result = threadService.getUserInterestedStudyHelpThreads(userId, subjectIds, pageNum, pageSize);
         return ResultGenerator.success(result);
-    }
-
-    @GetMapping("/thread/{id}/sse/likes")
-    @ApiOperation(value = "# of likes for thread in real time", notes = "实时显示帖子likes数")
-    public SseEmitter sseEmitterForThreadLikes(@PathVariable("id") Integer threadId) {
-        SseEmitter emitter = new SseEmitter();
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(() -> {
-            try {
-                for (int i = 0; true; i++) {
-                    SseEmitter.SseEventBuilder event = SseEmitter.event()
-                            .data(setData(threadId))
-                            .id(String.valueOf(i))
-                            .name("sse event - mvc");
-                    emitter.send(event);
-                    java.lang.Thread.sleep(1000);
-                }
-            } catch (Exception ex) {
-                emitter.completeWithError(ex);
-            }
-        });
-        return emitter;
     }
 
     private Object setData(Integer threadId) {
