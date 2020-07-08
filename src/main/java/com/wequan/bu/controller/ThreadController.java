@@ -1,19 +1,25 @@
 package com.wequan.bu.controller;
 
-import com.wequan.bu.repository.model.Thread;
+import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
+import com.wequan.bu.repository.model.Thread;
+import com.wequan.bu.repository.model.ThreadResource;
 import com.wequan.bu.repository.model.ThreadStream;
 import com.wequan.bu.repository.model.ThreadUserSelectedSubjects;
+import com.wequan.bu.service.ThreadResourceService;
 import com.wequan.bu.service.ThreadService;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -24,8 +30,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ThreadController {
 
     private static final Logger log = LoggerFactory.getLogger(ThreadController.class);
+
     @Autowired
     private ThreadService threadService;
+    @Autowired
+    private ThreadResourceService threadResourceService;
+    @Autowired
+    private MessageHandler messageHandler;
 
     /**
      * 6/23
@@ -82,6 +93,9 @@ public class ThreadController {
                     "# of dislikes, # of replies, # of views, status, study points reward")
     )
     public Result<Thread> getThread(@PathVariable("id") Integer threadId) {
+        if (threadId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
         Thread result = threadService.findByPrimaryKey(threadId);
         return ResultGenerator.success(result);
     }
@@ -132,9 +146,22 @@ public class ThreadController {
      */
     @PostMapping("/thread")
     @ApiOperation(value = "add thread", notes = "返回创建帖子成功与否")
+    @Transactional(rollbackFor = Exception.class)
     public Result addThread(@RequestBody Thread thread) {
+        if (Objects.isNull(thread)) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        thread.setLikes(0);
+        thread.setDislikes(0);
+        thread.setStatus(0);
         thread.setCreateTime(new Date());
         threadService.insert(thread);
+        List<ThreadResource> threadResources = thread.getThreadResources();
+        Integer threadId = thread.getId();
+        if (Objects.nonNull(threadResources) && threadResources.size() > 0 && threadId > 0) {
+            threadResources.forEach(e -> e.setBelongId(threadId));
+            threadResourceService.save(threadResources);
+        }
         return ResultGenerator.success();
     }
 

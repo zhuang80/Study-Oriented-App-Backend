@@ -2,9 +2,9 @@ package com.wequan.bu.repository.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Database Table Remarks:
@@ -59,14 +59,14 @@ public class Thread {
      * Database Column Remarks:
      *   帖子创建时间
      */
-    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
      * Database Column Remarks:
      *   帖子更新时间
      */
-    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     /**
@@ -91,10 +91,5 @@ public class Thread {
      */
     private Integer schoolId;
 
-    /**
-     * 同帖子关联的文件（图片，文件等）的S3链接id，多个id用逗号分隔，关联thread_resource(id)
-     */
-    private String resourceIds;
-
-    private ThreadResource threadResource;
+    private List<ThreadResource> threadResources;
 }
