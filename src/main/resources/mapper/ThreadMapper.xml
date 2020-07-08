@@ -17,15 +17,12 @@
     <result column="school_id" jdbcType="INTEGER" property="schoolId" />
   </resultMap>
 
-  <resultMap id="ResultMapWithResource" extends="BaseResultMap" type="com.wequan.bu.repository.model.Thread">
-    <collection property="threadResources" columnPrefix="tr_" resultMap="com.wequan.bu.repository.dao.ThreadResourceMapper.BaseResultMap" />
-  </resultMap>
-
   <resultMap id="ResultMapWithStats" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.ThreadStats">
-    <result column="create_by_name" jdbcType="VARCHAR" property="createByName" />
     <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
     <result column="number_of_view" jdbcType="INTEGER" property="numberOfView" />
     <result column="number_of_reply" jdbcType="INTEGER" property="numberOfReply" />
+    <association property="createByUser" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithBriefInfo" />
+    <collection property="threadResources" columnPrefix="tr_" resultMap="com.wequan.bu.repository.dao.ThreadResourceMapper.BaseResultMap" />
   </resultMap>
 
   <resultMap id="StreamResultMap" type="com.wequan.bu.repository.model.ThreadStream">
@@ -59,11 +56,19 @@
     update_time, likes, dislikes, status, school_id
   </sql>
 
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithResource">
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithStats">
     select 
-    t.*, tr.id tr_id, tr.type tr_type, tr.link tr_link, tr.file_type tr_file_type,
-    tr.file_name tr_file_name, tr.belong_id tr_belong_id
+      t.*,
+      u.user_name as u_user_name, u.school_id as u_school_id, u.first_name as u_first_name, u.last_name as u_last_name,
+      u.avatar as u_avatar, u.avatar_url_in_provider as u_avatar_url_in_provider, u.id as u_id,
+      tg.name as tag_name,
+      (select count(1) from ${schema}.wq_thread_view_history v where v.thread_id = t.id) as number_of_view,
+      (select count(1) from ${schema}.wq_thread_stream s where s.thread_id = t.id) as number_of_reply,
+      tr.id tr_id, tr.type tr_type, tr.link tr_link, tr.file_type tr_file_type,
+      tr.file_name tr_file_name, tr.belong_id tr_belong_id
     from ${schema}.wq_thread t
+    inner join ${schema}.wq_user_profile u on u.id = t.create_by
+    inner join ${schema}.wq_tags tg on tg.id = t.tag_id
     inner join ${schema}.wq_thread_resource tr on t.id = tr.belong_id
     where t.id = #{id,jdbcType=INTEGER}
   </select>
@@ -131,7 +136,8 @@
   <select id="selectByUserId" resultMap="ResultMapWithStats">
     select
       t.*,
-      u.user_name as create_by_name,
+      u.user_name as u_user_name, u.school_id as u_school_id, u.first_name as u_first_name, u.last_name as u_last_name,
+      u.avatar as u_avatar, u.avatar_url_in_provider as u_avatar_url_in_provider, u.id as u_id,
       tg.name as tag_name,
       (select count(1) from ${schema}.wq_thread_view_history v where v.thread_id = t.id) as number_of_view,
       (select count(1) from ${schema}.wq_thread_stream s where s.thread_id = t.id) as number_of_reply
@@ -144,7 +150,8 @@
   <select id="selectThreadStatsById" resultMap="ResultMapWithStats">
     select
       t.*,
-      u.user_name as create_by_name,
+      u.user_name as u_user_name, u.school_id as u_school_id, u.first_name as u_first_name, u.last_name as u_last_name,
+      u.avatar as u_avatar, u.avatar_url_in_provider as u_avatar_url_in_provider, u.id as u_id,
       tg.name as tag_name,
       (select count(1) from ${schema}.wq_thread_view_history v where v.thread_id = t.id) as number_of_view,
       (select count(1) from ${schema}.wq_thread_stream s where s.thread_id = t.id) as number_of_reply
