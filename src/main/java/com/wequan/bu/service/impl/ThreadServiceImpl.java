@@ -37,7 +37,7 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     public Thread findByPrimaryKey(Integer id){
         if(id!=null){
             Thread thread = threadMapper.selectByPrimaryKey(id);
-
+            threadMapper.addRecordOfThreadView(thread.getCreateBy(), thread.getId(), new Date());
             return thread;
         }
         return null;
