@@ -15,6 +15,7 @@
     <result column="dislikes" jdbcType="INTEGER" property="dislikes" />
     <result column="status" jdbcType="INTEGER" property="status"/>
     <result column="school_id" jdbcType="INTEGER" property="schoolId"/>
+    <result column="resource_ids" jdbcType="VARCHAR" property="resourceIds"/>
   </resultMap>
 
   <resultMap id="ResourceResultMap" type="com.wequan.bu.repository.model.ThreadResource">
@@ -112,12 +113,12 @@
   </select>
 
   <select id="selectedBySchoolIdOrderedByView" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
-    update_time, likes, dislikes, status, school_id
-    from ${schema}.wq_thread join ${schema}.wq_thread_view_history on ${schema}.wq_thread.id = ${schema}.wq_thread_view_history.thread_id
-    where school_id = #{schoolId, jdbcType=INTEGER}
-    order by
-    (select count(${schema}.wq_thread_view_history.thread_id) from ${schema}.wq_thread_view_history where ${schema}.wq_thread.id = ${schema}.wq_thread_view_history.thread_id) desc
+    select
+    t.*,
+    (select count(1) from ${schema}.wq_thread_view_history where thread_id = t.id) as view_of_number
+    from ${schema}.wq_thread t
+    where school_id = #{schoolId,jdbcType=INTEGER}
+    order by view_of_number desc
   </select>
 
   <select id="getUserInterestedStudyHelpThreadsByIds" resultMap="BaseResultMap">
@@ -167,35 +168,96 @@
     where user_id = #{userId,jdbcType=INTEGER}
   </delete>
 
+  <insert id="addRecordOfThreadView" useGeneratedKeys="true">
+    insert into ${schema}.wq_thread_view_history
+    (user_id, thread_id, view_time)
+    values(#{userId,jdbcType=INTEGER}, #{threadId,jdbcType=INTEGER}, #{viewTime,jdbcType=TIMESTAMP})
+  </insert>
+
   <insert id="insertThread" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.Thread" useGeneratedKeys="true">
     insert into ${schema}.wq_thread
-    ( create_by,
-    title,
-    category,
-    tag_id,
-    content,
-    study_points_bonus,
-    create_time,
-    update_time,
-    likes,
-    dislikes,
-    status,
-    school_id,
-    resource_ids)
-    values(
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="category != null">
+        category,
+      </if>
+      <if test="tagId != null">
+        tag_id,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="studyPointsBonus != null">
+        study_points_bonus,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="likes != null">
+        likes,
+      </if>
+      <if test="dislikes != null">
+        dislikes,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="schoolId != null">
+        school_id,
+      </if>
+      <if test="resourceIds != null">
+        resource_ids,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="createBy != null">
         #{createBy,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
         #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
         #{category,jdbcType=SMALLINT},
+      </if>
+      <if test="tagId != null">
         #{tagId,jdbcType=SMALLINT},
+      </if>
+      <if test="content != null">
         #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="studyPointsBonus != null">
         #{studyPointsBonus,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="likes != null">
         #{likes,jdbcType=INTEGER},
+      </if>
+      <if test="dislikes != null">
         #{dislikes,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
         #{status,jdbcType=INTEGER},
+      </if>
+      <if test="schoolId != null">
         #{schoolId,jdbcType=INTEGER},
-        #{resource_ids,jdbcType=VARCHAR})
+      </if>
+      <if test="resourceIds != null">
+        #{resourceIds,jdbcType=VARCHAR},
+      </if>
+    </trim>
   </insert>
 
   <insert id="insertReply" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.ThreadStream" useGeneratedKeys="true">
