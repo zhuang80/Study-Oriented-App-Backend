@@ -17,6 +17,14 @@
     <result column="school_id" jdbcType="INTEGER" property="schoolId"/>
   </resultMap>
 
+  <resultMap id="ResourceResultMap" type="com.wequan.bu.repository.model.ThreadResource">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="type" jdbcType="SMALLINT" property="type" />
+    <result column="links" jdbcType="VARCHAR" property="links" />
+    <result column="file_type" jdbcType="VARCHAR" property="fileType" />
+    <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+  </resultMap>
+
   <resultMap id="ResultMapWithStats" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.ThreadStats">
     <result column="create_by_name" jdbcType="VARCHAR" property="createByName" />
     <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
@@ -118,8 +126,8 @@
     from ${schema}.wq_thread join ${schema}.wq_thread_subject on ${schema}.wq_thread.id = ${schema}.wq_thread_subject.thread_id
     where ${schema}.wq_thread_subject.subject_id in
     <foreach item="subjectId" collection="res" open="(" separator="," close=")">
-    #{subjectId}
-  </foreach>
+      #{subjectId}
+    </foreach>
     and ${schema}.wq_thread.create_by = #{userId,jdbcType=INTEGER}
   </select>
 
@@ -194,9 +202,6 @@
     insert into ${schema}.wq_thread_stream(user_id, thread_id, content, to_stream_id, create_time, update_time, likes, dislikes)
     values (#{userId,jdbcType=INTEGER},#{threadId,jdbcType=INTEGER},#{content,jdbcType=VARCHAR},#{toStreamId,jdbcType=INTEGER},
     #{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},#{likes,jdbcType=INTEGER},#{dislikes,jdbcType=INTEGER})
-    insert into ${schema}.wq_thread_stream(user_id, thread_id, content, to_stream_id, create_time, update_time, likes, dislikes, resource_ids)
-    values (#{userId,jdbcType=INTEGER},#{threadId,jdbcType=INTEGER},#{content,jdbcType=VARCHAR},#{toStreamId,jdbcType=INTEGER},
-    #{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},#{likes,jdbcType=INTEGER},#{dislikes,jdbcType=INTEGER},#{resourceIds, jdbcType=VARCHAR})
   </insert>
 
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.Thread" useGeneratedKeys="true">
@@ -335,7 +340,7 @@
       dislikes = #{dislikes,jdbcType=INTEGER},
       status = #{status, jdbcType=INTEGER},
       school_id = #{schoolId, jdbcType=INTEGER}
-    where id = #{id,jdbcType=INTEGER}
+      where id = #{id,jdbcType=INTEGER}
   </update>
 
   <update id="likeThread" parameterType="java.lang.Integer">
