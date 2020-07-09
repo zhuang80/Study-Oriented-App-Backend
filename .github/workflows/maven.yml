@@ -43,4 +43,5 @@ jobs:
           mvn -B package -DskipTests --file pom.xml
           sudo docker build -t app_backend:latest .
           sudo docker stop app_backend || true && sudo docker rm app_backend || true
+          sudo docker rmi $(sudo docker images | grep "none" | awk '{print $3}')
           sudo docker run -it -d -v /tmp/wequan_log:/log --name app_backend -p 8080:8080 app_backend:latest
