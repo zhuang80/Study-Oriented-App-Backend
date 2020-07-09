@@ -184,8 +184,7 @@ public class ThreadController {
     public Result addThreadReply(@RequestBody ThreadStream threadStream) {
         threadStream.setCreateTime(new Date());
         threadService.insertReply(threadStream);
-        Result result = ResultGenerator.success();
-        return ResultGenerator.success(result);
+        return ResultGenerator.success();
     }
 
     /**
@@ -201,8 +200,7 @@ public class ThreadController {
                                @RequestParam("userId") Integer userId,
                                @RequestParam("reason") String reason) {
         threadService.reportThread(threadId, userId, reason);
-        Result result = ResultGenerator.success();
-        return result;
+        return ResultGenerator.success();
     }
 
     /**
@@ -220,8 +218,7 @@ public class ThreadController {
                                         @RequestParam("userId") Integer userId,
                                         @RequestParam("reason") String reason) {
         threadService.reportReplyToThread(threadId, replyId, userId, reason);
-        Result result = ResultGenerator.success();
-        return result;
+        return ResultGenerator.success();
     }
 
     /**
@@ -235,8 +232,7 @@ public class ThreadController {
     public Result likeThread(@RequestParam("threadId") Integer threadId,
                              @RequestParam("userId") Integer userId) {
         threadService.likeThread(threadId,userId);
-        Result result = ResultGenerator.success();
-        return result;
+        return ResultGenerator.success();
     }
 
     /**
@@ -250,8 +246,7 @@ public class ThreadController {
     public Result dislikeThread(@RequestParam("threadId") Integer threadId,
                                 @RequestParam("userId") Integer userId) {
         threadService.dislikeThread(threadId,userId);
-        Result result = ResultGenerator.success();
-        return result;
+        return ResultGenerator.success();
     }
 
     /**
@@ -267,8 +262,8 @@ public class ThreadController {
                                   @RequestParam("replyId") Integer replyId,
                                   @RequestParam("userId") Integer userId) {
         threadService.likeReplyOfThread(threadId,replyId,userId);
-        Result result = ResultGenerator.success();
-        return result;
+
+        return ResultGenerator.success();
     }
 
     /**
@@ -284,8 +279,7 @@ public class ThreadController {
                                      @RequestParam("replyId") Integer replyId,
                                      @RequestParam("userId") Integer userId) {
         threadService.dislikeReplyOfThread(threadId,replyId,userId);
-        Result result = ResultGenerator.success();
-        return result;
+        return ResultGenerator.success();
     }
 
     /**
