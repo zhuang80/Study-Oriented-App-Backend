@@ -149,7 +149,7 @@
     <foreach item="subjectId" collection="res" open="(" separator="," close=")">
       #{subjectId}
     </foreach>
-    and t.create_by = #{userId,jdbcType=INTEGER}
+    <!--and t.create_by = #{userId,jdbcType=INTEGER}-->
   </select>
 
   <select id="selectByUserId" resultMap="ResultMapWithStats">
