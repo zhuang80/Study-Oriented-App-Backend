@@ -59,12 +59,14 @@ public class Thread {
      * Database Column Remarks:
      *   帖子创建时间
      */
+
     private Date createTime;
 
     /**
      * Database Column Remarks:
      *   帖子更新时间
      */
+
     private Date updateTime;
 
     /**
