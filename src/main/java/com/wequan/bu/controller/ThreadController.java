@@ -237,7 +237,6 @@ public class ThreadController {
     public Result dislikeThread(@RequestParam("threadId") Integer threadId,
                                 @RequestParam("userId") Integer userId) {
         threadService.dislikeThread(threadId,userId);
-
         return ResultGenerator.success();
     }
 
