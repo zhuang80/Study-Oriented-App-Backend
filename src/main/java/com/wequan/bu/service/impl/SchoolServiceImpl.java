@@ -37,10 +37,10 @@ public class SchoolServiceImpl extends AbstractService<School> implements School
      */
     @Override
     public List<School> findAll(Integer pageNum, Integer pageSize){
-        if(pageNum == null) {
+        if(pageNum == null || pageNum < 0 ) {
             pageNum = 1;
         }
-        if(pageSize == null){
+        if(pageSize == null || pageSize < 0){
             pageSize = 10;
         }
         PageHelper.startPage(pageNum, pageSize);
