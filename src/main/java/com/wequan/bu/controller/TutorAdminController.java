@@ -122,8 +122,9 @@ public class TutorAdminController {
     @PutMapping("/tutor_application/{id}/disapprove")
     @ResponseBody
     @ApiOperation(value = "disapprove the tutor application", notes = "管理员审核tutor申请信息和文件资料后，不批准申请")
-    public Result disapproveTutorApplication(@PathVariable("id") Integer id){
-        tutorAdminService.disapprove(id);
+    public Result disapproveTutorApplication(@PathVariable("id") Integer id,
+                                             @RequestParam(value = "comment", required = false) String comment){
+        tutorAdminService.disapprove(id, comment);
         return ResultGenerator.success();
     }
 
@@ -131,7 +132,7 @@ public class TutorAdminController {
     @ResponseBody
     @ApiOperation(value = "require user to modify the tutor application in order to pass censorship", notes = "管理员要求user修改申请")
     public Result requireAmend(@PathVariable("id") Integer id,
-                               String comment){
+                               @RequestParam(value = "comment", required = false) String comment){
         tutorAdminService.requireAmend(id, comment);
         return ResultGenerator.success();
     }

@@ -8,6 +8,7 @@ import com.wequan.bu.service.TutorApplicationLogService;
 import com.wequan.bu.util.TutorApplicationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class TutorApplicationLogServiceImpl extends AbstractService<TutorApplica
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addTutorApplicationLog(TutorApplication application, TutorApplicationStatus status, String comment){
         TutorApplicationLog applicationLog = new TutorApplicationLog();
         applicationLog.setUserId(application.getUserId());

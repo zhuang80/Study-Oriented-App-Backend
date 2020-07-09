@@ -1,5 +1,6 @@
 package com.wequan.bu.service.impl;
 
+import com.wequan.bu.controller.vo.TutorApplicationSubjectTopic;
 import com.wequan.bu.controller.vo.UploadFileWrapper;
 import com.wequan.bu.controller.vo.TutorApplicationVo;
 import com.wequan.bu.repository.dao.TutorApplicationEducationBackgroundMapper;
@@ -14,6 +15,7 @@ import com.wequan.bu.util.TutorApplicationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
@@ -47,6 +49,9 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
     @Autowired
     private TutorService tutorService;
 
+    @Autowired
+    private TutorApplicationSubjectTopicService subjectTopicService;
+
     @PostConstruct
     public void postConstruct(){
         this.setMapper(tutorApplicationMapper);
@@ -54,9 +59,11 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
 
     @Async
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void apply(TutorApplicationVo tutorApplicationVo, List<UploadFileWrapper> uploadFileWrapperList) throws IOException {
         List<Integer> smList = new ArrayList<>();
         List<Integer> ebList = new ArrayList<>();
+        List<Integer> stList = new ArrayList<>();
 
         for(UploadFileWrapper file: uploadFileWrapperList){
             smList.addAll(materialService.uploadSupportMaterial(file));
@@ -68,10 +75,15 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         ebList.addAll(insertEducationBackground(tutorApplicationVo));
         String ebIds= joinIds(ebList);
 
+        //subject topics ids list string
+        stList.addAll(insertSubjectTopics(tutorApplicationVo));
+        String stIds = joinIds(stList);
+
+
         for(TutorApplicationEducationBackground t: tutorApplicationVo.getEducationBackgrounds()){
             System.out.println(t.getId() + "    gpa "+t.getGpa());
         }
-        insertTutorApplication(tutorApplicationVo, smIds, ebIds);
+        insertTutorApplication(tutorApplicationVo, smIds, ebIds, stIds);
     }
 
     @Override
@@ -96,6 +108,7 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
 
     @Async
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void update(TutorApplicationVo tutorApplicationVo, List<UploadFileWrapper> uploadFileWrapperList) throws IOException {
         TutorApplication oldRecord = tutorApplicationMapper.selectByPrimaryKey(tutorApplicationVo.getId());
 
@@ -104,11 +117,12 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
                 tutorApplicationVo.getSupportMaterialIds());
         String deletedEducationBackgroundIds = findDeletedIds(oldRecord.getEducationBackgroundIds(),
                 tutorApplicationVo.getEducationBackgroundIds());
+        String deletedSubjectTopicIds = findDeletedIds(oldRecord.getSubjectTopicsIds(),
+                tutorApplicationVo.getSupportMaterialIds());
 
-        System.out.println("================================ deleted support material ids "+ deletedSupportMaterialIds+" " + deletedSupportMaterialIds.isEmpty());
-        System.out.println("================================ deleted education background ids "+ deletedEducationBackgroundIds+ " "+deletedEducationBackgroundIds.isEmpty());
         List<Integer> smList = new ArrayList<>();
         List<Integer> ebList = new ArrayList<>();
+        List<Integer> stList = new ArrayList<>();
 
         for(UploadFileWrapper file: uploadFileWrapperList){
             smList.addAll(materialService.uploadSupportMaterial(file));
@@ -120,6 +134,13 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         ebList.addAll(insertEducationBackground(tutorApplicationVo));
         String ebIds= joinIds(ebList);
 
+        //added new subject topics ids list string
+        stList.addAll(insertSubjectTopics(tutorApplicationVo));
+        String stIds = joinIds(stList);
+
+        System.out.println("===================================> " + stList);
+        System.out.println("===================================> " + tutorApplicationVo.getSubjectTopicsIds());
+
         //delete support material (S3, database)
         materialService.deleteSupportMaterialsByIds(deletedSupportMaterialIds);
 
@@ -127,7 +148,7 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         educationBackgroundService.deleteByIds(deletedEducationBackgroundIds);
 
         //update tutor application table
-        updateTutorApplication(tutorApplicationVo, smIds, ebIds);
+        updateTutorApplication(tutorApplicationVo, smIds, ebIds, stIds);
     }
 
     @Override
@@ -136,6 +157,7 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void approve(Integer id) {
         TutorApplication tutorApplication = tutorApplicationMapper.selectByPrimaryKey(id);
         tutorApplication.setStatus(TutorApplicationStatus.APPROVE.getValue());
@@ -146,16 +168,18 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
     }
 
     @Override
-    public void disapprove(Integer id){
+    @Transactional(rollbackFor = Exception.class)
+    public void disapprove(Integer id, String comment){
         TutorApplication tutorApplication = tutorApplicationMapper.selectByPrimaryKey(id);
         tutorApplication.setId(id);
         tutorApplication.setStatus(TutorApplicationStatus.REJECT.getValue());
         tutorApplication.setUpdateTime(LocalDateTime.now());
         tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
-        tutorApplicationLogService.addTutorApplicationLog(tutorApplication, TutorApplicationStatus.REJECT, null);
+        tutorApplicationLogService.addTutorApplicationLog(tutorApplication, TutorApplicationStatus.REJECT, comment);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void requireAmend(Integer id, String comment) {
         TutorApplication tutorApplication = tutorApplicationMapper.selectByPrimaryKey(id);
         tutorApplication.setId(id);
@@ -166,6 +190,7 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteById(Integer applicationId){
         TutorApplication tutorApplication = tutorApplicationMapper.selectByPrimaryKey(applicationId);
         //delete education background
@@ -178,6 +203,7 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         tutorApplication.setStatus(TutorApplicationStatus.DELETED.getValue());
         tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
     }
+
 
     private UploadFileWrapper transferAndWrap(MultipartFile[] multipartFiles, short type, Integer userId) throws IOException {
         List<File> files = materialService.uploadFiles(multipartFiles, OUTPUT_PATH);
@@ -211,6 +237,7 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     private List<Integer> insertEducationBackground(List<TutorApplicationEducationBackground> educationBackgroundList){
         educationBackgroundService.save(educationBackgroundList);
         return educationBackgroundList
@@ -222,26 +249,31 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         return insertEducationBackground(tutorApplicationVo.getEducationBackgrounds());
     }
 
-    private void insertTutorApplication(TutorApplicationVo tutorApplicationVo, String smIds, String ebIds){
+    @Transactional(rollbackFor = Exception.class)
+    private void insertTutorApplication(TutorApplicationVo tutorApplicationVo, String smIds, String ebIds, String stIds){
         TutorApplication tutorApplication = new TutorApplication(tutorApplicationVo);
         tutorApplication.setCreateTime(LocalDateTime.now());
         tutorApplication.setSupportMaterialIds(smIds);
         tutorApplication.setEducationBackgroundIds(ebIds);
+        tutorApplication.setSubjectTopicsIds(stIds);
         tutorApplication.setStatus(TutorApplicationStatus.PENDING.getValue());
         tutorApplicationMapper.insertSelective(tutorApplication);
         tutorApplicationLogService.addTutorApplicationLog(tutorApplication, TutorApplicationStatus.PENDING, null);
     }
 
-    private void updateTutorApplication(TutorApplicationVo tutorApplicationVo, String smIds, String ebIds){
+    @Transactional(rollbackFor = Exception.class)
+    private void updateTutorApplication(TutorApplicationVo tutorApplicationVo, String smIds, String ebIds, String stIds){
         TutorApplication tutorApplication = new TutorApplication(tutorApplicationVo);
         tutorApplication.setCreateTime(tutorApplicationVo.getCreateTime());
         tutorApplication.setUpdateTime(LocalDateTime.now());
 
         String supportMaterialIds = joinIds(tutorApplicationVo.getSupportMaterialIds(), smIds);
         String educationBackgroundIds = joinIds(tutorApplicationVo.getEducationBackgroundIds(), ebIds);
+        String subjectTopicIds = joinIds(tutorApplicationVo.getSubjectTopicsIds(), stIds);
 
         tutorApplication.setSupportMaterialIds(supportMaterialIds);
         tutorApplication.setEducationBackgroundIds(educationBackgroundIds);
+        tutorApplication.setSubjectTopicsIds(subjectTopicIds);
 
         tutorApplication.setStatus(TutorApplicationStatus.PENDING.getValue());
         tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
@@ -266,5 +298,17 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         }
 
         return joinIds(result);
+    }
+
+    private List<Integer> insertSubjectTopics(List<TutorApplicationSubjectTopic> subjectTopics){
+        subjectTopicService.save(subjectTopics);
+        return subjectTopics
+                .stream()
+                .map(v -> v.getId())
+                .collect(Collectors.toList());
+    }
+
+    private List<Integer> insertSubjectTopics(TutorApplicationVo tutorApplicationVo){
+        return insertSubjectTopics(tutorApplicationVo.getSubjectTopics());
     }
 }
