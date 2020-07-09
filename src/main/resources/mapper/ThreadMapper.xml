@@ -74,7 +74,7 @@
     from ${schema}.wq_thread t
     inner join ${schema}.wq_user_profile u on u.id = t.create_by
     inner join ${schema}.wq_tags tg on tg.id = t.tag_id
-    inner join ${schema}.wq_thread_resource tr on t.id = tr.belong_id
+    left join ${schema}.wq_thread_resource tr on t.id = tr.belong_id
     where t.id = #{id,jdbcType=INTEGER}
   </select>
 

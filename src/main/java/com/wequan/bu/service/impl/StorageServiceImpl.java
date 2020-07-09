@@ -1,17 +1,13 @@
 package com.wequan.bu.service.impl;
 
 import com.wequan.bu.service.StorageService;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseBytes;
-import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.core.exception.SdkServiceException;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -24,7 +20,10 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequ
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
@@ -32,7 +31,7 @@ import java.time.Duration;
 @Service
 public class StorageServiceImpl implements StorageService {
 
-    private static final Logger logger = LoggerFactory.getLogger(TutorServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(StorageServiceImpl.class);
 
     private final Region region = Region.US_EAST_1;
     private final String END_POINT = "http://s3.amazonaws.com";

@@ -32,7 +32,7 @@
 <!--        <plugin type="org.mybatis.generator.plugins.CachePlugin"/>-->
         <plugin type="org.mybatis.generator.plugins.CaseInsensitiveLikePlugin"/>
 <!--        <plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin"/>-->
-<!--        <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>-->
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
 
         <commentGenerator>
             <property name="suppressDate" value="true"/>
