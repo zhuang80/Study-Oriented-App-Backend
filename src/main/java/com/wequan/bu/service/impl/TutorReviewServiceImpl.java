@@ -10,6 +10,7 @@ import com.wequan.bu.service.TutorReviewService;
 import com.wequan.bu.util.TagCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -34,7 +35,9 @@ public class TutorReviewServiceImpl extends AbstractService<TutorReview> impleme
     public void postConstruct(){
         this.setMapper(tutorReviewMapper);
     }
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void save(TutorReview tutorReview){
         //insert tutor review
         tutorReviewMapper.insertSelective(tutorReview);

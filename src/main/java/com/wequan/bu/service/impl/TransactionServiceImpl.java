@@ -19,6 +19,7 @@ import com.wequan.bu.util.PaymentMethod;
 import com.wequan.bu.util.TransactionStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.time.Instant;
@@ -61,6 +62,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveAppointmentTransaction(PaymentIntent paymentIntent) {
         Map<String, String> metadata = paymentIntent.getMetadata();
         Integer appointmentId = Integer.parseInt(metadata.get("appointment_id"));
@@ -71,6 +73,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void update(PaymentIntent paymentIntent) {
         Transaction transaction = new Transaction();
         short status = getStatus(paymentIntent.getStatus());
@@ -81,11 +84,13 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delete(PaymentIntent paymentIntent) {
         transactionMapper.deleteByThirdPartyTransactionId(paymentIntent.getId());
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void cancelTransactionByUser(Integer userId, String transactionId) throws Exception {
         Transaction transaction = transactionMapper.selectByPrimaryKey(transactionId);
         Integer refundAmount = 0;
@@ -114,6 +119,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void cancelTransactionByTutor(Integer tutorId, String transactionId) throws Exception {
         Transaction transaction = transactionMapper.selectByPrimaryKey(transactionId);
 
@@ -134,6 +140,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateStatus(String paymentIntentId, TransactionStatus status) {
         Transaction transaction = new Transaction();
         transaction.setStatus(status.getValue());
@@ -143,6 +150,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addRefundRecord(Charge charge) {
         Map<String, String> metadata = charge.getMetadata();
 
@@ -177,6 +185,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void refundApply(RefundApplication refundApplication) {
         String transactionId = refundApplication.getTransactionId();
         Appointment appointment = appointmentService.findByTransactionId(transactionId);
