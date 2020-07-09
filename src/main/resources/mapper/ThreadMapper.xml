@@ -80,12 +80,18 @@
     where school_id = #{schoolId, jdbcType=INTEGER}
   </select>
 
-  <select id="selectBySchoolIdAndTag" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, create_time,
-    update_time, likes, dislikes, status, school_id
-    from ${schema}.wq_thread
-    where school_id = #{schoolId, jdbcType=INTEGER} and tag_id = #{tagId, jdbcType=SMALLINT}
-    order by ${schema}.wq_thread.create_time desc
+  <select id="selectBySchoolIdAndTag" parameterType="java.lang.Integer" resultMap="ResultMapWithStats">
+    select t.*,
+    u.user_name as u_user_name, u.school_id as u_school_id, u.first_name as u_first_name, u.last_name as u_last_name,
+    u.avatar as u_avatar, u.avatar_url_in_provider as u_avatar_url_in_provider, u.id as u_id,
+    tg.name as tag_name,
+    (select count(1) from ${schema}.wq_thread_view_history v where v.thread_id = t.id) as number_of_view,
+    (select count(1) from ${schema}.wq_thread_stream s where s.thread_id = t.id) as number_of_reply
+    from ${schema}.wq_thread t
+    inner join ${schema}.wq_user_profile u on u.id = t.create_by
+    inner join ${schema}.wq_tags tg on tg.id = t.tag_id
+    where t.school_id = #{schoolId, jdbcType=INTEGER} and t.tag_id = #{tagId, jdbcType=SMALLINT}
+    order by t.create_time desc
   </select>
 
   <select id="selectDirectRepliesById" parameterType="java.lang.Integer" resultMap="StreamResultMap">
