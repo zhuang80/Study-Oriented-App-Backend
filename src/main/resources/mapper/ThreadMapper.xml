@@ -90,7 +90,7 @@
 
   <select id="selectDirectRepliesById" parameterType="java.lang.Integer" resultMap="StreamResultMap">
     select *
-    from ${schema}.wq_thread_stream
+    from ${schema}.wq_thread_stream ts join
     where thread_id = #{threadId,jdbcType=INTEGER}
   </select>
 
@@ -123,14 +123,14 @@
   </select>
 
   <select id="getUserInterestedStudyHelpThreadsByIds" resultMap="BaseResultMap">
-    select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, ${schema}.wq_thread.create_time,
+    select t.id, create_by, title, category, tag_id, content, study_points_bonus, t.create_time,
     update_time, likes, dislikes, status, school_id
-    from ${schema}.wq_thread join ${schema}.wq_thread_subject on ${schema}.wq_thread.id = ${schema}.wq_thread_subject.thread_id
-    where ${schema}.wq_thread_subject.subject_id in
+    from ${schema}.wq_thread t join ${schema}.wq_thread_subject s on t.id = s.thread_id
+    where s.subject_id in
     <foreach item="subjectId" collection="res" open="(" separator="," close=")">
       #{subjectId}
     </foreach>
-    and ${schema}.wq_thread.create_by = #{userId,jdbcType=INTEGER}
+    and t.create_by = #{userId,jdbcType=INTEGER}
   </select>
 
   <select id="selectByUserId" resultMap="ResultMapWithStats">
@@ -331,11 +331,7 @@
     </trim>
   </insert>
 
-  <update id="addUserInterestedSubjects">
-    update ${schema}.wq_thread_user_selected_subjects
-    set subject_ids = #{subjectIds,jdbcType=VARCHAR}
-    where user_id = #{userId,jdbcType=INTEGER}
-  </update>
+
 
   <insert id="reportThread" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
     insert into ${schema}.wq_report_records
@@ -347,6 +343,12 @@
     insert into ${schema}.wq_report_records
     (user_id, resource_type, resource_id, report_time, reason)
     values(#{userId,jdbcType=INTEGER},#{resourceType,jdbcType=SMALLINT},#{resourceId,jdbcType=INTEGER},#{reportTime,jdbcType=TIMESTAMP},#{reason,jdbcType=VARCHAR})
+  </insert>
+
+  <insert id="addUserInterestedSubjects">
+    insert into ${schema}.wq_thread_user_selected_subjects
+    (user_id, subject_ids)
+    values(#{userId,jdbcType=INTEGER}, #{subjectIds,jdbcType=VARCHAR})
   </insert>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.Thread">
