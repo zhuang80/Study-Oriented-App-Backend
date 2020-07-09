@@ -114,17 +114,8 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
      */
     @Override
     public List<Thread> findBySchoolAndTag(Integer schoolId, Integer tagId, Integer pageNum, Integer pageSize){
-        if(schoolId!=null && tagId!=null){
-            if(pageNum==null){
-                pageNum=1;
-            }
-            if(pageSize==null){
-                pageSize=10;
-            }
-            RowBounds rowBounds = new RowBounds(pageNum,pageSize);
-            return threadMapper.selectBySchoolIdAndTag(schoolId, tagId, rowBounds);
-        }
-        return null;
+        RowBounds rowBounds = new RowBounds(pageNum,pageSize);
+        return threadMapper.selectBySchoolIdAndTag(schoolId, tagId, rowBounds);
     }
 
     /**
