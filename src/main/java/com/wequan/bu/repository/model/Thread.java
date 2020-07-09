@@ -59,14 +59,14 @@ public class Thread {
      * Database Column Remarks:
      *   帖子创建时间
      */
-    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
+
     private Date createTime;
 
     /**
      * Database Column Remarks:
      *   帖子更新时间
      */
-    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
+
     private Date updateTime;
 
     /**
