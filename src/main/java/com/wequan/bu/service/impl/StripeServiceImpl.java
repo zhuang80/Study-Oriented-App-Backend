@@ -55,10 +55,14 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     @Value("${REFUND_WEBHOOK_SECRET}")
     private String refundWebhookSecret;
 
-    //local test webhook secret
-    //private String paymentIntentWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
-    //private String refundWebhookSecret="whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
+    @Value("${ACCOUNT_WEBHOOK_SECRET}")
+    private String accountWebhookSecret;
 
+/*  //local test webhook secret
+    private String paymentIntentWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
+    private String refundWebhookSecret="whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
+    private String accountWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
+*/
     @Autowired
     private TutorStripeMapper tutorStripeMapper;
 
@@ -79,20 +83,24 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void storeConnectedId(String code, Integer tutorId) {
+    public void storeConnectedId(String code, Integer tutorId) throws StripeException {
         Map<String, Object> params = new HashMap<>();
         params.put("grant_type", "authorization_code");
         params.put("code", code);
-        try{
-            TokenResponse stripeResponse = OAuth.token(params, null);
-            String connectedAccountId = stripeResponse.getStripeUserId();
-            TutorStripe tutorStripe = new TutorStripe();
+
+        TokenResponse stripeResponse = OAuth.token(params, null);
+        String connectedAccountId = stripeResponse.getStripeUserId();
+
+        TutorStripe tutorStripe = tutorStripeMapper.selectByTutorId(tutorId);
+        if(tutorStripe == null) {
+            tutorStripe = new TutorStripe();
             tutorStripe.setTutorId(tutorId);
             tutorStripe.setStripeAccount(connectedAccountId);
             tutorStripe.setCreateTime(LocalDateTime.now());
             tutorStripeMapper.insertSelective(tutorStripe);
-        } catch (StripeException e) {
-            e.printStackTrace();
+        }else{
+            tutorStripe.setStripeAccount(connectedAccountId);
+            tutorStripeMapper.updateByPrimaryKeySelective(tutorStripe);
         }
     }
 
@@ -240,6 +248,41 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
                 "?client_id=" + clientId +
                 "&state=" + state;
         return url;
+    }
+
+    @Override
+    public void revoke(Integer tutorId) throws StripeException, Exception {
+        TutorStripe tutorStripe = tutorStripeMapper.selectByTutorId(tutorId);
+
+        if(tutorStripe != null){
+            Map<String, Object> params = new HashMap<>();
+            params.put("client_id", clientId);
+            params.put("stripe_user_id", tutorStripe.getStripeAccount());
+            OAuth.deauthorize(params, null);
+        }else{
+            throw new Exception("No such Tutor.");
+        }
+
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void handleAccount(String sigHeader, String payload) throws Exception {
+        Event event = null;
+
+        try{
+            event = Webhook.constructEvent(payload, sigHeader, accountWebhookSecret);
+        } catch (SignatureVerificationException e) {
+            e.printStackTrace();
+        }
+        if(event != null) {
+            if ("account.application.deauthorized".equals(event.getType())) {
+                log.info("=============================> account deauthorized event webhook");
+                String connectedAccountId = event.getAccount();
+
+                tutorStripeMapper.deleteByStripeAccount(connectedAccountId);
+            }
+        }
     }
 
     private Object deserializeObject(Event event) throws Exception {

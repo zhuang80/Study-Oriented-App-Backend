@@ -41,8 +41,13 @@ public class ChargeController {
             return ResultGenerator.fail("Fail to connect. State doesn't match.");
         }
         Integer tutorId= Integer.parseInt((String) session.getAttribute("tutor_id"));
-        stripeService.storeConnectedId(code, tutorId);
-        return ResultGenerator.success();
+
+        try {
+            stripeService.storeConnectedId(code, tutorId);
+            return ResultGenerator.success();
+        }catch (StripeException e){
+            return ResultGenerator.fail(e.getMessage());
+        }
     }
 
     @GetMapping("/client_secret")
@@ -89,6 +94,18 @@ public class ChargeController {
         return ResultGenerator.success();
     }
 
+    @PostMapping("/account_webhook")
+    public Result handleAccount(HttpServletRequest request,
+                                @RequestBody String payload){
+        try{
+            stripeService.handleAccount(request.getHeader("Stripe-Signature"), payload);
+        }catch(Exception e){
+            return ResultGenerator.fail(e.getMessage());
+        }
+        return ResultGenerator.success();
+
+    }
+
     @GetMapping("/connect")
     @ApiOperation(value = "redirect to stripe sign up page", notes = "生成state，放入session，然后重定向到stripe的注册页面")
     public void getStripeConnectPage(HttpServletRequest request, HttpServletResponse response){
@@ -104,5 +121,18 @@ public class ChargeController {
         System.out.println("=========================================> " + session.getId());
         response.setHeader("Location", url);
         response.setStatus(302);
+    }
+
+    @GetMapping("/revoke")
+    @ApiOperation(value = "revoke the account's access", notes = "撤销Tutor的Stripe账号绑定")
+    public Result revoke(@RequestParam("tutor_id") Integer tutorId){
+        try{
+            stripeService.revoke(tutorId);
+            return ResultGenerator.success();
+        }catch (StripeException e){
+            return ResultGenerator.fail(e.getMessage());
+        }catch (Exception e){
+            return ResultGenerator.fail(e.getMessage());
+        }
     }
 }
