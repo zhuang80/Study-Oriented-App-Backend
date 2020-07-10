@@ -23,4 +23,8 @@ public interface StripeService extends Service<TutorStripe> {
     public Refund createRefund(String transactionId, Integer refundAmount) throws StripeException;
 
     public void handleRefund(String sigHeader, String webhookEndpoint) throws Exception;
+
+    public String getState();
+
+    public String getUrl(String state);
 }

@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author Zhaochao Huang
@@ -26,8 +28,19 @@ public class ChargeController {
     private StripeService stripeService;
 
     @PostMapping("/connect/oauth")
-    public Result connect(@RequestParam("code") String code,
-                          @RequestParam("tutorId") Integer tutorId){
+    public Result connect(HttpServletRequest request){
+        String code = request.getParameter("code");
+        String state = request.getParameter("state");
+
+        HttpSession session = request.getSession(false);
+        if(session == null || code == null || state == null) {
+            return ResultGenerator.fail("Fail to connect.");
+        }
+
+        if(!state.equals(session.getAttribute("state"))){
+            return ResultGenerator.fail("Fail to connect. State doesn't match.");
+        }
+        Integer tutorId= Integer.parseInt((String) session.getAttribute("tutor_id"));
         stripeService.storeConnectedId(code, tutorId);
         return ResultGenerator.success();
     }
@@ -74,5 +87,22 @@ public class ChargeController {
         System.out.println(request.getHeader("Stripe-Signature"));
         stripeService.handleRefund(request.getHeader("Stripe-Signature"), webhookEndpoint);
         return ResultGenerator.success();
+    }
+
+    @GetMapping("/connect")
+    @ApiOperation(value = "redirect to stripe sign up page", notes = "生成state，放入session，然后重定向到stripe的注册页面")
+    public void getStripeConnectPage(HttpServletRequest request, HttpServletResponse response){
+        String tutorId  = request.getParameter("tutor_id");
+        System.out.println("=============================> " + tutorId);
+        String state = stripeService.getState();
+        String url = stripeService.getUrl(state);
+
+        HttpSession session = request.getSession();
+        session.setAttribute("tutor_id", tutorId);
+        session.setAttribute("state", state);
+
+        System.out.println("=========================================> " + session.getId());
+        response.setHeader("Location", url);
+        response.setStatus(302);
     }
 }
