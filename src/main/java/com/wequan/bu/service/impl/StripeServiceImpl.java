@@ -33,6 +33,7 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author Zhaochao Huang
@@ -226,6 +227,19 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
                 appointmentService.updateStatus(paymentIntentId, AppointmentStatus.REFUNDED);
             }
         }
+    }
+
+    @Override
+    public String getState() {
+        return String.valueOf(UUID.randomUUID());
+    }
+
+    @Override
+    public String getUrl(String state) {
+        String url = "https://connect.stripe.com/express/oauth/authorize" +
+                "?client_id=" + clientId +
+                "&state=" + state;
+        return url;
     }
 
     private Object deserializeObject(Event event) throws Exception {
