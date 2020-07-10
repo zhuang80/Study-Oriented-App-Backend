@@ -8,7 +8,7 @@ import com.wequan.bu.repository.model.Appointment;
 import com.wequan.bu.repository.model.TutorStripe;
 
 public interface StripeService extends Service<TutorStripe> {
-    public void storeConnectedId(String code, Integer tutorId);
+    public void storeConnectedId(String code, Integer tutorId) throws StripeException;
 
     public PaymentIntent createPaymentIntent(Integer appointmentId) throws StripeException;
 
@@ -27,4 +27,8 @@ public interface StripeService extends Service<TutorStripe> {
     public String getState();
 
     public String getUrl(String state);
+
+    public void revoke(Integer tutorId) throws StripeException, Exception;
+
+    public void handleAccount(String sigHeader, String payload) throws Exception;
 }
