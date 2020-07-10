@@ -27,7 +27,7 @@ public class ChargeController {
     @Autowired
     private StripeService stripeService;
 
-    @PostMapping("/connect/oauth")
+    @GetMapping("/connect/oauth")
     public Result connect(HttpServletRequest request){
         String code = request.getParameter("code");
         String state = request.getParameter("state");
