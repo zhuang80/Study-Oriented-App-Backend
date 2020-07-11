@@ -10,4 +10,6 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface TutorStripeMapper extends GeneralMapper<TutorStripe>{
     public TutorStripe selectByTutorId(@Param("tutor_id") Integer tutorId);
+
+    public int deleteByStripeAccount(@Param("stripe_account") String stripeAccount);
 }
