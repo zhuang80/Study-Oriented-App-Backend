@@ -1,9 +1,6 @@
 package com.wequan.bu.service;
 
-import com.wequan.bu.repository.model.School;
-import com.wequan.bu.repository.model.Subject;
-import com.wequan.bu.repository.model.Tag;
-import com.wequan.bu.repository.model.Topic;
+import com.wequan.bu.repository.model.*;
 
 import java.util.List;
 
@@ -35,4 +32,10 @@ public interface CommonDataService {
      * @return topic列表
      */
     List<Topic> getTopicData();
+
+    /**
+     * 获取degree列表
+     * @return degree列表
+     */
+    List<Degree> getDegreeData();
 }

@@ -2,10 +2,7 @@ package com.wequan.bu.controller;
 
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
-import com.wequan.bu.repository.model.School;
-import com.wequan.bu.repository.model.Subject;
-import com.wequan.bu.repository.model.Tag;
-import com.wequan.bu.repository.model.Topic;
+import com.wequan.bu.repository.model.*;
 import com.wequan.bu.service.CommonDataService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -59,5 +56,11 @@ public class CommonDataController {
         return ResultGenerator.success(topicData);
     }
 
+    @GetMapping("/degree")
+    @ApiOperation(value = "a list of degree data", notes = "返回degree基本信息")
+    public Result<List<Degree>> getDegreeData(){
+        List<Degree> degreeData = commonDataService.getDegreeData();
+        return ResultGenerator.success(degreeData);
+    }
 
 }

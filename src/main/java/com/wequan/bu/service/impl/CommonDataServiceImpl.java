@@ -1,14 +1,8 @@
 package com.wequan.bu.service.impl;
 
 import com.wequan.bu.config.WeQuanConstants;
-import com.wequan.bu.repository.dao.SchoolMapper;
-import com.wequan.bu.repository.dao.SubjectsMapper;
-import com.wequan.bu.repository.dao.TagMapper;
-import com.wequan.bu.repository.dao.TopicMapper;
-import com.wequan.bu.repository.model.School;
-import com.wequan.bu.repository.model.Subject;
-import com.wequan.bu.repository.model.Tag;
-import com.wequan.bu.repository.model.Topic;
+import com.wequan.bu.repository.dao.*;
+import com.wequan.bu.repository.model.*;
 import com.wequan.bu.service.CommonDataService;
 import com.wequan.bu.util.redis.RedisUtil;
 import org.slf4j.Logger;
@@ -40,6 +34,8 @@ public class CommonDataServiceImpl implements CommonDataService {
     private SubjectsMapper subjectsMapper;
     @Autowired
     private TopicMapper topicMapper;
+    @Autowired
+    private DegreeMapper degreeMapper;
 
     private Lock lock = new ReentrantLock();
 
@@ -125,5 +121,27 @@ public class CommonDataServiceImpl implements CommonDataService {
             }
         }
         return topics;
+    }
+
+    @Override
+    public List<Degree> getDegreeData() {
+        List degrees = redisUtil.lGet(WeQuanConstants.DEGREE_CACHE_KEY, 0, -1);
+        if (Objects.isNull(degrees) || degrees.size() == 0) {
+            lock.lock();
+            try {
+                degrees = redisUtil.lGet(WeQuanConstants.DEGREE_CACHE_KEY, 0, -1);
+                if (Objects.isNull(degrees) || degrees.size() == 0) {
+                    //query in database
+                    degrees = degreeMapper.selectAll();
+                    redisUtil.lSet(WeQuanConstants.DEGREE_CACHE_KEY, degrees, CACHE_EXPIRE_TIME);
+                }
+            } catch (Exception e) {
+                log.error("getDegreeData()", e);
+            } finally {
+                lock.unlock();
+            }
+        }
+        return degrees;
+
     }
 }

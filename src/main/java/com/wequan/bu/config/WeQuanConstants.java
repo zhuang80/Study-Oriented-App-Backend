@@ -17,4 +17,5 @@ public interface WeQuanConstants {
     String TAG_CACHE_KEY = "Common_Data_Tag";
     String SUBJECT_CACHE_KEY = "Common_Data_Subject";
     String TOPIC_CACHE_KEY = "Common_Data_Topic";
+    String DEGREE_CACHE_KEY = "Common_Data_Degree";
 }
