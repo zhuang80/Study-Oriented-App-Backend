@@ -79,10 +79,6 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
         stList.addAll(insertSubjectTopics(tutorApplicationVo));
         String stIds = joinIds(stList);
 
-
-        for(TutorApplicationEducationBackground t: tutorApplicationVo.getEducationBackgrounds()){
-            System.out.println(t.getId() + "    gpa "+t.getGpa());
-        }
         insertTutorApplication(tutorApplicationVo, smIds, ebIds, stIds);
     }
 
@@ -253,7 +249,10 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
     private void insertTutorApplication(TutorApplicationVo tutorApplicationVo, String smIds, String ebIds, String stIds){
         TutorApplication tutorApplication = new TutorApplication(tutorApplicationVo);
         tutorApplication.setCreateTime(LocalDateTime.now());
-        tutorApplication.setSupportMaterialIds(smIds);
+
+        String supportMaterialIds = joinIds(tutorApplicationVo.getSupportMaterialIds(), smIds);
+
+        tutorApplication.setSupportMaterialIds(supportMaterialIds);
         tutorApplication.setEducationBackgroundIds(ebIds);
         tutorApplication.setSubjectTopicsIds(stIds);
         tutorApplication.setStatus(TutorApplicationStatus.PENDING.getValue());
