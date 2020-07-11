@@ -3,10 +3,8 @@ package com.wequan.bu.controller;
 import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
+import com.wequan.bu.repository.model.*;
 import com.wequan.bu.repository.model.Thread;
-import com.wequan.bu.repository.model.ThreadResource;
-import com.wequan.bu.repository.model.ThreadStream;
-import com.wequan.bu.repository.model.ThreadUserSelectedSubjects;
 import com.wequan.bu.service.ThreadResourceService;
 import com.wequan.bu.service.ThreadService;
 import io.swagger.annotations.*;
@@ -329,10 +327,9 @@ public class ThreadController {
      */
     @GetMapping("/thread/study_help/subjects")
     @ApiOperation(value = "a list of user interested subjects", notes = "根据user id获取之前感兴趣的科目列表")
-    public Result<ThreadUserSelectedSubjects> getUserSelectedSubjects(@RequestParam("userId") Integer userId) {
-
-        ThreadUserSelectedSubjects result = threadService.findUsersSelectedSubjects(userId);
-        return ResultGenerator.success(result);
+    public Result<String> getUserSelectedSubjects(@RequestParam("userId") Integer userId) {
+        String subjectIds = threadService.findUsersSelectedSubjects(userId);
+        return ResultGenerator.success(subjectIds);
     }
 
     /**

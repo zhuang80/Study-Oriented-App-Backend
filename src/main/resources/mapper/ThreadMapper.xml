@@ -132,11 +132,12 @@
     where ${schema}.wq_user_follow.user_id = #{userId,jdbcType=INTEGER}
   </select>
 
-  <select id="selectUserSelectedSubjectsById" parameterType="java.lang.Integer" resultMap="SubjectsResultMap">
+  <select id="selectUserSelectedSubjectsById" parameterType="integer" resultType="string">
     select subject_ids
     from ${schema}.wq_thread_user_selected_subjects
     where user_id = #{userId,jdbcType=INTEGER}
   </select>
+
 
   <select id="selectedBySchoolIdOrderedByView" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
@@ -147,6 +148,7 @@
     order by view_of_number desc
   </select>
 
+
   <select id="getUserInterestedStudyHelpThreadsByIds" resultMap="BaseResultMap">
     select t.id, create_by, title, category, tag_id, content, study_points_bonus, t.create_time,
     update_time, likes, dislikes, status, school_id
@@ -155,7 +157,7 @@
     <foreach item="subjectId" collection="res" open="(" separator="," close=")">
       #{subjectId}
     </foreach>
-    and t.create_by = #{userId,jdbcType=INTEGER}
+    <!--and t.create_by = #{userId,jdbcType=INTEGER}-->
   </select>
 
   <select id="selectByUserId" resultMap="ResultMapWithStats">
