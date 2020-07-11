@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wequan.bu.WeQuanApplication;
 import com.wequan.bu.controller.vo.Condition;
-import com.wequan.bu.repository.model.School;
-import com.wequan.bu.repository.model.Subject;
-import com.wequan.bu.repository.model.Tag;
-import com.wequan.bu.repository.model.Topic;
+import com.wequan.bu.repository.model.*;
 import com.wequan.bu.service.CommonDataService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.lang.Thread;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -66,6 +64,8 @@ public class SampleTest {
                     System.out.println(tagData.get(0).getName());
                     List<Topic> topicData = commonDataService.getTopicData();
                     System.out.println(topicData.get(0).getName());
+                    List<Degree> degreeData = commonDataService.getDegreeData();
+                    System.out.println(degreeData.get(0).getName());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
