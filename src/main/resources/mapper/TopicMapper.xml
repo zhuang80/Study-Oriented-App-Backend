@@ -14,10 +14,20 @@
         <result column="name" jdbcType="VARCHAR" property="name"/>
     </resultMap>
 
+    <sql id="Base_Column_List">
+        id, name, subject_id, create_by, create_time
+    </sql>
+
     <select id="selectByIds" resultType="com.wequan.bu.repository.model.Topic">
         <bind name="ids" value="'('+ ids + ')'" />
         SELECT *
         FROM ${schema}.wq_subjects s
         WHERE id IN ${ids}
     </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from ${schema}.wq_topic
+    </select>
+
 </mapper>

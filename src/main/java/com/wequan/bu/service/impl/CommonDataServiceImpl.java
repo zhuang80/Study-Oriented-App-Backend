@@ -116,7 +116,7 @@ public class CommonDataServiceImpl implements CommonDataService {
                 if (Objects.isNull(topics) || topics.size() == 0) {
                     //query in database
                     topics = topicMapper.selectAll();
-                    redisUtil.lSet(WeQuanConstants.SUBJECT_CACHE_KEY, topics, CACHE_EXPIRE_TIME);
+                    redisUtil.lSet(WeQuanConstants.TOPIC_CACHE_KEY, topics, CACHE_EXPIRE_TIME);
                 }
             } catch (Exception e) {
                 log.error("getTopicData()", e);

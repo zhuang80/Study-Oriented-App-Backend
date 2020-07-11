@@ -13,7 +13,7 @@
         id, name, category, create_by, create_time
     </sql>
 
-    <select id="selectAll">
+    <select id="selectAll" resultMap="BaseResultMap">
         select <include refid="Base_Column_List" />
         from ${schema}.wq_tags
     </select>

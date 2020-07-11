@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wequan.bu.WeQuanApplication;
 import com.wequan.bu.controller.vo.Condition;
 import com.wequan.bu.repository.model.School;
+import com.wequan.bu.repository.model.Subject;
+import com.wequan.bu.repository.model.Tag;
+import com.wequan.bu.repository.model.Topic;
 import com.wequan.bu.service.CommonDataService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -47,7 +50,7 @@ public class SampleTest {
     }
 
     @Test
-    public void testRedis() throws InterruptedException, JsonProcessingException {
+    public void testRedis() throws InterruptedException {
         int threadNum = 100;
         Thread[] threads = new Thread[threadNum];
         CountDownLatch countDownLatch = new CountDownLatch(threadNum);
@@ -57,6 +60,12 @@ public class SampleTest {
                     countDownLatch.await();
                     List<School> schoolData = commonDataService.getSchoolData();
                     System.out.println(schoolData.get(0).getName());
+                    List<Subject> subjectData = commonDataService.getSubjectData();
+                    System.out.println(subjectData.get(0).getName());
+                    List<Tag> tagData = commonDataService.getTagData();
+                    System.out.println(tagData.get(0).getName());
+                    List<Topic> topicData = commonDataService.getTopicData();
+                    System.out.println(topicData.get(0).getName());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
