@@ -75,6 +75,15 @@ public class ThreadController {
                                                           @RequestParam("tagId") Integer tagId,
                                                           @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                           @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        if (schoolId <= 0 || tagId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
         List<Thread> result = threadService.findBySchoolAndTag(schoolId,tagId, pageNum, pageSize);
         return ResultGenerator.success(result);
     }

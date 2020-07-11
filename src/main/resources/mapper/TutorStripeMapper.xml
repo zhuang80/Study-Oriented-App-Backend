@@ -11,4 +11,25 @@
         FROM ${schema}.wq_tutor_stripe ts
         WHERE ts.tutor_id = #{tutor_id, jdbcType=INTEGER}
     </select>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.TutorStripe">
+        UPDATE ${schema}.wq_tutor_stripe
+        <set>
+            <if test="tutorId != null">
+                tutor_id = #{tutorId,jdbcType=INTEGER},
+            </if>
+            <if test="stripeAccount != null">
+                stripe_account = #{stripeAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        WHERE id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <delete id="deleteByStripeAccount" parameterType="java.lang.String">
+        DELETE FROM ${schema}.wq_tutor_stripe
+        WHERE stripe_account = #{stripe_account, jdbcType=VARCHAR}
+    </delete>
 </mapper>
