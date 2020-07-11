@@ -1,9 +1,7 @@
 package com.wequan.bu.repository.dao;
 
-import com.wequan.bu.repository.model.ReportRecord;
+import com.wequan.bu.repository.model.*;
 import com.wequan.bu.repository.model.Thread;
-import com.wequan.bu.repository.model.ThreadStream;
-import com.wequan.bu.repository.model.ThreadUserSelectedSubjects;
 import com.wequan.bu.repository.model.extend.ThreadStats;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -158,7 +156,7 @@ public interface ThreadMapper extends GeneralMapper<Thread>{
      * @param userId
      * @return
      */
-    ThreadUserSelectedSubjects selectUserSelectedSubjectsById(Integer userId);
+    String selectUserSelectedSubjectsById(Integer userId);
 
     /**
      * 6/22

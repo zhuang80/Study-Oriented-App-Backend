@@ -1,10 +1,8 @@
 package com.wequan.bu.service.impl;
 
 import com.wequan.bu.repository.dao.ThreadMapper;
-import com.wequan.bu.repository.model.ReportRecord;
+import com.wequan.bu.repository.model.*;
 import com.wequan.bu.repository.model.Thread;
-import com.wequan.bu.repository.model.ThreadStream;
-import com.wequan.bu.repository.model.ThreadUserSelectedSubjects;
 import com.wequan.bu.repository.model.extend.ThreadStats;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.ThreadService;
@@ -240,8 +238,8 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
      * @return
      */
     @Override
-    public ThreadUserSelectedSubjects findUsersSelectedSubjects(Integer userId){
-        if(userId!=null){
+    public String findUsersSelectedSubjects(Integer userId){
+        if(userId>=0){
             return threadMapper.selectUserSelectedSubjectsById(userId);
         }
         return null;
