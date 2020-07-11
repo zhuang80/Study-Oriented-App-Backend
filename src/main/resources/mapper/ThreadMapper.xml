@@ -102,7 +102,7 @@
     tr.file_name tr_file_name, tr.belong_id tr_belong_id
     from ${schema}.wq_thread_stream ts
     inner join ${schema}.wq_user_profile u on ts.user_id = u.id
-    inner join ${schema}.wq_thread_resource tr on ts.id = tr.belong_id
+    left join ${schema}.wq_thread_resource tr on ts.id = tr.belong_id
     where ts.thread_id = #{threadId,jdbcType=INTEGER}
   </select>
 
@@ -115,7 +115,7 @@
     tr.file_name tr_file_name, tr.belong_id tr_belong_id
     from ${schema}.wq_thread_stream ts
     inner join ${schema}.wq_user_profile u on ts.user_id = u.id
-    inner join ${schema}.wq_thread_resource tr on ts.id = tr.belong_id
+    left join ${schema}.wq_thread_resource tr on ts.id = tr.belong_id
     where ts.thread_id = #{threadId,jdbcType=INTEGER}
   </select>
 
