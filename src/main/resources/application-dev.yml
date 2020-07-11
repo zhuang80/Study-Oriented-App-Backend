@@ -2,16 +2,11 @@
 spring:
   redis:
     database: 0
-    host: 127.0.0.1
+#    host: 127.0.0.1
+    host: wequan-redis.cois54.ng.0001.use1.cache.amazonaws.com
     port: 6379
     password:
-    jedis:
-      pool:
-        max-active: 100
-        max-idle: 10
-        max-wait: -1ms
-        min-idle: 0
-        time-between-eviction-runs: 1000ms
+    timeout: 20s
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://wequan.cgnev0a5e0ak.us-east-1.rds.amazonaws.com:5432/wequan
