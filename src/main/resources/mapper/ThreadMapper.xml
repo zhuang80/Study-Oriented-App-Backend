@@ -37,6 +37,11 @@
     <result column="dislikes" jdbcType="INTEGER" property="dislikes" />
   </resultMap>
 
+  <resultMap id="StreamResultMapWithUserInfo" extends="StreamResultMap" type="com.wequan.bu.repository.model.ThreadStream">
+    <association property="userBriefInfo" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithBriefInfo"/>
+    <collection property="threadResources" columnPrefix="tr_" resultMap="com.wequan.bu.repository.dao.ThreadResourceMapper.BaseResultMap" />
+  </resultMap>
+
   <resultMap id="SubjectsResultMap" type="com.wequan.bu.repository.model.ThreadUserSelectedSubjects">
     <id column="user_id" jdbcType="INTEGER" property="userId"/>
     <result column="subject_ids" jdbcType="VARCHAR" property="subjectIds"/>
@@ -94,16 +99,30 @@
     order by t.create_time desc
   </select>
 
-  <select id="selectDirectRepliesById" parameterType="java.lang.Integer" resultMap="StreamResultMap">
-    select *
-    from ${schema}.wq_thread_stream
-    where thread_id = #{threadId,jdbcType=INTEGER}
+  <select id="selectDirectRepliesById" parameterType="java.lang.Integer" resultMap="StreamResultMapWithUserInfo">
+    select
+    ts.*,
+    u.user_name as u_user_name, u.school_id as u_school_id, u.first_name as u_first_name, u.last_name as u_last_name,
+    u.avatar as u_avatar, u.avatar_url_in_provider as u_avatar_url_in_provider, u.id as u_id,
+    tr.id tr_id, tr.type tr_type, tr.link tr_link, tr.file_type tr_file_type,
+    tr.file_name tr_file_name, tr.belong_id tr_belong_id
+    from ${schema}.wq_thread_stream ts
+    inner join ${schema}.wq_user_profile u on ts.user_id = u.id
+    inner join ${schema}.wq_thread_resource tr on ts.id = tr.belong_id
+    where ts.thread_id = #{threadId,jdbcType=INTEGER}
   </select>
 
-  <select id="selectIndirectRepliesById" parameterType="java.lang.Integer" resultMap="StreamResultMap">
-    select *
-    from ${schema}.wq_thread_stream
-    where thread_id = #{threadId,jdbcType=INTEGER}
+  <select id="selectIndirectRepliesById" parameterType="java.lang.Integer" resultMap="StreamResultMapWithUserInfo">
+    select
+    ts.*,
+    u.user_name as u_user_name, u.school_id as u_school_id, u.first_name as u_first_name, u.last_name as u_last_name,
+    u.avatar as u_avatar, u.avatar_url_in_provider as u_avatar_url_in_provider, u.id as u_id,
+    tr.id tr_id, tr.type tr_type, tr.link tr_link, tr.file_type tr_file_type,
+    tr.file_name tr_file_name, tr.belong_id tr_belong_id
+    from ${schema}.wq_thread_stream ts
+    inner join ${schema}.wq_user_profile u on ts.user_id = u.id
+    inner join ${schema}.wq_thread_resource tr on ts.id = tr.belong_id
+    where ts.thread_id = #{threadId,jdbcType=INTEGER}
   </select>
 
   <select id="selectByUserFollowingId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -113,11 +132,12 @@
     where ${schema}.wq_user_follow.user_id = #{userId,jdbcType=INTEGER}
   </select>
 
-  <select id="selectUserSelectedSubjectsById" parameterType="java.lang.Integer" resultMap="SubjectsResultMap">
+  <select id="selectUserSelectedSubjectsById" parameterType="integer" resultType="string">
     select subject_ids
     from ${schema}.wq_thread_user_selected_subjects
     where user_id = #{userId,jdbcType=INTEGER}
   </select>
+
 
   <select id="selectedBySchoolIdOrderedByView" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
@@ -128,15 +148,16 @@
     order by view_of_number desc
   </select>
 
+
   <select id="getUserInterestedStudyHelpThreadsByIds" resultMap="BaseResultMap">
-    select ${schema}.wq_thread.id, create_by, title, category, tag_id, content, study_points_bonus, ${schema}.wq_thread.create_time,
+    select t.id, create_by, title, category, tag_id, content, study_points_bonus, t.create_time,
     update_time, likes, dislikes, status, school_id
-    from ${schema}.wq_thread join ${schema}.wq_thread_subject on ${schema}.wq_thread.id = ${schema}.wq_thread_subject.thread_id
-    where ${schema}.wq_thread_subject.subject_id in
+    from ${schema}.wq_thread t join ${schema}.wq_thread_subject s on t.id = s.thread_id
+    where s.subject_id in
     <foreach item="subjectId" collection="res" open="(" separator="," close=")">
       #{subjectId}
     </foreach>
-    and ${schema}.wq_thread.create_by = #{userId,jdbcType=INTEGER}
+    <!--and t.create_by = #{userId,jdbcType=INTEGER}-->
   </select>
 
   <select id="selectByUserId" resultMap="ResultMapWithStats">
@@ -337,11 +358,7 @@
     </trim>
   </insert>
 
-  <update id="addUserInterestedSubjects">
-    update ${schema}.wq_thread_user_selected_subjects
-    set subject_ids = #{subjectIds,jdbcType=VARCHAR}
-    where user_id = #{userId,jdbcType=INTEGER}
-  </update>
+
 
   <insert id="reportThread" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
     insert into ${schema}.wq_report_records
@@ -353,6 +370,12 @@
     insert into ${schema}.wq_report_records
     (user_id, resource_type, resource_id, report_time, reason)
     values(#{userId,jdbcType=INTEGER},#{resourceType,jdbcType=SMALLINT},#{resourceId,jdbcType=INTEGER},#{reportTime,jdbcType=TIMESTAMP},#{reason,jdbcType=VARCHAR})
+  </insert>
+
+  <insert id="addUserInterestedSubjects">
+    insert into ${schema}.wq_thread_user_selected_subjects
+    (user_id, subject_ids)
+    values(#{userId,jdbcType=INTEGER}, #{subjectIds,jdbcType=VARCHAR})
   </insert>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.Thread">

@@ -2,7 +2,6 @@ package com.wequan.bu.service;
 
 import com.wequan.bu.repository.model.Thread;
 import com.wequan.bu.repository.model.ThreadStream;
-import com.wequan.bu.repository.model.ThreadUserSelectedSubjects;
 import com.wequan.bu.repository.model.extend.ThreadStats;
 
 import java.util.List;
@@ -111,7 +110,7 @@ public interface ThreadService extends Service<Thread> {
      * @param userId
      * @return
      */
-    public ThreadUserSelectedSubjects findUsersSelectedSubjects(Integer userId);
+    public String findUsersSelectedSubjects(Integer userId);
 
     /**
      * 6/22
