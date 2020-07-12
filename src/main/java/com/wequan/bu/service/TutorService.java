@@ -37,4 +37,5 @@ public interface TutorService extends Service<Tutor> {
     public void updateAvailability(Integer tutorId, Short action);
 
     public void logTutorViewHistory(Tutor tutor, Integer userId);
+
 }
