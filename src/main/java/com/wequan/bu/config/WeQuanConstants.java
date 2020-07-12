@@ -18,4 +18,7 @@ public interface WeQuanConstants {
     String SUBJECT_CACHE_KEY = "Common_Data_Subject";
     String TOPIC_CACHE_KEY = "Common_Data_Topic";
     String DEGREE_CACHE_KEY = "Common_Data_Degree";
+
+    /** Constants for AWS S3 **/
+    String S3_TOP_PATH = "user/";
 }
