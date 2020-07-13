@@ -154,35 +154,58 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void approve(Integer id) {
+    public void approve(Integer id) throws Exception {
         TutorApplication tutorApplication = tutorApplicationMapper.selectByPrimaryKey(id);
-        tutorApplication.setStatus(TutorApplicationStatus.APPROVE.getValue());
-        tutorApplication.setUpdateTime(LocalDateTime.now());
-        tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
-        tutorApplicationLogService.addTutorApplicationLog(tutorApplication, TutorApplicationStatus.APPROVE, null);
-        tutorService.approveTutorApplication(tutorApplication);
+
+        if(tutorApplication != null){
+            if(isPending(tutorApplication)){
+                tutorApplication.setStatus(TutorApplicationStatus.APPROVE.getValue());
+                tutorApplication.setUpdateTime(LocalDateTime.now());
+                tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
+                tutorApplicationLogService.addTutorApplicationLog(tutorApplication, TutorApplicationStatus.APPROVE, null);
+                tutorService.approveTutorApplication(tutorApplication);
+            }
+        }else {
+            throw new Exception("No such application.");
+        }
+
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void disapprove(Integer id, String comment){
+    public void disapprove(Integer id, String comment) throws Exception {
         TutorApplication tutorApplication = tutorApplicationMapper.selectByPrimaryKey(id);
-        tutorApplication.setId(id);
-        tutorApplication.setStatus(TutorApplicationStatus.REJECT.getValue());
-        tutorApplication.setUpdateTime(LocalDateTime.now());
-        tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
-        tutorApplicationLogService.addTutorApplicationLog(tutorApplication, TutorApplicationStatus.REJECT, comment);
+
+        if(tutorApplication != null){
+            if(isPending(tutorApplication)) {
+                tutorApplication.setId(id);
+                tutorApplication.setStatus(TutorApplicationStatus.REJECT.getValue());
+                tutorApplication.setUpdateTime(LocalDateTime.now());
+                tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
+                tutorApplicationLogService.addTutorApplicationLog(tutorApplication, TutorApplicationStatus.REJECT, comment);
+            }
+        }else {
+            throw new Exception("No such application.");
+        }
+
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void requireAmend(Integer id, String comment) {
+    public void requireAmend(Integer id, String comment) throws Exception {
         TutorApplication tutorApplication = tutorApplicationMapper.selectByPrimaryKey(id);
-        tutorApplication.setId(id);
-        tutorApplication.setStatus(TutorApplicationStatus.REQUIRE_AMEND.getValue());
-        tutorApplication.setUpdateTime(LocalDateTime.now());
-        tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
-        tutorApplicationLogService.addTutorApplicationLog(tutorApplication, TutorApplicationStatus.REQUIRE_AMEND, comment);
+
+        if(tutorApplication != null){
+            if(isPending(tutorApplication)) {
+                tutorApplication.setId(id);
+                tutorApplication.setStatus(TutorApplicationStatus.REQUIRE_AMEND.getValue());
+                tutorApplication.setUpdateTime(LocalDateTime.now());
+                tutorApplicationMapper.updateByPrimaryKeySelective(tutorApplication);
+                tutorApplicationLogService.addTutorApplicationLog(tutorApplication, TutorApplicationStatus.REQUIRE_AMEND, comment);
+            }
+        }else{
+            throw new Exception("No such application.");
+        }
     }
 
     @Override
@@ -309,5 +332,12 @@ public class TutorAdminServiceImpl extends AbstractService<TutorApplication> imp
 
     private List<Integer> insertSubjectTopics(TutorApplicationVo tutorApplicationVo){
         return insertSubjectTopics(tutorApplicationVo.getSubjectTopics());
+    }
+
+    public boolean isPending(TutorApplication tutorApplication){
+       if(tutorApplication.getStatus() == TutorApplicationStatus.PENDING.getValue()){
+           return true;
+       }
+       return false;
     }
 }
