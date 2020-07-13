@@ -13,7 +13,7 @@ public class UserBriefInfo {
     private String firstName;
     private String lastName;
     private Short schoolId;
-    private byte[] avatar;
+    private String avatarUrl;
     private String avatarUrlInProvider;
 
 }

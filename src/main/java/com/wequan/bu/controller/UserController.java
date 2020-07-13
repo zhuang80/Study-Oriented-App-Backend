@@ -7,10 +7,7 @@ import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.exception.NotImplementedException;
 import com.wequan.bu.repository.model.*;
-import com.wequan.bu.repository.model.extend.AppointmentBriefInfo;
-import com.wequan.bu.repository.model.extend.ThreadStats;
-import com.wequan.bu.repository.model.extend.UserFollowBriefInfo;
-import com.wequan.bu.repository.model.extend.UserStats;
+import com.wequan.bu.repository.model.extend.*;
 import com.wequan.bu.service.*;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -74,6 +71,16 @@ public class UserController {
         }
         userService.updateUserProfile(userId, userVo);
         return ResultGenerator.success();
+    }
+
+    @GetMapping("/user/{id}/tutor/profile")
+    @ApiOperation(value = "tutor basic info", notes = "如果用户为tutor则返回用户作为tutor基本信息，否则返回空")
+    public Result<TutorBriefInfo> getUserTutorProfile(@PathVariable("id") Integer userId) {
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        TutorBriefInfo tutorBriefInfo = userService.getUserTutorProfile(userId);
+        return ResultGenerator.success(tutorBriefInfo);
     }
 
     @GetMapping("/user/{id}/appointments")

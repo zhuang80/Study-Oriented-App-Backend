@@ -9,6 +9,7 @@ import com.wequan.bu.repository.model.AppointmentReview;
 import com.wequan.bu.repository.model.User;
 import com.wequan.bu.repository.model.UserFollow;
 import com.wequan.bu.repository.model.UserSubject;
+import com.wequan.bu.repository.model.extend.TutorBriefInfo;
 import com.wequan.bu.repository.model.extend.UserFollowBriefInfo;
 import com.wequan.bu.repository.model.extend.UserStats;
 import com.wequan.bu.service.AbstractService;
@@ -131,11 +132,6 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
         BeanUtils.copyProperties(userVo, user);
         user.setId(userId);
         user.setUpdateTime(new Date());
-        String avatarString = userVo.getAvatarBase64Encoded();
-        if (StringUtils.isNotBlank(avatarString)) {
-            byte[] avatarBytes = Base64.getDecoder().decode(avatarString);
-            user.setAvatar(avatarBytes);
-        }
         userMapper.updateByPrimaryKeySelective(user);
         String subjectIds = userVo.getSubjectIds();
         if (StringUtils.isNotBlank(subjectIds)) {
@@ -153,6 +149,11 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
     @Override
     public int updateUserStudyPoint(Integer userId, Short amount) {
         return userMapper.updateStudyPointByUserId(userId, amount);
+    }
+
+    @Override
+    public TutorBriefInfo getUserTutorProfile(Integer userId) {
+        return userMapper.selectTutorProfileByUserId(userId);
     }
 
 
