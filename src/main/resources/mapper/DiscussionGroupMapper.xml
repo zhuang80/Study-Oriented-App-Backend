@@ -21,8 +21,8 @@
   </resultMap>
 
   <resultMap id="ResultMapWithBLOBs" extends="BaseResultMap" type="com.wequan.bu.repository.model.DiscussionGroup">
-    <result column="logo" jdbcType="BINARY" property="logo" />
-    <result column="image" jdbcType="BINARY" property="image" />
+    <result column="logo" jdbcType="VARCHAR" property="logo" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
   </resultMap>
 
   <sql id="Base_Column_List">

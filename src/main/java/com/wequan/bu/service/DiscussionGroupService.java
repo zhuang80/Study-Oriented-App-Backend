@@ -35,4 +35,6 @@ public interface DiscussionGroupService extends Service<DiscussionGroup> {
      * @return discussion group列表
      */
     List<DiscussionGroup> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition);
+
+
 }

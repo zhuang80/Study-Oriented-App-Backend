@@ -101,12 +101,12 @@ public class DiscussionGroup {
      * Database Column Remarks:
      *   图标
      */
-    private byte[] logo;
+    private String logo;
 
     /**
      *
      */
-    private byte[] image;
+    private String image;
 
     private String createByName;
 
