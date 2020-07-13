@@ -34,5 +34,8 @@
     WHERE ts.tutor_id = #{tutor_id}
   </select>
 
-
+  <select id="selectAll" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from ${schema}.wq_subjects
+  </select>
 </mapper>

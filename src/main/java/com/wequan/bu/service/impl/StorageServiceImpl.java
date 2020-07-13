@@ -4,6 +4,8 @@ import com.wequan.bu.service.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -16,6 +18,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 
 import javax.imageio.ImageIO;
@@ -32,12 +35,17 @@ import java.time.Duration;
 public class StorageServiceImpl implements StorageService {
 
     private static final Logger logger = LoggerFactory.getLogger(StorageServiceImpl.class);
+    private static final Region region = Region.US_EAST_1;
 
-    private final Region region = Region.US_EAST_1;
-    private final String END_POINT = "http://s3.amazonaws.com";
-    private final String ACCESS_KEY = "AKIAT3UCHJRBB7WS5BUB";
-    private final String SECRET_KEY = "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";
-    private final String bucket = "wq-dev";
+    @Value("${aws.s3.end-point}")
+    private String endPoint;
+    @Value("${aws.s3.access-key}")
+    private String accessKey;
+    @Value("${aws.s3.secret-key}")
+    private String secretKey;
+    @Value("${aws.s3.bucket}")
+    private String bucket = "wq-dev";
+
     private S3Client s3;
     private S3Presigner presigner;
 
@@ -48,7 +56,7 @@ public class StorageServiceImpl implements StorageService {
 
     @Autowired
     private void setPresigner() {
-        AwsSessionCredentials awsCreds = AwsSessionCredentials.create(ACCESS_KEY, SECRET_KEY, "");
+        AwsSessionCredentials awsCreds = AwsSessionCredentials.create(accessKey, secretKey, "");
         presigner = S3Presigner.builder()
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .region(region).build();
@@ -107,15 +115,22 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public URL getPresignedURL(String key) {
-        try {
-            PresignedPutObjectRequest presignedRequest =
-                    presigner.presignPutObject(z -> z.signatureDuration(Duration.ofMinutes(10))
-                            .putObjectRequest(por -> por.bucket(bucket).key(key)));
-
-            return presignedRequest.url();
-        } catch (S3Exception e) {
-            e.getStackTrace();
+    public URL getPresignedURL(String key, HttpMethod httpMethod) {
+        if (httpMethod == HttpMethod.PUT) {
+            try {
+                PresignedPutObjectRequest presignedRequest =
+                        presigner.presignPutObject(z -> z.signatureDuration(Duration.ofMinutes(10))
+                                .putObjectRequest(por -> por.bucket(bucket).key(key)));
+                return presignedRequest.url();
+            } catch (S3Exception e) {
+                e.getStackTrace();
+            }
+        }
+        if (httpMethod == HttpMethod.GET) {
+            PresignedGetObjectRequest presignedGetObjectRequest =
+                    presigner.presignGetObject(z -> z.signatureDuration(Duration.ofMinutes(10))
+                            .getObjectRequest(gor -> gor.bucket(bucket).key(key)));
+            return presignedGetObjectRequest.url();
         }
         return null;
     }
@@ -126,13 +141,10 @@ public class StorageServiceImpl implements StorageService {
     }
 
     private S3Client getS3Client() {
-
-        AwsSessionCredentials awsCreds = AwsSessionCredentials.create(ACCESS_KEY, SECRET_KEY, "");
-
+        AwsSessionCredentials awsCreds = AwsSessionCredentials.create(accessKey, secretKey, "");
         S3Client s3 = S3Client.builder().credentialsProvider(
                 StaticCredentialsProvider.create(awsCreds))
-                .endpointOverride(URI.create(END_POINT)).region(region).build();
-
+                .endpointOverride(URI.create(endPoint)).region(region).build();
         return s3;
     }
 
