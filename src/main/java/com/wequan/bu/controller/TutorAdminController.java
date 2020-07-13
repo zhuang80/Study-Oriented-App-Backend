@@ -115,8 +115,12 @@ public class TutorAdminController {
     @ResponseBody
     @ApiOperation(value = "approve the tutor application", notes = "管理员审核tutor申请信息和文件材料，并批准该申请")
     public Result approveTutorApplication(@PathVariable("id") Integer id){
-        tutorAdminService.approve(id);
-        return ResultGenerator.success();
+        try {
+            tutorAdminService.approve(id);
+            return ResultGenerator.success();
+        }catch (Exception e){
+            return ResultGenerator.fail(e.getMessage());
+        }
     }
 
     @PutMapping("/tutor_application/{id}/disapprove")
@@ -124,8 +128,13 @@ public class TutorAdminController {
     @ApiOperation(value = "disapprove the tutor application", notes = "管理员审核tutor申请信息和文件资料后，不批准申请")
     public Result disapproveTutorApplication(@PathVariable("id") Integer id,
                                              @RequestParam(value = "comment", required = false) String comment){
-        tutorAdminService.disapprove(id, comment);
-        return ResultGenerator.success();
+        try{
+            tutorAdminService.disapprove(id, comment);
+            return ResultGenerator.success();
+        }catch (Exception e){
+            return ResultGenerator.fail(e.getMessage());
+        }
+
     }
 
     @PutMapping("/tutor_application/{id}/require_amend")
@@ -133,7 +142,12 @@ public class TutorAdminController {
     @ApiOperation(value = "require user to modify the tutor application in order to pass censorship", notes = "管理员要求user修改申请")
     public Result requireAmend(@PathVariable("id") Integer id,
                                @RequestParam(value = "comment", required = false) String comment){
-        tutorAdminService.requireAmend(id, comment);
-        return ResultGenerator.success();
+        try{
+            tutorAdminService.requireAmend(id, comment);
+            return ResultGenerator.success();
+        }catch (Exception e){
+            return ResultGenerator.fail(e.getMessage());
+        }
+
     }
 }
