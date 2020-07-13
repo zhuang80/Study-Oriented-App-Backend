@@ -27,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * @author ChrisChen
@@ -62,8 +63,8 @@ public class StorageController {
             // return ResultGenerator.fail(messageHandler.getMessage("40099"));
             userId = 5;
         }
-        String key = System.currentTimeMillis() + "-" +fileName;
-        String s3Key = WeQuanConstants.S3_TOP_PATH.concat(userId + "/").concat(storageKey + "/")
+        String key = UUID.randomUUID() + "." + fileName;
+        String s3Key = (storageKey + "/").concat(WeQuanConstants.S3_USER_PATH).concat(userId + "/")
                 .concat(DATE_TIME_FORMATTER.format(LocalDate.now()) + "/").concat(key);
         URL presignedUrl = storageService.getPresignedURL(s3Key, HttpMethod.PUT);
         if (Objects.isNull(presignedUrl)) {
