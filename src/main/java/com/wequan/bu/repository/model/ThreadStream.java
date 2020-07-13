@@ -49,14 +49,12 @@ public class ThreadStream {
      * Database Column Remarks:
      *   回复帖子时间
      */
-    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private Date createTime;
 
     /**
      * Database Column Remarks:
      *   更新帖子时间
      */
-    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private Date updateTime;
 
     /**
