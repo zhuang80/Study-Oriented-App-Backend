@@ -22,13 +22,10 @@
     <result column="avatar_url_in_provider" jdbcType="VARCHAR" property="avatarUrlInProvider" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
   </resultMap>
 
-  <resultMap id="ResultMapWithAvatar" extends="BaseResultMap" type="com.wequan.bu.repository.model.User">
-    <result column="avatar" jdbcType="BINARY" property="avatar" />
-  </resultMap>
-
-  <resultMap id="ResultMapWithStat" extends="ResultMapWithAvatar" type="com.wequan.bu.repository.model.extend.UserStats">
+  <resultMap id="ResultMapWithStat" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.UserStats">
     <result column="subject_ids" jdbcType="VARCHAR" property="subjectIds" />
     <result column="number_of_threads" jdbcType="INTEGER" property="numberOfThreads" />
     <result column="number_of_following" jdbcType="INTEGER" property="numberOfFollowing" />
@@ -42,18 +39,16 @@
     <result column="school_id" jdbcType="SMALLINT" property="schoolId" />
     <result column="first_name" jdbcType="VARCHAR" property="firstName" />
     <result column="last_name" jdbcType="VARCHAR" property="lastName" />
-    <result column="avatar" jdbcType="BINARY" property="avatar" />
+    <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
     <result column="avatar_url_in_provider" jdbcType="VARCHAR" property="avatarUrlInProvider" />
   </resultMap>
 
   <sql id="Base_Column_List">
     id, user_name, email, phone, address, zip_code, credential, school_id, study_points,
     access_token, first_name, last_name, invitation_code, brief_introduction, email_verified,
-    provider, provider_id, avatar_url_in_provider, create_time, update_time
+    provider, provider_id, avatar_url_in_provider, create_time, update_time, avatar_url
   </sql>
-  <sql id="Avatar_Column_List">
-    avatar
-  </sql>
+
   <sql id="simple_columns">
     id, user_name, email, credential, create_time, update_time, email_verified, provider, provider_id
   </sql>
@@ -123,8 +118,8 @@
       <if test="updateTime != null">
         update_time,
       </if>
-      <if test="avatar != null">
-        avatar,
+      <if test="avatarUrl != null and avatarUrl != ''">
+        avatar_url,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -185,8 +180,8 @@
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="avatar != null">
-        #{avatar,jdbcType=BINARY},
+      <if test="avatarUrl != null and avatarUrl != ''">
+        #{avatarUrl,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -251,8 +246,8 @@
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="avatar != null">
-        avatar = #{avatar,jdbcType=BINARY},
+      <if test="avatarUrl != null and avatarUrl != ''">
+        avatar_url = #{avatarUrl,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
@@ -302,7 +297,7 @@
   <select id="selectById" resultMap="ResultMapWithStat">
     select
       t.id, t.first_name, t.last_name, t.user_name, t.email, t.school_id, t.brief_introduction,
-      t.avatar, t.avatar_url_in_provider, t.provider, t.create_time, t.update_time,
+      t.avatar_url, t.avatar_url_in_provider, t.provider, t.create_time, t.update_time,
       (select string_agg(subject_id::character varying, ',') from ${schema}.wq_user_subject where user_id = t.id) as subject_ids,
       (select count(1) from ${schema}.wq_thread where create_by = t.id) as number_of_thread,
       (select count(1) from ${schema}.wq_user_follow where user_id = t.id) as number_of_following,
