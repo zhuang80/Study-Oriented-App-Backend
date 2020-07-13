@@ -68,6 +68,8 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     @Override
     public void insertReply(ThreadStream threadStream){
         if(threadStream!=null){
+            threadStream.setLikes(0);
+            threadStream.setDislikes(0);
             threadMapper.insertReply(threadStream);
         }
     }
@@ -89,18 +91,6 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     public void updateByKey(Thread record){
         if(record!=null){
             threadMapper.updateByPrimaryKey(record);
-        }
-    }
-
-    /**
-     * 6/20
-     * @param threadStream
-     * @return
-     */
-    @Override
-    public void replyToThread(ThreadStream threadStream){
-        if(threadStream!=null){
-            threadMapper.insertReply(threadStream);
         }
     }
 
