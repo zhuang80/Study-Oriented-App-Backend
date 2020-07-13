@@ -1,6 +1,7 @@
 package com.wequan.bu.repository.dao;
 
 import com.wequan.bu.repository.model.User;
+import com.wequan.bu.repository.model.extend.TutorBriefInfo;
 import com.wequan.bu.repository.model.extend.UserStats;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -60,4 +61,10 @@ public interface UserMapper extends GeneralMapper<User> {
      */
     int updateStudyPointByUserId(@Param("userId") Integer userId, @Param("amount") Short amount);
 
+    /**
+     * 根据用户id获取用户作为tutor的信息
+     * @param userId 用户id
+     * @return tutor简要信息
+     */
+    TutorBriefInfo selectTutorProfileByUserId(Integer userId);
 }

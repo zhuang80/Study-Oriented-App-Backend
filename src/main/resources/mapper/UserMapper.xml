@@ -318,4 +318,10 @@
     where id = #{userId,jdbcType=INTEGER}
   </select>
 
+  <select id="selectTutorProfileByUserId" resultMap="com.wequan.bu.repository.dao.TutorMapper.ResultMapUsingInSearch">
+    select *
+    from ${schema}.wq_tutor_info
+    where user_id = #{userId}
+  </select>
+
 </mapper>
