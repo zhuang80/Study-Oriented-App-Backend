@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 /**
  * @author Zhaochao Huang
@@ -21,5 +22,10 @@ public class TutorSubjectServiceImpl extends AbstractService<TutorSubject> imple
     @PostConstruct
     public void postConstruct(){
         this.setMapper(tutorSubjectMapper);
+    }
+
+    @Override
+    public void insertOrDoNothing(List<TutorSubject> tutorSubjectList) {
+        tutorSubjectMapper.upsertList(tutorSubjectList);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import java.util.List;
  */
 @RestController
 @Api(tags = "Recommendation")
+@ApiIgnore
 public class RecommendationController {
 
     private static final Logger log = LoggerFactory.getLogger(RecommendationController.class);

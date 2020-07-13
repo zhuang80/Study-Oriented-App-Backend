@@ -1,15 +1,14 @@
 package com.wequan.bu.service.impl;
 
 import com.wequan.bu.service.StorageService;
-import com.wequan.bu.util.FileTool;
 import com.wequan.bu.util.Image;
 import com.wequan.bu.util.PDF;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.test.context.junit4.SpringRunner;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
@@ -17,10 +16,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.UUID;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -58,7 +54,15 @@ public class StorageServiceImplTest {
 
     @Test
     public void getPresignedURL() {
-        URL url = service.getPresignedURL(UUID.randomUUID().toString() + ".pdf");
+        URL url = service.getPresignedURL(UUID.randomUUID().toString() + ".pdf", HttpMethod.PUT);
+        String urlStr = url.toString();
+        assert urlStr.startsWith("https://") || urlStr.startsWith("http://");
+        System.out.println(urlStr);
+    }
+
+    @Test
+    public void getSharePresignedURL() {
+        URL url = service.getPresignedURL("atc17_slides_zhang_hao.pdf", HttpMethod.GET);
         String urlStr = url.toString();
         assert urlStr.startsWith("https://") || urlStr.startsWith("http://");
         System.out.println(urlStr);
@@ -66,7 +70,7 @@ public class StorageServiceImplTest {
 
     @Test
     public void uploadViaPreSignedURL() {
-        URL url = service.getPresignedURL("test_presigned_url.pdf");
+        URL url = service.getPresignedURL("test_presigned_url.pdf", HttpMethod.PUT);
         try {
             System.out.println("Pre-signed URL to upload a file to: " + url);
 

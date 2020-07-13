@@ -55,6 +55,11 @@ aws:
     enabled: true
     access-key-id: AKIAT3UCHJRBHHDUGM3L
     secret-access-key: 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
+  s3:
+    end-point: http://s3.amazonaws.com
+    access-key: AKIAT3UCHJRBB7WS5BUB
+    secret-key: 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
+    bucket: wq-dev
 
 swagger:
   enable: true
