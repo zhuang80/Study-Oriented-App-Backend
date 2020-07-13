@@ -34,13 +34,6 @@ public interface ThreadService extends Service<Thread> {
     public void updateByKey(Thread record);
 
     /**
-     * 6/20
-     * @param threadStream
-     * @return
-     */
-    public void replyToThread(ThreadStream threadStream);
-
-    /**
      * 6/19
      * @param schoolId
      * @param tagId
