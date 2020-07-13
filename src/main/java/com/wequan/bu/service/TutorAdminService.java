@@ -23,9 +23,9 @@ public interface TutorAdminService extends Service<TutorApplication> {
 
     public TutorApplication findCurrentStatusByUserId(Integer userId);
 
-    public void approve(Integer id);
+    public void approve(Integer id) throws Exception;
 
-    public void disapprove(Integer id, String comment);
+    public void disapprove(Integer id, String comment) throws Exception;
 
-    public void requireAmend(Integer id, String comment);
+    public void requireAmend(Integer id, String comment) throws Exception;
 }
