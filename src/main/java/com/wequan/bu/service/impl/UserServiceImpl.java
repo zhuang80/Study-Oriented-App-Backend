@@ -132,11 +132,6 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
         BeanUtils.copyProperties(userVo, user);
         user.setId(userId);
         user.setUpdateTime(new Date());
-        String avatarString = userVo.getAvatarBase64Encoded();
-        if (StringUtils.isNotBlank(avatarString)) {
-            byte[] avatarBytes = Base64.getDecoder().decode(avatarString);
-            user.setAvatar(avatarBytes);
-        }
         userMapper.updateByPrimaryKeySelective(user);
         String subjectIds = userVo.getSubjectIds();
         if (StringUtils.isNotBlank(subjectIds)) {

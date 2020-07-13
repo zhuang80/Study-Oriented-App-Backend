@@ -12,7 +12,7 @@
     <result column="user_name" jdbcType="VARCHAR" property="userName"/>
     <result column="first_name" jdbcType="VARCHAR" property="firstName"/>
     <result column="last_name" jdbcType="VARCHAR" property="lastName"/>
-    <result column="avatar" jdbcType="BINARY" property="avatar"/>
+    <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl"/>
     <result column="avatar_url_in_provider" jdbcType="VARCHAR" property="avatarUrlInProvider"/>
     <result column="mutual" jdbcType="BIT" property="mutual"/>
   </resultMap>
@@ -27,7 +27,7 @@
       u.user_name,
       u.first_name,
       u.last_name,
-      u.avatar,
+      u.avatar_url,
       u.avatar_url_in_provider,
       (t1.user_id is not null) as mutual
     from ${schema}.wq_user_follow t
@@ -42,7 +42,7 @@
       u.user_name,
       u.first_name,
       u.last_name,
-      u.avatar,
+      u.avatar_url,
       u.avatar_url_in_provider,
       (t1.user_id is not null) as mutual
     from ${schema}.wq_user_follow t

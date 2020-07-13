@@ -124,9 +124,9 @@ public class User {
 
     /**
      * Database Column Remarks:
-     *   用户头像
+     *   用户头像URL
      */
-    private byte[] avatar;
+    private String avatarUrl;
 
     /**
      * Database Column Remarks:
