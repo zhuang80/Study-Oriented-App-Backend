@@ -9,6 +9,7 @@ import com.wequan.bu.repository.model.AppointmentReview;
 import com.wequan.bu.repository.model.User;
 import com.wequan.bu.repository.model.UserFollow;
 import com.wequan.bu.repository.model.UserSubject;
+import com.wequan.bu.repository.model.extend.TutorBriefInfo;
 import com.wequan.bu.repository.model.extend.UserFollowBriefInfo;
 import com.wequan.bu.repository.model.extend.UserStats;
 import com.wequan.bu.service.AbstractService;
@@ -153,6 +154,11 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
     @Override
     public int updateUserStudyPoint(Integer userId, Short amount) {
         return userMapper.updateStudyPointByUserId(userId, amount);
+    }
+
+    @Override
+    public TutorBriefInfo getUserTutorProfile(Integer userId) {
+        return userMapper.selectTutorProfileByUserId(userId);
     }
 
 

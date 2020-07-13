@@ -30,7 +30,7 @@
     </resultMap>
 
     <resultMap id="ResultMapUsingInSearch" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.TutorBriefInfo">
-        <result column="score" jdbcType="DOUBLE" property="score" />
+        <result column="t_score" jdbcType="DOUBLE" property="score" />
         <association property="user" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithBriefInfo" />
         <collection property="subjectList" columnPrefix="s_" resultMap="com.wequan.bu.repository.dao.SubjectsMapper.ResultMapWithBriefInfo" />
     </resultMap>
