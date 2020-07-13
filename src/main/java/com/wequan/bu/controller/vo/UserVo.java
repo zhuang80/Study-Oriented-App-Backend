@@ -55,7 +55,7 @@ public class UserVo {
     /**
      *   用户头像
      */
-    private String avatarBase64Encoded;
+    private String avatarUrl;
 
     /**
      *   用户选择的科目id，逗号分隔

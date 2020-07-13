@@ -1,6 +1,5 @@
 package com.wequan.bu.repository.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wequan.bu.repository.model.extend.UserBriefInfo;
 import lombok.Data;
 

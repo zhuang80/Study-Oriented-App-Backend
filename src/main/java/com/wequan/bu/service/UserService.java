@@ -3,6 +3,7 @@ package com.wequan.bu.service;
 import com.wequan.bu.controller.vo.UserVo;
 import com.wequan.bu.repository.model.AppointmentReview;
 import com.wequan.bu.repository.model.User;
+import com.wequan.bu.repository.model.extend.TutorBriefInfo;
 import com.wequan.bu.repository.model.extend.UserFollowBriefInfo;
 import com.wequan.bu.repository.model.extend.UserStats;
 
@@ -109,4 +110,11 @@ public interface UserService extends Service<User> {
      * @return 影响行数
      */
     int updateUserStudyPoint(Integer userId, Short amount);
+
+    /**
+     * 获取用户作为tutor的信息
+     * @param userId 用户id
+     * @return
+     */
+    TutorBriefInfo getUserTutorProfile(Integer userId);
 }

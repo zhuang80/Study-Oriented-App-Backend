@@ -12,6 +12,7 @@ import java.util.List;
 public class TutorBriefInfo {
 
     private Integer id;
+    private Integer userId;
     private UserBriefInfo user;
     private String briefIntroduction;
     private LocalDateTime createTime;
@@ -27,6 +28,5 @@ public class TutorBriefInfo {
     private Integer hourlyRate;
     private Double score;
     private List<SubjectBriefInfo> subjectList;
-
 
 }
