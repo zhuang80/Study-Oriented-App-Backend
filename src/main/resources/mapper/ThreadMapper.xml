@@ -434,25 +434,25 @@
   <update id="likeThread" parameterType="java.lang.Integer">
     update ${schema}.wq_thread
     set likes = likes+1
-    where id = #{threadId, jdbcType=INTEGER} and create_by = #{userId, jdbcType=INTEGER}
+    where id = #{threadId, jdbcType=INTEGER}
   </update>
 
   <update id="dislikeThread" parameterType="java.lang.Integer">
     update ${schema}.wq_thread
     set dislikes = dislikes+1
-    where id = #{threadId, jdbcType=INTEGER} and create_by = #{userId, jdbcType=INTEGER}
+    where id = #{threadId, jdbcType=INTEGER}
   </update>
 
   <update id="likeReplyOfThread" parameterType="java.lang.Integer">
     update ${schema}.wq_thread_stream
     set likes = likes+1
-    where id = #{threadId, jdbcType=INTEGER} and user_id=#{userId, jdbcType=INTEGER} and to_stream_id = #{replyId, jdbcType=INTEGER}
+    where thread_id = #{threadId, jdbcType=INTEGER} and id = #{replyId, jdbcType=INTEGER}
   </update>
 
   <update id="dislikeReplyOfThread" parameterType="java.lang.Integer">
     update ${schema}.wq_thread_stream
     set dislikes = dislikes+1
-    where id = #{threadId, jdbcType=INTEGER} and user_id=#{userId, jdbcType=INTEGER} and to_stream_id = #{replyId, jdbcType=INTEGER}
+    where thread_id = #{threadId, jdbcType=INTEGER} and id = #{replyId, jdbcType=INTEGER}
   </update>
 
 </mapper>
