@@ -3,6 +3,7 @@
 <mapper namespace="com.wequan.bu.repository.dao.TutorMapper">
     <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.Tutor">
         <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="user_id" jdbcType="VARCHAR" property="userId" />
         <result column="brief_introduction" jdbcType="VARCHAR" property="briefIntroduction" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
@@ -198,4 +199,10 @@
         </set>
         WHERE id = #{id, jdbcType=INTEGER}
     </update>
+
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT *
+        FROM ${schema}.wq_tutor_profile
+        WHERE user_id = #{user_id, jdbcType=VARCHAR}
+    </select>
 </mapper>

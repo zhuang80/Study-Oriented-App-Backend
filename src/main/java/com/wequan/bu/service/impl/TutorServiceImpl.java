@@ -103,9 +103,17 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void approveTutorApplication(TutorApplication tutorApplication) {
-        Tutor tutor = setTutorProfile(tutorApplication);
-        tutorMapper.insertSelective(tutor);
+        Tutor tutor = tutorMapper.selectByUserId(tutorApplication.getUserId());
+
+        if(tutor != null){
+            tutor = setTutorProfile(tutor, tutorApplication);
+            tutorMapper.updateByPrimaryKeySelective(tutor);
+        }else {
+            tutor = setTutorProfile(null, tutorApplication);
+            tutorMapper.insertSelective(tutor);
+        }
         saveTutorSubject(tutor, tutorApplication);
+
     }
 
     @Override
@@ -132,11 +140,16 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
         }
     }
 
-    private Tutor setTutorProfile(TutorApplication tutorApplication){
-        Tutor tutor = new Tutor();
+    private Tutor setTutorProfile(Tutor tutor, TutorApplication tutorApplication){
+        if(tutor != null){
+            tutor.setUpdateTime(LocalDateTime.now());
+        }else{
+            tutor = new Tutor();
+            tutor.setCreateTime(LocalDateTime.now());
+        }
+
         tutor.setUserId(tutorApplication.getUserId());
         tutor.setBriefIntroduction(tutorApplication.getBriefIntroduction());
-        tutor.setCreateTime(LocalDateTime.now());
         tutor.setStatus((short) 1);
         tutor.setLatePolicyId(tutorApplication.getLatePolicyId());
         tutor.setCancellationPolicyId(tutorApplication.getCancellationPolicyId());
@@ -160,7 +173,7 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
             tutorSubject.setCreateTime(LocalDateTime.now());
             tutorSubjectList.add(tutorSubject);
         }
-        tutorSubjectService.save(tutorSubjectList);
+        tutorSubjectService.insertOrDoNothing(tutorSubjectList);
     }
 
 }

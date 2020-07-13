@@ -28,4 +28,6 @@ public interface TutorMapper extends GeneralMapper<Tutor> {
 
     List<TutorRateInfo> selectTopTutors(@Param("subject_id") Integer subjectId);
 
+    Tutor selectByUserId(@Param("user_id") Integer userId);
+
 }
