@@ -40,7 +40,7 @@
     </sql>
 
     <sql id="insertColumns">
-        INSERT INTO ${schema}.wq_professor_course_rate(professor_id, course_id, create_by, quality_score, difficult_score, number_of_exams, number_of_quizzes, number_of_homeworks, number_of_projects, number_of_papers, grade_received, create_by, comment, anonymous, using_textbook, attendance)
+        INSERT INTO ${schema}.wq_professor_course_review(professor_id, course_id, quality_score, difficult_score, number_of_exams, number_of_quizzes, number_of_homeworks, number_of_projects, number_of_papers, grade_received, create_by, comment, anonymous, using_textbook, attendance)
     </sql>
 
     <select id="selectAllByProfessorIdAndCourseId" resultMap="professorCourseRateResultMap">
@@ -51,6 +51,6 @@
 
     <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.ProfessorCourseRate">
         <include refid="insertColumns" />
-        VALUES(#{professorId}, #{courseId}, #{userId}, #{qualityScore}, #{difficultScore}, #{numberOfExams}, #{numberOfQuizzes}, #{numberOfHomeworks}, #{numberOfProjects}, #{numberOfPapers}, #{gradeReceived}, #{createBy}, #{comment}, #{anonymous}, #{usingTextbook}, #{attendance})
+        VALUES(#{professorId}, #{courseId}, #{qualityScore}, #{difficultScore}, #{numberOfExams}, #{numberOfQuizzes}, #{numberOfHomeworks}, #{numberOfProjects}, #{numberOfPapers}, #{gradeReceived}, #{createBy}, #{comment}, #{anonymous}, #{usingTextbook}, #{attendance})
     </insert>
 </mapper>

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Zhaochao Huang
@@ -35,8 +36,19 @@ public class ProfessorServiceImpl extends AbstractService<Professor> implements 
     public void postConstruct() { this.setMapper(professorMapper);}
 
     @Override
-    public List<Professor> findAllWithRateByName(Integer limit, String name) {
-        return professorMapper.selectAllWithRateByName(limit, name);
+    public List<Professor> findAllWithRateByName(Integer limit, String name, Integer pageNum, Integer pageSize) {
+        if(pageNum == null || pageNum < 0){
+            pageNum = 1;
+        }
+        if(pageSize == null || pageSize < 0){
+            pageSize = 10;
+        }
+        List<Professor> professorList = professorMapper.selectAllWithRateByName(limit, name);
+        professorList = professorList.stream()
+                                    .skip((pageNum-1) * pageSize)
+                                    .limit(pageSize)
+                                    .collect(Collectors.toList());
+        return professorList;
     }
 
     @Override
@@ -68,5 +80,10 @@ public class ProfessorServiceImpl extends AbstractService<Professor> implements 
         }
         professor.setCreateTime(LocalDateTime.now());
         professorMapper.insert(professor);
+    }
+
+    @Override
+    public void updateOverallScore(Integer id) {
+        professorMapper.updateOverallScoreByPrimaryKey(id);
     }
 }

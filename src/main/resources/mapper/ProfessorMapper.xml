@@ -26,7 +26,7 @@
     </resultMap>
 
     <resultMap id="courseRateResultMap" type="com.wequan.bu.repository.model.CourseRate">
-        <id column="professor_course_rate_course_id" jdbcType="INTEGER" property="id"/>
+        <id column="professor_course_review_course_id" jdbcType="INTEGER" property="id"/>
         <collection property="reviews"
                     ofType="com.wequan.bu.repository.model.ProfessorCourseRate"
                     resultMap="com.wequan.bu.repository.dao.ProfessorCourseRateMapper.professorCourseRateResultMap"
@@ -144,13 +144,13 @@
             LEFT JOIN ${schema}.wq_department d on p.department_id = d.id
             LEFT JOIN ${schema}.wq_professor_course pc on p.id = pc.professor_id
             LEFT JOIN ${schema}.wq_course c on pc.course_id = c.id
-            LEFT JOIN ${schema}.wq_professor_course_review pcr on p.id = pcr.professor_id
+            LEFT JOIN ${schema}.wq_professor_course_review pcr on p.id = pcr.professor_id AND c.id = pcr.course_id
         )
         SELECT *
         FROM (
-        SELECT *,
-        ROW_NUMBER() OVER (PARTITION BY professor_id, professor_course_review_course_id) AS row_id
-        FROM temp_table
+            SELECT *,
+            ROW_NUMBER() OVER (PARTITION BY professor_id, professor_course_review_course_id) AS row_id
+            FROM temp_table
         ) AS A
         WHERE row_id &lt;= #{limit} AND ( professor_first_name ILIKE #{name} OR professor_last_name ILIKE #{name} )
         ORDER BY professor_overall_score DESC
@@ -192,4 +192,26 @@
         INSERT INTO ${schema}.wq_professor_profile(first_name, last_name, school_id, create_time, create_by, department_id)
         VALUES(#{firstName}, #{lastName}, #{schoolId}, #{createTime}, #{createBy}, #{departmentId})
     </insert>
+
+    <update id="updateOverallScoreByPrimaryKey" parameterType="java.lang.Integer">
+        WITH temp_table AS (
+            SELECT
+                p.id,
+                r.quality_score
+            FROM ${schema}.wq_professor_profile p
+            LEFT JOIN ${schema}.wq_professor_course_review r ON r.professor_id = p.id
+            WHERE p.id = #{id, jdbcType=INTEGER}
+        )
+
+        UPDATE ${schema}.wq_professor_profile p
+        SET overall_score = a.avg_score
+        FROM (
+            SELECT
+                id,
+                avg(quality_score) avg_score
+            FROM temp_table
+            GROUP BY id
+        ) AS a
+        WHERE p.id = a.id
+    </update>
 </mapper>

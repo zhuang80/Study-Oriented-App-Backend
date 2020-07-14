@@ -2,6 +2,7 @@ package com.wequan.bu.repository.model;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -40,13 +41,13 @@ public class DiscussionGroup {
      * Database Column Remarks:
      *   创建时间
      */
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      * Database Column Remarks:
      *   更新时间，比如更新简介
      */
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     /**
      * Database Column Remarks:

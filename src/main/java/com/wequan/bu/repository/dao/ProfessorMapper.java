@@ -39,4 +39,5 @@ public interface ProfessorMapper extends GeneralMapper<Professor> {
 
     void insert(ProfessorVo professor);
 
+    void updateOverallScoreByPrimaryKey(@Param("id") Integer id);
 }
