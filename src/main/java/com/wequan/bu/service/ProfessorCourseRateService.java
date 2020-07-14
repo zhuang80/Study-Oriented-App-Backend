@@ -18,4 +18,5 @@ public interface ProfessorCourseRateService extends Service<ProfessorCourseRate>
      * @return a list of reviews
      */
     public List<ProfessorCourseRate> findAllByProfessorIdAndCourseId(Integer p_id, Integer c_id, Integer pageNum, Integer pageSize);
+
 }

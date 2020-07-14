@@ -36,5 +36,23 @@ public interface DiscussionGroupService extends Service<DiscussionGroup> {
      */
     List<DiscussionGroup> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition);
 
+    List<DiscussionGroup> findAll(Integer pageNum, Integer pageSize);
 
+    List<DiscussionGroup> findBySchoolId(Integer schoolId, Integer pageNum, Integer pageSize);
+
+    List<Integer> findMemberIdsByDiscussionGroupId(Integer id);
+
+    void updateAvailability(Integer id, Short action) throws Exception;
+
+    void updateName(Integer id, String name) throws Exception;
+
+    void updateVisibility(Integer id, boolean visibility) throws Exception;
+
+    void updateBriefDescription(Integer id, String briefDescription) throws Exception;
+
+    void updateGroupMessage(Integer id, String groupMessage) throws Exception;
+
+    void updateTag(Integer id, Short tagId) throws Exception;
+
+    void updateLogo(Integer id, String logoUrl) throws Exception;
 }

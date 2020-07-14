@@ -7,7 +7,7 @@
         <result column="code_first" jdbcType="VARCHAR" property="codeFirst" />
         <result column="code_second" jdbcType="VARCHAR" property="codeSecond" />
         <result column="school_id" jdbcType="INTEGER" property="schoolId" />
-        <result column="category_id" jdbcType="INTEGER" property="categoryId" />
+        <result column="subject_id" jdbcType="INTEGER" property="subjectId" />
         <collection property="professors" column="id" ofType="com.wequan.bu.repository.model.Professor"
                     select="com.wequan.bu.repository.dao.ProfessorMapper.selectByCourseId"/>
     </resultMap>
@@ -18,7 +18,7 @@
         <result column="code_first" jdbcType="VARCHAR" property="codeFirst" />
         <result column="code_second" jdbcType="VARCHAR" property="codeSecond" />
         <result column="school_id" jdbcType="INTEGER" property="schoolId" />
-        <result column="category_id" jdbcType="INTEGER" property="categoryId" />
+        <result column="subject_id" jdbcType="INTEGER" property="subjectId" />
     </resultMap>
 
     <sql id="courseColumns">
@@ -27,7 +27,7 @@
         ${alias}.school_id ${prefix}_school_id,
         ${alias}.code_first ${prefix}_code_first,
         ${alias}.code_second ${prefix}_code_second,
-        ${alias}.category_id ${prefix}_category_id
+        ${alias}.subject_id ${prefix}_subject_id
     </sql>
 
     <select id="selectAll" resultMap="courseResultMap">
@@ -54,7 +54,7 @@
     </select>
 
     <insert id="save" parameterType="com.wequan.bu.controller.vo.CourseVo">
-        INSERT INTO ${schema}.wq_course(name, school_id, code_first, code_second, category_id)
-        VALUES(#{name}, #{schoolId}, #{codeFirst}, #{codeSecond}, #{categoryId})
+        INSERT INTO ${schema}.wq_course(name, school_id, code_first, code_second, subject_id)
+        VALUES(#{name}, #{schoolId}, #{codeFirst}, #{codeSecond}, #{subjectId})
     </insert>
 </mapper>

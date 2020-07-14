@@ -5,6 +5,7 @@ import com.wequan.bu.repository.dao.ProfessorCourseRateMapper;
 import com.wequan.bu.repository.model.ProfessorCourseRate;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.ProfessorCourseRateService;
+import com.wequan.bu.service.ProfessorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,9 @@ public class ProfessorCourseRateServiceImpl extends AbstractService<ProfessorCou
 
     @Autowired
     private ProfessorCourseRateMapper professorCourseRateMapper;
+
+    @Autowired
+    private ProfessorService professorService;
 
     @PostConstruct
     public void postConstruct(){
@@ -43,5 +47,11 @@ public class ProfessorCourseRateServiceImpl extends AbstractService<ProfessorCou
         }
         PageHelper.startPage(pageNum, pageSize);
         return professorCourseRateMapper.selectAllByProfessorIdAndCourseId(p_id, c_id);
+    }
+
+    @Override
+    public void save(ProfessorCourseRate professorCourseRate){
+        professorCourseRateMapper.insertSelective(professorCourseRate);
+        professorService.updateOverallScore(professorCourseRate.getProfessorId());
     }
 }
