@@ -1,5 +1,6 @@
 package com.wequan.bu.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.wequan.bu.controller.vo.CourseVo;
 import com.wequan.bu.repository.dao.CategoryMapper;
 import com.wequan.bu.repository.dao.CourseMapper;
@@ -35,6 +36,19 @@ public class CourseServiceImpl extends AbstractService<Course> implements Course
     public Course findByIdAssociatedWithProfessor(Integer id) {
         Course course = courseMapper.selectByIdAssociatedWithProfessor(id);
         return courseMapper.selectByIdAssociatedWithProfessor(id);
+    }
+
+    @Override
+    public List<Course> findTopViewedCourses(Integer schoolId, Integer subjectId, Integer pageNum, Integer pageSize) {
+        if(pageNum == null || pageNum < 0){
+            pageNum = 1;
+        }
+        if(pageSize == null || pageSize < 0){
+            pageSize = 10;
+        }
+        PageHelper.startPage(pageNum, pageSize);
+
+        return courseMapper.selectTopViewedCourses(schoolId, subjectId);
     }
 
 }

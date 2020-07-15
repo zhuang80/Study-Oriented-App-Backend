@@ -6,6 +6,7 @@ import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.CourseViewHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class CourseViewHistoryServiceImpl extends AbstractService<CourseViewHist
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void recordHistory(Integer courseId, Integer userId) {
         CourseViewHistory courseViewHistory = new CourseViewHistory();
         courseViewHistory.setCourseId(courseId);

@@ -72,8 +72,8 @@ public class CourseController {
                                               @RequestParam("subjectId") Integer subjectId,
                                               @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                               @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        Result<List<Course>> result = null;
-        return result;
+        List<Course> courses = courseService.findTopViewedCourses(schoolId, subjectId, pageNum, pageSize);
+        return ResultGenerator.success(courses);
     }
 
     @GetMapping("/course/{id}")

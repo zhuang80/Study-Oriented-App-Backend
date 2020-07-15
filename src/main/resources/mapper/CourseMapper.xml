@@ -90,4 +90,29 @@
             </if>
         </trim>
     </insert>
+
+    <select id="selectTopViewedCourses" resultType="com.wequan.bu.repository.model.Course">
+        WITH temp_table AS (
+            select
+                c.*,
+                SUM (CASE
+                        WHEN h.id is NULL then 0
+                        ELSE  1
+                    END ) as viewed_counter
+            from ${schema}.wq_course c
+            left join ${schema}.wq_course_view_history h on h.course_id = c.id
+            group by c.id
+        )
+        select *
+        from temp_table
+        <trim prefix="WHERE" prefixOverrides="AND " >
+            <if test="school_id != null">
+                school_id = #{school_id, jdbcType=INTEGER}
+            </if>
+            <if test="subject_id != null">
+                AND subject_id = #{subject_id, jdbcType=INTEGER}
+            </if>
+        </trim>
+        order by viewed_counter DESC, name ASC
+    </select>
 </mapper>
