@@ -17,9 +17,5 @@ public interface CourseService extends Service<Course>{
      */
     public Course findByIdAssociatedWithProfessor(Integer id);
 
-    /**
-     * add a new course
-     * @param course the course form send from the client
-     */
-    public void save(CourseVo course) throws Exception;
+
 }

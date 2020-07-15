@@ -20,5 +20,4 @@ public interface CourseMapper extends GeneralMapper<Course> {
      */
     public Course selectByIdAssociatedWithProfessor(@Param("id") Integer id);
 
-    public void save(CourseVo course);
 }

@@ -53,8 +53,41 @@
         WHERE name ILIKE #{name} OR code_first || code_second ILIKE #{code}
     </select>
 
-    <insert id="save" parameterType="com.wequan.bu.controller.vo.CourseVo">
-        INSERT INTO ${schema}.wq_course(name, school_id, code_first, code_second, subject_id)
-        VALUES(#{name}, #{schoolId}, #{codeFirst}, #{codeSecond}, #{subjectId})
+    <insert id="insertSelective" parameterType="com.wequan.bu.controller.vo.CourseVo">
+        INSERT INTO ${schema}.wq_course
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">
+                name,
+            </if>
+            <if test="schoolId != null">
+                school_id,
+            </if>
+            <if test="codeFirst != null">
+                code_first,
+            </if>
+            <if test="codeSecond != null">
+                code_second,
+            </if>
+            <if test="subjectId != null">
+                subject_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="schoolId != null">
+                #{schoolId,jdbcType=SMALLINT},
+            </if>
+            <if test="codeFirst != null">
+                #{codeFirst,jdbcType=VARCHAR},
+            </if>
+            <if test="codeSecond != null">
+                #{codeSecond,jdbcType=VARCHAR},
+            </if>
+            <if test="subjectId != null">
+                #{subjectId,jdbcType=INTEGER},
+            </if>
+        </trim>
     </insert>
 </mapper>
