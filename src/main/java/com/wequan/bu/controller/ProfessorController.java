@@ -5,9 +5,7 @@ import com.wequan.bu.controller.vo.ProfessorVo;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.json.JSON;
-import com.wequan.bu.repository.model.Course;
-import com.wequan.bu.repository.model.Professor;
-import com.wequan.bu.repository.model.ProfessorCourseRate;
+import com.wequan.bu.repository.model.*;
 import com.wequan.bu.service.ProfessorCourseRateService;
 import com.wequan.bu.service.ProfessorService;
 import io.swagger.annotations.Api;
@@ -27,7 +25,7 @@ import java.util.List;
  */
 @Controller
 @Api(tags = "Professor")
-@ApiIgnore
+//@ApiIgnore
 public class ProfessorController{
 
     private static final Logger log = LoggerFactory.getLogger(ProfessorController.class);
@@ -55,86 +53,97 @@ public class ProfessorController{
     @GetMapping("/professor/{id}")
     @ApiOperation(value="Professor profile", notes="返回professor信息，关联所教课程profile")
     @JSON(type = Professor.class, filter = "courseRates")
+    @JSON(type = School.class, include = {"id", "name"})
     @JSON(type = Course.class, filter = {"professors","schoolId","departmentId"})
-    public Professor findById(@PathVariable("id") Integer id) {
+    public Result<Professor> findById(@PathVariable("id") Integer id) {
         if(id<0){
-            messageHandler.getFailResponseMessage("40005");
-            return null;
+            String message = messageHandler.getFailResponseMessage("40005");
+            return ResultGenerator.fail(message);
         }
-        return professorService.findById(id);
+        return ResultGenerator.success(professorService.findById(id));
     }
 
     @GetMapping("/professor/top")
     @ResponseBody
     @ApiOperation(value = "a list of top professor", notes = "根据school id, subject id获取professor列表，按评分排名")
-    public Result<List<Professor>> getTopProfessors(@RequestParam("schoolId") Integer schoolId,
-                                                    @RequestParam("subjectId") Integer subjectId,
-                                                    @RequestParam("pageNum") Integer pageNum,
-                                                    @RequestParam("pageSize") Integer pageSize) {
-        Result<List<Professor>> result = null;
-        return result;
+    public Result<List<ProfessorVo>> getTopProfessors(@RequestParam("schoolId") Integer schoolId,
+                                                    @RequestParam(value = "subjectId", required = false) Integer subjectId,
+                                                    @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                    @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+       if(schoolId < 0 ) {
+           String message = messageHandler.getFailResponseMessage("40008");
+           return ResultGenerator.fail(message);
+       }
+        if(subjectId != null && subjectId < 0 ) {
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
+        List<ProfessorVo> professorVoList = professorService.findTopProfessors(schoolId, subjectId, pageNum, pageSize);
+        return ResultGenerator.success(professorVoList);
     }
 
     @GetMapping("/professors")
     @ResponseBody
     @ApiOperation(value="Search professor", notes="返回Professor列表, 根据评分排序，关联所教课程3个评价")
     @JSON(type = Course.class, filter = {"professors","schoolId","departmentId"})
-    public List<Professor> findAllWithRateByName(@RequestParam("name") String name){
-        if(name.isEmpty()) {
-            messageHandler.getFailResponseMessage("40006");
-            return null;
+    public Result<List<Professor>> findAllWithRateByName(@RequestParam("name") String name,
+                                                         @RequestParam(value="pageNum", required = false) Integer pageNum,
+                                                         @RequestParam(value="pageSize", required = false) Integer pageSize){
+        if(name == null || name.isEmpty()) {
+            String message = messageHandler.getFailResponseMessage("40006");
+            return ResultGenerator.fail(message);
         }
-        return professorService.findAllWithRateByName(3, name);
+        return ResultGenerator.success(professorService.findAllWithRateByName(3, name, pageNum, pageSize));
     }
 
     @GetMapping("/professor/{id}/course/{cId}/reviews")
-    @ResponseBody
+    @JSON(type = User.class, include = {"id", "username", "first_name", "last_name", "avatar"})
     @ApiOperation(value="Reviews for each professor, each course", notes="返回professor所教课程的评价列表")
-    public List<ProfessorCourseRate> findAllReviewsByProfessorIdAndCourseId(
+    public Result<List<ProfessorCourseRate>> findAllReviewsByProfessorIdAndCourseId(
             @PathVariable("id") Integer p_id,
             @PathVariable("cId") Integer c_id,
-            Integer pageNum,
-            Integer pageSize
+            @RequestParam(value = "pageNum", required = false) Integer pageNum,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
     ){
         if(p_id < 0 || c_id < 0) {
-            messageHandler.getFailResponseMessage("40007");
-            return null;
+            String message = messageHandler.getFailResponseMessage("40007");
+            return ResultGenerator.fail(message);
         }
-        return professorCourseRateService.findAllByProfessorIdAndCourseId(p_id, c_id, pageNum, pageSize);
+        List<ProfessorCourseRate> professorCourseRateList= professorCourseRateService.findAllByProfessorIdAndCourseId(p_id, c_id, pageNum, pageSize);
+        return ResultGenerator.success(professorCourseRateList);
     }
 
     @PostMapping("/professor/{id}/course/{cId}/review")
     @ResponseBody
     @ApiOperation(value="Rate course for professor", notes="评价授课教师所教课程")
-    public ResponseEntity<String> postReview(@PathVariable("id") Integer id,
+    public Result postReview(@PathVariable("id") Integer id,
                                              @PathVariable("cId") Integer c_id,
                                              @RequestBody ProfessorCourseRate review){
         if(id<0 || c_id<0) {
             String message = messageHandler.getFailResponseMessage("40008");
-            log.info(message);
-            return ResponseEntity.status(400).body(message);
+            return ResultGenerator.fail(message);
         }
-        log.info(professorService.checkCourseForProfessor(id,c_id).toString());
+
         if(professorService.checkCourseForProfessor(id, c_id)){
             review.setProfessorId(id);
             review.setCourseId(c_id);
-            //hardcode use id 1, should be changed after
-            review.setCreateBy(1);
+            review.setCreateBy(review.getCreateBy());
             professorCourseRateService.save(review);
-            return ResponseEntity.status(200).body("success");
+            return ResultGenerator.success();
         }
-        return ResponseEntity.status(400).body("The Professor don't teach this course.");
+        return ResultGenerator.fail("No match.");
     }
 
     @PostMapping("/professor")
     @ApiOperation(value="", notes="add professor")
     @ResponseBody
-    public void addProfessor(@RequestBody ProfessorVo professor) {
+    public Result addProfessor(@RequestBody ProfessorVo professor) {
         try {
             professorService.save(professor);
         } catch (Exception e) {
-            log.info(messageHandler.getFailResponseMessage(e.getMessage()));
+            return ResultGenerator.fail(messageHandler.getFailResponseMessage(e.getMessage()));
         }
+        return ResultGenerator.success();
     }
 
     @PostMapping("/professor/review/report")

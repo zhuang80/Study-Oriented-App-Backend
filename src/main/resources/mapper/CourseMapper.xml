@@ -7,7 +7,7 @@
         <result column="code_first" jdbcType="VARCHAR" property="codeFirst" />
         <result column="code_second" jdbcType="VARCHAR" property="codeSecond" />
         <result column="school_id" jdbcType="INTEGER" property="schoolId" />
-        <result column="category_id" jdbcType="INTEGER" property="categoryId" />
+        <result column="subject_id" jdbcType="INTEGER" property="subjectId" />
         <collection property="professors" column="id" ofType="com.wequan.bu.repository.model.Professor"
                     select="com.wequan.bu.repository.dao.ProfessorMapper.selectByCourseId"/>
     </resultMap>
@@ -18,7 +18,7 @@
         <result column="code_first" jdbcType="VARCHAR" property="codeFirst" />
         <result column="code_second" jdbcType="VARCHAR" property="codeSecond" />
         <result column="school_id" jdbcType="INTEGER" property="schoolId" />
-        <result column="category_id" jdbcType="INTEGER" property="categoryId" />
+        <result column="subject_id" jdbcType="INTEGER" property="subjectId" />
     </resultMap>
 
     <sql id="courseColumns">
@@ -27,7 +27,7 @@
         ${alias}.school_id ${prefix}_school_id,
         ${alias}.code_first ${prefix}_code_first,
         ${alias}.code_second ${prefix}_code_second,
-        ${alias}.category_id ${prefix}_category_id
+        ${alias}.subject_id ${prefix}_subject_id
     </sql>
 
     <select id="selectAll" resultMap="courseResultMap">
@@ -53,8 +53,66 @@
         WHERE name ILIKE #{name} OR code_first || code_second ILIKE #{code}
     </select>
 
-    <insert id="save" parameterType="com.wequan.bu.controller.vo.CourseVo">
-        INSERT INTO ${schema}.wq_course(name, school_id, code_first, code_second, category_id)
-        VALUES(#{name}, #{schoolId}, #{codeFirst}, #{codeSecond}, #{categoryId})
+    <insert id="insertSelective" parameterType="com.wequan.bu.controller.vo.CourseVo">
+        INSERT INTO ${schema}.wq_course
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">
+                name,
+            </if>
+            <if test="schoolId != null">
+                school_id,
+            </if>
+            <if test="codeFirst != null">
+                code_first,
+            </if>
+            <if test="codeSecond != null">
+                code_second,
+            </if>
+            <if test="subjectId != null">
+                subject_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="schoolId != null">
+                #{schoolId,jdbcType=SMALLINT},
+            </if>
+            <if test="codeFirst != null">
+                #{codeFirst,jdbcType=VARCHAR},
+            </if>
+            <if test="codeSecond != null">
+                #{codeSecond,jdbcType=VARCHAR},
+            </if>
+            <if test="subjectId != null">
+                #{subjectId,jdbcType=INTEGER},
+            </if>
+        </trim>
     </insert>
+
+    <select id="selectTopViewedCourses" resultType="com.wequan.bu.repository.model.Course">
+        WITH temp_table AS (
+            select
+                c.*,
+                SUM (CASE
+                        WHEN h.id is NULL then 0
+                        ELSE  1
+                    END ) as viewed_counter
+            from ${schema}.wq_course c
+            left join ${schema}.wq_course_view_history h on h.course_id = c.id
+            group by c.id
+        )
+        select *
+        from temp_table
+        <trim prefix="WHERE" prefixOverrides="AND " >
+            <if test="school_id != null">
+                school_id = #{school_id, jdbcType=INTEGER}
+            </if>
+            <if test="subject_id != null">
+                AND subject_id = #{subject_id, jdbcType=INTEGER}
+            </if>
+        </trim>
+        order by viewed_counter DESC, name ASC
+    </select>
 </mapper>

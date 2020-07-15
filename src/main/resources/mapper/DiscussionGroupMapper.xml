@@ -21,8 +21,8 @@
   </resultMap>
 
   <resultMap id="ResultMapWithBLOBs" extends="BaseResultMap" type="com.wequan.bu.repository.model.DiscussionGroup">
-    <result column="logo" jdbcType="BINARY" property="logo" />
-    <result column="image" jdbcType="BINARY" property="image" />
+    <result column="logo" jdbcType="VARCHAR" property="logo" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
   </resultMap>
 
   <sql id="Base_Column_List">
@@ -166,10 +166,10 @@
         #{tagId,jdbcType=SMALLINT},
       </if>
       <if test="logo != null">
-        #{logo,jdbcType=BINARY},
+        #{logo,jdbcType=VARCHAR},
       </if>
       <if test="image != null">
-        #{image,jdbcType=BINARY},
+        #{image,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -226,13 +226,32 @@
         tag_id = #{tagId,jdbcType=SMALLINT},
       </if>
       <if test="logo != null">
-        logo = #{logo,jdbcType=BINARY},
+        logo = #{logo,jdbcType=VARCHAR},
       </if>
       <if test="image != null">
-        image = #{image,jdbcType=BINARY},
+        image = #{image,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectAll" resultMap="ResultMapWithBLOBs">
+    SELECT *
+    FROM ${schema}.wq_discussion_group
+    ORDER BY create_time DESC
+  </select>
+
+  <select id="selectBySchoolId" resultMap="ResultMapWithBLOBs">
+    SELECT *
+    FROM ${schema}.wq_discussion_group
+    WHERE belong_school_id = #{school_id, jdbcType=INTEGER}
+    ORDER BY create_time DESC
+  </select>
+
+  <select id="selectMemberIdsByDiscussionGroupId" resultType="java.lang.Integer">
+    SELECT member_id
+    FROM ${schema}.wq_discussion_group_member
+    WHERE discussion_group_id = #{discussion_group_id, jdbcType=INTEGER}
+  </select>
 
 </mapper>
