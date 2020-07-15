@@ -3,6 +3,9 @@ package com.wequan.bu.controller.vo;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * @author ChrisChen
+ */
 @Data
 @Builder
 public class UserVo {

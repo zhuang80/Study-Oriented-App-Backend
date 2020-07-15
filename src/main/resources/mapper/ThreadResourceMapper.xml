@@ -69,7 +69,7 @@
     (type, link, file_type, file_name, belong_id)
     values
     <foreach collection="list" item="item" separator=",">
-      (1,#{item.link,jdbcType=VARCHAR},#{item.fileType,jdbcType=VARCHAR},#{item.fileName,jdbcType=VARCHAR},#{item.belongId,jdbcType=INTEGER})
+      (#{item.type,jdbcType=INTEGER},#{item.link,jdbcType=VARCHAR},#{item.fileType,jdbcType=VARCHAR},#{item.fileName,jdbcType=VARCHAR},#{item.belongId,jdbcType=INTEGER})
     </foreach>
   </insert>
 

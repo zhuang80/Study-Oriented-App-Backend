@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ThreadStreamBriefInfo extends ThreadStream {
-
-    private ThreadBriefInfo thread;
-
+    private Integer numberOfReply;
+    private UserBriefInfo userBriefInfo;
+    private ThreadBriefInfo threadBriefInfo;
 }
