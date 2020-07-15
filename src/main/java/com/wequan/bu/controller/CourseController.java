@@ -106,11 +106,18 @@ public class CourseController {
     }
 
     @PostMapping("/course/associate_professor")
+    @ResponseBody
     @ApiOperation(value="course associate with professor", notes="课程关联授课教师")
     public Result associateProfessor(@RequestParam("courseId") Integer courseId,
                                      @RequestParam("professorId") Integer professorId,
                                      @RequestParam("userId") Integer userId) {
-        return null;
+
+        if(courseId < 0 || professorId < 0 || userId < 0){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
+        courseService.associateWithProfessor(courseId, professorId, userId);
+        return ResultGenerator.success();
     }
 
 }
