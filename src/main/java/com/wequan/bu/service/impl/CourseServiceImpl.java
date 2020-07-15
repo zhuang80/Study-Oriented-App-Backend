@@ -37,12 +37,4 @@ public class CourseServiceImpl extends AbstractService<Course> implements Course
         return courseMapper.selectByIdAssociatedWithProfessor(id);
     }
 
-    @Override
-    public void save(CourseVo course) throws Exception{
-        Category category = categoryMapper.selectByPrimaryKey(course.getCategoryId());
-        if(category == null || !category.getSchoolId().equals(course.getSchoolId())){
-            throw new Exception("40009");
-        }
-        courseMapper.save(course);
-    }
 }

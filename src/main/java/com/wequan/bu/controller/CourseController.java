@@ -6,8 +6,10 @@ import com.wequan.bu.controller.vo.result.ResultCode;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.json.JSON;
 import com.wequan.bu.repository.model.Course;
+import com.wequan.bu.repository.model.CourseViewHistory;
 import com.wequan.bu.repository.model.Professor;
 import com.wequan.bu.service.CourseService;
+import com.wequan.bu.service.CourseViewHistoryService;
 import com.wequan.bu.service.ProfessorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -37,28 +39,22 @@ public class CourseController {
     private MessageHandler messageHandler;
     @Autowired
     private ProfessorService professorService;
+    @Autowired
+    private CourseViewHistoryService courseViewHistoryService;
 
     @PostMapping("/course")
     @ResponseBody
     @ApiOperation(value = "add course", notes = "添加课程")
     public Result addCourse(@RequestBody Course course) {
-        Result result;
-        try{
-            courseService.save(course);
-        }catch(Exception e){
-            String message = messageHandler.getFailResponseMessage(e.getMessage());
-            result = ResultGenerator.fail(ResultCode.FAIL.code(), message);
-            return result;
-        }
-        result = ResultGenerator.success();
-        return result;
+        courseService.save(course);
+        return ResultGenerator.success();
     }
 
     @GetMapping("/courses")
     @ApiOperation(value="Search course", notes="根据课程名或者课程代号返回课程列表，关联授课professor的 name, rating")
     @JSON(type = Professor.class, filter = {"courses", "courseRates", "department", "school"})
     public Result<List<Course>> findCourses(@RequestParam(value = "name", required = false) String name,
-                                    @RequestParam(value = "code", required = false) String code) {
+                                            @RequestParam(value = "code", required = false) String code) {
         List<Course> courseList = null;
         if (StringUtils.hasText(name) || StringUtils.hasText(code)) {
             courseList = courseService.findByNameOrCode(name, code);
@@ -74,8 +70,8 @@ public class CourseController {
     @ApiOperation(value = "a list of top course", notes = "根据school id, subject id获取course列表，按查看记录排名")
     public Result<List<Course>> getTopCourses(@RequestParam("schoolId") Integer schoolId,
                                               @RequestParam("subjectId") Integer subjectId,
-                                              @RequestParam("pageNum") Integer pageNum,
-                                              @RequestParam("pageSize") Integer pageSize) {
+                                              @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         Result<List<Course>> result = null;
         return result;
     }
@@ -83,16 +79,15 @@ public class CourseController {
     @GetMapping("/course/{id}")
     @ApiOperation(value="Course profile", notes="获取course信息，关联授课professor信息以及可用课程资料类型")
     @JSON(type = Professor.class, filter = {"courses", "courseRates", "department", "school"})
-    public Result<Course> findById(@PathVariable("id") Integer id) {
-        Result result;
+    public Result<Course> findById(@PathVariable("id") Integer id,
+                                   @RequestParam("user_id") Integer userId) {
         if(id<0){
             String message = messageHandler.getFailResponseMessage("40003");
-            result = ResultGenerator.fail(message);
-            return result;
+            return ResultGenerator.fail(message);
         }
         Course course = courseService.findByIdAssociatedWithProfessor(id);
-        result = ResultGenerator.success(course);
-        return result;
+        courseViewHistoryService.recordHistory(id, userId);
+        return  ResultGenerator.success(course);
     }
 
     @GetMapping("/course/{id}/professors")
