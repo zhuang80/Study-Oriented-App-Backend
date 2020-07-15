@@ -14,7 +14,7 @@ public interface ProfessorService extends Service<Professor>{
      * @param limit the number of reviews showed for each course
      * @return a list of Professor whose courseRates field is present
      */
-    List<Professor> findAllWithRateByName(Integer limit, String name);
+    List<Professor> findAllWithRateByName(Integer limit, String name, Integer pageNum, Integer pageSize);
 
     /**
      * check whether a professor with id teach a course with c_id
@@ -32,4 +32,8 @@ public interface ProfessorService extends Service<Professor>{
     List<Professor> findProfessorsByCourseId(Integer id);
 
     void save(ProfessorVo professor) throws Exception;
+
+    void updateOverallScore(Integer id);
+
+    List<ProfessorVo> findTopProfessors(Integer schoolId, Integer subjectId, Integer pageNum, Integer pageSize);
 }

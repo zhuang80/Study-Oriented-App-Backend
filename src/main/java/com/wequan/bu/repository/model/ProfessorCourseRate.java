@@ -1,11 +1,13 @@
 package com.wequan.bu.repository.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 /**
  * @author Zhaochao Huang
  */
 @Data
+@JsonIgnoreProperties("handler")
 public class ProfessorCourseRate {
 
     private Integer id;
@@ -39,5 +41,7 @@ public class ProfessorCourseRate {
     private Boolean usingTextbook;
 
     private Boolean attendance;
+
+    private User user;
 
 }
