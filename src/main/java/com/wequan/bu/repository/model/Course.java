@@ -18,6 +18,8 @@ public class Course{
     private String codeSecond;
     private Integer schoolId;
     private Integer subjectId;
+
     private List<Professor> professors;
+    private Long viewedCounter;
 
 }

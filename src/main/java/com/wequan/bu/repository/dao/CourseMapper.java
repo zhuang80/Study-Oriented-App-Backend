@@ -20,4 +20,5 @@ public interface CourseMapper extends GeneralMapper<Course> {
      */
     public Course selectByIdAssociatedWithProfessor(@Param("id") Integer id);
 
+    public List<Course> selectTopViewedCourses(@Param("school_id") Integer schoolId, @Param("subject_id") Integer subjectId);
 }

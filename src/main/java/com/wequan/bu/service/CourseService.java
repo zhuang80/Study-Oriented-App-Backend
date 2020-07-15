@@ -17,5 +17,7 @@ public interface CourseService extends Service<Course>{
      */
     public Course findByIdAssociatedWithProfessor(Integer id);
 
+    public List<Course> findTopViewedCourses(Integer schoolId, Integer subjectId, Integer pageNum, Integer pageSize);
 
+    public void associateWithProfessor(Integer courseId, Integer professorId, Integer userId);
 }
