@@ -1,12 +1,15 @@
 package com.wequan.bu.service;
 
+import com.wequan.bu.controller.vo.ThreadVo;
 import com.wequan.bu.repository.model.Thread;
-import com.wequan.bu.repository.model.ThreadStream;
 import com.wequan.bu.repository.model.extend.ThreadStats;
 
 import java.util.List;
 
 
+/**
+ * @author ChrisChen
+ */
 public interface ThreadService extends Service<Thread> {
 
     /**
@@ -14,154 +17,112 @@ public interface ThreadService extends Service<Thread> {
      * @param id 帖子id
      * @return 帖子信息
      */
-    public Thread findByPrimaryKey(Integer id);
-
-    public int deleteByPrimaryKey(Integer id);
-
-    public void insert(Thread record);
+    Thread findByPrimaryKey(Integer id);
 
     /**
-     * 6/20
-     * @param threadStream
-     * @return
+     * 添加帖子
+     * @param record ThreadVo对象
+     * @return 被添加Thread的id
      */
-    public void insertReply(ThreadStream threadStream);
-
-    public int insertSelective(Thread record);
-
-    public void updateByIdSelective(Thread record);
-
-    public void updateByKey(Thread record);
+    int addThread(ThreadVo record);
 
     /**
-     * 6/19
-     * @param schoolId
-     * @param tagId
-     * @param pageNum
-     * @param pageSize
-     * @return
+     * 根据school id, tag id获取帖子列表
+     * @param schoolId schoolId
+     * @param tagId 标签id
+     * @param pageNum pageNum
+     * @param pageSize pageSize
+     * @return 帖子列表
      */
-    public List<Thread> findBySchoolAndTag(Integer schoolId, Integer tagId, Integer pageNum, Integer pageSize);
+    List<Thread> findBySchoolAndTag(Integer schoolId, Integer tagId, Integer pageNum, Integer pageSize);
 
     /**
-     * 6/22
-     * @param schoolId
-     * @param pageNum
-     * @param pageSize
-     * @return
+     * 根据schoolId获取帖子列表
+     * @param schoolId schoolId
+     * @param pageNum pageNum
+     * @param pageSize pageSize
+     * @return 帖子列表
      */
-    public List<Thread> findByOtherSchoolId(Integer schoolId, Integer pageNum, Integer pageSize);
-    /**
-     * 6/20
-     * @param threadId
-     * @param pageNum
-     * @param pageSize
-     * @return
-     */
-    public List<ThreadStream> getDirectThreadReplies(Integer threadId,Integer pageNum, Integer pageSize);
+    List<Thread> findByOtherSchoolId(Integer schoolId, Integer pageNum, Integer pageSize);
 
     /**
-     * 6/22
-     * @param threadId
-     * @param pageNum
-     * @param pageSize
-     * @return
+     * 对帖子点赞
+     * @param threadId 帖子id
+     * @param userId 用户id
      */
-    public List<ThreadStream> getIndirectThreadReplies(Integer threadId,Integer pageNum, Integer pageSize);
-    /**
-     * 6/20
-     * @param threadId
-     * @param userId
-     */
-    public void likeThread(Integer threadId, Integer userId);
+    void likeThread(Integer threadId, Integer userId);
 
     /**
-     * 6/20
-     * @param threadId
-     * @param userId
+     * 对帖子拍砖
+     * @param threadId 帖子id
+     * @param userId 用户id
      */
-    public void dislikeThread(Integer threadId, Integer userId);
+    void dislikeThread(Integer threadId, Integer userId);
 
     /**
-     *6/19
-     * @param threadId
-     * @param replyId
-     * @param userId
+     * 科目ids
+     * @param userId 用户id
+     * @return 科目id，多个id以逗号分隔
      */
-    public void likeReplyOfThread(Integer threadId, Integer replyId, Integer userId);
+    String findUserSelectedSubjects(Integer userId);
 
     /**
-     *6/19
-     * @param threadId
-     * @param replyId
-     * @param userId
+     * 添加/更新用户感兴趣的科目ids
+     * @param userId 用户id
+     * @param subjectIds 科目ids
      */
-    public void dislikeReplyOfThread(Integer threadId, Integer replyId, Integer userId);
+    void addUserSelectedSubjects(Integer userId, String subjectIds);
 
     /**
-     * 6/22
-     * @param userId
-     * @return
+     * 删除用户感兴趣的科目
+     * @param userId 用户id
      */
-    public String findUsersSelectedSubjects(Integer userId);
+    void deleteUserSelectedSubjects(Integer userId);
 
     /**
-     * 6/22
-     * @param userId
-     * @param subjectsId
+     * 根据用户关注的人，获取thread列表
+     * @param userId 用户id
+     * @param pageNum pageNum
+     * @param pageSize pageSize
+     * @return 帖子列表
      */
-    public void addUserSelectedSubjects(Integer userId, String subjectsId);
+    List<Thread> getUserFollowingThreads(Integer userId, Integer pageNum, Integer pageSize);
 
     /**
-     * 6/22
-     * @param userId
+     * 根据school id获取帖子列表
+     * @param schoolId schoolId
+     * @param pageNum pageNum
+     * @param pageSize pageSize
+     * @return 帖子列表
      */
-    public void deleteUserSelectedSubjects(Integer userId);
+    List<Thread> findBySchoolIdOrderByView(Integer schoolId, Integer pageNum, Integer pageSize);
 
     /**
-     * 6/22
-     * @param userId
-     * @param pageNum
-     * @param pageSize
-     * @return
+     * 对帖子进行举报
+     * @param threadId 帖子id
+     * @param userId 用户id
+     * @param reason 举报原因
      */
-    public List<Thread> findByUserFollowingId(Integer userId, Integer pageNum, Integer pageSize);
+    void reportThread(Integer threadId, Integer userId, String reason);
 
     /**
-     * 6/23
-     * @param schoolId
-     * @param pageNum
-     * @param pageSize
-     * @return
+     * 对回帖进行举报
+     * @param threadId 帖子id
+     * @param replyId 回帖id
+     * @param userId 用户id
+     * @param reason 举报原因
      */
-    public List<Thread> findBySchoolIdOrderByView(Integer schoolId, Integer pageNum, Integer pageSize);
+    void reportThreadReply(Integer threadId, Integer replyId, Integer userId, String reason);
 
     /**
-     * 6/23
-     * @param threadId
-     * @param userId
-     * @param reason
+     * 获取用户在学习板块感兴趣科目涉及的帖子列表
+     * @param userId 用户id
+     * @param subjectIds 科目ids
+     * @param pageNum pageNum
+     * @param pageSize pageSize
+     * @return 帖子列表
      */
-    public void reportThread(Integer threadId, Integer userId, String reason);
-
-    /**
-     * 6/23
-     * @param threadId
-     * @param replyId
-     * @param userId
-     * @param reason
-     */
-    public void reportReplyToThread(Integer threadId, Integer replyId, Integer userId, String reason);
-
-    /**
-     * 6/26
-     * @param userId
-     * @param subjectIds
-     * @param pageNum
-     * @param pageSize
-     * @return
-     */
-    public List<Thread> getUserInterestedStudyHelpThreads(Integer userId, String subjectIds, Integer pageNum, Integer pageSize);
+    List<Thread> getUserInterestedStudyHelpThreads(Integer userId, String subjectIds, Integer pageNum, Integer pageSize);
 
     /**
      * 获取用户创建的帖子列表
@@ -171,4 +132,11 @@ public interface ThreadService extends Service<Thread> {
      * @return 用户创建的帖子列表
      */
     List<ThreadStats> getUserThreads(Integer userId, Integer pageNum, Integer pageSize);
+
+    /**
+     * 添加帖子所属科目id
+     * @param threadId 帖子id
+     * @param subjectIds 科目ids
+     */
+    void addThreadSubjects(int threadId, List<Integer> subjectIds);
 }

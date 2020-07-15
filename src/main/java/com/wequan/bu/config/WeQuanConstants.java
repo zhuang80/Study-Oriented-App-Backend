@@ -20,5 +20,5 @@ public interface WeQuanConstants {
     String DEGREE_CACHE_KEY = "Common_Data_Degree";
 
     /** Constants for AWS S3 **/
-    String S3_TOP_PATH = "user/";
+    String S3_USER_PATH = "user/";
 }

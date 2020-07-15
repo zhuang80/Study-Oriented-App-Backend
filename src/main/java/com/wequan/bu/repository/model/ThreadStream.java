@@ -1,6 +1,5 @@
 package com.wequan.bu.repository.model;
 
-import com.wequan.bu.repository.model.extend.UserBriefInfo;
 import lombok.Data;
 
 import java.util.Date;
@@ -67,16 +66,6 @@ public class ThreadStream {
      *   拍砖数
      */
     private Integer dislikes;
-
-    /**
-     * 用户信息
-     */
-    private UserBriefInfo userBriefInfo;
-
-    /**
-     * 同回复帖子关联的文件（图片，文件等）的S3链接id，多个id用逗号分隔，关联thread_resource(id)
-     */
-    private String resourceIds;
 
     private List<ThreadResource> threadResources;
 
