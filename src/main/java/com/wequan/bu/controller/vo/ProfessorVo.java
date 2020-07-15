@@ -1,10 +1,15 @@
 package com.wequan.bu.controller.vo;
 
+import com.wequan.bu.repository.model.Course;
+import lombok.Data;
+
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author Zhaochao Huang
  */
+@Data
 public class ProfessorVo {
     private Integer id;
     private String firstName;
@@ -14,68 +19,7 @@ public class ProfessorVo {
     private Integer createBy;
     private Integer departmentId;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Integer getSchoolId() {
-        return schoolId;
-    }
-
-    public void setSchoolId(Integer schoolId) {
-        this.schoolId = schoolId;
-    }
-
-    public Double getOverallScore() {
-        return overallScore;
-    }
-
-    public void setOverallScore(Double overallScore) {
-        this.overallScore = overallScore;
-    }
-
-    public Integer getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(Integer createBy) {
-        this.createBy = createBy;
-    }
-
-    public Integer getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(Integer departmentId) {
-        this.departmentId = departmentId;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
+    private List<CoursesGroupedBySubject> courseList;
 }
