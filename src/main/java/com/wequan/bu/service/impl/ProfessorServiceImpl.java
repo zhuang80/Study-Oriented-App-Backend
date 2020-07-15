@@ -1,5 +1,6 @@
 package com.wequan.bu.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.wequan.bu.controller.vo.ProfessorVo;
 import com.wequan.bu.repository.dao.DepartmentMapper;
 import com.wequan.bu.repository.dao.ProfessorMapper;
@@ -85,5 +86,17 @@ public class ProfessorServiceImpl extends AbstractService<Professor> implements 
     @Override
     public void updateOverallScore(Integer id) {
         professorMapper.updateOverallScoreByPrimaryKey(id);
+    }
+
+    @Override
+    public List<ProfessorVo> findTopProfessors(Integer schoolId, Integer subjectId, Integer pageNum, Integer pageSize) {
+        if(pageNum == null || pageNum < 0){
+            pageNum = 1;
+        }
+        if(pageSize == null || pageSize < 0){
+            pageSize = 10;
+        }
+        PageHelper.startPage(pageNum, pageSize);
+        return professorMapper.selectTopProfessors(schoolId, subjectId);
     }
 }

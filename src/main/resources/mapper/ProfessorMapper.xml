@@ -42,6 +42,18 @@
         <result column="professor_create_by" jdbcType="INTEGER" property="createBy" />
         <result column="professor_school_id" jdbcType="INTEGER" property="schoolId"/>
         <result column="professor_department_id" jdbcType="INTEGER" property="departmentId"/>
+        <collection property="courseList"
+                    ofType="com.wequan.bu.controller.vo.CoursesGroupedBySubject"
+                    resultMap="CoursesGroupedBySubjectResultMap"
+        />
+    </resultMap>
+
+    <resultMap id="CoursesGroupedBySubjectResultMap" type="com.wequan.bu.controller.vo.CoursesGroupedBySubject">
+        <id property="subjectId" jdbcType="INTEGER" column="course_subject_id" />
+        <collection property="courseList" ofType="com.wequan.bu.repository.model.Course"
+                    resultMap="com.wequan.bu.repository.dao.CourseMapper.baseResultMap"
+                    columnPrefix="course_"
+        />
     </resultMap>
 
     <sql id="professorColumns">
@@ -189,8 +201,53 @@
     </select>
 
     <insert id="insert" parameterType="com.wequan.bu.controller.vo.ProfessorVo">
-        INSERT INTO ${schema}.wq_professor_profile(first_name, last_name, school_id, create_time, create_by, department_id)
-        VALUES(#{firstName}, #{lastName}, #{schoolId}, #{createTime}, #{createBy}, #{departmentId})
+        INSERT INTO ${schema}.wq_professor_profile
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="firstName != null">
+                first_name,
+            </if>
+            <if test="lastName != null">
+                last_name,
+            </if>
+            <if test="schoolId != null">
+                school_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="departmentId != null">
+                department_id,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="firstName != null">
+                #{firstName,jdbcType=VARCHAR},
+            </if>
+            <if test="lastName != null">
+                #{lastName,jdbcType=VARCHAR},
+            </if>
+            <if test="schoolId != null">
+                #{schoolId,jdbcType=SMALLINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=INTEGER},
+            </if>
+            <if test="departmentId != null">
+                #{departmentId,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
     </insert>
 
     <update id="updateOverallScoreByPrimaryKey" parameterType="java.lang.Integer">
@@ -214,4 +271,28 @@
         ) AS a
         WHERE p.id = a.id
     </update>
+
+    <select id="selectTopProfessors" resultMap="baseResultMap">
+        SELECT
+            <include refid="professorColumns">
+                <property name="alias" value="p"/>
+                <property name="prefix" value="professor"/>
+            </include>,
+            <include refid="com.wequan.bu.repository.dao.CourseMapper.courseColumns">
+                <property name="alias" value="c"/>
+                <property name="prefix" value="course"/>
+            </include>
+        FROM ${schema}.wq_professor_profile p
+        LEFT JOIN ${schema}.wq_professor_course pc on pc.professor_id = p.id
+        LEFT JOIN ${schema}.wq_course c on c.id = pc.course_id
+        <trim prefix="WHERE" prefixOverrides="AND " >
+            <if test="school_id != null">
+                p.school_id = #{school_id, jdbcType=INTEGER}
+            </if>
+            <if test="subject_id != null">
+                AND subject_id = #{subject_id, jdbcType=INTEGER}
+            </if>
+        </trim>
+        ORDER BY overall_score DESC NULLS LAST
+    </select>
 </mapper>

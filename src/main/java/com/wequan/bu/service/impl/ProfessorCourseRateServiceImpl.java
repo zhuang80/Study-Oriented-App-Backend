@@ -39,10 +39,10 @@ public class ProfessorCourseRateServiceImpl extends AbstractService<ProfessorCou
      */
     @Override
     public List<ProfessorCourseRate> findAllByProfessorIdAndCourseId(Integer p_id, Integer c_id, Integer pageNum, Integer pageSize) {
-        if(pageNum == null) {
+        if(pageNum == null || pageNum < 0) {
             pageNum = 1;
         }
-        if(pageSize == null){
+        if(pageSize == null || pageSize < 0){
             pageSize = 10;
         }
         PageHelper.startPage(pageNum, pageSize);

@@ -40,4 +40,6 @@ public interface ProfessorMapper extends GeneralMapper<Professor> {
     void insert(ProfessorVo professor);
 
     void updateOverallScoreByPrimaryKey(@Param("id") Integer id);
+
+    List<ProfessorVo> selectTopProfessors(@Param("school_id") Integer schoolId, @Param("subject_id") Integer subjectId);
 }
