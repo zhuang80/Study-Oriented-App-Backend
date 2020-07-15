@@ -1,5 +1,8 @@
 package com.wequan.bu.util;
 
+import com.wequan.bu.controller.vo.ThreadVo;
+import com.wequan.bu.repository.model.ThreadResource;
+import com.wequan.bu.repository.model.ThreadStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -13,6 +16,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.spec.KeySpec;
 import java.util.Base64;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -81,4 +85,38 @@ public class GeneralTool {
         return StringUtils.hasText(password);
     }
 
+    public static boolean checkThreadVo(ThreadVo threadVo) {
+        boolean threadCheck = threadVo != null && threadVo.getCategory() != null && threadVo.getCreateBy() != null && threadVo.getSchoolId() != null
+                && threadVo.getTagId() != null && StringUtils.hasText(threadVo.getTitle()) && StringUtils.hasText(threadVo.getContent());
+        boolean threadResourceCheck = true;
+        if (threadVo != null) {
+            List<ThreadResource> threadResources = threadVo.getThreadResources();
+            if (threadResources != null) {
+                for (ThreadResource tr : threadResources) {
+                    if (!StringUtils.hasText(tr.getLink())) {
+                        threadResourceCheck = false;
+                        break;
+                    }
+                }
+            }
+        }
+        return threadCheck && threadResourceCheck;
+    }
+
+    public static boolean checkThreadStream(ThreadStream threadStream) {
+        boolean threadStreamCheck = threadStream != null && threadStream.getUserId() != null && threadStream.getThreadId() != null && StringUtils.hasText(threadStream.getContent());
+        boolean threadResourceCheck = true;
+        if (threadStream != null) {
+            List<ThreadResource> threadResources = threadStream.getThreadResources();
+            if (threadResources != null) {
+                for (ThreadResource tr : threadResources) {
+                    if (!StringUtils.hasText(tr.getLink())) {
+                        threadResourceCheck = false;
+                        break;
+                    }
+                }
+            }
+        }
+        return threadStreamCheck && threadResourceCheck;
+    }
 }

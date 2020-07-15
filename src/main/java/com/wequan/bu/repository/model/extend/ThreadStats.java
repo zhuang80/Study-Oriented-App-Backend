@@ -11,8 +11,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class ThreadStats extends Thread {
 
-    private String tagName;
+    private String subjectIds;
     private Integer numberOfView;
     private Integer numberOfReply;
+    private UserBriefInfo createByUser;
 
 }

@@ -13,17 +13,27 @@
     <result column="dislikes" jdbcType="INTEGER" property="dislikes" />
   </resultMap>
 
+  <resultMap id="ResultMapWithBriefInfo" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.ThreadStreamBriefInfo">
+    <result column="number_of_reply" jdbcType="INTEGER" property="numberOfReply" />
+    <association property="userBriefInfo" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithBriefInfo"/>
+    <collection property="threadResources" columnPrefix="tr_" resultMap="com.wequan.bu.repository.dao.ThreadResourceMapper.BaseResultMap" />
+  </resultMap>
+
+  <resultMap id="ResultMapWithThreadBriefInfo" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.ThreadStreamBriefInfo">
+    <association property="threadBriefInfo" columnPrefix="t_" resultMap="com.wequan.bu.repository.dao.ThreadMapper.ResultMapWithBriefInfo" />
+  </resultMap>
+
   <sql id="Base_Column_List">
-    id, user_id, thread_id, comment, to_stream_id, create_time, update_time, likes, dislikes
+    id, user_id, thread_id, content, to_stream_id, create_time, update_time, likes, dislikes
   </sql>
 
-  <resultMap id="ResultMapWithThread" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.ThreadStreamBriefInfo">
-    <result column="_thread_id" jdbcType="INTEGER" property="thread.id" />
-    <result column="_thread_create_by" jdbcType="INTEGER" property="thread.createBy" />
-    <result column="_thread_title" jdbcType="VARCHAR" property="thread.title" />
-    <result column="_thread_category" jdbcType="INTEGER" property="thread.category" />
-    <result column="_thread_tag_id" jdbcType="INTEGER" property="thread.tagId" />
-  </resultMap>
+  <sql id="Reply_Base_Select">
+    ts.*,
+    u.user_name as u_user_name, u.school_id as u_school_id, u.first_name as u_first_name, u.last_name as u_last_name,
+    u.avatar_url as u_avatar_url, u.avatar_url_in_provider as u_avatar_url_in_provider, u.id as u_id,
+    tr.id tr_id, tr.type tr_type, tr.link tr_link, tr.file_type tr_file_type,
+    tr.file_name tr_file_name, tr.belong_id tr_belong_id
+  </sql>
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -32,17 +42,43 @@
     where id = #{id,jdbcType=INTEGER}
   </select>
 
-  <select id="selectByUserId" resultMap="ResultMapWithThread">
+  <select id="selectByUserId" resultMap="ResultMapWithThreadBriefInfo">
     select
       ts.*,
-      t.id _thread_id,
-      t.create_by _thread_create_by,
-      t.title _thread_title,
-      t.category _thread_category,
-      t.tag_id _thread_tag_id
+      t.id t_id,
+      t.create_by t_create_by,
+      t.title t_title,
+      t.category t_category,
+      t.tag_id t_tag_id
     from ${schema}.wq_thread_stream ts
     inner join ${schema}.wq_thread t on t.id = ts.thread_id
     where ts.user_id = #{userId}
+  </select>
+
+  <select id="selectDirectRepliesById" parameterType="java.lang.Integer" resultMap="ResultMapWithBriefInfo">
+    select
+      <include refid="Reply_Base_Select"/>,
+      (select count(1) from ${schema}.wq_thread_stream where to_stream_id = ts.id) as number_of_reply
+    from ${schema}.wq_thread_stream ts
+    inner join ${schema}.wq_user_profile u on ts.user_id = u.id
+    left join ${schema}.wq_thread_resource tr on (ts.id = tr.belong_id and tr.type = 2)
+    where ts.thread_id = #{threadId,jdbcType=INTEGER} and ts.to_stream_id is null
+  </select>
+
+  <select id="selectIndirectRepliesById" parameterType="java.lang.Integer" resultMap="ResultMapWithBriefInfo">
+    select <include refid="Reply_Base_Select"/>
+    from ${schema}.wq_thread_stream ts
+    inner join ${schema}.wq_user_profile u on ts.user_id = u.id
+    left join ${schema}.wq_thread_resource tr on (ts.id = tr.belong_id and tr.type = 2)
+    where ts.thread_id = #{threadId,jdbcType=INTEGER} and ts.to_stream_id is not null
+  </select>
+
+  <select id="selectIndirectRepliesForDirectReply" resultMap="ResultMapWithBriefInfo">
+    select <include refid="Reply_Base_Select"/>
+    from ${schema}.wq_thread_stream ts
+    inner join ${schema}.wq_user_profile u on ts.user_id = u.id
+    left join ${schema}.wq_thread_resource tr on (ts.id = tr.belong_id and tr.type = 2)
+    where ts.thread_id = #{threadId,jdbcType=INTEGER} and ts.to_stream_id = #{directReplyId,jdbcType=INTEGER}
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
@@ -59,8 +95,8 @@
       <if test="threadId != null">
         thread_id,
       </if>
-      <if test="comment != null and comment != ''">
-        comment,
+      <if test="content != null and content != ''">
+        content,
       </if>
       <if test="toStreamId != null">
         to_stream_id,
@@ -85,8 +121,8 @@
       <if test="threadId != null">
         #{threadId,jdbcType=INTEGER},
       </if>
-      <if test="comment != null and comment != ''">
-        #{comment,jdbcType=VARCHAR},
+      <if test="content != null and content != ''">
+        #{content,jdbcType=VARCHAR},
       </if>
       <if test="toStreamId != null">
         #{toStreamId,jdbcType=INTEGER},
@@ -115,8 +151,8 @@
       <if test="threadId != null">
         thread_id = #{threadId,jdbcType=INTEGER},
       </if>
-      <if test="comment != null and comment != ''">
-        comment = #{comment,jdbcType=VARCHAR},
+      <if test="content != null and content != ''">
+        content = #{content,jdbcType=VARCHAR},
       </if>
       <if test="toStreamId != null">
         to_stream_id = #{toStreamId,jdbcType=INTEGER},
@@ -135,6 +171,18 @@
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="likeThreadReply">
+    update ${schema}.wq_thread_stream
+    set likes = likes + 1
+    where id = #{replyId, jdbcType=INTEGER}
+  </update>
+
+  <update id="dislikeThreadReply">
+    update ${schema}.wq_thread_stream
+    set dislikes = dislikes + 1
+    where id = #{replyId, jdbcType=INTEGER}
   </update>
 
 </mapper>
