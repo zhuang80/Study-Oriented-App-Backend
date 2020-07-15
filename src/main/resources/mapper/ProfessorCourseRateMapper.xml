@@ -18,6 +18,9 @@
         <result column="anonymous" jdbcType="BOOLEAN" property="anonymous"/>
         <result column="using_textbook" jdbcType="BOOLEAN" property="usingTextbook"/>
         <result column="attendance" jdbcType="BOOLEAN" property="attendance"/>
+        <association property="user"
+                     select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey"
+                     column="create_by" />
     </resultMap>
 
     <sql id="professorCourseRateColumns">

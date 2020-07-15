@@ -34,4 +34,6 @@ public interface ProfessorService extends Service<Professor>{
     void save(ProfessorVo professor) throws Exception;
 
     void updateOverallScore(Integer id);
+
+    List<ProfessorVo> findTopProfessors(Integer schoolId, Integer subjectId, Integer pageNum, Integer pageSize);
 }
