@@ -47,13 +47,13 @@ public class OnlineEvent {
      * Database Column Remarks:
      *   创建时间
      */
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      * Database Column Remarks:
      *   更新时间，比如更新简介
      */
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
     /**
      * Database Column Remarks:
@@ -68,7 +68,7 @@ public class OnlineEvent {
      * Database Column Remarks:
      *   费用
      */
-    private Float fee;
+    private Integer fee;
 
     /**
      * Database Column Remarks:
@@ -122,13 +122,13 @@ public class OnlineEvent {
      * Database Column Remarks:
      * logo
      */
-    private byte[] logo;
+    private String logo;
 
     /**
      * Database Column Remarks:
      * image
      */
-    private byte[] image;
+    private String image;
 
     private int numberOfMember;
 

@@ -23,4 +23,8 @@ public interface OnlineEventMapper extends GeneralMapper<OnlineEvent> {
      * @return online event列表
      */
     List<OnlineEvent> selectByUserIdAndType(@Param("userId") Integer userId, @Param("type") Integer typeId, RowBounds rowBounds);
+
+    List<OnlineEvent> selectAllByType(@Param("type") Short type);
+
+    List<OnlineEvent> selectAllBySchoolId(@Param("school_id") Integer schoolId);
 }
