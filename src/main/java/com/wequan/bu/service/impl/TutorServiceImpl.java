@@ -140,6 +140,11 @@ public class TutorServiceImpl extends AbstractService<Tutor> implements TutorSer
         }
     }
 
+    @Override
+    public Tutor findByUserId(Integer userId) {
+        return tutorMapper.selectByUserId(userId);
+    }
+
     private Tutor setTutorProfile(Tutor tutor, TutorApplication tutorApplication){
         if(tutor != null){
             tutor.setUpdateTime(LocalDateTime.now());

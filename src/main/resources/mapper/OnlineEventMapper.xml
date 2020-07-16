@@ -10,7 +10,7 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
         <result column="status" jdbcType="SMALLINT" property="status" />
-        <result column="fee" jdbcType="REAL" property="fee" />
+        <result column="fee" jdbcType="INTEGER" property="fee" />
         <result column="method" jdbcType="VARCHAR" property="method" />
         <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
         <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
@@ -22,8 +22,8 @@
     </resultMap>
 
     <resultMap id="ResultMapWithBLOBs" extends="BaseResultMap" type="com.wequan.bu.repository.model.OnlineEvent">
-        <result column="logo" jdbcType="BINARY" property="logo" />
-        <result column="image" jdbcType="BINARY" property="image" />
+        <result column="logo" jdbcType="VARCHAR" property="logo" />
+        <result column="image" jdbcType="VARCHAR" property="image" />
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -45,4 +45,208 @@
             and type = #{type}
         </if>
     </select>
+
+    <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.OnlineEvent"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into ${schema}.wq_online_event
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">
+                name,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="briefDescription != null">
+                brief_description,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="fee != null">
+                fee,
+            </if>
+            <if test="method != null">
+                method,
+            </if>
+            <if test="startTime != null">
+                start_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="visible != null">
+                visible,
+            </if>
+            <if test="belongSchoolId != null">
+                belong_school_id,
+            </if>
+            <if test="guid != null">
+                guid,
+            </if>
+            <if test="methodDetail != null">
+                method_detail,
+            </if>
+            <if test="logo != null">
+                logo,
+            </if>
+            <if test="image != null">
+                image,
+            </if>
+            <if test="tagId != null">
+                tag_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=SMALLINT},
+            </if>
+            <if test="briefDescription != null">
+                #{briefDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=SMALLINT},
+            </if>
+            <if test="fee != null">
+                #{fee,jdbcType=INTEGER},
+            </if>
+            <if test="method != null">
+                #{method,jdbcType=VARCHAR},
+            </if>
+            <if test="startTime != null">
+                #{startTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="visible != null">
+                #{visible,jdbcType=BIT},
+            </if>
+            <if test="belongSchoolId != null">
+                #{belongSchoolId,jdbcType=SMALLINT},
+            </if>
+            <if test="guid != null">
+                #{guid,jdbcType=VARCHAR},
+            </if>
+            <if test="methodDetail != null">
+                #{methodDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="logo != null">
+                #{logo,jdbcType=VARCHAR},
+            </if>
+            <if test="image != null">
+                #{image,jdbcType=VARCHAR},
+            </if>
+            <if test="tagId != null">
+                #{tagId,jdbcType=SMALLINT},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="selectAll" resultType="com.wequan.bu.repository.model.OnlineEvent">
+        SELECT *
+        FROM ${schema}.wq_online_event
+        WHERE start_time > now()
+        ORDER BY start_time ASC
+    </select>
+
+    <select id="selectByPrimaryKey" resultType="com.wequan.bu.repository.model.OnlineEvent">
+        SELECT *
+        FROM ${schema}.wq_online_event
+        WHERE id = #{id, jdbcType=INTEGER}
+    </select>
+
+    <select id="selectAllByType" resultType="com.wequan.bu.repository.model.OnlineEvent">
+        SELECT *
+        FROM ${schema}.wq_online_event
+        WHERE type = #{type, jdbcType=SMALLINT}
+    </select>
+
+    <select id="selectAllBySchoolId" resultType="com.wequan.bu.repository.model.OnlineEvent">
+        SELECT *
+        FROM ${schema}.wq_online_event
+        WHERE belong_school_id = #{school_id, jdbcType=SMALLINT}
+    </select>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.OnlineEvent">
+        update ${schema}.wq_online_event
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=SMALLINT},
+            </if>
+            <if test="briefDescription != null">
+                brief_description = #{briefDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=SMALLINT},
+            </if>
+            <if test="fee != null">
+                fee = #{fee,jdbcType=INTEGER},
+            </if>
+            <if test="method != null">
+                method = #{method,jdbcType=VARCHAR},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="visible != null">
+                visible = #{visible,jdbcType=BIT},
+            </if>
+            <if test="belongSchoolId != null">
+                belong_school_id = #{belongSchoolId,jdbcType=SMALLINT},
+            </if>
+            <if test="guid != null">
+                guid = #{guid,jdbcType=VARCHAR},
+            </if>
+            <if test="methodDetail != null">
+                method_detail = #{methodDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="logo != null">
+                logo = #{logo,jdbcType=VARCHAR},
+            </if>
+            <if test="image != null">
+                image = #{image,jdbcType=VARCHAR},
+            </if>
+            <if test="tagId != null">
+                tag_id = #{tagId,jdbcType=SMALLINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
 </mapper>
