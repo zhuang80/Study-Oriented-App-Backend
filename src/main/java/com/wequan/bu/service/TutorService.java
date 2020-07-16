@@ -38,4 +38,6 @@ public interface TutorService extends Service<Tutor> {
 
     public void logTutorViewHistory(Tutor tutor, Integer userId);
 
+    public Tutor findByUserId(Integer userId);
+
 }
