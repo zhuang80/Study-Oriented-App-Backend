@@ -57,7 +57,7 @@
   <sql id="Stats_Base_Table">
     ${schema}.wq_thread t
     inner join ${schema}.wq_user_profile u on u.id = t.create_by
-    inner join (
+    left join (
       select thread_id, string_agg(subject_id::character varying, ',') as subject_ids
       from ${schema}.wq_thread_subject
       group by thread_id
@@ -117,7 +117,7 @@
       t.*, ts.subject_ids as ts_subject_ids,
       <include refid="Stats_Number_Base_Column"/>
     from ${schema}.wq_thread t
-    inner join (
+    left join (
       select thread_id, string_agg(subject_id::character varying, ',') as subject_ids
       from ${schema}.wq_thread_subject
       group by thread_id
@@ -132,7 +132,7 @@
       <include refid="Resource_Base_Column"/>
     from ${schema}.wq_thread t
     inner join ${schema}.wq_user_profile u on u.id = t.create_by
-    inner join (
+    left join (
       select thread_id, string_agg(subject_id::character varying, ',') as subject_ids
       from ${schema}.wq_thread_subject
       where subject_id in
