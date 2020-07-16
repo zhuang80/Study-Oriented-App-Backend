@@ -63,7 +63,16 @@ public class StorageController {
             // return ResultGenerator.fail(messageHandler.getMessage("40099"));
             userId = 5;
         }
-        String key = UUID.randomUUID() + "." + fileName;
+        String key;
+        if (fileName.contains("/")) {
+            int lastIndex = fileName.lastIndexOf("/");
+            key = fileName.substring(0, lastIndex + 1).concat(UUID.randomUUID() + ".").concat(fileName.substring(lastIndex + 1));
+            if (fileName.startsWith("/")) {
+                key = key.substring(1);
+            }
+        } else {
+            key = UUID.randomUUID() + "." + fileName;
+        }
         String s3Key = (storageKey + "/").concat(WeQuanConstants.S3_USER_PATH).concat(userId + "/")
                 .concat(DATE_TIME_FORMATTER.format(LocalDate.now()) + "/").concat(key);
         URL presignedUrl = storageService.getPresignedURL(s3Key, HttpMethod.PUT);
