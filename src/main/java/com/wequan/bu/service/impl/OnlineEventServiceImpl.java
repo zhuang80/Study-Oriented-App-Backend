@@ -1,14 +1,17 @@
 package com.wequan.bu.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.wequan.bu.quartz.UpdateStatusJob;
 import com.wequan.bu.repository.dao.OnlineEventMapper;
 import com.wequan.bu.repository.model.OnlineEvent;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.OnlineEventService;
 import com.wequan.bu.service.TutorService;
+import com.wequan.bu.util.OnlineEventStatus;
 import com.wequan.bu.util.OnlineEventType;
 import org.apache.ibatis.session.RowBounds;
+import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,9 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
 
     @Autowired
     private TutorService tutorService;
+
+    @Autowired
+    private Scheduler scheduler;
 
     @PostConstruct
     public void postConstruct() {
@@ -60,6 +66,10 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
         onlineEvent.setCreateTime(LocalDateTime.now());
         onlineEvent.setGuid(String.valueOf(UUID.randomUUID()));
         onlineEventMapper.insertSelective(onlineEvent);
+
+        addStatusUpdationQuartzJobAndTrigger(onlineEvent, onlineEvent.getStartTime(), OnlineEventStatus.ONGOING.getValue());
+        addStatusUpdationQuartzJobAndTrigger(onlineEvent, onlineEvent.getEndTime(), OnlineEventStatus.DONE.getValue());
+
     }
 
     @Override
@@ -188,6 +198,48 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
         onlineEvent.setUpdateTime(LocalDateTime.now());
         onlineEvent.setTagId(tagId);
         onlineEventMapper.updateByPrimaryKeySelective(onlineEvent);
+    }
+
+    @Override
+    public void updateStatus(Integer id, Short status){
+        OnlineEvent onlineEvent = onlineEventMapper.selectByPrimaryKey(id);
+        onlineEvent.setUpdateTime(LocalDateTime.now());
+        onlineEvent.setStatus(status);
+        onlineEventMapper.updateByPrimaryKeySelective(onlineEvent);
+    }
+
+    @Override
+    public void addStatusUpdationQuartzJobAndTrigger(OnlineEvent onlineEvent, LocalDateTime time, Short status) throws Exception {
+        //set up a job detail
+        JobDetail startJobDetail = JobBuilder.newJob(UpdateStatusJob.class)
+                .withIdentity(onlineEvent.getGuid(),
+                        status == OnlineEventStatus.ONGOING.getValue() ? "onlineEvent_start" : "onlineEvent_end")
+                .usingJobData("time", time.toString())
+                .usingJobData("status", String.valueOf(status))
+                .usingJobData("guid", onlineEvent.getGuid())
+                .usingJobData("id", onlineEvent.getId())
+                .build();
+        //set a cron expression
+        String startCron = String.format("%d %d %d %d %d ? %d",
+                time.getSecond(),
+                time.getMinute(),
+                time.getHour(),
+                time.getDayOfMonth(),
+                time.getMonth().getValue(),
+                time.getYear());
+        //set up a trigger
+        CronTrigger startCronTrigger = TriggerBuilder.newTrigger()
+                .withIdentity(onlineEvent.getGuid(), status == 1? "onlineEvent_start" : "onlineEvent_end")
+                .withSchedule(CronScheduleBuilder.cronSchedule(startCron))
+                .build();
+
+        //add job and trigger in scheduler
+        try{
+            scheduler.scheduleJob(startJobDetail, startCronTrigger);
+        }catch (SchedulerException e){
+            e.printStackTrace();
+            throw new Exception("Fail to set up quartz job.");
+        }
     }
 
 }
