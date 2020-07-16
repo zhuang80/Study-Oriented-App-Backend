@@ -30,6 +30,32 @@ spring:
       FAIL_ON_EMPTY_BEANS: false
     deserialization:
       FAIL_ON_UNKNOWN_PROPERTIES: false
+    quartz:
+      properties:
+        org:
+          quartz:
+            scheduler:
+              instanceName: clusteredScheduler
+              instanceId: AUTO
+            jobStore:
+              class: org.quartz.impl.jdbcjobstore.JobStoreTX
+              driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+              tablePrefix: QRTZ_
+              useProperties: false
+              dataSource: myDs
+            threadPool:
+              class: org.quartz.simpl.SimpleThreadPool
+              threadCount: 10
+              threadPriority: 5
+              threadsInheritContextClassLoaderOfInitializingThread: true
+            dataSource:
+              myDs:
+                driver: org.postgresql.Driver
+                URL: jdbc:postgresql://wequan.cgnev0a5e0ak.us-east-1.rds.amazonaws.com:5432/wequan
+                user: wequan_admin
+                password: wequan@bu
+
+      jdbc-store-type: jdbc
 
 mybatis:
   mapper-locations:
