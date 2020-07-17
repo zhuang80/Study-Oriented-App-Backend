@@ -1,5 +1,6 @@
 package com.wequan.bu.service;
 
+import com.wequan.bu.controller.vo.DiscussionGroupMemberIdsWrapper;
 import com.wequan.bu.repository.model.DiscussionGroup;
 
 import java.util.List;
@@ -55,4 +56,6 @@ public interface DiscussionGroupService extends Service<DiscussionGroup> {
     void updateTag(Integer id, Short tagId) throws Exception;
 
     void updateLogo(Integer id, String logoUrl) throws Exception;
+
+    List<DiscussionGroupMemberIdsWrapper> findMemberIdsForAllDiscussionGroup();
 }

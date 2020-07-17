@@ -43,4 +43,6 @@ public interface DiscussionGroupMapper extends GeneralMapper<DiscussionGroup> {
     List<Integer> selectMemberIdsByDiscussionGroupId(@Param("discussion_group_id") Integer id);
 
     void updateCurrentHeadcountByPrimaryKey(@Param("id") Integer id);
+
+    List<DiscussionGroupMember> selectDiscussionGroupMembers();
 }

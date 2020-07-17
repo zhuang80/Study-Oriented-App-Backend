@@ -204,9 +204,14 @@ public class DiscussionGroupController {
         DiscussionGroupMemberIdsWrapper memberIdsWrapper = new DiscussionGroupMemberIdsWrapper();
         DiscussionGroup discussionGroup = discussionGroupService.findById(id);
         memberIdsWrapper.setId(discussionGroup.getId());
-        memberIdsWrapper.setGuid(discussionGroup.getGuid());
         memberIdsWrapper.setMemberIds(discussionGroupService.findMemberIdsByDiscussionGroupId(id));
        return ResultGenerator.success(memberIdsWrapper);
+    }
+
+    @GetMapping("/discussion_group/members")
+    @ApiOperation(value = "get the member list of all discussion group", notes = "返回每个discussion group的成员列表")
+    public Result<List<DiscussionGroupMemberIdsWrapper>> getMemberIdsForAllDiscussionGroup(){
+        return ResultGenerator.success(discussionGroupService.findMemberIdsForAllDiscussionGroup());
     }
 
 }

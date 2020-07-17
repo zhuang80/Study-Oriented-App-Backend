@@ -1,6 +1,7 @@
 package com.wequan.bu.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.wequan.bu.controller.vo.DiscussionGroupMemberIdsWrapper;
 import com.wequan.bu.repository.dao.DiscussionGroupMapper;
 import com.wequan.bu.repository.model.DiscussionGroup;
 import com.wequan.bu.repository.model.DiscussionGroupMember;
@@ -18,10 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author ChrisChen
@@ -214,6 +212,26 @@ public class DiscussionGroupServiceImpl extends AbstractService<DiscussionGroup>
         discussionGroup.setLogo(logoUrl);
         discussionGroup.setUpdateTime(LocalDateTime.now());
         discussionGroupMapper.updateByPrimaryKeySelective(discussionGroup);
+    }
+
+    @Override
+    public List<DiscussionGroupMemberIdsWrapper> findMemberIdsForAllDiscussionGroup() {
+        Map<Integer, List<Integer>> result = new HashMap<>();
+        List<DiscussionGroupMember> discussionGroupMembers = discussionGroupMapper.selectDiscussionGroupMembers();
+        for(DiscussionGroupMember m: discussionGroupMembers){
+            List<Integer> members = result.getOrDefault(m.getDiscussionGroupId(), new ArrayList<>());
+            members.add(m.getMemberId());
+            result.put(m.getDiscussionGroupId(), members);
+        }
+
+        List<DiscussionGroupMemberIdsWrapper> memberIdsWrappers = new ArrayList<>();
+        for(Map.Entry<Integer, List<Integer>> entry: result.entrySet()){
+            DiscussionGroupMemberIdsWrapper wrapper = new DiscussionGroupMemberIdsWrapper();
+            wrapper.setId(entry.getKey());
+            wrapper.setMemberIds(entry.getValue());
+            memberIdsWrappers.add(wrapper);
+        }
+        return memberIdsWrappers;
     }
 
     @Override
