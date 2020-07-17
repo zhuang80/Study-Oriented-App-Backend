@@ -283,4 +283,30 @@
         ON CONFLICT (online_event_id, member_id)
         DO UPDATE SET action = EXCLUDED.action, action_time = EXCLUDED.action_time
     </insert>
+
+    <insert id="insertOnlineEventTransaction" parameterType="com.wequan.bu.repository.model.OnlineEventTransaction">
+        INSERT INTO ${schema}.wq_online_event_transaction
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="onlineEventId != null">
+                online_event_id,
+            </if>
+            <if test="transactionId != null">
+                transaction_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="onlineEventId != null">
+                #{onlineEventId, jdbcType=INTEGER},
+            </if>
+            <if test="transactionId != null">
+                #{transactionId, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime, jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
 </mapper>
