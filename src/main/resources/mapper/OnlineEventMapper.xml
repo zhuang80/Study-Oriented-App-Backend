@@ -249,4 +249,38 @@
         where id = #{id,jdbcType=INTEGER}
     </update>
 
+    <insert id="insertOrUpdateActionByUserId" parameterType="com.wequan.bu.repository.model.OnlineEventMember"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO ${schema}.wq_online_event_member
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="onlineEventId != null">
+                online_event_id,
+            </if>
+            <if test="memberId != null">
+                member_id,
+            </if>
+            <if test="action != null">
+                action,
+            </if>
+            <if test="actionTime != null">
+                action_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="onlineEventId != null">
+                #{onlineEventId,jdbcType=INTEGER},
+            </if>
+            <if test="memberId != null">
+                #{memberId,jdbcType=INTEGER},
+            </if>
+            <if test="action != null">
+                #{action,jdbcType=SMALLINT},
+            </if>
+            <if test="actionTime != null">
+                #{actionTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+        ON CONFLICT (online_event_id, member_id)
+        DO UPDATE SET action = EXCLUDED.action, action_time = EXCLUDED.action_time
+    </insert>
 </mapper>

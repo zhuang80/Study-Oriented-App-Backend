@@ -50,13 +50,29 @@ public class DiscussionGroupServiceImpl extends AbstractService<DiscussionGroup>
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void doUserAction(Integer userId, Integer dgId, Short action) {
+    public void doUserAction(Integer userId, Integer dgId, Short action) throws Exception {
+        DiscussionGroup discussionGroup = discussionGroupMapper.selectByPrimaryKey(dgId);
+        User user = userService.findById(userId);
+
+        //check whether the group is full yet
+        if(discussionGroup.getCurrentHeadcount() >= discussionGroup.getGroupCapacity()){
+            throw new Exception("The group is full now.");
+        }
+
+        //check whether the group is visible to the user
+        if(!discussionGroup.getVisible() && !user.getSchoolId().equals(discussionGroup.getBelongSchoolId())){
+            throw new Exception("The group is not visible for your school.");
+        }
+
         DiscussionGroupMember discussionGroupMember = new DiscussionGroupMember();
         discussionGroupMember.setDiscussionGroupId(dgId);
         discussionGroupMember.setMemberId(userId);
         discussionGroupMember.setAction(action);
         discussionGroupMember.setActionTime(new Date());
         discussionGroupMapper.insertOrUpdateActionByUserId(discussionGroupMember);
+
+        //update discussion group current headcount
+        discussionGroupMapper.updateCurrentHeadcountByPrimaryKey(dgId);
     }
 
     @Override

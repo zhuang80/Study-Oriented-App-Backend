@@ -4,8 +4,11 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.Refund;
 import com.stripe.model.WebhookEndpoint;
+import com.wequan.bu.controller.vo.Transaction;
 import com.wequan.bu.repository.model.Appointment;
 import com.wequan.bu.repository.model.TutorStripe;
+
+import java.util.Map;
 
 public interface StripeService extends Service<TutorStripe> {
     public void storeConnectedId(String code, Integer tutorId) throws StripeException;
@@ -31,4 +34,10 @@ public interface StripeService extends Service<TutorStripe> {
     public void revoke(Integer tutorId) throws StripeException, Exception;
 
     public void handleAccount(String sigHeader, String payload) throws Exception;
+
+    public PaymentIntent createSeparatePaymentIntent(Integer amount, String guid, Map<String,String> metadata) throws StripeException;
+
+    public PaymentIntent createSeparatePaymentIntent(Integer publicClassId) throws StripeException;
+
+    public void createSeparateTransfer(String guid, Long amount, String destination) throws StripeException;
 }

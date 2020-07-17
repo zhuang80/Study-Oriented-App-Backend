@@ -53,4 +53,6 @@ public interface OnlineEventService extends Service<OnlineEvent> {
     void updateStatus(Integer id, Short status);
 
     void addStatusUpdationQuartzJobAndTrigger(OnlineEvent onlineEvent, LocalDateTime time, Short status) throws Exception;
+
+    void doUserAction(Integer userId, Integer oeId, Short action) throws Exception;
 }

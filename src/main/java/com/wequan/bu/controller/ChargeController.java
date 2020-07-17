@@ -135,4 +135,16 @@ public class ChargeController {
             return ResultGenerator.fail(e.getMessage());
         }
     }
+
+    @GetMapping("/client_secret/public_class")
+    @ApiOperation(value="return client secret", notes="根据public class id生成一个client secret 前端使用client secret完成交易")
+    public Result<String> getClientSecret(@RequestParam("public_class_id") Integer publicClassId){
+        try {
+            PaymentIntent paymentIntent = stripeService.createSeparatePaymentIntent(publicClassId);
+            return ResultGenerator.success(paymentIntent.getClientSecret());
+        }catch (StripeException e){
+            return ResultGenerator.fail(e.getMessage());
+        }
+
+    }
 }
