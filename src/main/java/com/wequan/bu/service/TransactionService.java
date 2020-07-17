@@ -15,6 +15,8 @@ import java.util.List;
 public interface TransactionService extends Service<Transaction> {
     public void saveAppointmentTransaction(PaymentIntent paymentIntent);
 
+    public void saveTransaction(PaymentIntent paymentIntent);
+
     public void update(PaymentIntent paymentIntent);
 
     public void delete(PaymentIntent paymentIntent);

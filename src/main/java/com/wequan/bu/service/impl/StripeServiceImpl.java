@@ -48,21 +48,22 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
     @Value("${CLIENT_ID}")
     private String clientId;
-
+/*
     @Value("${PAYMENT_INTENT_WEBHOOK_SECRET}")
     private String paymentIntentWebhookSecret;
+
 
     @Value("${REFUND_WEBHOOK_SECRET}")
     private String refundWebhookSecret;
 
     @Value("${ACCOUNT_WEBHOOK_SECRET}")
     private String accountWebhookSecret;
-
-/*  //local test webhook secret
+*/
+ //local test webhook secret
     private String paymentIntentWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
     private String refundWebhookSecret="whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
     private String accountWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
-*/
+
     @Autowired
     private TutorStripeMapper tutorStripeMapper;
 
@@ -108,8 +109,18 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     }
 
     @Override
-    public PaymentIntent createPaymentIntent(Integer appointmentId) throws StripeException {
+    public PaymentIntent createPaymentIntent(Integer appointmentId) throws StripeException, Exception {
         Appointment appointment = appointmentMapper.selectByPrimaryKey(appointmentId);
+
+        if(appointment == null) {
+            throw new Exception("No such appointment.");
+        }
+
+        if(appointment.getTransactionId() != null){
+            Transaction transaction = transactionService.findById(appointment.getTransactionId());
+            return PaymentIntent.retrieve(transaction.getThirdPartyTransactionId());
+        }
+        
         TutorStripe tutorStripe = tutorStripeMapper.selectByTutorId(appointment.getTutorId());
 
         PaymentIntentCreateParams.TransferData transferData = PaymentIntentCreateParams.TransferData
@@ -166,7 +177,16 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
             if("payment_intent.created".equals(event.getType())){
                 paymentIntent = (PaymentIntent) deserializeObject(event);
                 log.info("=============================> payment intent created event webhook");
-                transactionService.saveAppointmentTransaction(paymentIntent);
+
+                Map<String, String> metadata = paymentIntent.getMetadata();
+                Short type = Short.parseShort(metadata.get("type"));
+                if(TransactionType.APPOINTMENT.getValue() == type){
+                    transactionService.saveAppointmentTransaction(paymentIntent);
+                }
+                if(TransactionType.PUBLIC_CLASS.getValue() == type){
+                    transactionService.saveTransaction(paymentIntent);
+                }
+
             }
             if("payment_intent.canceled".equals(event.getType())){
                 paymentIntent = (PaymentIntent) deserializeObject(event);
@@ -303,12 +323,14 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     }
 
     @Override
-    public PaymentIntent createSeparatePaymentIntent(Integer publicClassId) throws StripeException{
+    public PaymentIntent createSeparatePaymentIntent(Integer publicClassId, Integer userId) throws StripeException{
         OnlineEvent onlineEvent = onlineEventService.findById(publicClassId);
         //set up metadata which is used when payment_intent.created webhook is triggered
         Map<String, String> metadata = new HashMap<>();
         metadata.put("type", String.valueOf(TransactionType.PUBLIC_CLASS.getValue()));
         metadata.put("online_event_id", String.valueOf(publicClassId));
+        metadata.put("from", String.valueOf(userId));
+        metadata.put("to", String.valueOf(onlineEvent.getCreateBy()));
 
         return createSeparatePaymentIntent(onlineEvent.getFee(), onlineEvent.getGuid(), metadata);
     }
@@ -321,6 +343,19 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
                 .setDestination(destination)
                 .setTransferGroup(guid)
                 .build();
+    }
+
+    @Override
+    public String retrieveClientSecret(String transactionId) throws Exception {
+        Transaction transaction = transactionService.findById(transactionId);
+
+        if(transaction == null) {
+            throw new Exception("No such transaction.");
+        }
+
+        PaymentIntent paymentIntent = PaymentIntent.retrieve(transaction.getThirdPartyTransactionId());
+
+        return paymentIntent.getClientSecret();
     }
 
     private Object deserializeObject(Event event) throws Exception {

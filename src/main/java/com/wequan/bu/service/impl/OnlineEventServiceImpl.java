@@ -3,12 +3,11 @@ package com.wequan.bu.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.wequan.bu.quartz.UpdateStatusJob;
 import com.wequan.bu.repository.dao.OnlineEventMapper;
-import com.wequan.bu.repository.model.OnlineEvent;
-import com.wequan.bu.repository.model.OnlineEventMember;
-import com.wequan.bu.repository.model.Tutor;
+import com.wequan.bu.repository.model.*;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.OnlineEventService;
 import com.wequan.bu.service.TutorService;
+import com.wequan.bu.service.UserService;
 import com.wequan.bu.util.OnlineEventStatus;
 import com.wequan.bu.util.OnlineEventType;
 import org.apache.ibatis.session.RowBounds;
@@ -37,6 +36,9 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
 
     @Autowired
     private TutorService tutorService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private Scheduler scheduler;
@@ -248,15 +250,29 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
     @Transactional(rollbackFor = Exception.class)
     public void doUserAction(Integer userId, Integer oeId, Short action) throws Exception {
         OnlineEvent onlineEvent = onlineEventMapper.selectByPrimaryKey(oeId);
+        User user = userService.findById(userId);
+
+        //check whether the online event is visible to the user
+        if(!onlineEvent.getVisible() && !user.getSchoolId().equals(onlineEvent.getBelongSchoolId())){
+            throw new Exception("The group is not visible for your school.");
+        }
+
+        //check whether the online event is a public class
         if(onlineEvent.getType() == OnlineEventType.PUBLIC_CLASS.getValue()){
             throw new Exception("This API don't support online event of public class type.");
         }
+
         OnlineEventMember onlineEventMember = new OnlineEventMember();
         onlineEventMember.setOnlineEventId(oeId);
         onlineEventMember.setMemberId(userId);
         onlineEventMember.setAction(action);
         onlineEventMember.setActionTime(LocalDateTime.now());
         onlineEventMapper.insertOrUpdateActionByUserId(onlineEventMember);
+    }
+
+    @Override
+    public void saveOnlineEventTransaction(OnlineEventTransaction onlineEventTransaction) {
+        onlineEventMapper.insertOnlineEventTransaction(onlineEventTransaction);
     }
 
 }

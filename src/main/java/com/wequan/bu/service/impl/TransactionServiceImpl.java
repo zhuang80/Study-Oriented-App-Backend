@@ -8,15 +8,9 @@ import com.wequan.bu.controller.vo.Transaction;
 import com.wequan.bu.repository.dao.AppointmentMapper;
 import com.wequan.bu.repository.dao.TransactionMapper;
 import com.wequan.bu.repository.dao.TutorMapper;
-import com.wequan.bu.repository.model.Appointment;
-import com.wequan.bu.repository.model.AppointmentChangeRecord;
-import com.wequan.bu.repository.model.CancellationPolicy;
-import com.wequan.bu.repository.model.Tutor;
+import com.wequan.bu.repository.model.*;
 import com.wequan.bu.service.*;
-import com.wequan.bu.util.AdminAction;
-import com.wequan.bu.util.ChangeType;
-import com.wequan.bu.util.PaymentMethod;
-import com.wequan.bu.util.TransactionStatus;
+import com.wequan.bu.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +50,9 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     @Autowired
     private AppointmentChangeRecordService appointmentChangeRecordService;
 
+    @Autowired
+    private OnlineEventService onlineEventService;
+
     @PostConstruct
     public void postConstruct(){
         this.setMapper(transactionMapper);
@@ -70,6 +67,26 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         Transaction transaction = generateTransaction(paymentIntent);
         transactionMapper.insertSelective(transaction);
         appointmentService.updateTransactionIdByPrimaryKey(appointmentId, transaction.getId());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveTransaction(PaymentIntent paymentIntent){
+        Map<String, String> metadata = paymentIntent.getMetadata();
+        Short type = Short.parseShort(metadata.get("type"));
+
+        if(TransactionType.PUBLIC_CLASS.getValue() == type){
+            //save transaction information
+            Transaction transaction = generateTransaction(paymentIntent);
+            transactionMapper.insertSelective(transaction);
+
+            //save online event and transaction relationship
+            OnlineEventTransaction onlineEventTransaction = new OnlineEventTransaction();
+            onlineEventTransaction.setOnlineEventId(Integer.parseInt(metadata.get("online_event_id")));
+            onlineEventTransaction.setTransactionId(transaction.getId());
+            onlineEventTransaction.setCreateTime(LocalDateTime.now());
+            onlineEventService.saveOnlineEventTransaction(onlineEventTransaction);
+        }
     }
 
     @Override
@@ -245,27 +262,50 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     private Transaction generateTransaction(PaymentIntent paymentIntent){
         //fetch meta data appointment Id and transaction type
         Map<String, String> metadata = paymentIntent.getMetadata();
-
-
-        Integer appointmentId = Integer.parseInt(metadata.get("appointment_id"));
         short type = Short.parseShort(metadata.get("type"));
 
-        Appointment appointment = appointmentMapper.selectByPrimaryKey(appointmentId);
-        Tutor tutor = tutorMapper.selectByPrimaryKey(appointment.getTutorId());
+        Transaction transaction = null;
+        if(type == TransactionType.APPOINTMENT.getValue()) {
+            Integer appointmentId = Integer.parseInt(metadata.get("appointment_id"));
 
-        Transaction transaction = new Transaction();
-        transaction.setId(String.valueOf(UUID.randomUUID()));
-        transaction.setType(type);
-        transaction.setPayFrom(appointment.getUserId());
-        transaction.setPayTo(tutor.getUser().getId());
-        transaction.setPayAmount(appointment.getFee());
-        transaction.setPaymentMethod((short) PaymentMethod.CARD.getValue());
-        transaction.setThirdPartyTransactionId(paymentIntent.getId());
-        LocalDateTime createdTime = convertTimestampToLocalDateTime(paymentIntent.getCreated());
 
-        transaction.setCreateTime(createdTime);
-        short status = getStatus(paymentIntent.getStatus());
-        transaction.setStatus(status);
+            Appointment appointment = appointmentMapper.selectByPrimaryKey(appointmentId);
+            Tutor tutor = tutorMapper.selectByPrimaryKey(appointment.getTutorId());
+
+            transaction = new Transaction();
+            transaction.setId(String.valueOf(UUID.randomUUID()));
+            transaction.setType(type);
+            transaction.setPayFrom(appointment.getUserId());
+            transaction.setPayTo(tutor.getUser().getId());
+            transaction.setPayAmount(appointment.getFee());
+            transaction.setPaymentMethod((short) PaymentMethod.CARD.getValue());
+            transaction.setThirdPartyTransactionId(paymentIntent.getId());
+            LocalDateTime createdTime = convertTimestampToLocalDateTime(paymentIntent.getCreated());
+
+            transaction.setCreateTime(createdTime);
+            short status = getStatus(paymentIntent.getStatus());
+            transaction.setStatus(status);
+        }
+
+        if(type == TransactionType.PUBLIC_CLASS.getValue()){
+            Integer onlineEventId = Integer.parseInt(metadata.get("online_event_id"));
+
+            OnlineEvent onlineEvent = onlineEventService.findById(onlineEventId);
+
+            transaction = new Transaction();
+            transaction.setId(String.valueOf(UUID.randomUUID()));
+            transaction.setType(type);
+            transaction.setPayFrom(Integer.parseInt(metadata.get("from")));
+            transaction.setPayTo(Integer.parseInt(metadata.get("to")));
+            transaction.setPayAmount((int) (long) paymentIntent.getAmount());
+            transaction.setPaymentMethod((short) PaymentMethod.CARD.getValue());
+            transaction.setThirdPartyTransactionId(paymentIntent.getId());
+            LocalDateTime createdTime = convertTimestampToLocalDateTime(paymentIntent.getCreated());
+
+            transaction.setCreateTime(createdTime);
+            short status = getStatus(paymentIntent.getStatus());
+            transaction.setStatus(status);
+        }
 
         return transaction;
     }
