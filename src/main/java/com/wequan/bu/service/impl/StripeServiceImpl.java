@@ -10,15 +10,15 @@ import com.stripe.net.Webhook;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.PaymentIntentUpdateParams;
 import com.stripe.param.RefundCreateParams;
+import com.stripe.param.TransferCreateParams;
 import com.wequan.bu.controller.vo.Transaction;
 import com.wequan.bu.repository.dao.AppointmentMapper;
 import com.wequan.bu.repository.dao.TutorStripeMapper;
 import com.wequan.bu.repository.model.Appointment;
+import com.wequan.bu.repository.model.OnlineEvent;
+import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.repository.model.TutorStripe;
-import com.wequan.bu.service.AbstractService;
-import com.wequan.bu.service.AppointmentService;
-import com.wequan.bu.service.StripeService;
-import com.wequan.bu.service.TransactionService;
+import com.wequan.bu.service.*;
 import com.wequan.bu.util.AppointmentStatus;
 import com.wequan.bu.util.TransactionStatus;
 import com.wequan.bu.util.TransactionType;
@@ -74,6 +74,9 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
    @Autowired
    private AppointmentService appointmentService;
+
+   @Autowired
+   private OnlineEventService onlineEventService;
 
     @PostConstruct
     public void postConstruct(){
@@ -283,6 +286,41 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
                 tutorStripeMapper.deleteByStripeAccount(connectedAccountId);
             }
         }
+    }
+
+    @Override
+    public PaymentIntent createSeparatePaymentIntent(Integer amount, String guid, Map<String, String> metadata) throws StripeException{
+        PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                .setAmount((long) (int) amount)
+                .setCurrency("usd")
+                .addPaymentMethodType("card")
+                .setTransferGroup(guid)
+                .putAllMetadata(metadata)
+                .build();
+
+        PaymentIntent paymentIntent = PaymentIntent.create(params);
+        return paymentIntent;
+    }
+
+    @Override
+    public PaymentIntent createSeparatePaymentIntent(Integer publicClassId) throws StripeException{
+        OnlineEvent onlineEvent = onlineEventService.findById(publicClassId);
+        //set up metadata which is used when payment_intent.created webhook is triggered
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("type", String.valueOf(TransactionType.PUBLIC_CLASS.getValue()));
+        metadata.put("online_event_id", String.valueOf(publicClassId));
+
+        return createSeparatePaymentIntent(onlineEvent.getFee(), onlineEvent.getGuid(), metadata);
+    }
+
+    @Override
+    public void createSeparateTransfer(String guid, Long amount, String destination) throws StripeException {
+        TransferCreateParams params = TransferCreateParams.builder()
+                .setAmount(amount)
+                .setCurrency("usd")
+                .setDestination(destination)
+                .setTransferGroup(guid)
+                .build();
     }
 
     private Object deserializeObject(Event event) throws Exception {

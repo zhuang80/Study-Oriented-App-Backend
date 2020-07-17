@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.wequan.bu.quartz.UpdateStatusJob;
 import com.wequan.bu.repository.dao.OnlineEventMapper;
 import com.wequan.bu.repository.model.OnlineEvent;
+import com.wequan.bu.repository.model.OnlineEventMember;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.OnlineEventService;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -240,6 +242,21 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
             e.printStackTrace();
             throw new Exception("Fail to set up quartz job.");
         }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void doUserAction(Integer userId, Integer oeId, Short action) throws Exception {
+        OnlineEvent onlineEvent = onlineEventMapper.selectByPrimaryKey(oeId);
+        if(onlineEvent.getType() == OnlineEventType.PUBLIC_CLASS.getValue()){
+            throw new Exception("This API don't support online event of public class type.");
+        }
+        OnlineEventMember onlineEventMember = new OnlineEventMember();
+        onlineEventMember.setOnlineEventId(oeId);
+        onlineEventMember.setMemberId(userId);
+        onlineEventMember.setAction(action);
+        onlineEventMember.setActionTime(LocalDateTime.now());
+        onlineEventMapper.insertOrUpdateActionByUserId(onlineEventMember);
     }
 
 }

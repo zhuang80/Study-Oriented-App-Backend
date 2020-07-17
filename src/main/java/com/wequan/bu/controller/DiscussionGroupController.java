@@ -1,6 +1,7 @@
 package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
+import com.wequan.bu.controller.vo.DiscussionGroupMemberIdsWrapper;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.DiscussionGroup;
@@ -194,12 +195,18 @@ public class DiscussionGroupController {
 
     @GetMapping("/discussion_group/{id}/members")
     @ApiOperation(value = "get the member list of a given discussion group", notes = "返回某个讨论组的所有成员id, 服务于IM系统")
-    public Result<List<Integer>> getMemberIds(@PathVariable("id") Integer id){
+    public Result<DiscussionGroupMemberIdsWrapper> getMemberIds(@PathVariable("id") Integer id){
         if(id < 0){
             String message = messageHandler.getFailResponseMessage("40080");
             return ResultGenerator.fail(message);
         }
-       return ResultGenerator.success(discussionGroupService.findMemberIdsByDiscussionGroupId(id));
+
+        DiscussionGroupMemberIdsWrapper memberIdsWrapper = new DiscussionGroupMemberIdsWrapper();
+        DiscussionGroup discussionGroup = discussionGroupService.findById(id);
+        memberIdsWrapper.setId(discussionGroup.getId());
+        memberIdsWrapper.setGuid(discussionGroup.getGuid());
+        memberIdsWrapper.setMemberIds(discussionGroupService.findMemberIdsByDiscussionGroupId(id));
+       return ResultGenerator.success(memberIdsWrapper);
     }
 
 }
