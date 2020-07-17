@@ -116,11 +116,17 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
             throw new Exception("No such appointment.");
         }
 
+        //check whether there exists a transaction for this appointment
         if(appointment.getTransactionId() != null){
             Transaction transaction = transactionService.findById(appointment.getTransactionId());
-            return PaymentIntent.retrieve(transaction.getThirdPartyTransactionId());
+            //check whether the transaction require customer to pay out
+            if(transaction.getStatus() == TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue()){
+                return PaymentIntent.retrieve(transaction.getThirdPartyTransactionId());
+            }else{
+                throw new Exception("Can't checkout.");
+            }
         }
-        
+
         TutorStripe tutorStripe = tutorStripeMapper.selectByTutorId(appointment.getTutorId());
 
         PaymentIntentCreateParams.TransferData transferData = PaymentIntentCreateParams.TransferData

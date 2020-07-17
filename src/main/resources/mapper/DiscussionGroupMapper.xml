@@ -264,6 +264,12 @@
     WHERE discussion_group_id = #{discussion_group_id, jdbcType=INTEGER} AND action = 1
   </select>
 
+  <select id="selectDiscussionGroupMembers" resultType="com.wequan.bu.repository.model.DiscussionGroupMember">
+    SELECT *
+    FROM ${schema}.wq_discussion_group_member
+    WHERE action = 1
+  </select>
+
   <update id="updateCurrentHeadcountByPrimaryKey" parameterType="java.lang.Integer">
     update ${schema}.wq_discussion_group c
     set current_headcount = count

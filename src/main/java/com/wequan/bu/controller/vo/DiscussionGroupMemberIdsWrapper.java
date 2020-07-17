@@ -10,6 +10,5 @@ import java.util.List;
 @Data
 public class DiscussionGroupMemberIdsWrapper {
     private Integer id;
-    private String guid;
     private List<Integer> memberIds;
 }
