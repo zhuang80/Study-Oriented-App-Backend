@@ -1,6 +1,7 @@
 package com.wequan.bu.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.wequan.bu.quartz.TransferJob;
 import com.wequan.bu.quartz.UpdateStatusJob;
 import com.wequan.bu.repository.dao.OnlineEventMapper;
 import com.wequan.bu.repository.model.*;
@@ -73,6 +74,12 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
 
         addStatusUpdationQuartzJobAndTrigger(onlineEvent, onlineEvent.getStartTime(), OnlineEventStatus.ONGOING.getValue());
         addStatusUpdationQuartzJobAndTrigger(onlineEvent, onlineEvent.getEndTime(), OnlineEventStatus.DONE.getValue());
+
+        //transfer money from platform account to connected account two days after the public class end
+        if(onlineEvent.getType() == OnlineEventType.PUBLIC_CLASS.getValue()){
+            LocalDateTime transferTime = onlineEvent.getEndTime().plusMinutes(2);
+            addTransferQuartzJobAndTrigger(onlineEvent, transferTime);
+        }
 
     }
 
@@ -213,6 +220,7 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addStatusUpdationQuartzJobAndTrigger(OnlineEvent onlineEvent, LocalDateTime time, Short status) throws Exception {
         //set up a job detail
         JobDetail startJobDetail = JobBuilder.newJob(UpdateStatusJob.class)
@@ -242,7 +250,41 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
             scheduler.scheduleJob(startJobDetail, startCronTrigger);
         }catch (SchedulerException e){
             e.printStackTrace();
-            throw new Exception("Fail to set up quartz job.");
+            throw new Exception("Fail to set up status updating quartz job.");
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addTransferQuartzJobAndTrigger(OnlineEvent onlineEvent, LocalDateTime time) throws Exception {
+        JobDetail startJobDetail = JobBuilder.newJob(TransferJob.class)
+                .withIdentity(onlineEvent.getGuid(), "transfer")
+                .usingJobData("guid", onlineEvent.getGuid())
+                .usingJobData("id", onlineEvent.getId())
+                .usingJobData("time", time.toString())
+                .build();
+
+        //set a cron expression
+        String startCron = String.format("%d %d %d %d %d ? %d",
+                time.getSecond(),
+                time.getMinute(),
+                time.getHour(),
+                time.getDayOfMonth(),
+                time.getMonth().getValue(),
+                time.getYear());
+
+        //set up a trigger
+        CronTrigger startCronTrigger = TriggerBuilder.newTrigger()
+                .withIdentity(onlineEvent.getGuid(), "transfer")
+                .withSchedule(CronScheduleBuilder.cronSchedule(startCron))
+                .build();
+
+        //add job and trigger in scheduler
+        try{
+            scheduler.scheduleJob(startJobDetail, startCronTrigger);
+        }catch (SchedulerException e){
+            e.printStackTrace();
+            throw new Exception("Fail to set up transfer quartz job.");
         }
     }
 
@@ -274,5 +316,6 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
     public void saveOnlineEventTransaction(OnlineEventTransaction onlineEventTransaction) {
         onlineEventMapper.insertOnlineEventTransaction(onlineEventTransaction);
     }
+
 
 }

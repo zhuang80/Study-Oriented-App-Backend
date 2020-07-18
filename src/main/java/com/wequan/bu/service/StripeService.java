@@ -42,5 +42,7 @@ public interface StripeService extends Service<TutorStripe> {
 
     public void createSeparateTransfer(String guid, Long amount, String destination) throws StripeException;
 
+    public void createSeparateTransfer(Integer id) throws StripeException;
+
     public String retrieveClientSecret(String transactionId) throws Exception;
 }
