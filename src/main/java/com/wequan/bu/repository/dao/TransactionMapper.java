@@ -19,4 +19,7 @@ public interface TransactionMapper extends GeneralMapper<Transaction> {
     public Transaction selectByThirdPartyTransactionId(@Param("third_party_transaction_id") String thirdPartyTransactionId);
 
     public List<Transaction> selectByUserId(@Param("user_id") Integer userId);
+
+    public Integer selectTotalTransactionAmountByDiscussionGroupId(@Param("discussion_group_id") Integer discussionGroupId,
+                                                                @Param("status") Short status);
 }

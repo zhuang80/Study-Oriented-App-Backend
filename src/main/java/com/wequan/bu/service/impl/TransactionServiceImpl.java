@@ -233,6 +233,11 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         return transactionMapper.selectAll();
     }
 
+    @Override
+    public Integer findTotalTransactionAmountByDiscussionGroupId(Integer id) {
+        return transactionMapper.selectTotalTransactionAmountByDiscussionGroupId(id, TransactionStatus.SUCCEEDED.getValue());
+    }
+
     private LocalDateTime convertTimestampToLocalDateTime(Long timestamp){
         return LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp),
                 TimeZone.getDefault().toZoneId());

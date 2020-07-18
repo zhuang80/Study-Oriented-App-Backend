@@ -48,7 +48,7 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
     @Value("${CLIENT_ID}")
     private String clientId;
-/*
+
     @Value("${PAYMENT_INTENT_WEBHOOK_SECRET}")
     private String paymentIntentWebhookSecret;
 
@@ -58,11 +58,12 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
     @Value("${ACCOUNT_WEBHOOK_SECRET}")
     private String accountWebhookSecret;
-*/
+
  //local test webhook secret
-    private String paymentIntentWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
+  /*  private String paymentIntentWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
     private String refundWebhookSecret="whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
     private String accountWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
+    */
 
     @Autowired
     private TutorStripeMapper tutorStripeMapper;
@@ -349,7 +350,20 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
                 .setDestination(destination)
                 .setTransferGroup(guid)
                 .build();
+        Transfer transfer = Transfer.create(params);
     }
+
+    @Override
+    public void createSeparateTransfer(Integer id) throws StripeException {
+        OnlineEvent onlineEvent = onlineEventService.findById(id);
+        Long amount = (long)(int)transactionService.findTotalTransactionAmountByDiscussionGroupId(id) ;
+        amount = Math.round(amount * 0.9);
+        TutorStripe tutorStripe = tutorStripeMapper.selectByUserId(onlineEvent.getCreateBy());
+
+        System.out.println("transfer amount: "+ amount + " to tutor:" + tutorStripe.getTutorId() + "-----" + LocalDateTime.now().toString());
+        createSeparateTransfer(onlineEvent.getGuid(), amount, tutorStripe.getStripeAccount());
+    }
+
 
     @Override
     public String retrieveClientSecret(String transactionId) throws Exception {
@@ -372,4 +386,5 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
             throw new Exception("fail to deserialize object data from event");
         }
     }
+
 }

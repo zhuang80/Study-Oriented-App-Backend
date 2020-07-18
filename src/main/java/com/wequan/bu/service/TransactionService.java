@@ -37,4 +37,6 @@ public interface TransactionService extends Service<Transaction> {
 
     public List<Transaction> findAll(Integer pageNum, Integer pageSize);
 
+    public Integer findTotalTransactionAmountByDiscussionGroupId(Integer id);
+
 }
