@@ -319,4 +319,19 @@
     where user_id = #{userId}
   </select>
 
+  <select id="selectFollowEachOther" resultType="java.util.Map">
+    select
+      t1.user_id u_user_id,
+      t1.follow_id u_follow_id,
+      t2.user_id o_user_id,
+      t2.follow_id o_follow_id
+    from (
+      select user_id, follow_id from ${schema}.wq_user_follow
+      where user_id = #{userId} and follow_id = #{otherUserId}
+    ) t1 full join (
+      select user_id, follow_id from ${schema}.wq_user_follow
+      where user_id = #{otherUserId} and follow_id = #{userId}
+    ) t2 on (t1.user_id = t2.follow_id and t1.follow_id = t2.user_id)
+  </select>
+
 </mapper>
