@@ -6,6 +6,8 @@ import com.wequan.bu.repository.model.extend.UserStats;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Map;
+
 /**
  * @author ChrisChen
  */
@@ -67,4 +69,12 @@ public interface UserMapper extends GeneralMapper<User> {
      * @return tutor简要信息
      */
     TutorBriefInfo selectTutorProfileByUserId(Integer userId);
+
+    /**
+     * 获取用户与其他用户关注关系数据
+     * @param userId 用户id
+     * @param otherUserId 其他用户id
+     * @return 用户与其他用户关注关系数据
+     */
+    Map<String, Object> selectFollowEachOther(@Param("userId") Integer userId, @Param("otherUserId") Integer otherUserId);
 }

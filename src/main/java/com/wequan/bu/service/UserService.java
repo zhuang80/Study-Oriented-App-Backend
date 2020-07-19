@@ -117,4 +117,12 @@ public interface UserService extends Service<User> {
      * @return
      */
     TutorBriefInfo getUserTutorProfile(Integer userId);
+
+    /**
+     * 用户同其他用户的关注关系
+     * @param userId 用户id
+     * @param otherUserId 其他用户id
+     * @return 关注关系code
+     */
+    Integer getFollowRelationshipWithOtherUser(Integer userId, Integer otherUserId);
 }
