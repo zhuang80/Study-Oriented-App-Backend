@@ -32,4 +32,14 @@
         DELETE FROM ${schema}.wq_tutor_stripe
         WHERE stripe_account = #{stripe_account, jdbcType=VARCHAR}
     </delete>
+
+    <select id="selectByUserId" resultType="com.wequan.bu.repository.model.TutorStripe">
+        select *
+        from ${schema}.wq_tutor_stripe
+        where tutor_id = (
+            select id
+            from ${schema}.wq_tutor_profile
+            where user_id = #{user_id, jdbcType=INTEGER}
+        )
+    </select>
 </mapper>

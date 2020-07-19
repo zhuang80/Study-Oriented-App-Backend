@@ -136,8 +136,15 @@ public class UserController {
     })
     public Result doOnlineEvent(@PathVariable("id") Integer userId,
                                 @RequestParam("oeId") Integer oeId,
-                                @RequestParam("action") Integer action) {
-
+                                @RequestParam("action") Short action) {
+        if (userId <= 0 || oeId <= 0 || (action != 1 && action != -1)) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        try {
+            onlineEventService.doUserAction(userId, oeId, action);
+        }catch(Exception e){
+            return ResultGenerator.fail(e.getMessage());
+        }
         return ResultGenerator.success();
     }
 
@@ -172,7 +179,12 @@ public class UserController {
         if (userId <= 0 || dgId <= 0 || (action != 1 && action != -1)) {
             return ResultGenerator.fail(messageHandler.getMessage("40098"));
         }
-        discussionGroupService.doUserAction(userId, dgId, action);
+        try{
+            discussionGroupService.doUserAction(userId, dgId, action);
+        }catch(Exception e){
+            return ResultGenerator.fail(e.getMessage());
+        }
+
         return ResultGenerator.success();
     }
 
