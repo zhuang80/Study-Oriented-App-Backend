@@ -291,6 +291,23 @@ public class UserController {
         return ResultGenerator.success();
     }
 
+    @GetMapping("/user/{id}/follow")
+    @ApiOperation(value = "get follow relationship with other user", notes = "返回用户同其他用户的关注关系")
+    @ApiResponses(
+            @ApiResponse(code = 200, message = "1 -> 完全没关注; 2 -> 我关注了他; 3 -> 他关注了我; 4 -> 我们相互关注")
+    )
+    public Result<Integer> followRelationshipOtherUser(@PathVariable("id") Integer userId,
+                                                       @RequestParam("otherUserId") Integer otherUserId) {
+        if (userId <= 0 || otherUserId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (userId - otherUserId == 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40097"));
+        }
+        Integer relCode = userService.getFollowRelationshipWithOtherUser(userId, otherUserId);
+        return ResultGenerator.success(relCode);
+    }
+
     @PostMapping("/user/{id}/follow")
     @ApiOperation(value = "follow/unfollow other user", notes = "返回关注/取关其他用户成功与否")
     @ApiImplicitParams({
