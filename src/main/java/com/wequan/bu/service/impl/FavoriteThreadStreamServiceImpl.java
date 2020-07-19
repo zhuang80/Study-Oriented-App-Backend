@@ -51,4 +51,9 @@ public class FavoriteThreadStreamServiceImpl extends AbstractService<FavoriteThr
             favoriteThreadStreamMapper.deleteByPrimaryKey(params);
         }
     }
+
+    @Override
+    public boolean checkFavorite(Integer userId, Integer favoriteId) {
+        return favoriteThreadStreamMapper.checkFavorite(userId, favoriteId);
+    }
 }

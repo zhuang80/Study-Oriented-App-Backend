@@ -51,4 +51,9 @@ public class FavoriteThreadServiceImpl extends AbstractService<FavoriteThread> i
             favoriteThreadMapper.deleteByPrimaryKey(params);
         }
     }
+
+    @Override
+    public boolean checkFavorite(Integer userId, Integer favoriteId) {
+        return favoriteThreadMapper.checkFavorite(userId, favoriteId);
+    }
 }

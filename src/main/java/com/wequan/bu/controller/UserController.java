@@ -279,13 +279,35 @@ public class UserController {
         return ResultGenerator.success(favorites);
     }
 
+    @GetMapping("/user/{id}/favorite")
+    @ApiOperation(value = "favorite or not", notes = "按类别和favoriteId返回用户是否已收藏")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "categoryId", value = "1 -> tutor; 2 -> course; 3 -> material;" +
+                    " 4 -> thread; 5 -> professor; 6 -> activity; 7 -> public class; 8 -> thread reply"),
+            @ApiImplicitParam(name = "favoriteId", value = "收藏资源的id")
+    })
+    public Result<Boolean> checkFavorite(@PathVariable("id") Integer userId,
+                                         @RequestParam("categoryId") Integer categoryId,
+                                         @RequestParam("favoriteId") Integer favoriteId) {
+        if (userId <= 0 || favoriteId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        Class<? extends Service> favoriteServiceClazz = FavoriteCategory.getFavoriteService(categoryId);
+        if (Objects.isNull(favoriteServiceClazz)) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        Service favoriteService = applicationContext.getBean(favoriteServiceClazz);
+        boolean favorite = favoriteService.checkFavorite(userId, favoriteId);
+        return ResultGenerator.success(favorite);
+    }
+
     @PostMapping("/user/{id}/favorite")
     @ApiOperation(value = "favorite/unfavorite tutor/course/material/thread/professor", notes = "返回用户按类别收藏/取消收藏成功与否")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "categoryId", value = "1 -> tutor; 2 -> course; 3 -> material;" +
                     " 4 -> thread; 5 -> professor; 6 -> activity; 7 -> public class; 8 -> thread reply"),
             @ApiImplicitParam(name = "favoriteId", value = "收藏资源的id"),
-            @ApiImplicitParam(name = "action", value = "1 -> 收藏；-1 -> 取消收藏"),
+            @ApiImplicitParam(name = "action", value = "1 -> 收藏；-1 -> 取消收藏")
     })
     public Result favorite(@PathVariable("id") Integer userId,
                            @RequestParam("categoryId") Integer categoryId,
