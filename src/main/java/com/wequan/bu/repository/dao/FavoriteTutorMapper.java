@@ -21,4 +21,12 @@ public interface FavoriteTutorMapper extends GeneralMapper<FavoriteTutor> {
      * @return 用户收藏的tutor列表
      */
     List<FavoriteTutorBriefInfo> selectByUserId(@Param("userId") Integer userId, RowBounds rowBounds);
+
+    /**
+     * 用户是否收藏tutor
+     * @param userId 用户id
+     * @param favoriteId tutor id
+     * @return 收藏与否
+     */
+    boolean checkFavorite(@Param("userId") Integer userId, @Param("tutorId") Integer favoriteId);
 }

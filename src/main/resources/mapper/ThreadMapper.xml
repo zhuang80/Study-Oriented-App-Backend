@@ -96,7 +96,10 @@
     select <include refid="Stats_Base_Column"/>,
       <include refid="Stats_Number_Base_Column"/>
     from <include refid="Stats_Base_Table"/>
-    where t.school_id = #{schoolId, jdbcType=INTEGER} and t.tag_id = #{tagId, jdbcType=SMALLINT}
+    where t.school_id = #{schoolId, jdbcType=INTEGER}
+    <if test="tagId > 0">
+      and t.tag_id = #{tagId, jdbcType=SMALLINT}
+    </if>
     order by t.create_time desc
   </select>
 
