@@ -1,6 +1,8 @@
 package com.wequan.bu.repository.dao;
 
 import com.wequan.bu.repository.model.OnlineEvent;
+import com.wequan.bu.repository.model.OnlineEventMember;
+import com.wequan.bu.repository.model.OnlineEventTransaction;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
@@ -27,4 +29,8 @@ public interface OnlineEventMapper extends GeneralMapper<OnlineEvent> {
     List<OnlineEvent> selectAllByType(@Param("type") Short type);
 
     List<OnlineEvent> selectAllBySchoolId(@Param("school_id") Integer schoolId);
+
+    void insertOrUpdateActionByUserId(OnlineEventMember onlineEventMember);
+
+    void insertOnlineEventTransaction(OnlineEventTransaction onlineEventTransaction);
 }

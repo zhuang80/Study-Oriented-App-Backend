@@ -8,6 +8,7 @@ import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.Appointment;
 import com.wequan.bu.service.StripeService;
+import com.wequan.bu.util.TransactionType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,8 @@ public class ChargeController {
             PaymentIntent paymentIntent = stripeService.createPaymentIntent(appointmentId);
             return ResultGenerator.success(paymentIntent.getClientSecret());
         }catch (StripeException e){
+            return ResultGenerator.fail(e.getMessage());
+        }catch (Exception e){
             return ResultGenerator.fail(e.getMessage());
         }
 
@@ -132,6 +135,30 @@ public class ChargeController {
         }catch (StripeException e){
             return ResultGenerator.fail(e.getMessage());
         }catch (Exception e){
+            return ResultGenerator.fail(e.getMessage());
+        }
+    }
+
+    @GetMapping("/client_secret/public_class")
+    @ApiOperation(value="return client secret", notes="根据public class id生成一个client secret 前端使用client secret完成交易")
+    public Result<String> getClientSecretForPublicClass(@RequestParam("public_class_id") Integer publicClassId,
+                                                        @RequestParam("user_id") Integer userId){
+        try {
+            PaymentIntent paymentIntent = stripeService.createSeparatePaymentIntent(publicClassId, userId);
+            return ResultGenerator.success(paymentIntent.getClientSecret());
+        }catch (StripeException e){
+            return ResultGenerator.fail(e.getMessage());
+        }
+    }
+
+    @GetMapping("/transaction/{id}/client_secret/retrieve")
+    @ApiOperation(value = "retrieve client secret for a transaction", notes = "根据transaction id 取回该交易的client secret")
+    public Result<String> retrieveClientSecretByTransactionId(@PathVariable("id") String id){
+        try{
+            return ResultGenerator.success(stripeService.retrieveClientSecret(id));
+        } catch (StripeException e) {
+            return ResultGenerator.fail(e.getMessage());
+        } catch (Exception e) {
             return ResultGenerator.fail(e.getMessage());
         }
     }

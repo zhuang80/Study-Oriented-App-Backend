@@ -1,6 +1,7 @@
 package com.wequan.bu.service;
 
 import com.wequan.bu.repository.model.OnlineEvent;
+import com.wequan.bu.repository.model.OnlineEventTransaction;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,4 +50,14 @@ public interface OnlineEventService extends Service<OnlineEvent> {
     void updateLogo(Integer id, String logo);
 
     void updateTag(Integer id, Short tagId);
+
+    void updateStatus(Integer id, Short status);
+
+    void addStatusUpdationQuartzJobAndTrigger(OnlineEvent onlineEvent, LocalDateTime time, Short status) throws Exception;
+
+    void addTransferQuartzJobAndTrigger(OnlineEvent onlineEvent, LocalDateTime time) throws Exception;
+
+    void doUserAction(Integer userId, Integer oeId, Short action) throws Exception;
+
+    void saveOnlineEventTransaction(OnlineEventTransaction onlineEventTransaction);
 }

@@ -115,4 +115,6 @@ public class DiscussionGroup {
 
     private String tagName;
 
+    private Integer currentHeadcount;
+
 }

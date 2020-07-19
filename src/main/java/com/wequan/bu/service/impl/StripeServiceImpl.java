@@ -10,15 +10,15 @@ import com.stripe.net.Webhook;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.PaymentIntentUpdateParams;
 import com.stripe.param.RefundCreateParams;
+import com.stripe.param.TransferCreateParams;
 import com.wequan.bu.controller.vo.Transaction;
 import com.wequan.bu.repository.dao.AppointmentMapper;
 import com.wequan.bu.repository.dao.TutorStripeMapper;
 import com.wequan.bu.repository.model.Appointment;
+import com.wequan.bu.repository.model.OnlineEvent;
+import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.repository.model.TutorStripe;
-import com.wequan.bu.service.AbstractService;
-import com.wequan.bu.service.AppointmentService;
-import com.wequan.bu.service.StripeService;
-import com.wequan.bu.service.TransactionService;
+import com.wequan.bu.service.*;
 import com.wequan.bu.util.AppointmentStatus;
 import com.wequan.bu.util.TransactionStatus;
 import com.wequan.bu.util.TransactionType;
@@ -52,17 +52,19 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     @Value("${PAYMENT_INTENT_WEBHOOK_SECRET}")
     private String paymentIntentWebhookSecret;
 
+
     @Value("${REFUND_WEBHOOK_SECRET}")
     private String refundWebhookSecret;
 
     @Value("${ACCOUNT_WEBHOOK_SECRET}")
     private String accountWebhookSecret;
 
-/*  //local test webhook secret
-    private String paymentIntentWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
+ //local test webhook secret
+  /*  private String paymentIntentWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
     private String refundWebhookSecret="whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
     private String accountWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
-*/
+    */
+
     @Autowired
     private TutorStripeMapper tutorStripeMapper;
 
@@ -74,6 +76,9 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
    @Autowired
    private AppointmentService appointmentService;
+
+   @Autowired
+   private OnlineEventService onlineEventService;
 
     @PostConstruct
     public void postConstruct(){
@@ -105,8 +110,24 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     }
 
     @Override
-    public PaymentIntent createPaymentIntent(Integer appointmentId) throws StripeException {
+    public PaymentIntent createPaymentIntent(Integer appointmentId) throws StripeException, Exception {
         Appointment appointment = appointmentMapper.selectByPrimaryKey(appointmentId);
+
+        if(appointment == null) {
+            throw new Exception("No such appointment.");
+        }
+
+        //check whether there exists a transaction for this appointment
+        if(appointment.getTransactionId() != null){
+            Transaction transaction = transactionService.findById(appointment.getTransactionId());
+            //check whether the transaction require customer to pay out
+            if(transaction.getStatus() == TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue()){
+                return PaymentIntent.retrieve(transaction.getThirdPartyTransactionId());
+            }else{
+                throw new Exception("Can't checkout.");
+            }
+        }
+
         TutorStripe tutorStripe = tutorStripeMapper.selectByTutorId(appointment.getTutorId());
 
         PaymentIntentCreateParams.TransferData transferData = PaymentIntentCreateParams.TransferData
@@ -163,7 +184,16 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
             if("payment_intent.created".equals(event.getType())){
                 paymentIntent = (PaymentIntent) deserializeObject(event);
                 log.info("=============================> payment intent created event webhook");
-                transactionService.saveAppointmentTransaction(paymentIntent);
+
+                Map<String, String> metadata = paymentIntent.getMetadata();
+                Short type = Short.parseShort(metadata.get("type"));
+                if(TransactionType.APPOINTMENT.getValue() == type){
+                    transactionService.saveAppointmentTransaction(paymentIntent);
+                }
+                if(TransactionType.PUBLIC_CLASS.getValue() == type){
+                    transactionService.saveTransaction(paymentIntent);
+                }
+
             }
             if("payment_intent.canceled".equals(event.getType())){
                 paymentIntent = (PaymentIntent) deserializeObject(event);
@@ -285,6 +315,69 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
         }
     }
 
+    @Override
+    public PaymentIntent createSeparatePaymentIntent(Integer amount, String guid, Map<String, String> metadata) throws StripeException{
+        PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                .setAmount((long) (int) amount)
+                .setCurrency("usd")
+                .addPaymentMethodType("card")
+                .setTransferGroup(guid)
+                .putAllMetadata(metadata)
+                .build();
+
+        PaymentIntent paymentIntent = PaymentIntent.create(params);
+        return paymentIntent;
+    }
+
+    @Override
+    public PaymentIntent createSeparatePaymentIntent(Integer publicClassId, Integer userId) throws StripeException{
+        OnlineEvent onlineEvent = onlineEventService.findById(publicClassId);
+        //set up metadata which is used when payment_intent.created webhook is triggered
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("type", String.valueOf(TransactionType.PUBLIC_CLASS.getValue()));
+        metadata.put("online_event_id", String.valueOf(publicClassId));
+        metadata.put("from", String.valueOf(userId));
+        metadata.put("to", String.valueOf(onlineEvent.getCreateBy()));
+
+        return createSeparatePaymentIntent(onlineEvent.getFee(), onlineEvent.getGuid(), metadata);
+    }
+
+    @Override
+    public void createSeparateTransfer(String guid, Long amount, String destination) throws StripeException {
+        TransferCreateParams params = TransferCreateParams.builder()
+                .setAmount(amount)
+                .setCurrency("usd")
+                .setDestination(destination)
+                .setTransferGroup(guid)
+                .build();
+        Transfer transfer = Transfer.create(params);
+    }
+
+    @Override
+    public void createSeparateTransfer(Integer id) throws StripeException {
+        OnlineEvent onlineEvent = onlineEventService.findById(id);
+        Long amount = (long)(int)transactionService.findTotalTransactionAmountByDiscussionGroupId(id) ;
+        amount = Math.round(amount * 0.9);
+        TutorStripe tutorStripe = tutorStripeMapper.selectByUserId(onlineEvent.getCreateBy());
+
+        System.out.println("transfer amount: "+ amount + " to tutor:" + tutorStripe.getTutorId() + "-----" + LocalDateTime.now().toString());
+        createSeparateTransfer(onlineEvent.getGuid(), amount, tutorStripe.getStripeAccount());
+    }
+
+
+    @Override
+    public String retrieveClientSecret(String transactionId) throws Exception {
+        Transaction transaction = transactionService.findById(transactionId);
+
+        if(transaction == null) {
+            throw new Exception("No such transaction.");
+        }
+
+        PaymentIntent paymentIntent = PaymentIntent.retrieve(transaction.getThirdPartyTransactionId());
+
+        return paymentIntent.getClientSecret();
+    }
+
     private Object deserializeObject(Event event) throws Exception {
         EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
         if (dataObjectDeserializer.getObject().isPresent()) {
@@ -293,4 +386,5 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
             throw new Exception("fail to deserialize object data from event");
         }
     }
+
 }

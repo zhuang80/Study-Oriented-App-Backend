@@ -18,6 +18,7 @@
     <result column="tag_id" jdbcType="SMALLINT" property="tagId" />
     <result column="create_by_name" jdbcType="VARCHAR" property="createByName" />
     <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
+    <result column="current_headcount" jdbcType="INTEGER" property="currentHeadcount" />
   </resultMap>
 
   <resultMap id="ResultMapWithBLOBs" extends="BaseResultMap" type="com.wequan.bu.repository.model.DiscussionGroup">
@@ -27,7 +28,7 @@
 
   <sql id="Base_Column_List">
     id, name, create_by, brief_description, create_time, update_time, status, group_message, 
-    group_manager_id, group_capacity, visible, belong_school_id, guid, tag_id
+    group_manager_id, group_capacity, visible, belong_school_id, guid, tag_id, current_headcount
   </sql>
 
   <sql id="Blob_Column_List">
@@ -124,6 +125,9 @@
       <if test="image != null">
         image,
       </if>
+      <if test="currentHeadcount != null">
+        current_headcount,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="name != null and name != ''">
@@ -170,6 +174,9 @@
       </if>
       <if test="image != null">
         #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="currentHeadcount != null">
+        #{currentHeadCount, jdbcType=INTEGER}
       </if>
     </trim>
   </insert>
@@ -231,6 +238,9 @@
       <if test="image != null">
         image = #{image,jdbcType=VARCHAR},
       </if>
+      <if test="currentHeadcount != null">
+        current_headcount = #{currentHeadcount, jdbcType=INTEGER}
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -251,7 +261,35 @@
   <select id="selectMemberIdsByDiscussionGroupId" resultType="java.lang.Integer">
     SELECT member_id
     FROM ${schema}.wq_discussion_group_member
-    WHERE discussion_group_id = #{discussion_group_id, jdbcType=INTEGER}
+    WHERE discussion_group_id = #{discussion_group_id, jdbcType=INTEGER} AND action = 1
   </select>
+
+  <select id="selectDiscussionGroupMembers" resultType="com.wequan.bu.repository.model.DiscussionGroupMember">
+    SELECT *
+    FROM ${schema}.wq_discussion_group_member
+    WHERE action = 1
+  </select>
+
+  <update id="updateCurrentHeadcountByPrimaryKey" parameterType="java.lang.Integer">
+    update ${schema}.wq_discussion_group c
+    set current_headcount = count
+    from (
+      select
+        discussion_group_id,
+        SUM(count) as count
+      from(
+            select
+              discussion_group_id,
+              case
+                when action = -1 then 0
+                else 1
+              end as count
+            from ${schema}.wq_discussion_group_member
+          ) as a
+      group by discussion_group_id
+      having discussion_group_id = #{id, jdbcType=INTEGER}
+    ) as b
+    where c.id = b.discussion_group_id
+  </update>
 
 </mapper>
