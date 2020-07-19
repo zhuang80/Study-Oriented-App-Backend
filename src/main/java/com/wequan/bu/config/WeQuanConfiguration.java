@@ -268,4 +268,5 @@ public class WeQuanConfiguration implements WebMvcConfigurer {
     public void addReturnValueHandlers(final List<HandlerMethodReturnValueHandler> returnValueHandlers){
         returnValueHandlers.add(new JsonReturnHandler());
     }
+
 }
