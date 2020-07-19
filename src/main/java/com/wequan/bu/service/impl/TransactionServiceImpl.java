@@ -1,8 +1,10 @@
 package com.wequan.bu.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
 import com.stripe.model.PaymentIntent;
+import com.stripe.model.Refund;
 import com.wequan.bu.controller.vo.RefundApplication;
 import com.wequan.bu.controller.vo.Transaction;
 import com.wequan.bu.repository.dao.AppointmentMapper;
@@ -12,6 +14,7 @@ import com.wequan.bu.repository.model.*;
 import com.wequan.bu.service.*;
 import com.wequan.bu.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +31,9 @@ import java.util.UUID;
  */
 @Service
 public class TransactionServiceImpl extends AbstractService<Transaction> implements TransactionService {
+
+    @Value("${APPLICATION_FEE_RATE}")
+    private Double applicationFeeRate;
 
     @Autowired
     private TransactionMapper transactionMapper;
@@ -71,21 +77,32 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public void savePublicClassTransaction(PaymentIntent paymentIntent){
+        Map<String, String> metadata = paymentIntent.getMetadata();
+        //save transaction information
+        Transaction transaction = generateTransaction(paymentIntent);
+        transactionMapper.insertSelective(transaction);
+
+        //save online event and transaction relationship
+        OnlineEventTransaction onlineEventTransaction = new OnlineEventTransaction();
+        onlineEventTransaction.setOnlineEventId(Integer.parseInt(metadata.get("online_event_id")));
+        onlineEventTransaction.setTransactionId(transaction.getId());
+        onlineEventTransaction.setCreateTime(LocalDateTime.now());
+        onlineEventService.saveOnlineEventTransaction(onlineEventTransaction);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveTransaction(PaymentIntent paymentIntent){
         Map<String, String> metadata = paymentIntent.getMetadata();
         Short type = Short.parseShort(metadata.get("type"));
 
         if(TransactionType.PUBLIC_CLASS.getValue() == type){
-            //save transaction information
-            Transaction transaction = generateTransaction(paymentIntent);
-            transactionMapper.insertSelective(transaction);
+           savePublicClassTransaction(paymentIntent);
+        }
 
-            //save online event and transaction relationship
-            OnlineEventTransaction onlineEventTransaction = new OnlineEventTransaction();
-            onlineEventTransaction.setOnlineEventId(Integer.parseInt(metadata.get("online_event_id")));
-            onlineEventTransaction.setTransactionId(transaction.getId());
-            onlineEventTransaction.setCreateTime(LocalDateTime.now());
-            onlineEventService.saveOnlineEventTransaction(onlineEventTransaction);
+        if(TransactionType.APPOINTMENT.getValue() == type){
+            saveAppointmentTransaction(paymentIntent);
         }
     }
 
@@ -115,40 +132,89 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         if(transaction == null) {
             throw new Exception("no such transaction");
         }
+        Short type = transaction.getType();
+
+        if(type == TransactionType.APPOINTMENT.getValue()){
+            cancelAppointmentTypeTransactionByUser(transaction);
+        }
+
+        if(type == TransactionType.PUBLIC_CLASS.getValue()){
+            cancelPublicClassTypeTransactionByUser(transaction);
+        }
+    }
+
+    public void cancelAppointmentTypeTransactionByUser(Transaction transaction) throws Exception {
+        Integer refundAmount = 0;
         if(TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue() == transaction.getStatus()){
             stripeService.cancelPaymentIntent(transaction.getThirdPartyTransactionId());
         }else if(TransactionStatus.SUCCEEDED.getValue() == transaction.getStatus()){
-            Appointment appointment = appointmentService.findByTransactionId(transactionId);
+            Appointment appointment = appointmentService.findByTransactionId(transaction.getId());
 
             //check if the start time of appointment is after current time
             if(appointment.getStartTime().isAfter(LocalDateTime.now())){
                 //refund part of fee
-                refundAmount = calculateRefundAmount(transactionId);
+                refundAmount = calculateRefundAmount(transaction.getId());
 
-                stripeService.createRefund(transactionId, refundAmount);
+                stripeService.createSeparateRefund(transaction.getId(), refundAmount);
             }else {
                 throw new Exception("Please apply for refund request.");
             }
         }
 
+        appointmentChangeRecordService.addRecordByUser(transaction.getId(), transaction.getPayFrom(), refundAmount);
+    }
 
-        appointmentChangeRecordService.addRecordByUser(transactionId, userId, refundAmount);
+    public void cancelPublicClassTypeTransactionByUser(Transaction transaction) throws Exception {
+        Integer refundAmount = 0;
+        if(TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue() == transaction.getStatus()){
+            stripeService.cancelPaymentIntent(transaction.getThirdPartyTransactionId());
+        }else if(TransactionStatus.SUCCEEDED.getValue() == transaction.getStatus()){
+            OnlineEvent onlineEvent = onlineEventService.findByTransactionId(transaction.getId());
+
+            //check if the start time of appointment is after current time
+            if(onlineEvent.getStartTime().isAfter(LocalDateTime.now())){
+                //refund part of fee
+                refundAmount = calculateRefundAmount(transaction.getId());
+
+                stripeService.createRefund(transaction.getId(), refundAmount);
+            }else {
+                throw new Exception("Can't cancel public class after it starts.");
+            }
+
+        }
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void cancelTransactionByTutor(Integer tutorId, String transactionId) throws Exception {
         Transaction transaction = transactionMapper.selectByPrimaryKey(transactionId);
-
-        if(TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue() == transaction.getStatus()){
-            stripeService.cancelPaymentIntent(transaction.getThirdPartyTransactionId());
-        }else if(TransactionStatus.SUCCEEDED.getValue() == transaction.getStatus()){
-
-            Integer amount = transaction.getPayAmount();
-            stripeService.createRefund(transactionId, amount);
+        if(transaction == null) {
+            throw new Exception("No such transaction.");
         }
 
-        appointmentChangeRecordService.addRecordByTutor(transactionId, tutorId);
+        Short type = transaction.getType();
+        Short status = transaction.getStatus();
+
+        if(type == TransactionType.APPOINTMENT.getValue()){
+            if(TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue() == status){
+                stripeService.cancelPaymentIntent(transaction.getThirdPartyTransactionId());
+            }else if(TransactionStatus.SUCCEEDED.getValue() == status){
+                Integer amount = transaction.getPayAmount() - (int) Math.round(transaction.getPayAmount() * applicationFeeRate);
+                stripeService.createRefund(transactionId, amount);
+            }
+
+            appointmentChangeRecordService.addRecordByTutor(transactionId, tutorId);
+        }
+
+        if(type == TransactionType.PUBLIC_CLASS.getValue()){
+            if(TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue() == status){
+                stripeService.cancelPaymentIntent(transaction.getThirdPartyTransactionId());
+            }else if(TransactionStatus.SUCCEEDED.getValue() == status){
+                Integer amount = transaction.getPayAmount() - (int) Math.round(transaction.getPayAmount() * applicationFeeRate);
+                stripeService.createSeparateRefund(transactionId, amount);
+            }
+        }
+
     }
 
     @Override
@@ -168,26 +234,30 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void addRefundRecord(Charge charge) {
+    public void addRefundTransactionRecord(Charge charge) {
         Map<String, String> metadata = charge.getMetadata();
 
-        Appointment appointment = appointmentMapper.selectByPrimaryKey(Integer.parseInt(metadata.get("appointment_id")));
-        Tutor tutor = tutorMapper.selectByPrimaryKey(appointment.getTutorId());
+        Refund refund = charge.getRefunds().getData().get(0);
+        Map<String, String> refundMetadata = refund.getMetadata();
+        String transactionId = refundMetadata.get("transaction_id");
+
+        Transaction trans = transactionMapper.selectByPrimaryKey(transactionId);
 
         Transaction transaction = new Transaction();
         transaction.setId(String.valueOf(UUID.randomUUID()));
         transaction.setType(Short.parseShort(metadata.get("type")));
-        transaction.setPayFrom(tutor.getUser().getId());
-        transaction.setPayTo(appointment.getUserId());
+        transaction.setPayFrom(trans.getPayTo());
+        transaction.setPayTo(trans.getPayFrom());
         transaction.setPayAmount((int)(long) charge.getAmountRefunded());
         transaction.setPaymentMethod((short) PaymentMethod.CARD.getValue());
         transaction.setThirdPartyTransactionId(charge.getTransfer());
         transaction.setCreateTime(LocalDateTime.now());
         transaction.setStatus(TransactionStatus.SUCCEEDED.getValue());
-        transaction.setToTransactionId(appointment.getTransactionId());
+        transaction.setToTransactionId(transactionId);
 
         transactionMapper.insertSelective(transaction);
     }
+
 
     @Override
     public List<Transaction> findByUserId(Integer userId, Integer pageNum, Integer pageSize) {
@@ -234,8 +304,32 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     }
 
     @Override
-    public Integer findTotalTransactionAmountByDiscussionGroupId(Integer id) {
-        return transactionMapper.selectTotalTransactionAmountByDiscussionGroupId(id, TransactionStatus.SUCCEEDED.getValue());
+    public Integer findTotalTransactionAmountByOnlineEventId(Integer id) {
+        return transactionMapper.selectTotalTransactionAmountByOnlineEventId(id, TransactionStatus.SUCCEEDED.getValue());
+    }
+
+    @Override
+    public Integer findTransactionAmountByOnlineEventIdAndUserId(Integer onlineEventId, Integer userId) {
+        Transaction transaction = transactionMapper.selectByOnlineEventIdAndUserId(onlineEventId, userId);
+
+        if(transaction != null){
+            Short status = transaction.getStatus();
+            Integer amount = transaction.getPayAmount();
+
+            if(status == TransactionStatus.SUCCEEDED.getValue()){
+                return amount;
+            }
+            if(status == TransactionStatus.REFUNDED.getValue()){
+                Transaction refund = transactionMapper.selectRefundTransactionByToTransactionId(transaction.getId());
+                return amount - refund.getPayAmount();
+            }
+        }
+        return -1;
+    }
+
+    @Override
+    public Transaction findByOnlineEventIdAndUserId(Integer publicClassId, Integer userId) {
+        return transactionMapper.selectByOnlineEventIdAndUserId(publicClassId, userId);
     }
 
     private LocalDateTime convertTimestampToLocalDateTime(Long timestamp){
@@ -316,11 +410,13 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     }
 
     private Integer calculateRefundAmount(String transactionId){
+        Transaction transaction = transactionMapper.selectByPrimaryKey(transactionId);
         Appointment appointment = appointmentService.findByTransactionId(transactionId);
         CancellationPolicy cancellationPolicy = cancellationPolicyService.findByTutorId(appointment.getTutorId());
 
-        Float amount = cancellationPolicy.getRefundRatio() * appointment.getFee();
-        return Math.round(amount);
+        Integer amount = transaction.getPayAmount() - (int) Math.round(transaction.getPayAmount() * applicationFeeRate);
+        amount = Math.round(cancellationPolicy.getRefundRatio() * amount);
+        return amount;
     }
 
 }

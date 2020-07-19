@@ -149,7 +149,7 @@
         ORDER BY create_time DESC
     </select>
 
-    <select id="selectTotalTransactionAmountByDiscussionGroupId" resultType="java.lang.Integer">
+    <select id="selectTotalTransactionAmountByOnlineEventId" resultType="java.lang.Integer">
         SELECT
             SUM(pay_amount)
         FROM ${schema}.wq_transaction
@@ -159,5 +159,21 @@
             where online_event_id = #{discussion_group_id, jdbcType=INTEGER}
         ) AND status = #{status, jdbcType=SMALLINT}
 
+    </select>
+
+    <select id="selectByOnlineEventIdAndUserId" resultType="com.wequan.bu.controller.vo.Transaction">
+        SELECT *
+        FROM ${schema}.wq_transaction
+        WHERE id IN
+            (SELECT transaction_id
+            FROM ${schema}.wq_online_event_transaction
+            WHERE online_event_id = #{online_event_id, jdbcType=INTEGER}
+            ) AND pay_from = #{user_id, jdbcType=INTEGER}
+    </select>
+
+    <select id="selectRefundTransactionByToTransactionId" resultType="com.wequan.bu.controller.vo.Transaction">
+        SELECT *
+        FROM ${schema}.wq_transaction
+        WHERE to_transaction_id = #{to_transaction_id, jdbcType=INTEGER}
     </select>
 </mapper>

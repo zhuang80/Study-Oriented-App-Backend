@@ -29,6 +29,7 @@ public class ChargeController {
     private StripeService stripeService;
 
     @GetMapping("/connect/oauth")
+    @ApiOperation(value = "redirect url for Stripe connected account register", notes = "作为Stripe connected account 注册完成后的重定向API,来完成tutor id和connected account的绑定")
     public Result connect(HttpServletRequest request){
         String code = request.getParameter("code");
         String state = request.getParameter("state");
@@ -53,7 +54,7 @@ public class ChargeController {
 
     @GetMapping("/client_secret")
     @ApiOperation(value="return client secret", notes="根据appointment生成一个client secret 前端使用client secret完成交易")
-    public Result<String> getClientSecret(@RequestParam("appointment_id") Integer appointmentId){
+    public Result<String> getClientSecretForAppointment(@RequestParam("appointment_id") Integer appointmentId){
         try {
             PaymentIntent paymentIntent = stripeService.createPaymentIntent(appointmentId);
             return ResultGenerator.success(paymentIntent.getClientSecret());
@@ -65,22 +66,10 @@ public class ChargeController {
 
     }
 
-    @GetMapping("/client_secret/retrieve")
-    @ApiOperation(value="retrieve client secret by appointment id", notes="根据appointment id来取回client secret")
-    public Result<String> retrieveClientSecret(@RequestParam("appointment_id") Integer appointmentId){
-        try{
-            return ResultGenerator.success(stripeService.retrieveClientSecret(appointmentId));
-        } catch (StripeException e) {
-            return ResultGenerator.fail(e.getMessage());
-        } catch (Exception e) {
-            return ResultGenerator.fail(e.getMessage());
-        }
-    }
-
     @PostMapping("/webhook")
+    @ApiOperation(value = "webhook to handle payment intent event", notes = "用来处理各种payment intent相关的event,并更新相应的表数据")
     public Result handlePaymentIntent(HttpServletRequest request,
                                   @RequestBody String webhookEndpoint) throws Exception {
-        System.out.println("============================ enter webhook");
         System.out.println(webhookEndpoint);
         System.out.println(request.getHeader("Stripe-Signature"));
         stripeService.handlePaymentIntent(request.getHeader("Stripe-Signature"), webhookEndpoint);
@@ -88,9 +77,9 @@ public class ChargeController {
     }
 
     @PostMapping("/refund_webhook")
+    @ApiOperation(value = "webhook to handle  charge refund event", notes = "用来处理各种charge refund相关的event,并更新相应的表数据")
     public Result handleRefund(HttpServletRequest request,
                                       @RequestBody String webhookEndpoint) throws Exception {
-        System.out.println("============================ enter webhook");
         System.out.println(webhookEndpoint);
         System.out.println(request.getHeader("Stripe-Signature"));
         stripeService.handleRefund(request.getHeader("Stripe-Signature"), webhookEndpoint);
@@ -98,6 +87,7 @@ public class ChargeController {
     }
 
     @PostMapping("/account_webhook")
+    @ApiOperation(value = "webhook to handle account event", notes = "用来处理各种account相关的event,并更新相应的表数据")
     public Result handleAccount(HttpServletRequest request,
                                 @RequestBody String payload){
         try{
@@ -113,15 +103,16 @@ public class ChargeController {
     @ApiOperation(value = "redirect to stripe sign up page", notes = "生成state，放入session，然后重定向到stripe的注册页面")
     public void getStripeConnectPage(HttpServletRequest request, HttpServletResponse response){
         String tutorId  = request.getParameter("tutor_id");
-        System.out.println("=============================> " + tutorId);
+
         String state = stripeService.getState();
         String url = stripeService.getUrl(state);
 
+        //set up a http session to store state and tutor id
         HttpSession session = request.getSession();
         session.setAttribute("tutor_id", tutorId);
         session.setAttribute("state", state);
 
-        System.out.println("=========================================> " + session.getId());
+        System.out.println("=========================================> session id: " + session.getId());
         response.setHeader("Location", url);
         response.setStatus(302);
     }
@@ -147,6 +138,8 @@ public class ChargeController {
             PaymentIntent paymentIntent = stripeService.createSeparatePaymentIntent(publicClassId, userId);
             return ResultGenerator.success(paymentIntent.getClientSecret());
         }catch (StripeException e){
+            return ResultGenerator.fail(e.getMessage());
+        }catch (Exception e){
             return ResultGenerator.fail(e.getMessage());
         }
     }
