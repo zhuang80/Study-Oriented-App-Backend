@@ -28,6 +28,11 @@
     from ${schema}.wq_favorite_thread
     where user_id = #{userId,jdbcType=INTEGER}
   </select>
+  <select id="checkFavorite" resultType="java.lang.Boolean">
+    select count(1) > 0
+    from ${schema}.wq_favorite_thread
+    where user_id = #{userId} and thread_id = #{threadId}
+  </select>
 
   <delete id="deleteByPrimaryKey" parameterType="map">
     delete from ${schema}.wq_favorite_thread

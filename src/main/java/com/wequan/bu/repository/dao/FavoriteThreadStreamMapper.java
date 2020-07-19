@@ -22,4 +22,11 @@ public interface FavoriteThreadStreamMapper extends GeneralMapper<FavoriteThread
      */
     List<FavoriteThreadStreamBriefInfo> selectByUserId(@Param("userId") Integer userId, RowBounds rowBounds);
 
+    /**
+     * 用户是否收藏reply
+     * @param userId 用户id
+     * @param favoriteId reply id
+     * @return 收藏与否
+     */
+    boolean checkFavorite(@Param("userId") Integer userId, @Param("threadStreamId") Integer favoriteId);
 }
