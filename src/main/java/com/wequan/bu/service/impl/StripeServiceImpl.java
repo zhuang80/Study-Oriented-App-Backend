@@ -62,11 +62,15 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
     @Value("${ACCOUNT_WEBHOOK_SECRET}")
     private String accountWebhookSecret;
+
+    @Value("${TRANSFER_WEBHOOK_SECRET}")
+    private String transferWebhookSecret;
 */
  //local test webhook secret
     private String paymentIntentWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
     private String refundWebhookSecret="whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
     private String accountWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
+    private String transferWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
 
 
     @Autowired
@@ -83,6 +87,9 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
    @Autowired
    private OnlineEventService onlineEventService;
+
+   @Autowired
+   private TutorService tutorService;
 
     @PostConstruct
     public void postConstruct(){
@@ -154,10 +161,13 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
         }
 
         TutorStripe tutorStripe = tutorStripeMapper.selectByTutorId(appointment.getTutorId());
+        Tutor tutor = tutorService.findById(appointment.getTutorId());
 
         Map<String, String> metadata = new HashMap<>();
         metadata.put("type", String.valueOf(TransactionType.APPOINTMENT.getValue()));
         metadata.put("appointment_id", String.valueOf(appointment.getId()));
+        metadata.put("from", String.valueOf(appointment.getUserId()));
+        metadata.put("to", String.valueOf(tutor.getUserId()));
 
         PaymentIntent paymentIntent = createPaymentIntent(appointment.getFee(), tutorStripe.getStripeAccount(), metadata);
         return paymentIntent;
@@ -199,8 +209,8 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
         Map<String, String> metadata = paymentIntent.getMetadata();
         Short type = Short.parseShort(metadata.get("type"));
 
-        //update transaction status
-        transactionService.update(paymentIntent);
+        //update transaction status and transfer id
+        transactionService.updateByPaymentIntent(paymentIntent);
 
         //for public class type transaction, the money is transfered to connected account several days after public class ends
         if(TransactionType.PUBLIC_CLASS.getValue() == type){
@@ -236,19 +246,19 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public PaymentIntent updatePaymentIntent(Integer appointmentId) throws StripeException {
-        Appointment appointment = appointmentService.findById(appointmentId);
-        Transaction transaction = transactionService.findById(appointment.getTransactionId());
+    public PaymentIntent updatePaymentIntent(String transactionId, Integer amount) throws StripeException {
+        Transaction transaction = transactionService.findById(transactionId);
 
         PaymentIntent paymentIntent = PaymentIntent.retrieve(transaction.getThirdPartyTransactionId());
         PaymentIntentUpdateParams params = PaymentIntentUpdateParams.builder()
-                .setAmount((long)(int)appointment.getFee())
+                .setAmount((long)(int) amount)
                 .build();
         PaymentIntent updatedPaymentIntent = paymentIntent.update(params);
 
-        transactionService.update(updatedPaymentIntent);
+        transactionService.updateByPaymentIntent(updatedPaymentIntent);
         return updatedPaymentIntent;
     }
+
 
     @Override
     public Refund createRefund(String transactionId, Integer refundAmount) throws StripeException {
@@ -283,8 +293,6 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     @Transactional(rollbackFor = Exception.class)
     public void handleRefund(String sigHeader, String webhookEndpoint) throws Exception {
         Event event = null;
-        Charge charge = null;
-        Transfer transfer = null;
 
         try{
             event = Webhook.constructEvent(webhookEndpoint, sigHeader, refundWebhookSecret);
@@ -330,6 +338,35 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
                 "?client_id=" + clientId +
                 "&state=" + state;
         return url;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void handleTransfer(String sigHeader, String payload) throws Exception {
+        Event event = null;
+
+        try{
+            event = Webhook.constructEvent(payload, sigHeader, transferWebhookSecret);
+        } catch (SignatureVerificationException e) {
+            e.printStackTrace();
+        }
+
+        if(event != null) {
+            if ("transfer.created".equals(event.getType())) {
+                log.info("=============================> transfer.created event webhook");
+                handleTransferCreated(event);
+            }
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    private void handleTransferCreated(Event event) throws Exception {
+        Transfer transfer = (Transfer) deserializeObject(event);
+        String chargeId = transfer.getSourceTransaction();
+        Charge charge = Charge.retrieve(chargeId);
+        String paymentIntentId = charge.getPaymentIntent();
+
+        transactionService.updateTransferIdByThirdPartyTransactionId(paymentIntentId, transfer.getId());
     }
 
     @Override
@@ -422,11 +459,23 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
         if(amount == -1){
             throw new Exception("Can't transfer. The transaction is not confirmed.");
         }
-        amount = Math.round(amount * 0.9);
+
         TutorStripe tutorStripe = tutorStripeMapper.selectByUserId(onlineEvent.getCreateBy());
 
         System.out.println("transfer amount: "+ amount + " to tutor:" + tutorStripe.getTutorId() + "-----" + LocalDateTime.now().toString());
         createSeparateTransfer(amount, tutorStripe.getStripeAccount(), chargeId);
+    }
+
+    @Override
+    public void reverseTransfer(String transactionId, Integer amount) throws StripeException {
+        Transaction transaction = transactionService.findById(transactionId);
+        String transferId = transaction.getTransferId();
+
+        Transfer transfer = Transfer.retrieve(transferId);
+        Map<String, Object> params = new HashMap<>();
+        params.put("amount", amount);
+
+        transfer.getReversals().create(params);
     }
 
 

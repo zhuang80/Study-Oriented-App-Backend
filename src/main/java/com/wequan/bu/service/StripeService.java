@@ -28,7 +28,7 @@ public interface StripeService extends Service<TutorStripe> {
 
     public PaymentIntent cancelPaymentIntent(String paymentIntentId) throws StripeException;
 
-    public PaymentIntent updatePaymentIntent(Integer appointmentId) throws StripeException;
+    public PaymentIntent updatePaymentIntent(String transactionId, Integer amount) throws StripeException;
 
     public Refund createRefund(String transactionId, Integer refundAmount) throws StripeException;
 
@@ -44,7 +44,11 @@ public interface StripeService extends Service<TutorStripe> {
 
     public void createSeparateTransfer(Integer id, String chargeId, Integer userId) throws StripeException, Exception;
 
+    public void reverseTransfer(String transactionId, Integer amount) throws StripeException;
+
     public String getState();
 
     public String getUrl(String state);
+
+    public void handleTransfer(String sigHeader, String payload) throws Exception;
 }

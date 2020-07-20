@@ -93,13 +93,15 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
 
     @Override
     public List<OnlineEvent> findAllPublicClasses(Integer pageNum, Integer pageSize){
-        if(pageNum == null){
+        if(pageNum != null && pageNum < 0){
             pageNum = 1;
         }
-        if(pageSize == null){
+        if(pageSize != null && pageSize < 0){
             pageSize = 10;
         }
-        PageHelper.startPage(pageNum, pageSize);
+        if(pageNum != null && pageSize != null){
+            PageHelper.startPage(pageNum, pageSize);
+        }
         return onlineEventMapper.selectAllByType(OnlineEventType.PUBLIC_CLASS.getValue());
     }
 
@@ -311,7 +313,7 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
                                         .getId();
         //transfer money from platform account to connected account two days after the public class end
         if(onlineEvent.getType() == OnlineEventType.PUBLIC_CLASS.getValue()){
-            LocalDateTime transferTime = onlineEvent.getEndTime().plusMinutes(2);
+            LocalDateTime transferTime = onlineEvent.getEndTime().plusMinutes(1);
             addTransferQuartzJobAndTrigger(onlineEvent, transferTime, chargeId, userId);
         }
     }

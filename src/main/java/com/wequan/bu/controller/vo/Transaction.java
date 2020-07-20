@@ -26,4 +26,6 @@ public class Transaction {
     private LocalDateTime updateTime;
     private Short status;
     private String toTransactionId;
+    private Integer applicationFeeAmount;
+    private String transferId;
 }

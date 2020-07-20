@@ -19,7 +19,7 @@ public interface TransactionService extends Service<Transaction> {
 
     public void saveTransaction(PaymentIntent paymentIntent);
 
-    public void update(PaymentIntent paymentIntent);
+    public void updateByPaymentIntent(PaymentIntent paymentIntent);
 
     public void delete(PaymentIntent paymentIntent);
 
@@ -44,5 +44,9 @@ public interface TransactionService extends Service<Transaction> {
     public Integer findTransactionAmountByOnlineEventIdAndUserId(Integer onlineEventId, Integer userId);
 
     public Transaction findByOnlineEventIdAndUserId(Integer publicClassId, Integer userId);
+
+    public Transaction findByThirdPartyTransactionId(String paymentIntentId);
+
+    public void updateTransferIdByThirdPartyTransactionId(String paymentIntentId, String transferId);
 
 }
