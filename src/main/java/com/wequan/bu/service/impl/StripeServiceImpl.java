@@ -52,10 +52,8 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     @Value("${CLIENT_ID}")
     private String clientId;
 
-    /*
     @Value("${PAYMENT_INTENT_WEBHOOK_SECRET}")
     private String paymentIntentWebhookSecret;
-
 
     @Value("${REFUND_WEBHOOK_SECRET}")
     private String refundWebhookSecret;
@@ -65,13 +63,14 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
     @Value("${TRANSFER_WEBHOOK_SECRET}")
     private String transferWebhookSecret;
-*/
+
  //local test webhook secret
+/*
     private String paymentIntentWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
     private String refundWebhookSecret="whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
     private String accountWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
     private String transferWebhookSecret = "whsec_UYCgjzmqTIMbBgZsuI3mxc63mD9YaHdi";
-
+*/
 
     @Autowired
     private TutorStripeMapper tutorStripeMapper;
