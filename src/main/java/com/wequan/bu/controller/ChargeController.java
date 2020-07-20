@@ -99,6 +99,21 @@ public class ChargeController {
 
     }
 
+    @PostMapping("/transfer_webhook")
+    @ApiOperation(value = "webhook to handle transfer event", notes = "用来处理各种transfer相关的event，并更新transaction表对应字段")
+    public Result handleTransfer(HttpServletRequest request,
+                                 @RequestBody String payload){
+        System.out.println(payload);
+        System.out.println(request.getHeader("Stripe-Signature"));
+        try{
+            stripeService.handleTransfer(request.getHeader("Stripe-Signature"), payload);
+        }catch(Exception e){
+            return ResultGenerator.fail(e.getMessage());
+        }
+        return ResultGenerator.success();
+
+    }
+
     @GetMapping("/connect")
     @ApiOperation(value = "redirect to stripe sign up page", notes = "生成state，放入session，然后重定向到stripe的注册页面")
     public void getStripeConnectPage(HttpServletRequest request, HttpServletResponse response){

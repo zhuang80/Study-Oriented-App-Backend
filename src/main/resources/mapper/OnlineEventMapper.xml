@@ -180,6 +180,7 @@
         SELECT *
         FROM ${schema}.wq_online_event
         WHERE type = #{type, jdbcType=SMALLINT}
+        ORDER BY create_time DESC
     </select>
 
     <select id="selectAllBySchoolId" resultType="com.wequan.bu.repository.model.OnlineEvent">

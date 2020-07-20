@@ -48,6 +48,9 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     private TutorMapper tutorMapper;
 
     @Autowired
+    private TutorService tutorService;
+
+    @Autowired
     private StripeService stripeService;
 
     @Autowired
@@ -91,6 +94,10 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         onlineEventService.saveOnlineEventTransaction(onlineEventTransaction);
     }
 
+    /**
+     * create and save transaction after payment_intent.created webhook is triggered
+     * @param paymentIntent
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveTransaction(PaymentIntent paymentIntent){
@@ -108,12 +115,18 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void update(PaymentIntent paymentIntent) {
+    public void updateByPaymentIntent(PaymentIntent paymentIntent) {
         Transaction transaction = new Transaction();
         short status = getStatus(paymentIntent.getStatus());
+        String transferId= paymentIntent.getCharges()
+                .getData()
+                .get(0)
+                .getTransfer();
+
         transaction.setStatus(status);
         transaction.setThirdPartyTransactionId(paymentIntent.getId());
         transaction.setPayAmount((int)(long) paymentIntent.getAmount());
+        transaction.setTransferId(transferId);
         transactionMapper.updateByThirdPartyTransactionId(transaction);
     }
 
@@ -155,7 +168,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
                 //refund part of fee
                 refundAmount = calculateRefundAmount(transaction.getId());
 
-                stripeService.createSeparateRefund(transaction.getId(), refundAmount);
+                stripeService.createRefund(transaction.getId(), refundAmount);
             }else {
                 throw new Exception("Please apply for refund request.");
             }
@@ -176,7 +189,8 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
                 //refund part of fee
                 refundAmount = calculateRefundAmount(transaction.getId());
 
-                stripeService.createRefund(transaction.getId(), refundAmount);
+                stripeService.createSeparateRefund(transaction.getId(), refundAmount);
+                stripeService.reverseTransfer(transaction.getId(), refundAmount);
             }else {
                 throw new Exception("Can't cancel public class after it starts.");
             }
@@ -212,6 +226,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
             }else if(TransactionStatus.SUCCEEDED.getValue() == status){
                 Integer amount = transaction.getPayAmount() - (int) Math.round(transaction.getPayAmount() * applicationFeeRate);
                 stripeService.createSeparateRefund(transactionId, amount);
+                stripeService.reverseTransfer(transactionId, amount);
             }
         }
 
@@ -250,7 +265,6 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         transaction.setPayTo(trans.getPayFrom());
         transaction.setPayAmount((int)(long) charge.getAmountRefunded());
         transaction.setPaymentMethod((short) PaymentMethod.CARD.getValue());
-        transaction.setThirdPartyTransactionId(charge.getTransfer());
         transaction.setCreateTime(LocalDateTime.now());
         transaction.setStatus(TransactionStatus.SUCCEEDED.getValue());
         transaction.setToTransactionId(transactionId);
@@ -315,13 +329,14 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         if(transaction != null){
             Short status = transaction.getStatus();
             Integer amount = transaction.getPayAmount();
+            Integer applicationFeeAmount = transaction.getApplicationFeeAmount();
 
             if(status == TransactionStatus.SUCCEEDED.getValue()){
-                return amount;
+                return amount - applicationFeeAmount;
             }
             if(status == TransactionStatus.REFUNDED.getValue()){
                 Transaction refund = transactionMapper.selectRefundTransactionByToTransactionId(transaction.getId());
-                return amount - refund.getPayAmount();
+                return amount - applicationFeeAmount - refund.getPayAmount();
             }
         }
         return -1;
@@ -331,6 +346,20 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     public Transaction findByOnlineEventIdAndUserId(Integer publicClassId, Integer userId) {
         return transactionMapper.selectByOnlineEventIdAndUserId(publicClassId, userId);
     }
+
+    @Override
+    public Transaction findByThirdPartyTransactionId(String paymentIntentId) {
+        return transactionMapper.selectByThirdPartyTransactionId(paymentIntentId);
+    }
+
+    @Override
+    public void updateTransferIdByThirdPartyTransactionId(String paymentIntentId, String transferId) {
+        Transaction transaction = new Transaction();
+        transaction.setTransferId(transferId);
+        transaction.setThirdPartyTransactionId(paymentIntentId);
+        transactionMapper.updateByThirdPartyTransactionId(transaction);
+    }
+
 
     private LocalDateTime convertTimestampToLocalDateTime(Long timestamp){
         return LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp),
@@ -354,69 +383,55 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     }
 
     /**
-     * generate the transaction of an appointment
+     * generate the transaction after payment_intent.created webhook is triggered
      * @param paymentIntent
      * @return
      */
     private Transaction generateTransaction(PaymentIntent paymentIntent){
-        //fetch meta data appointment Id and transaction type
+        //fetch meta data
         Map<String, String> metadata = paymentIntent.getMetadata();
         short type = Short.parseShort(metadata.get("type"));
+        Integer from = Integer.parseInt(metadata.get("from"));
+        Integer to = Integer.parseInt(metadata.get("to"));
 
-        Transaction transaction = null;
-        if(type == TransactionType.APPOINTMENT.getValue()) {
-            Integer appointmentId = Integer.parseInt(metadata.get("appointment_id"));
+        Integer amount = (int) (long) paymentIntent.getAmount();
+        Integer applicationFeeAmount = calculateApplicationFeeAmount(amount);
+        LocalDateTime createdTime = convertTimestampToLocalDateTime(paymentIntent.getCreated());
+        short status = getStatus(paymentIntent.getStatus());
 
-
-            Appointment appointment = appointmentMapper.selectByPrimaryKey(appointmentId);
-            Tutor tutor = tutorMapper.selectByPrimaryKey(appointment.getTutorId());
-
-            transaction = new Transaction();
-            transaction.setId(String.valueOf(UUID.randomUUID()));
-            transaction.setType(type);
-            transaction.setPayFrom(appointment.getUserId());
-            transaction.setPayTo(tutor.getUser().getId());
-            transaction.setPayAmount(appointment.getFee());
-            transaction.setPaymentMethod((short) PaymentMethod.CARD.getValue());
-            transaction.setThirdPartyTransactionId(paymentIntent.getId());
-            LocalDateTime createdTime = convertTimestampToLocalDateTime(paymentIntent.getCreated());
-
-            transaction.setCreateTime(createdTime);
-            short status = getStatus(paymentIntent.getStatus());
-            transaction.setStatus(status);
-        }
-
-        if(type == TransactionType.PUBLIC_CLASS.getValue()){
-            Integer onlineEventId = Integer.parseInt(metadata.get("online_event_id"));
-
-            OnlineEvent onlineEvent = onlineEventService.findById(onlineEventId);
-
-            transaction = new Transaction();
-            transaction.setId(String.valueOf(UUID.randomUUID()));
-            transaction.setType(type);
-            transaction.setPayFrom(Integer.parseInt(metadata.get("from")));
-            transaction.setPayTo(Integer.parseInt(metadata.get("to")));
-            transaction.setPayAmount((int) (long) paymentIntent.getAmount());
-            transaction.setPaymentMethod((short) PaymentMethod.CARD.getValue());
-            transaction.setThirdPartyTransactionId(paymentIntent.getId());
-            LocalDateTime createdTime = convertTimestampToLocalDateTime(paymentIntent.getCreated());
-
-            transaction.setCreateTime(createdTime);
-            short status = getStatus(paymentIntent.getStatus());
-            transaction.setStatus(status);
-        }
+        //set up transaction fields
+        Transaction transaction = new Transaction();
+        transaction.setId(String.valueOf(UUID.randomUUID()));
+        transaction.setType(type);
+        transaction.setPayFrom(from);
+        transaction.setPayTo(to);
+        transaction.setPayAmount(amount);
+        transaction.setApplicationFeeAmount(applicationFeeAmount);
+        transaction.setPaymentMethod((short) PaymentMethod.CARD.getValue());
+        transaction.setThirdPartyTransactionId(paymentIntent.getId());
+        transaction.setCreateTime(createdTime);
+        transaction.setStatus(status);
 
         return transaction;
     }
 
+    /**
+     * calculate refund amount, refund amount = (total charge - application fee) * refund ratio
+     * @param transactionId
+     * @return
+     */
     private Integer calculateRefundAmount(String transactionId){
         Transaction transaction = transactionMapper.selectByPrimaryKey(transactionId);
-        Appointment appointment = appointmentService.findByTransactionId(transactionId);
-        CancellationPolicy cancellationPolicy = cancellationPolicyService.findByTutorId(appointment.getTutorId());
+        Tutor tutor = tutorService.findByUserId(transaction.getPayTo());
+        CancellationPolicy cancellationPolicy = cancellationPolicyService.findByTutorId(tutor.getId());
 
-        Integer amount = transaction.getPayAmount() - (int) Math.round(transaction.getPayAmount() * applicationFeeRate);
+        Integer amount = transaction.getPayAmount() - transaction.getApplicationFeeAmount();
         amount = Math.round(cancellationPolicy.getRefundRatio() * amount);
         return amount;
+    }
+
+    private Integer calculateApplicationFeeAmount(Integer amount){
+        return (int) Math.round(amount * applicationFeeRate);
     }
 
 }
