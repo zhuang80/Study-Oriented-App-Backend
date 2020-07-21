@@ -8,9 +8,14 @@ public interface WeQuanConstants {
     /** Constants for web security **/
     String REGISTER_URL = "/user/register";
     String LOGIN_URL = "/user/login";
+    String REFRESH_TOKEN_URL = "/access_token/refresh";
     String EMAIL_CONFIRM_URL = "/user/e-confirm";
     String AUTH_HEADER = "Authorization";
     String TOKEN_PREFIX = "Bearer ";
+
+    /** Constants for token **/
+    String ACCESS_TOKEN_PREFIX_IN_REDIS = "jwt_access_token_u_";
+    String REFRESH_TOKEN_PREFIX_IN_REDIS = "jwt_refresh_token_u_";
 
     /** Constants for cache **/
     String SCHOOL_CACHE_KEY = "Common_Data_School";
