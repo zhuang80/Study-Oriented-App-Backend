@@ -1,6 +1,7 @@
 package com.wequan.bu.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wequan.bu.WeQuanApplication;
 import com.wequan.bu.controller.vo.Condition;
@@ -18,12 +19,16 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.RestTemplate;
 
 import java.lang.Thread;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 @RunWith(SpringRunner.class)
@@ -100,6 +105,36 @@ public class SampleTest {
         String subject = claimsJws.getBody().getSubject();
         System.out.println(expiration);
         System.out.println(subject);
+    }
+
+    @Test
+    public void testTokenRefresh()  throws InterruptedException {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://127.0.0.1:8080/api/access_token/refresh?refreshToken={refreshToken}";
+        int num = 20;
+        Thread[] threads = new Thread[num];
+        CountDownLatch countDownLatch = new CountDownLatch(num);
+        for (int i = 0; i < num; i++) {
+            Thread thread = new Thread(() -> {
+                try {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("refreshToken", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3IiwiaWF0IjoxNTk1MzY0Mzk0LCJleHAiOjE1OTUzNjQ2MDR9.4SFEzmx943HyUUJOwbvYP17JtjuLC3d9v0ausvRH2Jw");
+                    countDownLatch.await();
+                    ResponseEntity<String> resp = restTemplate.getForEntity(url, String.class, params);
+                    JsonNode node = new ObjectMapper().readTree(resp.getBody());
+                    System.out.println("access_token = " + node.get("data").get("access_token").asText());
+                    System.out.println("refresh_token = " + node.get("data").get("refresh_token").asText());
+                } catch (JsonProcessingException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+            threads[i] = thread;
+            thread.start();
+            countDownLatch.countDown();
+        }
+        for (int i = 0; i < num; i++) {
+            threads[i].join();
+        }
     }
 
 }

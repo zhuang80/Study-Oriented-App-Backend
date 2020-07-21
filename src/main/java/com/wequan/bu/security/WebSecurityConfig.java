@@ -77,6 +77,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         .authenticationEntryPoint(tokenAuthenticationEntryPoint)
                         .and()
                     .authorizeRequests()
+                        .antMatchers("/v2/api-docs",
+                                "/configuration/ui",
+                                "/swagger-resources/**",
+                                "/configuration/security",
+                                "/swagger-ui.html",
+                                "/webjars/**").permitAll()
                         .antMatchers(HttpMethod.POST, "/user/{id}/*").access("@restApiWebSecurity.checkUserId(authentication, request, #id)")
                         .antMatchers("/",
                                 "/favicon.ico",
