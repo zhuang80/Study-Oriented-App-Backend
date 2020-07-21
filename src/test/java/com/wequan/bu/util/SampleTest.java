@@ -4,17 +4,25 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wequan.bu.WeQuanApplication;
 import com.wequan.bu.controller.vo.Condition;
+import com.wequan.bu.controller.vo.Token;
 import com.wequan.bu.repository.model.*;
+import com.wequan.bu.security.authentication.token.UserNamePasswordAuthenticationToken;
+import com.wequan.bu.security.component.TokenProvider;
 import com.wequan.bu.service.CommonDataService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.Authentication;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.lang.Thread;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -28,6 +36,8 @@ public class SampleTest {
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private TokenProvider tokenProvider;
 
     @Test
     public void testExpressionCheck() throws JsonProcessingException {
@@ -78,6 +88,18 @@ public class SampleTest {
         for (Thread t : threads) {
             t.join();
         }
+    }
+
+    @Test
+    public void testRefreshToken() {
+        Authentication authentication = new UserNamePasswordAuthenticationToken(5, null);
+        Token refreshToken = tokenProvider.createRefreshToken(authentication);
+        System.out.println(refreshToken.getToken());
+        Jws<Claims> claimsJws = Jwts.parser().setSigningKey("30094969A24217D99F46A4EBB3BA9FB80D471B48AF545DBBF472C029041836FF").parseClaimsJws(refreshToken.getToken());
+        Date expiration = claimsJws.getBody().getExpiration();
+        String subject = claimsJws.getBody().getSubject();
+        System.out.println(expiration);
+        System.out.println(subject);
     }
 
 }

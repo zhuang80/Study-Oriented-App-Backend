@@ -21,7 +21,8 @@ public class TokenAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        logger.error("Responding with unauthorized error. Message - {}", authException.getMessage());
-        response.sendError(HttpStatus.UNAUTHORIZED.value(), authException.getMessage());
+        logger.error("Responding with unauthorized error. Message - {} {}", authException.getMessage(), request.getRequestURI());
+        response.setContentType("application/json");
+        response.getWriter().write("{\"code\": " + HttpStatus.UNAUTHORIZED.value() + ", \"message\": \"Unauthorized\"}");
     }
 }
