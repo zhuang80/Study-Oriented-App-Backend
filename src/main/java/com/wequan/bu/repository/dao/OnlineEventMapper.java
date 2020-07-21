@@ -33,4 +33,6 @@ public interface OnlineEventMapper extends GeneralMapper<OnlineEvent> {
     void insertOrUpdateActionByUserId(OnlineEventMember onlineEventMember);
 
     void insertOnlineEventTransaction(OnlineEventTransaction onlineEventTransaction);
+
+    OnlineEvent selectByTransactionId(@Param("transaction_id") String transactionId);
 }
