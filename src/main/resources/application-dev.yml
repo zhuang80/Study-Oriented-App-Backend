@@ -2,8 +2,8 @@
 spring:
   redis:
     database: 0
-#    host: 127.0.0.1
-    host: wequan-redis.cois54.ng.0001.use1.cache.amazonaws.com
+    host: 127.0.0.1
+#    host: wequan-redis.cois54.ng.0001.use1.cache.amazonaws.com
     port: 6379
     password:
     timeout: 5000ms
@@ -76,7 +76,11 @@ swagger:
 app:
   auth:
     tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
-    tokenExpirationMsec: 86400000000
+#    tokenExpirationMsec: 86400000
+    tokenExpirationMsec: 30000
+    refreshTokenSecret: 30094969A24217D99F46A4EBB3BA9FB80D471B48AF545DBBF472C029041836FF
+#    refreshTokenExpirationMsec: 2592000000
+    refreshTokenExpirationMsec: 120000
   oauth2:
     # After successfully authenticating with the OAuth2 Provider,
     # we'll be generating an auth token for the user and sending the token to the

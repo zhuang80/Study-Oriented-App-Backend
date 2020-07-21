@@ -1,6 +1,7 @@
 package com.wequan.bu.security.component;
 
 import com.wequan.bu.config.properties.AppProperties;
+import com.wequan.bu.controller.vo.Token;
 import com.wequan.bu.security.AppUserDetails;
 import com.wequan.bu.security.authentication.token.EmailPasswordAuthenticationToken;
 import com.wequan.bu.security.authentication.token.UserNamePasswordAuthenticationToken;
@@ -26,7 +27,7 @@ public class TokenProvider {
         this.appProperties = appProperties;
     }
 
-    public String createToken(Authentication authentication) {
+    public Token createToken(Authentication authentication) {
         String userId;
         if (authentication instanceof EmailPasswordAuthenticationToken
                 || authentication instanceof UserNamePasswordAuthenticationToken) {
@@ -37,13 +38,26 @@ public class TokenProvider {
         }
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + appProperties.getAuth().getTokenExpirationMsec());
+        String token = Jwts.builder()
+                            .setSubject(userId)
+                            .setIssuedAt(now)
+                            .setExpiration(expiryDate)
+                            .signWith(SignatureAlgorithm.HS512, appProperties.getAuth().getTokenSecret())
+                            .compact();
+        return Token.builder().token(token).subject(userId).issueDate(now).expiryDate(expiryDate).build();
+    }
 
-        return Jwts.builder()
-                .setSubject(userId)
-                .setIssuedAt(new Date())
-                .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, appProperties.getAuth().getTokenSecret())
-                .compact();
+    public Token createRefreshToken(Authentication authentication) {
+        String userId = authentication.getPrincipal().toString();
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + appProperties.getAuth().getRefreshTokenExpirationMsec());
+        String token = Jwts.builder()
+                            .setSubject(userId)
+                            .setIssuedAt(now)
+                            .setExpiration(expiryDate)
+                            .signWith(SignatureAlgorithm.HS256, appProperties.getAuth().getRefreshTokenSecret())
+                            .compact();
+        return Token.builder().token(token).subject(userId).issueDate(now).expiryDate(expiryDate).build();
     }
 
     public String getUserIdFromToken(String token) {

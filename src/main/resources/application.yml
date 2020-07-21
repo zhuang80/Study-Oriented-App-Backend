@@ -14,7 +14,7 @@ http:
 
 spring:
   profiles:
-    active: dev
+    active: prod
   application:
     name: We_Quan
   transaction:
@@ -66,8 +66,6 @@ mybatis:
     lazy-loading-enabled: true
     aggressive-lazy-loading: false
     cache-enabled: true
-#    interceptors:
-#      -
   lazy-initialization: true
   configuration-properties:
     schema: bu
@@ -85,7 +83,3 @@ logging:
 
 log:
   path: log
-
-app:
-  user:
-    profile-location: profile
