@@ -1,6 +1,7 @@
 package com.wequan.bu.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.stripe.model.PaymentIntent;
 import com.wequan.bu.quartz.TransferJob;
 import com.wequan.bu.quartz.UpdateStatusJob;
 import com.wequan.bu.repository.dao.OnlineEventMapper;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -60,6 +62,7 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
     }
 
     @Override
+    @Transactional(rollbackFor =  Exception.class)
     public void saveOnlineEvent(OnlineEvent onlineEvent) throws Exception{
         if(OnlineEventType.PUBLIC_CLASS.getValue() == onlineEvent.getType()){
             Tutor tutor = tutorService.findByUserId(onlineEvent.getCreateBy());
@@ -74,13 +77,6 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
 
         addStatusUpdationQuartzJobAndTrigger(onlineEvent, onlineEvent.getStartTime(), OnlineEventStatus.ONGOING.getValue());
         addStatusUpdationQuartzJobAndTrigger(onlineEvent, onlineEvent.getEndTime(), OnlineEventStatus.DONE.getValue());
-
-        //transfer money from platform account to connected account two days after the public class end
-        if(onlineEvent.getType() == OnlineEventType.PUBLIC_CLASS.getValue()){
-            LocalDateTime transferTime = onlineEvent.getEndTime().plusMinutes(2);
-            addTransferQuartzJobAndTrigger(onlineEvent, transferTime);
-        }
-
     }
 
     @Override
@@ -97,13 +93,15 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
 
     @Override
     public List<OnlineEvent> findAllPublicClasses(Integer pageNum, Integer pageSize){
-        if(pageNum == null){
+        if(pageNum != null && pageNum < 0){
             pageNum = 1;
         }
-        if(pageSize == null){
+        if(pageSize != null && pageSize < 0){
             pageSize = 10;
         }
-        PageHelper.startPage(pageNum, pageSize);
+        if(pageNum != null && pageSize != null){
+            PageHelper.startPage(pageNum, pageSize);
+        }
         return onlineEventMapper.selectAllByType(OnlineEventType.PUBLIC_CLASS.getValue());
     }
 
@@ -132,6 +130,7 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
     }
 
     @Override
+    @Transactional(rollbackFor =  Exception.class)
     public void updateName(Integer id, String name){
         OnlineEvent onlineEvent = onlineEventMapper.selectByPrimaryKey(id);
         onlineEvent.setName(name);
@@ -140,6 +139,7 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
     }
 
     @Override
+    @Transactional(rollbackFor =  Exception.class)
     public void updateDescription(Integer id, String description) {
         OnlineEvent onlineEvent = onlineEventMapper.selectByPrimaryKey(id);
         onlineEvent.setUpdateTime(LocalDateTime.now());
@@ -148,6 +148,7 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
     }
 
     @Override
+    @Transactional(rollbackFor =  Exception.class)
     public void updateFee(Integer id, Integer fee) {
         OnlineEvent onlineEvent = onlineEventMapper.selectByPrimaryKey(id);
         onlineEvent.setUpdateTime(LocalDateTime.now());
@@ -156,6 +157,7 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
     }
 
     @Override
+    @Transactional(rollbackFor =  Exception.class)
     public void updateMethod(Integer id, String method) {
         OnlineEvent onlineEvent = onlineEventMapper.selectByPrimaryKey(id);
         onlineEvent.setUpdateTime(LocalDateTime.now());
@@ -164,6 +166,7 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
     }
 
     @Override
+    @Transactional(rollbackFor =  Exception.class)
     public void updateStartTime(Integer id, LocalDateTime startTime) {
         OnlineEvent onlineEvent = onlineEventMapper.selectByPrimaryKey(id);
         onlineEvent.setUpdateTime(LocalDateTime.now());
@@ -172,6 +175,7 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
     }
 
     @Override
+    @Transactional(rollbackFor =  Exception.class)
     public void updateEndTime(Integer id, LocalDateTime endTime) {
         OnlineEvent onlineEvent = onlineEventMapper.selectByPrimaryKey(id);
         onlineEvent.setUpdateTime(LocalDateTime.now());
@@ -180,6 +184,7 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
     }
 
     @Override
+    @Transactional(rollbackFor =  Exception.class)
     public void updateVisibility(Integer id, boolean visibility) {
         OnlineEvent onlineEvent = onlineEventMapper.selectByPrimaryKey(id);
         onlineEvent.setUpdateTime(LocalDateTime.now());
@@ -188,6 +193,7 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
     }
 
     @Override
+    @Transactional(rollbackFor =  Exception.class)
     public void updateMethodDetail(Integer id, String methodDetail) {
         OnlineEvent onlineEvent = onlineEventMapper.selectByPrimaryKey(id);
         onlineEvent.setUpdateTime(LocalDateTime.now());
@@ -196,6 +202,7 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
     }
 
     @Override
+    @Transactional(rollbackFor =  Exception.class)
     public void updateLogo(Integer id, String logo) {
         OnlineEvent onlineEvent = onlineEventMapper.selectByPrimaryKey(id);
         onlineEvent.setUpdateTime(LocalDateTime.now());
@@ -204,6 +211,7 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
     }
 
     @Override
+    @Transactional(rollbackFor =  Exception.class)
     public void updateTag(Integer id, Short tagId) {
         OnlineEvent onlineEvent = onlineEventMapper.selectByPrimaryKey(id);
         onlineEvent.setUpdateTime(LocalDateTime.now());
@@ -212,6 +220,7 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
     }
 
     @Override
+    @Transactional(rollbackFor =  Exception.class)
     public void updateStatus(Integer id, Short status){
         OnlineEvent onlineEvent = onlineEventMapper.selectByPrimaryKey(id);
         onlineEvent.setUpdateTime(LocalDateTime.now());
@@ -256,12 +265,14 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void addTransferQuartzJobAndTrigger(OnlineEvent onlineEvent, LocalDateTime time) throws Exception {
+    public void addTransferQuartzJobAndTrigger(OnlineEvent onlineEvent, LocalDateTime time, String chargeId, Integer userId) throws Exception {
         JobDetail startJobDetail = JobBuilder.newJob(TransferJob.class)
                 .withIdentity(onlineEvent.getGuid(), "transfer")
                 .usingJobData("guid", onlineEvent.getGuid())
                 .usingJobData("id", onlineEvent.getId())
                 .usingJobData("time", time.toString())
+                .usingJobData("charge_id", chargeId)
+                .usingJobData("user_id", userId)
                 .build();
 
         //set a cron expression
@@ -290,6 +301,26 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public void addTransferQuartzJobAndTrigger(PaymentIntent paymentIntent) throws Exception {
+        Map<String, String> metadata = paymentIntent.getMetadata();
+        Integer onlineEventId = Integer.parseInt(metadata.get("online_event_id"));
+        Integer userId = Integer.parseInt(metadata.get("from"));
+
+        OnlineEvent onlineEvent = onlineEventMapper.selectByPrimaryKey(onlineEventId);
+        String chargeId = paymentIntent.getCharges()
+                                        .getData()
+                                        .get(0)
+                                        .getId();
+        //transfer money from platform account to connected account two days after the public class end
+        if(onlineEvent.getType() == OnlineEventType.PUBLIC_CLASS.getValue()){
+            LocalDateTime transferTime = onlineEvent.getEndTime().plusMinutes(1);
+            addTransferQuartzJobAndTrigger(onlineEvent, transferTime, chargeId, userId);
+        }
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public void doUserAction(Integer userId, Integer oeId, Short action) throws Exception {
         OnlineEvent onlineEvent = onlineEventMapper.selectByPrimaryKey(oeId);
         User user = userService.findById(userId);
@@ -313,8 +344,25 @@ public class OnlineEventServiceImpl extends AbstractService<OnlineEvent> impleme
     }
 
     @Override
+    @Transactional(rollbackFor =  Exception.class)
     public void saveOnlineEventTransaction(OnlineEventTransaction onlineEventTransaction) {
         onlineEventMapper.insertOnlineEventTransaction(onlineEventTransaction);
+    }
+
+    @Override
+    @Transactional(rollbackFor =  Exception.class)
+    public void saveOrUpdateOnlineEventMember(Integer onlineEventId, Integer userId, Short action) {
+        OnlineEventMember onlineEventMember = new OnlineEventMember();
+        onlineEventMember.setOnlineEventId(onlineEventId);
+        onlineEventMember.setMemberId(userId);
+        onlineEventMember.setAction(action);
+        onlineEventMember.setActionTime(LocalDateTime.now());
+        onlineEventMapper.insertOrUpdateActionByUserId(onlineEventMember);
+    }
+
+    @Override
+    public OnlineEvent findByTransactionId(String transactionId) {
+        return onlineEventMapper.selectByTransactionId(transactionId);
     }
 
 

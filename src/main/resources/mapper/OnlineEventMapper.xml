@@ -180,6 +180,7 @@
         SELECT *
         FROM ${schema}.wq_online_event
         WHERE type = #{type, jdbcType=SMALLINT}
+        ORDER BY create_time DESC
     </select>
 
     <select id="selectAllBySchoolId" resultType="com.wequan.bu.repository.model.OnlineEvent">
@@ -309,4 +310,14 @@
             </if>
         </trim>
     </insert>
+
+    <select id="selectByTransactionId" resultType="com.wequan.bu.repository.model.OnlineEvent">
+        SELECT *
+        FROM ${schema}.wq_online_event
+        WHERE id = (
+            SELECT online_event_id
+            FROM ${schema}.wq_online_event_transaction
+            WHERE transaction_id = #{transaction_id, jdbcType=VARCHAR}
+        )
+    </select>
 </mapper>

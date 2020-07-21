@@ -15,9 +15,11 @@ import java.util.List;
 public interface TransactionService extends Service<Transaction> {
     public void saveAppointmentTransaction(PaymentIntent paymentIntent);
 
+    public void savePublicClassTransaction(PaymentIntent paymentIntent);
+
     public void saveTransaction(PaymentIntent paymentIntent);
 
-    public void update(PaymentIntent paymentIntent);
+    public void updateByPaymentIntent(PaymentIntent paymentIntent);
 
     public void delete(PaymentIntent paymentIntent);
 
@@ -29,7 +31,7 @@ public interface TransactionService extends Service<Transaction> {
 
     public void updateStatus(String paymentIntentId, TransactionStatus status);
 
-    public void addRefundRecord(Charge charge);
+    public void addRefundTransactionRecord(Charge charge);
 
     public List<Transaction> findByUserId(Integer userId, Integer pageNum, Integer pageSize);
 
@@ -37,6 +39,14 @@ public interface TransactionService extends Service<Transaction> {
 
     public List<Transaction> findAll(Integer pageNum, Integer pageSize);
 
-    public Integer findTotalTransactionAmountByDiscussionGroupId(Integer id);
+    public Integer findTotalTransactionAmountByOnlineEventId(Integer id);
+
+    public Integer findTransactionAmountByOnlineEventIdAndUserId(Integer onlineEventId, Integer userId);
+
+    public Transaction findByOnlineEventIdAndUserId(Integer publicClassId, Integer userId);
+
+    public Transaction findByThirdPartyTransactionId(String paymentIntentId);
+
+    public void updateTransferIdByThirdPartyTransactionId(String paymentIntentId, String transferId);
 
 }

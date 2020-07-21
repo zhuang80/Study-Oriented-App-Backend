@@ -27,10 +27,14 @@ public class TransferJob extends QuartzJobBean {
         JobDataMap jobDataMap = jobDetail.getJobDataMap();
 
         Integer id = jobDataMap.getInt("id");
+        String chargeId = jobDataMap.getString("charge_id");
+        Integer userId = jobDataMap.getInt("user_id");
 
         try {
-            stripeService.createSeparateTransfer(id);
+            stripeService.createSeparateTransfer(id, chargeId, userId);
         }catch (StripeException e){
+            e.printStackTrace();
+        }catch (Exception e){
             e.printStackTrace();
         }
 
