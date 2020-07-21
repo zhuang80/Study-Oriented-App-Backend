@@ -2,8 +2,7 @@
 spring:
   redis:
     database: 0
-    host: 127.0.0.1
-#    host: wequan-redis.cois54.ng.0001.use1.cache.amazonaws.com
+    host: wequan-redis.cois54.ng.0001.use1.cache.amazonaws.com
     port: 6379
     password:
     timeout: 5000ms
