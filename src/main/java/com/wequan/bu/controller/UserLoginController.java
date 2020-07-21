@@ -27,8 +27,6 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,6 +35,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -116,7 +116,7 @@ public class UserLoginController {
 
     @PostMapping("/user/login")
     @ApiOperation(value = "user login", notes = "返回登录信息")
-    public ResponseEntity<Result> login(@RequestBody LoginSignUp loginSignUp) {
+    public Result login(@RequestBody LoginSignUp loginSignUp) {
         String userName = loginSignUp.getUserName();
         String email = loginSignUp.getEmail();
         String password = loginSignUp.getPassword();
@@ -140,7 +140,7 @@ public class UserLoginController {
             }
         }
         if (Objects.isNull(authentication)) {
-            return ResponseEntity.ok().body(ResultGenerator.fail("认证失败"));
+            return ResultGenerator.fail("认证失败");
         } else {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             Token accessToken = tokenProvider.createToken(authentication);
@@ -150,10 +150,10 @@ public class UserLoginController {
                     (accessToken.getExpiryDate().getTime() - System.currentTimeMillis()) / 1000);
             redisUtil.set(WeQuanConstants.REFRESH_TOKEN_PREFIX_IN_REDIS + accessToken.getSubject(), refreshToken.getToken(),
                     (refreshToken.getExpiryDate().getTime() - System.currentTimeMillis()) / 1000);
-            HttpHeaders respHeaders = new HttpHeaders();
-            respHeaders.setBearerAuth(accessToken.getToken());
-            respHeaders.set("Refresh-Token", refreshToken.getToken());
-            return ResponseEntity.ok().headers(respHeaders).body(ResultGenerator.success());
+            Map<String, String> tokens = new HashMap<>(2);
+            tokens.put("access_token", accessToken.getToken());
+            tokens.put("refresh_token", refreshToken.getToken());
+            return ResultGenerator.success(tokens);
         }
     }
 
@@ -184,9 +184,9 @@ public class UserLoginController {
 
     @GetMapping("/access_token/refresh")
     @ApiOperation(value = "refresh access/refresh token", notes = "返回新的access token/refresh token")
-    public ResponseEntity<Result> refreshToken(@RequestParam("refreshToken") String refreshToken) {
+    public Result refreshToken(@RequestParam("refreshToken") String refreshToken) {
         if (!StringUtils.hasText(refreshToken)) {
-            return ResponseEntity.ok().body(ResultGenerator.fail(messageHandler.getMessage("40098")));
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
         }
         try {
             Jws<Claims> claimsJws = Jwts.parser().setSigningKey(appProperties.getAuth().getRefreshTokenSecret()).parseClaimsJws(refreshToken);
@@ -220,17 +220,17 @@ public class UserLoginController {
             if (Objects.nonNull(refreshTokenObj) && !refreshToken.equals(refreshTokenObj)) {
                 refreshToken = refreshTokenObj.toString();
             }
-            HttpHeaders respHeaders = new HttpHeaders();
-            respHeaders.setBearerAuth(accessTokenObj.toString());
-            respHeaders.set("Refresh-Token", refreshToken);
-            return ResponseEntity.ok().headers(respHeaders).body(ResultGenerator.success());
+            Map<String, String> tokens = new HashMap<>(2);
+            tokens.put("access_token", accessTokenObj.toString());
+            tokens.put("refresh_token", refreshToken);
+            return ResultGenerator.success(tokens);
         } catch (ExpiredJwtException e) {
             //refreshToken过期，客户端跳转登录界面
             log.error("Expired JWT refresh token");
-            return ResponseEntity.ok().body(ResultGenerator.fail(messageHandler.getMessage("40095")));
+            return new Result().setCode(40095).setMessage(messageHandler.getMessage("40095"));
         } catch (Exception e) {
             log.error(e.getMessage());
-            return ResponseEntity.ok().body(ResultGenerator.fail(messageHandler.getMessage("40099")));
+            return ResultGenerator.fail(messageHandler.getMessage("40099"));
         }
     }
 
