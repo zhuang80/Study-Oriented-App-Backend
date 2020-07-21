@@ -1,5 +1,6 @@
 package com.wequan.bu.service;
 
+import com.stripe.model.PaymentIntent;
 import com.wequan.bu.repository.model.OnlineEvent;
 import com.wequan.bu.repository.model.OnlineEventTransaction;
 
@@ -55,9 +56,15 @@ public interface OnlineEventService extends Service<OnlineEvent> {
 
     void addStatusUpdationQuartzJobAndTrigger(OnlineEvent onlineEvent, LocalDateTime time, Short status) throws Exception;
 
-    void addTransferQuartzJobAndTrigger(OnlineEvent onlineEvent, LocalDateTime time) throws Exception;
+    void addTransferQuartzJobAndTrigger(OnlineEvent onlineEvent, LocalDateTime time, String chargeId, Integer userId) throws Exception;
+
+    void addTransferQuartzJobAndTrigger(PaymentIntent paymentIntent) throws Exception;
 
     void doUserAction(Integer userId, Integer oeId, Short action) throws Exception;
 
     void saveOnlineEventTransaction(OnlineEventTransaction onlineEventTransaction);
+
+    void saveOrUpdateOnlineEventMember(Integer onlineEventId, Integer userId, Short action);
+
+    OnlineEvent findByTransactionId(String transactionId);
 }

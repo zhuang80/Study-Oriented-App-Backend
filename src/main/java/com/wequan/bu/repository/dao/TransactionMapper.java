@@ -20,6 +20,11 @@ public interface TransactionMapper extends GeneralMapper<Transaction> {
 
     public List<Transaction> selectByUserId(@Param("user_id") Integer userId);
 
-    public Integer selectTotalTransactionAmountByDiscussionGroupId(@Param("discussion_group_id") Integer discussionGroupId,
+    public Integer selectTotalTransactionAmountByOnlineEventId(@Param("discussion_group_id") Integer discussionGroupId,
                                                                 @Param("status") Short status);
+
+    public Transaction selectByOnlineEventIdAndUserId(@Param("online_event_id") Integer onlineEventId,
+                                                      @Param("user_id") Integer userId);
+
+    public Transaction selectRefundTransactionByToTransactionId(@Param("to_transaction_id") String toTransactionId);
 }

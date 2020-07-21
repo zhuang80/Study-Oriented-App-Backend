@@ -100,7 +100,7 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
             if(!appointment.getFee().equals(oldRecord.getFee())){
                 appointment.setUpdateTime(LocalDateTime.now());
                 appointmentMapper.updateByPrimaryKeySelective(appointment);
-                stripeService.updatePaymentIntent(appointmentId);
+                stripeService.updatePaymentIntent(appointment.getTransactionId(), appointment.getFee());
                 return;
             }
 
