@@ -4,6 +4,7 @@ import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.controller.vo.ThreadVo;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
+import com.wequan.bu.event.ViewEvent;
 import com.wequan.bu.repository.model.Thread;
 import com.wequan.bu.repository.model.ThreadResource;
 import com.wequan.bu.repository.model.ThreadStream;
@@ -16,6 +17,7 @@ import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +42,8 @@ public class ThreadController {
     private ThreadResourceService threadResourceService;
     @Autowired
     private MessageHandler messageHandler;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @GetMapping("/thread/myschool/top")
     @ApiOperation(value = "a list of top thread for user's school", notes = "根据school id获取thread列表，按查看次数排序")
@@ -98,11 +102,13 @@ public class ThreadController {
             return ResultGenerator.fail(messageHandler.getMessage("40098"));
         }
         if (Objects.isNull(userId)) {
-            // return ResultGenerator.fail(messageHandler.getMessage("40099"));
-            userId = 5;
+             return ResultGenerator.fail(messageHandler.getMessage("40099"));
         }
-        Thread result = threadService.findByPrimaryKey(threadId);
-        return ResultGenerator.success(result);
+        Thread thread = threadService.findByPrimaryKey(threadId);
+        if (Objects.nonNull(thread) && (userId - thread.getCreateBy() != 0)) {
+            applicationContext.publishEvent(ViewEvent.createOn(ViewEvent.ViewType.THREAD, userId, threadId));
+        }
+        return ResultGenerator.success(thread);
     }
 
     @GetMapping("/thread/{id}/direct_replies")
