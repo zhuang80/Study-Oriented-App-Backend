@@ -10,6 +10,7 @@ public interface WeQuanConstants {
     String LOGIN_URL = "/user/login";
     String REFRESH_TOKEN_URL = "/access_token/refresh";
     String EMAIL_CONFIRM_URL = "/user/e-confirm";
+    String STRIPE_CALLBACK_URL = "/connect/oauth";
     String AUTH_HEADER = "Authorization";
     String TOKEN_PREFIX = "Bearer ";
 

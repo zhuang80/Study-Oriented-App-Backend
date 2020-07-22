@@ -178,12 +178,6 @@
     where user_id = #{userId,jdbcType=INTEGER}
   </delete>
 
-  <insert id="addRecordOfThreadView" useGeneratedKeys="true">
-    insert into ${schema}.wq_thread_view_history
-    (user_id, thread_id, view_time)
-    values(#{userId,jdbcType=INTEGER}, #{threadId,jdbcType=INTEGER}, #{viewTime,jdbcType=TIMESTAMP})
-  </insert>
-
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.Thread" useGeneratedKeys="true">
     insert into ${schema}.wq_thread
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -277,6 +271,14 @@
     <foreach collection="subjectIds" item="subjectId" separator=",">
       (#{threadId,jdbcType=INTEGER}, #{subjectId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
     </foreach>
+  </insert>
+
+  <insert id="insertViewHistory">
+    insert into ${schema}.wq_thread_view_history (user_id, thread_id, view_time)
+    values
+    (#{userId,jdbcType=INTEGER}, #{threadId,jdbcType=INTEGER}, #{viewTime,jdbcType=TIMESTAMP})
+    on conflict (user_id, thread_id)
+    do update set view_time = EXCLUDED.view_time
   </insert>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.Thread">

@@ -41,11 +41,8 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     }
 
     @Override
-    public Thread findByPrimaryKey(Integer id){
-        Thread thread = threadMapper.selectByPrimaryKey(id);
-        // to do - add thread view history
-        // threadMapper.addRecordOfThreadView(thread.getCreateBy(), thread.getId(), new Date());
-        return thread;
+    public Thread findByPrimaryKey(Integer id) {
+        return threadMapper.selectByPrimaryKey(id);
     }
 
     @Override
@@ -146,5 +143,11 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     @Override
     public void addThreadSubjects(int threadId, List<Integer> subjectIds) {
         threadMapper.insertSubjectIds(threadId, subjectIds, new Date());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addViewRecord(int userId, int threadId, Date viewTime) {
+        threadMapper.insertViewHistory(userId, threadId, viewTime);
     }
 }
