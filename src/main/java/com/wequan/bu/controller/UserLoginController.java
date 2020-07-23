@@ -4,11 +4,14 @@ import com.wequan.bu.config.WeQuanConstants;
 import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.config.properties.AppProperties;
 import com.wequan.bu.controller.vo.LoginSignUp;
+import com.wequan.bu.controller.vo.StudyPointRule;
 import com.wequan.bu.controller.vo.Token;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
+import com.wequan.bu.event.StudyPointEvent;
 import com.wequan.bu.exception.NotImplementedException;
 import com.wequan.bu.repository.dao.UserMapper;
+import com.wequan.bu.repository.model.StudyPointHistory;
 import com.wequan.bu.repository.model.User;
 import com.wequan.bu.security.authentication.token.EmailPasswordAuthenticationToken;
 import com.wequan.bu.security.authentication.token.UserNamePasswordAuthenticationToken;
@@ -27,6 +30,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -65,6 +69,8 @@ public class UserLoginController {
     private AppProperties appProperties;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @PostMapping("/user/register")
     @ApiOperation(value = "user register", notes = "返回注册信息")
@@ -170,6 +176,11 @@ public class UserLoginController {
             String email = subject.split("\\|\\|")[0];
             userService.confirmEmail(email);
             result = ResultGenerator.success();
+            //add study point
+            StudyPointHistory studyPoint = StudyPointHistory.builder().
+                    userId(0).actionLog(StudyPointRule.REGISTER_SUCCESS.name().toLowerCase())
+                    .changeAmount((short)StudyPointRule.REGISTER_SUCCESS.getStudyPoint()).remainingAmount((short)0).actionTime(new Date()).build();
+            applicationContext.publishEvent(new StudyPointEvent(studyPoint));
         } else {
             result = ResultGenerator.fail(messageHandler.getMessage("40099"));
         }

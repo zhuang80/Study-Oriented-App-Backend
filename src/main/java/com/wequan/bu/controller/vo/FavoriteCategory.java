@@ -8,7 +8,7 @@ import com.wequan.bu.service.*;
 public enum FavoriteCategory {
 
     /**
-     *
+     * Favorite Service
      */
     TUTOR(1, FavoriteTutorService.class),
     THREAD(4, FavoriteThreadService .class),
