@@ -2,6 +2,7 @@ package com.wequan.bu.event.listener;
 
 import com.wequan.bu.event.StudyPointEvent;
 import com.wequan.bu.event.ViewEvent;
+import com.wequan.bu.repository.model.StudyPointHistory;
 import com.wequan.bu.service.ThreadService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +25,14 @@ public class WeQuanEventListeners {
     private ThreadService threadService;
 
     @Async
+    @EventListener
     public void handleStudyPointEvent(StudyPointEvent studyPointEvent) {
-        System.out.println("=========" + studyPointEvent);
+        StudyPointHistory source = studyPointEvent.getSource();
+
+
     }
 
+    @Async
     @EventListener
     public void handleViewEvent(ViewEvent viewEvent) {
         ViewEvent.ViewType viewType = viewEvent.getViewType();
@@ -42,6 +47,7 @@ public class WeQuanEventListeners {
                 threadService.addViewRecord(userId, targetId, viewTime);
                 break;
             case THREAD_REPLY:
+                // add view record for thread reply
                 break;
             default:
                 break;

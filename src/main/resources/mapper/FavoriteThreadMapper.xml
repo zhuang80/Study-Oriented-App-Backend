@@ -64,6 +64,8 @@
         #{createTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
+    on conflict on constraint "favorite_thread_pk_id"
+    do nothing
   </insert>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.FavoriteThread">

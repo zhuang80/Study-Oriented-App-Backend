@@ -6,7 +6,6 @@ import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.json.JSON;
 import com.wequan.bu.repository.model.TutorApplication;
-import com.wequan.bu.repository.model.TutorApplicationEducationBackground;
 import com.wequan.bu.repository.model.TutorApplicationLog;
 import com.wequan.bu.repository.model.extend.TutorApplicationFullInfo;
 import com.wequan.bu.service.TutorAdminService;
@@ -17,12 +16,9 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -30,7 +26,6 @@ import java.util.List;
  * @author ChrisChen
  */
 @Controller
-@EnableAsync
 @Api(tags = "Apply Tutor")
 public class TutorAdminController {
 
