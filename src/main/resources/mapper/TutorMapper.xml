@@ -28,6 +28,10 @@
                     column="id"
                     ofType="com.wequan.bu.repository.model.Subject"
                     select="com.wequan.bu.repository.dao.SubjectsMapper.selectByTutorId" />
+        <collection property="topicList"
+                    column="id"
+                    ofType="com.wequan.bu.repository.model.Topic"
+                    select="selectTopicsByTutorId" />
     </resultMap>
 
     <resultMap id="ResultMapUsingInSearch" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.TutorBriefInfo">
@@ -204,5 +208,38 @@
         SELECT *
         FROM ${schema}.wq_tutor_profile
         WHERE user_id = #{user_id, jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectTopicsByTutorId" resultType="com.wequan.bu.repository.model.Topic">
+        WITH temp_table AS (
+            SELECT subject_topics_ids
+            FROM ${schema}.wq_tutor_application
+            WHERE id = (
+                SELECT tutor_application_id
+                FROM bu.wq_tutor_profile
+                WHERE id = #{tutor_id, jdbcType=INTEGER}
+            )
+        ),
+
+        topic_ids_table AS (
+            SELECT topic_ids
+            FROM ${schema}.wq_tutor_application_subject_topics
+            WHERE id IN
+            (
+                SELECT id::INT
+                FROM regexp_split_to_table((SELECT subject_topics_ids FROM temp_table), ',') as id
+            )
+        )
+
+        SELECT *
+        FROM ${schema}.wq_topic
+        WHERE id IN (
+            SELECT id::INT
+            FROM regexp_split_to_table( (
+                SELECT string_agg(topic_ids, ',')
+                FROM topic_ids_table
+            ), ','
+            ) as id
+        )
     </select>
 </mapper>
