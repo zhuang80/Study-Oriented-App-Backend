@@ -21,4 +21,12 @@ public interface FavoriteThreadMapper extends GeneralMapper<FavoriteThread> {
      * @return 用户收藏的帖子列表
      */
     List<FavoriteThreadBriefInfo> selectByUserId(@Param("userId") Integer userId, RowBounds rowBounds);
+
+    /**
+     * 用户是否收藏帖子
+     * @param userId 用户id
+     * @param favoriteId thread id
+     * @return 收藏与否
+     */
+    boolean checkFavorite(@Param("userId") Integer userId, @Param("threadId") Integer favoriteId);
 }

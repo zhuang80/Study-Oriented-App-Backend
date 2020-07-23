@@ -65,9 +65,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         User user = new User();
         user.setProvider(oAuth2UserRequest.getClientRegistration().getRegistrationId());
         user.setProviderId(oAuth2UserInfo.getId());
-        //后期做唯一性处理 - to do
-        user.setUserName(oAuth2UserInfo.getName());
         user.setEmail(oAuth2UserInfo.getEmail());
+        user.setEmailVerified(true);
         user.setAvatarUrlInProvider(oAuth2UserInfo.getImageUrl());
         user.setCreateTime(new Date());
         userMapper.insertSelective(user);
@@ -76,7 +75,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private User updateExistingUser (User existingUser, OAuth2UserInfo oAuth2UserInfo) {
         User user = new User();
-        user.setUserName(oAuth2UserInfo.getName());
         user.setAvatarUrlInProvider(oAuth2UserInfo.getImageUrl());
         user.setUpdateTime(new Date());
         user.setId(existingUser.getId());

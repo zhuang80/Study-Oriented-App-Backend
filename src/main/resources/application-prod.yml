@@ -1,14 +1,94 @@
 ### configuration for production
 spring:
+  redis:
+    database: 0
+    host: wequan-redis.cois54.ng.0001.use1.cache.amazonaws.com
+    port: 6379
+    password:
+    timeout: 5000ms
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/wequan
+    url: jdbc:postgresql://wequan.cgnev0a5e0ak.us-east-1.rds.amazonaws.com:5432/wequan
     username: wequan_admin
     password: wequan@bu
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 22759321826-q9msaska7r0m7egseib886rb6hj3rjis.apps.googleusercontent.com
+            clientSecret: FEazZN6fsskE4QzvWtLufKTv
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - email
+              - profile
+          facebook:
+            clientId: 867043290454128
+            clientSecret: 0b3d36132573109258659f0fc36f5f9b
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - email
+              - public_profile
+          github:
+            clientId: c54a386a407ddbfaaefb
+            clientSecret: 6e3792b1dcc464945d445b93e38298630bb21448
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - user:email
+              - read:user
+        provider:
+          facebook:
+            authorizationUri: https://www.facebook.com/v7.0/dialog/oauth
+            tokenUri: https://graph.facebook.com/v7.0/oauth/access_token
+            userInfoUri: https://graph.facebook.com/v7.0/me?fields=id,first_name,middle_name,last_name,name,email,verified,is_verified,picture.width(250).height(250)
+  devtools:
+    add-properties: false
 
-# email service configuration
-sendcloud:
-  email:
-    api-user: ccyzhope_test_u1jCHY
-    api-key: CqI5QkoXFgIKdATU
-    domain: 9FxtC4peFpLuxKZPt2XaoHXuwkyiV3tP.sendcloud.org
+logging:
+  level:
+    com.wequan.bu.repository.dao: DEBUG
+
+# aws service configuration
+aws:
+  ses:
+    enabled: true
+    access-key-id: AKIAT3UCHJRBHHDUGM3L
+    secret-access-key: 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
+  s3:
+    end-point: http://s3.amazonaws.com
+    access-key: AKIAT3UCHJRBB7WS5BUB
+    secret-key: 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
+    bucket: wq-dev
+
+# app configuration
+app:
+  auth:
+    tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
+    tokenExpirationMsec: 86400000
+    refreshTokenSecret: 30094969A24217D99F46A4EBB3BA9FB80D471B48AF545DBBF472C029041836FF
+    refreshTokenExpirationMsec: 2592000000
+  oauth2:
+    authorizedRedirectUris:
+      - http://localhost:3000/oauth2/redirect
+      - myandroidapp://oauth2/redirect
+      - myiosapp://oauth2/redirect
+
+SECRET_KEY: sk_test_51GvSqhEWcWYP1PyNkbOqe9ccNkeR1Fwyqra7tCvsgwY9H8pNvcSpNoqxwgirFsHfD96LRLiRI9k9Gylb3O7Qx6se009LZHlhhm
+CLIENT_ID: ca_HUSn3TlzUSpqzLeK4JHl3EIh6BKjVFeM
+PAYMENT_INTENT_WEBHOOK_SECRET: whsec_R4xsIBVAmFEkeirp1JCScbry2eQAuAXC
+REFUND_WEBHOOK_SECRET: whsec_ZGuxa9YqEiBuRs8A6d56jFzGtfGL5B49
+ACCOUNT_WEBHOOK_SECRET: whsec_Ie4EhpHc51Gw7I8A5wl8znATpFnVNkhS
+TRANSFER_WEBHOOK_SECRET: whsec_Pw11KXXu8ULrPMelNA58ZAfEnn0EJkpJ
+APPLICATION_FEE_RATE: 0.08
+
+swagger:
+  enable: true
+  title: ${spring.application.name} Restful API
+  description: ${spring.application.name} Restful API
+  termsOfServiceUrl: https://github.com/yonhenli
+  contact:
+    name: Yongheng Li
+    url: https://github.com/yonhenli
+    email: yli241@binghamton.edu
+  version: 1.0
+  base-package: com.wequan.bu.controller

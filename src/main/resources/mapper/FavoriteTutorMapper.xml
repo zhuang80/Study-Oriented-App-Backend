@@ -65,4 +65,10 @@
     where ft.user_id = #{userId}
   </select>
 
+  <select id="checkFavorite" resultType="java.lang.Boolean">
+    select count(1) > 0
+    from ${schema}.wq_favorite_tutor
+    where user_id = #{userId} and tutor_id = #{tutorId}
+  </select>
+
 </mapper>

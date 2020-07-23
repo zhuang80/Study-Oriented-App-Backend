@@ -77,6 +77,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         .authenticationEntryPoint(tokenAuthenticationEntryPoint)
                         .and()
                     .authorizeRequests()
+                        .antMatchers("/v2/api-docs",
+                                "/configuration/ui",
+                                "/swagger-resources/**",
+                                "/configuration/security",
+                                "/swagger-ui.html",
+                                "/webjars/**").permitAll()
+                        .antMatchers(HttpMethod.POST, "/user/{id}/*").access("@restApiWebSecurity.checkUserId(authentication, request, #id)")
                         .antMatchers("/",
                                 "/favicon.ico",
                                 "/**/*.png",
@@ -87,7 +94,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                                 "/**/*.css",
                                 "/**/*.js").permitAll()
                         .antMatchers(HttpMethod.POST, WeQuanConstants.REGISTER_URL, WeQuanConstants.LOGIN_URL).permitAll()
-                        .antMatchers(WeQuanConstants.EMAIL_CONFIRM_URL, "/oauth2/**").permitAll()
+                        .antMatchers(WeQuanConstants.EMAIL_CONFIRM_URL, WeQuanConstants.REFRESH_TOKEN_URL, "/oauth2/**").permitAll()
                         .anyRequest()
                             .authenticated()
                         .and()
@@ -121,7 +128,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         .authenticationEntryPoint(tokenAuthenticationEntryPoint)
                         .and()
                     .authorizeRequests()
-                    .antMatchers(HttpMethod.GET, "/user/{id}/*").access("@restApiWebSecurity.checkUserId(authentication, request, #id)")
+                    .antMatchers(HttpMethod.POST, "/user/{id}/*").access("@restApiWebSecurity.checkUserId(authentication, request, #id)")
                     .anyRequest()
                         .permitAll()
                         .and()

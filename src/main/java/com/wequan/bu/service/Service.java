@@ -90,4 +90,13 @@ public interface Service<T> {
     default void postFavorite(Integer userId, Integer favoriteId, Integer action) {
     }
 
+    /**
+     * 检查用户是否已收藏
+     * @param userId 用户id
+     * @param favoriteId 资源id
+     * @return 是否已收藏
+     */
+    default boolean checkFavorite(Integer userId, Integer favoriteId) {
+        return false;
+    }
 }
