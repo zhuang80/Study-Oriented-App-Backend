@@ -63,6 +63,8 @@
         #{createTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
+    on conflict on constraint "favorite_thread_stream_pk_id"
+    do nothing
   </insert>
 
 </mapper>
