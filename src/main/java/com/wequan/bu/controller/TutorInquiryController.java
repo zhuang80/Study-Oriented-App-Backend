@@ -38,7 +38,7 @@ public class TutorInquiryController {
     private MessageHandler messageHandler;
 
     @GetMapping("/tutor_inquiries")
-    @JSON(type = User.class, include = {"id", "userName", "email", "avatarUrl"})
+    @JSON(type = User.class, include = {"id", "userName", "firstName", "lastName", "schoolId", "avatarUrl", "avatarUrlInProvider"})
     @JSON(type = TutorInquiry.class, filter = "subject")
     @JSON(type = Subject.class, filter = {"createBy","createTime"})
     @JSON(type = Topic.class, include = {"id", "name", "subjectId"})
@@ -56,7 +56,7 @@ public class TutorInquiryController {
     }
 
     @GetMapping("/tutor_inquiry/{id}")
-    @JSON(type = User.class, include = {"id", "userName", "email", "avatarUrl"})
+    @JSON(type = User.class, include = {"id", "userName", "firstName", "lastName", "schoolId", "avatarUrl", "avatarUrlInProvider"})
     @JSON(type = Subject.class, include = {"id", "name"})
     @JSON(type = Topic.class, include = {"id", "name", "subjectId"})
     @ApiOperation(value = "Tutor inquiry detail", notes = "返回Tutor inquiry详情")
