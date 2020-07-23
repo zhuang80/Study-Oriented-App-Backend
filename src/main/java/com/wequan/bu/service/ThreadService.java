@@ -4,6 +4,7 @@ import com.wequan.bu.controller.vo.ThreadVo;
 import com.wequan.bu.repository.model.Thread;
 import com.wequan.bu.repository.model.extend.ThreadStats;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -139,4 +140,12 @@ public interface ThreadService extends Service<Thread> {
      * @param subjectIds 科目ids
      */
     void addThreadSubjects(int threadId, List<Integer> subjectIds);
+
+    /**
+     * 记录帖子被查看
+     * @param userId 用户id
+     * @param threadId 帖子id
+     * @param viewTime 查看时间
+     */
+    void addViewRecord(int userId, int threadId, Date viewTime);
 }

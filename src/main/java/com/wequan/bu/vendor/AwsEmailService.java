@@ -114,17 +114,4 @@ public class AwsEmailService {
 
     }
 
-    public static void main(String[] args) {
-        String receiver = "bingo.tech.20@gmail.com";
-        String userName = "bingo.tech.20";
-        Date now = new Date();
-        String token = Jwts.builder()
-                .setSubject(receiver + "||" + userName)
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + TOKEN_EXPIRATION_IN_MSC))
-                .signWith(SignatureAlgorithm.HS512, "926D96C90030DD58429D2751AC1BDBBC")
-                .compact();
-        System.out.println(token);
-    }
-
 }

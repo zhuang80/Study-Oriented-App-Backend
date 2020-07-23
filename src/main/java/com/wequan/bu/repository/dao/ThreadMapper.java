@@ -16,14 +16,6 @@ import java.util.List;
 public interface ThreadMapper extends GeneralMapper<Thread>{
 
     /**
-     * 7/7
-     * @param userId
-     * @param threadId
-     * @param viewTime
-     */
-    void addRecordOfThreadView(Integer userId, Integer threadId, Date viewTime);
-
-    /**
      * 根据schoolId获取帖子列表
      * @param schoolId schoolId
      * @param rowBounds 分页
@@ -120,4 +112,12 @@ public interface ThreadMapper extends GeneralMapper<Thread>{
      * @param createTime 创建时间
      */
     void insertSubjectIds(@Param("threadId") Integer threadId, @Param("subjectIds") List<Integer> subjectIds, @Param("createTime") Date createTime);
+
+    /**
+     * 插入/更新帖子被查看记录
+     * @param userId 用户id
+     * @param threadId 帖子id
+     * @param viewTime 帖子查看时间
+     */
+    void insertViewHistory(@Param("userId") Integer userId, @Param("threadId") Integer threadId, @Param("viewTime") Date viewTime);
 }
