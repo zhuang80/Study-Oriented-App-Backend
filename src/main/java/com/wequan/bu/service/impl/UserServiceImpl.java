@@ -156,5 +156,28 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
         return userMapper.selectTutorProfileByUserId(userId);
     }
 
+    @Override
+    public Integer getFollowRelationshipWithOtherUser(Integer userId, Integer otherUserId) {
+        int result;
+        Map<String, Object> followResult = userMapper.selectFollowEachOther(userId, otherUserId);
+        if (Objects.isNull(followResult)) {
+            result = 1;
+        } else {
+            Object uUserId = followResult.get("u_user_id");
+            Object oUserId = followResult.get("o_user_id");
+            if (Objects.nonNull(uUserId)) {
+                result = 2;
+            } else {
+                result = 1;
+            }
+            if (Objects.nonNull(oUserId)) {
+                result += 2;
+            } else {
+                result += 0;
+            }
+        }
+        return result;
+    }
+
 
 }

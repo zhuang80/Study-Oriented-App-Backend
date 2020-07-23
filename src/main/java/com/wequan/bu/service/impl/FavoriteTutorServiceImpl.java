@@ -51,4 +51,9 @@ public class FavoriteTutorServiceImpl extends AbstractService<FavoriteTutor> imp
             favoriteTutorMapper.deleteByPrimaryKey(params);
         }
     }
+
+    @Override
+    public boolean checkFavorite(Integer userId, Integer favoriteId) {
+        return favoriteTutorMapper.checkFavorite(userId, favoriteId);
+    }
 }

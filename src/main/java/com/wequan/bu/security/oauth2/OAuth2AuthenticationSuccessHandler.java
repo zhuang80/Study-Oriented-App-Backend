@@ -1,6 +1,7 @@
 package com.wequan.bu.security.oauth2;
 
 import com.wequan.bu.config.properties.AppProperties;
+import com.wequan.bu.controller.vo.Token;
 import com.wequan.bu.exception.ServiceException;
 import com.wequan.bu.security.component.TokenProvider;
 import com.wequan.bu.util.CookieUtils;
@@ -59,10 +60,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
 
-        String token = tokenProvider.createToken(authentication);
+        Token token = tokenProvider.createToken(authentication);
 
         return UriComponentsBuilder.fromUriString(targetUrl)
-                .queryParam("token", token)
+                .queryParam("token", token.getToken())
                 .build().toUriString();
     }
 
