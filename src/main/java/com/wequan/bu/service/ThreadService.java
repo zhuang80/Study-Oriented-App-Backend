@@ -148,4 +148,12 @@ public interface ThreadService extends Service<Thread> {
      * @param viewTime 查看时间
      */
     void addViewRecord(int userId, int threadId, Date viewTime);
+
+    /**
+     * 按标签获取帖子列表
+     * @param label 标签
+     * @return 帖子列表
+     */
+    List<Thread> getLabelThreads(Integer label, Integer pageNum, Integer pageSize);
+
 }

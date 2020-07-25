@@ -81,6 +81,25 @@
     where ts.thread_id = #{threadId,jdbcType=INTEGER} and ts.to_stream_id = #{directReplyId,jdbcType=INTEGER}
   </select>
 
+  <select id="selectLabelThreadStreams" resultMap="ResultMapWithBriefInfo">
+    select * from (
+      select
+        <include refid="Reply_Base_Select"/>,
+        (select count(1) from ${schema}.wq_thread_stream where to_stream_id = ts.id) as number_of_reply
+      from ${schema}.wq_thread_stream ts
+      inner join ${schema}.wq_user_profile u on ts.user_id = u.id
+      left join ${schema}.wq_thread_resource tr on (ts.id = tr.belong_id and tr.type = 2)
+    ) a where
+    <choose>
+      <when test="label == 1">
+        a.number_of_reply > 0
+      </when>
+      <when test="label == 2">
+        a.likes > 0
+      </when>
+    </choose>
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from ${schema}.wq_thread_stream
     where id = #{id,jdbcType=INTEGER}

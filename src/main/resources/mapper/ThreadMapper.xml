@@ -168,6 +168,24 @@
     where user_id = #{userId,jdbcType=INTEGER}
   </select>
 
+  <select id="selectLabelThreads" resultMap="ResultMapWithStats">
+    select * from (
+      select <include refid="Stats_Base_Column"/>,
+        <include refid="Stats_Number_Base_Column"/>,
+        <include refid="Resource_Base_Column"/>
+      from <include refid="Stats_Base_Table"/>
+      left join ${schema}.wq_thread_resource tr on (t.id = tr.belong_id and tr.type = 1)
+    ) a where
+    <choose>
+      <when test="label == 1">
+        a.number_of_reply > 0
+      </when>
+      <when test="label == 2">
+        a.likes > 0
+      </when>
+    </choose>
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from ${schema}.wq_thread
     where id = #{id,jdbcType=INTEGER}
