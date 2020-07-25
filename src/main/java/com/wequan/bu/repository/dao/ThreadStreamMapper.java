@@ -62,4 +62,11 @@ public interface ThreadStreamMapper extends GeneralMapper<ThreadStream> {
      */
     void dislikeThreadReply(@Param("threadId") Integer threadId, @Param("replyId") Integer replyId, @Param("userId") Integer userId);
 
+    /**
+     * 按标签获取回帖列表
+     * @param label 标签
+     * @param rowBounds 分页
+     * @return 回帖列表
+     */
+    List<ThreadStream> selectLabelThreadStreams(@Param("label") Integer label, RowBounds rowBounds);
 }

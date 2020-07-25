@@ -69,4 +69,10 @@ public interface ThreadStreamService extends Service<ThreadStream> {
      */
     void dislikeThreadReply(Integer threadId, Integer replyId, Integer userId);
 
+    /**
+     * 按标签获取回帖列表
+     * @param label 标签
+     * @return 帖子列表
+     */
+    List<ThreadStream> getLabelThreadReplies(Integer label, Integer pageNum, Integer pageSize);
 }

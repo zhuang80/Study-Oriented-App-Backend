@@ -120,4 +120,12 @@ public interface ThreadMapper extends GeneralMapper<Thread>{
      * @param viewTime 帖子查看时间
      */
     void insertViewHistory(@Param("userId") Integer userId, @Param("threadId") Integer threadId, @Param("viewTime") Date viewTime);
+
+    /**
+     * 获取标签帖子列表
+     * @param label 标签
+     * @param rowBounds 分页
+     * @return 标签帖子列表
+     */
+    List<Thread> selectLabelThreads(@Param("label") Integer label, RowBounds rowBounds);
 }
