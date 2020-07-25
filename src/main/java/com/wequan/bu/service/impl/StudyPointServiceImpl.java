@@ -1,6 +1,7 @@
 package com.wequan.bu.service.impl;
 
 import com.wequan.bu.repository.dao.StudyPointHistoryMapper;
+import com.wequan.bu.repository.dao.UserMapper;
 import com.wequan.bu.repository.model.StudyPointHistory;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.StudyPointService;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -23,6 +25,8 @@ public class StudyPointServiceImpl extends AbstractService<StudyPointHistory> im
 
     @Autowired
     private StudyPointHistoryMapper studyPointHistoryMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     @PostConstruct
     public void postConstruct() {
@@ -33,6 +37,15 @@ public class StudyPointServiceImpl extends AbstractService<StudyPointHistory> im
     public List<StudyPointHistory> getUserStudyPointTransactions(Integer userId, Integer pageNum, Integer pageSize) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
         return studyPointHistoryMapper.selectByUserId(userId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addStudyPoint(StudyPointHistory studyPoint) {
+        Integer userId = studyPoint.getUserId();
+        Short changeAmount = studyPoint.getChangeAmount();
+        userMapper.updateStudyPointByUserId(userId, changeAmount);
+        studyPointHistoryMapper.insert(studyPoint);
     }
 
     @Override

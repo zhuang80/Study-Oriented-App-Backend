@@ -174,13 +174,18 @@ public class UserLoginController {
                     .getBody();
             String subject = claims.getSubject();
             String email = subject.split("\\|\\|")[0];
-            userService.confirmEmail(email);
-            result = ResultGenerator.success();
-            //add study point
-            StudyPointHistory studyPoint = StudyPointHistory.builder().
-                    userId(0).actionLog(StudyPointRule.REGISTER_SUCCESS.name().toLowerCase())
-                    .changeAmount((short)StudyPointRule.REGISTER_SUCCESS.getStudyPoint()).remainingAmount((short)0).actionTime(new Date()).build();
-            applicationContext.publishEvent(new StudyPointEvent(studyPoint));
+            User user = userService.getUserProfileByEmail(email);
+            if (Objects.isNull(user.getEmailVerified()) || !user.getEmailVerified()) {
+                userService.confirmEmail(email);
+                //add study point
+                StudyPointHistory studyPoint = StudyPointHistory.builder().
+                        userId(user.getId()).actionLog(StudyPointRule.REGISTER_SUCCESS.getAction())
+                        .changeAmount((short)StudyPointRule.REGISTER_SUCCESS.getStudyPoint()).actionTime(new Date()).build();
+                applicationContext.publishEvent(new StudyPointEvent(studyPoint));
+                result = ResultGenerator.success();
+            } else {
+                result = ResultGenerator.fail(messageHandler.getMessage("40094"));
+            }
         } else {
             result = ResultGenerator.fail(messageHandler.getMessage("40099"));
         }

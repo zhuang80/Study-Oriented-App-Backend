@@ -125,4 +125,18 @@ public interface UserService extends Service<User> {
      * @return 关注关系code
      */
     Integer getFollowRelationshipWithOtherUser(Integer userId, Integer otherUserId);
+
+    /**
+     * 邮箱是否已经确认
+     * @param email email
+     * @return 邮箱是否已经确认
+     */
+    boolean checkEmailConfirmed(String email);
+
+    /**
+     * 根据email返回用户信息
+     * @param email email
+     * @return 用户信息
+     */
+    User getUserProfileByEmail(String email);
 }

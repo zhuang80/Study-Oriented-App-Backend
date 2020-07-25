@@ -3,6 +3,7 @@ package com.wequan.bu.event.listener;
 import com.wequan.bu.event.StudyPointEvent;
 import com.wequan.bu.event.ViewEvent;
 import com.wequan.bu.repository.model.StudyPointHistory;
+import com.wequan.bu.service.StudyPointService;
 import com.wequan.bu.service.ThreadService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,13 +24,14 @@ public class WeQuanEventListeners {
 
     @Autowired
     private ThreadService threadService;
+    @Autowired
+    private StudyPointService studyPointService;
 
     @Async
     @EventListener
     public void handleStudyPointEvent(StudyPointEvent studyPointEvent) {
-        StudyPointHistory source = studyPointEvent.getSource();
-
-
+        StudyPointHistory studyPoint = studyPointEvent.getSource();
+        studyPointService.addStudyPoint(studyPoint);
     }
 
     @Async
