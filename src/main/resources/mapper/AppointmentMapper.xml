@@ -43,7 +43,7 @@
 
   <select id="selectByUserId" resultMap="ResultMapWithNames">
     select a.id, a.tutor_id, a.user_id, a.create_time, a.update_time, a.status, a.brief_description, a.start_time,
-      a.end_time, a.subject_id, a.topic_id, a.title, o.user_name tutor_name, u.user_name user_name
+      a.end_time, a.subject_id, a.topic_id, a.title, o.user_name tutor_name, u.user_name user_name, a.transaction_id
     from ${schema}.wq_appointment a
     left join ${schema}.wq_user_profile u on u.id = a.user_id
     left join (
