@@ -183,9 +183,9 @@ public class ThreadController {
         if (!GeneralTool.checkThreadVo(threadVo)) {
             return ResultGenerator.fail(messageHandler.getMessage("40098"));
         }
-//        if (threadVo.getCreateBy().compareTo(userId) != 0) {
-//            return ResultGenerator.fail(messageHandler.getMessage("40099"));
-//        }
+        if (threadVo.getCreateBy().compareTo(userId) != 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40099"));
+        }
         if (threadVo.getStudyPointsBonus() == null) {
             threadVo.setStudyPointsBonus((short) 0);
         }
@@ -212,9 +212,9 @@ public class ThreadController {
         if (!GeneralTool.checkThreadStream(threadStream)) {
             return ResultGenerator.fail(messageHandler.getMessage("40098"));
         }
-//        if (threadStream.getUserId().compareTo(userId) != 0) {
-//            return ResultGenerator.fail(messageHandler.getMessage("40099"));
-//        }
+        if (threadStream.getUserId().compareTo(userId) != 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40099"));
+        }
         int threadStreamId = threadStreamService.addThreadReply(threadStream);
         List<ThreadResource> threadResources = threadStream.getThreadResources();
         if (Objects.nonNull(threadResources) && threadResources.size() > 0 && threadStreamId > 0) {
