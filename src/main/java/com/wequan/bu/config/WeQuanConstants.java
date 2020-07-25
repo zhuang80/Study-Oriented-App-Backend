@@ -11,6 +11,10 @@ public interface WeQuanConstants {
     String REFRESH_TOKEN_URL = "/access_token/refresh";
     String EMAIL_CONFIRM_URL = "/user/e-confirm";
     String STRIPE_CALLBACK_URL = "/connect/oauth";
+    String STRIPE_WEBHOOK_URL = "/webhook";
+    String STRIPE_REFUND_URL = "/refund_webhook";
+    String STRIPE_ACCOUNT_URL = "/account_webhook";
+    String STRIPE_TRANSFER_URL = "/transfer_webhook";
     String AUTH_HEADER = "Authorization";
     String TOKEN_PREFIX = "Bearer ";
 

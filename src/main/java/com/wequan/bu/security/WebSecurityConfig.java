@@ -94,7 +94,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                                 "/**/*.css",
                                 "/**/*.js").permitAll()
                         .antMatchers(HttpMethod.POST, WeQuanConstants.REGISTER_URL, WeQuanConstants.LOGIN_URL).permitAll()
-                        .antMatchers(WeQuanConstants.EMAIL_CONFIRM_URL, WeQuanConstants.REFRESH_TOKEN_URL, WeQuanConstants.STRIPE_CALLBACK_URL, "/oauth2/**").permitAll()
+                        .antMatchers(WeQuanConstants.EMAIL_CONFIRM_URL, WeQuanConstants.REFRESH_TOKEN_URL, WeQuanConstants.STRIPE_CALLBACK_URL, WeQuanConstants.STRIPE_WEBHOOK_URL, WeQuanConstants.STRIPE_TRANSFER_URL, WeQuanConstants.STRIPE_REFUND_URL, WeQuanConstants.STRIPE_ACCOUNT_URL,"/oauth2/**").permitAll()
                         .anyRequest()
                             .authenticated()
                         .and()
