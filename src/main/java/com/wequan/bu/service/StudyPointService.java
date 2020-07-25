@@ -4,6 +4,9 @@ import com.wequan.bu.repository.model.StudyPointHistory;
 
 import java.util.List;
 
+/**
+ * @author ChrisChen
+ */
 public interface StudyPointService extends Service<StudyPointHistory> {
 
     /**
@@ -14,4 +17,10 @@ public interface StudyPointService extends Service<StudyPointHistory> {
      * @return 学习积分变动历史
      */
     List<StudyPointHistory> getUserStudyPointTransactions(Integer userId, Integer pageNum, Integer pageSize);
+
+    /**
+     * 添加学习积分
+     * @param studyPoint 学习积分
+     */
+    void addStudyPoint(StudyPointHistory studyPoint);
 }

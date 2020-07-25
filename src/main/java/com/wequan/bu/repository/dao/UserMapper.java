@@ -77,4 +77,12 @@ public interface UserMapper extends GeneralMapper<User> {
      * @return 用户与其他用户关注关系数据
      */
     Map<String, Object> selectFollowEachOther(@Param("userId") Integer userId, @Param("otherUserId") Integer otherUserId);
+
+    /**
+     * 获取邮箱验证或未验证记录数
+     * @param email email
+     * @param verified 邮箱是否验证
+     * @return 记录数量
+     */
+    int countByEmailAndVerified(@Param("email") String email, @Param("verified") boolean verified);
 }
