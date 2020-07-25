@@ -211,6 +211,10 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
         //update transaction status and transfer id
         transactionService.updateByPaymentIntent(paymentIntent);
 
+        if(TransactionType.APPOINTMENT.getValue() == type){
+            appointmentService.updateStatus(paymentIntent.getId(), AppointmentStatus.PAID);
+        }
+
         //for public class type transaction, the money is transfered to connected account several days after public class ends
         if(TransactionType.PUBLIC_CLASS.getValue() == type){
             Integer onlineEventId = Integer.parseInt(metadata.get("online_event_id"));
