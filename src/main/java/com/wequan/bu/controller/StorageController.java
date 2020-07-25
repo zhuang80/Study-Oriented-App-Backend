@@ -58,10 +58,8 @@ public class StorageController {
         if (Objects.isNull(storageKey) || !StringUtils.hasText(fileName)) {
             return ResultGenerator.fail(messageHandler.getMessage("40098"));
         }
-        // only for test before token ready
-        if (Objects.isNull(userId)) {
-            // return ResultGenerator.fail(messageHandler.getMessage("40099"));
-            userId = 5;
+        if (Objects.isNull(userId) || userId <= 0) {
+             return ResultGenerator.fail(messageHandler.getMessage("40099"));
         }
         String key;
         if (fileName.contains("/")) {

@@ -179,5 +179,16 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
         return result;
     }
 
+    @Override
+    public boolean checkEmailConfirmed(String email) {
+        int count = userMapper.countByEmailAndVerified(email, true);
+        return count > 0;
+    }
+
+    @Override
+    public User getUserProfileByEmail(String email) {
+        return userMapper.selectByEmail(email);
+    }
+
 
 }

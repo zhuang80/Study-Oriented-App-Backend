@@ -82,4 +82,11 @@ public class ThreadStreamServiceImpl extends AbstractService<ThreadStream> imple
     public void dislikeThreadReply(Integer threadId, Integer replyId, Integer userId) {
         threadStreamMapper.dislikeThreadReply(threadId, replyId, userId);
     }
+
+    @Override
+    public List<ThreadStream> getLabelThreadReplies(Integer label, Integer pageNum, Integer pageSize) {
+        RowBounds rowBounds = new RowBounds(pageNum, pageSize);
+        List<ThreadStream> threadStreams = threadStreamMapper.selectLabelThreadStreams(label, rowBounds);
+        return threadStreams.stream().sorted(Comparator.comparing(ThreadStream::getCreateTime).reversed()).collect(Collectors.toList());
+    }
 }
