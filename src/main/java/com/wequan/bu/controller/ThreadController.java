@@ -253,6 +253,27 @@ public class ThreadController {
         return ResultGenerator.success();
     }
 
+    @GetMapping("/thread/list")
+    @ApiOperation(value = "a list of thread based on label", notes = "根据标签返回帖子列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "label", value = "1 -> 已回复; 2 -> 已点赞", required = true)
+    })
+    public Result labelThreads(@RequestParam("label") Integer label,
+                               @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                               @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        if (label != 1 && label != 2) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        List<Thread> threads = threadService.getLabelThreads(label, pageNum, pageSize);
+        return ResultGenerator.success(threads);
+    }
+
     @PostMapping("/thread/like")
     @ApiOperation(value = "like thread", notes = "对帖子点赞")
     public Result likeThread(@RequestParam("threadId") Integer threadId,
@@ -273,6 +294,27 @@ public class ThreadController {
         }
         threadService.dislikeThread(threadId, userId);
         return ResultGenerator.success();
+    }
+
+    @GetMapping("/thread/reply/list")
+    @ApiOperation(value = "a list of thread reply based on label", notes = "根据标签返回回帖列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "label", value = "1 -> 已回复; 2 -> 已点赞", required = true)
+    })
+    public Result labelThreadReplies(@RequestParam("label") Integer label,
+                                     @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                     @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        if (label != 1 && label != 2) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        List<ThreadStream> threads = threadStreamService.getLabelThreadReplies(label, pageNum, pageSize);
+        return ResultGenerator.success(threads);
     }
 
     @PostMapping("/thread/reply/like")

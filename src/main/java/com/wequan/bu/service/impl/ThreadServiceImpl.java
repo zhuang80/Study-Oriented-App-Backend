@@ -5,6 +5,7 @@ import com.wequan.bu.repository.dao.ReportRecordMapper;
 import com.wequan.bu.repository.dao.ThreadMapper;
 import com.wequan.bu.repository.model.ReportRecord;
 import com.wequan.bu.repository.model.Thread;
+import com.wequan.bu.repository.model.ThreadStream;
 import com.wequan.bu.repository.model.extend.ThreadStats;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.ThreadService;
@@ -150,4 +151,12 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     public void addViewRecord(int userId, int threadId, Date viewTime) {
         threadMapper.insertViewHistory(userId, threadId, viewTime);
     }
+
+    @Override
+    public List<Thread> getLabelThreads(Integer label, Integer pageNum, Integer pageSize) {
+        RowBounds rowBounds = new RowBounds(pageNum, pageSize);
+        List<Thread> threads = threadMapper.selectLabelThreads(label, rowBounds);
+        return threads.stream().sorted(Comparator.comparing(Thread::getCreateTime).reversed()).collect(Collectors.toList());
+    }
+
 }
