@@ -34,7 +34,7 @@ public class ThreadStreamServiceImpl extends AbstractService<ThreadStream> imple
     }
 
     @Override
-    public List<ThreadStream> getUserThreadReplies(Integer userId, Integer pageNum, Integer pageSize) {
+    public List<ThreadStream> getUserReplies(Integer userId, Integer pageNum, Integer pageSize) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
         List<ThreadStream> threadStreams = threadStreamMapper.selectByUserId(userId, rowBounds);
         return threadStreams.stream().sorted(Comparator.comparing(ThreadStream::getCreateTime).reversed()).collect(Collectors.toList());
@@ -86,7 +86,14 @@ public class ThreadStreamServiceImpl extends AbstractService<ThreadStream> imple
     @Override
     public List<ThreadStream> getLabelThreadReplies(Integer label, Integer pageNum, Integer pageSize) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
-        List<ThreadStream> threadStreams = threadStreamMapper.selectLabelThreadStreams(label, rowBounds);
+        List<ThreadStream> threadStreams = threadStreamMapper.selectLabelThreadReply(label, rowBounds);
         return threadStreams.stream().sorted(Comparator.comparing(ThreadStream::getCreateTime).reversed()).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ThreadStream> getUserThreadReplies(Integer userId, Integer pageNum, Integer pageSize) {
+        RowBounds rowBounds = new RowBounds(pageNum, pageSize);
+        List<ThreadStream> threadStreams = threadStreamMapper.selectThreadReplyByUserId(userId, rowBounds);
+        return threadStreams;
     }
 }
