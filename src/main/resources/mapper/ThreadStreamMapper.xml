@@ -13,14 +13,20 @@
     <result column="dislikes" jdbcType="INTEGER" property="dislikes" />
   </resultMap>
 
-  <resultMap id="ResultMapWithBriefInfo" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.ThreadStreamBriefInfo">
+  <resultMap id="ResultMapWithBriefInfo" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.ThreadStreamStats">
     <result column="number_of_reply" jdbcType="INTEGER" property="numberOfReply" />
     <association property="userBriefInfo" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithBriefInfo"/>
     <collection property="threadResources" columnPrefix="tr_" resultMap="com.wequan.bu.repository.dao.ThreadResourceMapper.BaseResultMap" />
   </resultMap>
 
-  <resultMap id="ResultMapWithThreadBriefInfo" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.ThreadStreamBriefInfo">
+  <resultMap id="ResultMapWithThreadBriefInfo" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.ThreadStreamStats">
     <association property="threadBriefInfo" columnPrefix="t_" resultMap="com.wequan.bu.repository.dao.ThreadMapper.ResultMapWithBriefInfo" />
+  </resultMap>
+
+  <resultMap id="ResultMapWithThread" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.ThreadStreamBriefInfo">
+    <association property="userBriefInfo" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithBriefInfo"/>
+    <association property="thread" columnPrefix="t_" resultMap="com.wequan.bu.repository.dao.ThreadMapper.BaseResultMap" />
+    <collection property="threadResources" columnPrefix="tr_" resultMap="com.wequan.bu.repository.dao.ThreadResourceMapper.BaseResultMap" />
   </resultMap>
 
   <sql id="Base_Column_List">
@@ -81,7 +87,7 @@
     where ts.thread_id = #{threadId,jdbcType=INTEGER} and ts.to_stream_id = #{directReplyId,jdbcType=INTEGER}
   </select>
 
-  <select id="selectLabelThreadStreams" resultMap="ResultMapWithBriefInfo">
+  <select id="selectLabelThreadReply" resultMap="ResultMapWithBriefInfo">
     select * from (
       select
         <include refid="Reply_Base_Select"/>,
@@ -98,6 +104,19 @@
         a.likes > 0
       </when>
     </choose>
+  </select>
+
+  <select id="selectThreadReplyByUserId" resultMap="ResultMapWithThread">
+    select
+      <include refid="Reply_Base_Select"/>,
+      t.id t_id, t.create_by t_create_by, t.title t_title, t.category t_category, t.tag_id t_tag_id, t.content t_content,
+      t.study_points_bonus t_study_points_bonus, t.create_time t_create_time, t.update_time t_update_time, t.likes t_likes,
+      t.dislikes t_dislikes, t.status t_status, t.school_id t_school_id
+    from ${schema}.wq_thread_stream ts
+    inner join ${schema}.wq_user_profile u on ts.user_id = u.id
+    left join ${schema}.wq_thread_resource tr on (ts.id = tr.belong_id and tr.type = 2)
+    inner join ${schema}.wq_thread t on t.id = ts.thread_id
+    where t.create_by = #{userId}
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">

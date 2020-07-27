@@ -1,6 +1,5 @@
 package com.wequan.bu.repository.model.extend;
 
-import com.wequan.bu.repository.model.Thread;
 import com.wequan.bu.repository.model.ThreadStream;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,9 +9,10 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ThreadStreamBriefInfo extends ThreadStream {
+public class ThreadStreamStats extends ThreadStream {
 
+    private Integer numberOfReply;
     private UserBriefInfo userBriefInfo;
-    private Thread thread;
+    private ThreadBriefInfo threadBriefInfo;
 
 }

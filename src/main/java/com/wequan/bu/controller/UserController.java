@@ -208,7 +208,7 @@ public class UserController {
     }
 
     @GetMapping("/user/{id}/threads")
-    @ApiOperation(value = "a list of user’s threads", notes = "返回用户的thread列表")
+    @ApiOperation(value = "a list of user’s threads", notes = "返回用户发布的帖子列表")
     @ApiResponses(
             @ApiResponse(code = 200, message = "a list of thread card (title, thread id, user name, user id, tag, created time, first 100 words, \n" +
                     "first 3 photos, # of likes, # of dislikes, # of views, school id, study points reward, status) sorted by created time")
@@ -230,8 +230,28 @@ public class UserController {
         return ResultGenerator.success(threads);
     }
 
+    @GetMapping("/user/{id}/thread_replies")
+    @ApiOperation(value = "a list of user's thread with reply ", notes = "返回针对用户已发布帖子的回帖列表")
+    public Result getUserThreadReplies(@PathVariable("id") Integer userId,
+                                       @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                       @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        List<ThreadStream> threadStreams = threadStreamService.getUserThreadReplies(userId, pageNum, pageSize);
+        return ResultGenerator.success(threadStreams);
+    }
+
+
+
     @GetMapping("/user/{id}/replies")
-    @ApiOperation(value = "a list of user’s replies", notes = "返回用户的帖子回复列表")
+    @ApiOperation(value = "a list of user’s replies", notes = "返回用户发布的对帖子的回帖列表")
     public Result<List<ThreadStream>> getThreadReplies(@PathVariable("id") Integer userId,
                                                        @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                        @RequestParam(value = "pageSize", required = false) Integer pageSize) {
@@ -245,7 +265,7 @@ public class UserController {
         if (Objects.isNull(pageSize)) {
             pageSize = 0;
         }
-        threadReplies = threadStreamService.getUserThreadReplies(userId, pageNum, pageSize);
+        threadReplies = threadStreamService.getUserReplies(userId, pageNum, pageSize);
         return ResultGenerator.success(threadReplies);
     }
 
