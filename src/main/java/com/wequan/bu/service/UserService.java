@@ -3,6 +3,7 @@ package com.wequan.bu.service;
 import com.wequan.bu.controller.vo.UserVo;
 import com.wequan.bu.repository.model.AppointmentReview;
 import com.wequan.bu.repository.model.User;
+import com.wequan.bu.repository.model.extend.LikeRecordBriefInfo;
 import com.wequan.bu.repository.model.extend.TutorBriefInfo;
 import com.wequan.bu.repository.model.extend.UserFollowBriefInfo;
 import com.wequan.bu.repository.model.extend.UserStats;
@@ -139,4 +140,13 @@ public interface UserService extends Service<User> {
      * @return 用户信息
      */
     User getUserProfileByEmail(String email);
+
+    /**
+     * 获取用户被点赞的资源列表
+     * @param userId 用户id
+     * @param pageNum pageNum
+     * @param pageSize pageSize
+     * @return
+     */
+    List<LikeRecordBriefInfo> getUserLikedResources(Integer userId, Integer pageNum, Integer pageSize);
 }

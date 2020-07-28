@@ -78,4 +78,10 @@ public interface ThreadStreamMapper extends GeneralMapper<ThreadStream> {
      */
     List<ThreadStream> selectThreadReplyByUserId(@Param("userId") Integer userId, RowBounds rowBounds);
 
+    /**
+     * 获取回帖创建用户id
+     * @param replyId 回帖id
+     * @return 回帖创建用户id
+     */
+    Integer selectCreateByById(Integer replyId);
 }

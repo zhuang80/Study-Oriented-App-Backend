@@ -90,6 +90,7 @@
     from <include refid="Stats_Base_Table"/>
     left join ${schema}.wq_thread_resource tr on (t.id = tr.belong_id and tr.type = 1)
     where t.school_id = #{schoolId, jdbcType=INTEGER}
+    order by t.create_time desc
   </select>
 
   <select id="selectBySchoolIdAndTag" resultMap="ResultMapWithStats">
@@ -113,6 +114,7 @@
       select 1 from ${schema}.wq_user_follow uf
       where uf.user_id = #{userId} and uf.follow_id = t.create_by
     )
+    order by t.create_time desc
   </select>
 
   <select id="selectBySchoolIdOrderedByView" parameterType="java.lang.Integer" resultMap="ResultMapWithStats">
@@ -184,6 +186,18 @@
         a.likes > 0
       </when>
     </choose>
+    order by a.create_time desc
+  </select>
+
+  <select id="selectCreateByById" resultType="java.lang.Integer">
+    select create_by from ${schema}.wq_thread where id = #{threadId}
+  </select>
+
+  <select id="selectByIds" resultMap="ResultMapWithStats">
+    select <include refid="Stats_Base_Column"/>,
+    <include refid="Stats_Number_Base_Column"/>
+    from <include refid="Stats_Base_Table"/>
+    where t.id in (${ids})
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">

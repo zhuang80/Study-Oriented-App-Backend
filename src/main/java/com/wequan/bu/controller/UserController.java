@@ -248,8 +248,6 @@ public class UserController {
         return ResultGenerator.success(threadStreams);
     }
 
-
-
     @GetMapping("/user/{id}/replies")
     @ApiOperation(value = "a list of user’s replies", notes = "返回用户发布的对帖子的回帖列表")
     public Result<List<ThreadStream>> getThreadReplies(@PathVariable("id") Integer userId,
@@ -267,6 +265,24 @@ public class UserController {
         }
         threadReplies = threadStreamService.getUserReplies(userId, pageNum, pageSize);
         return ResultGenerator.success(threadReplies);
+    }
+
+    @GetMapping("/user/{id}/liked")
+    @ApiOperation(value = "a list of user’s resource liked by others", notes = "返回用户资源被点赞的列表，按照资源创建时间排序")
+    public Result<List<LikeRecordBriefInfo>> getUserLikedResources(@PathVariable("id") Integer userId,
+                                                          @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                          @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        List<LikeRecordBriefInfo> likeRecords = userService.getUserLikedResources(userId, pageNum, pageSize);
+        return ResultGenerator.success(likeRecords);
     }
 
     @GetMapping("/user/{id}/favorites")
