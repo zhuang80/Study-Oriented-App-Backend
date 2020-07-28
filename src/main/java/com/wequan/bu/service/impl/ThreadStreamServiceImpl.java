@@ -1,6 +1,9 @@
 package com.wequan.bu.service.impl;
 
+import com.wequan.bu.config.WeQuanResources;
+import com.wequan.bu.repository.dao.LikeRecordMapper;
 import com.wequan.bu.repository.dao.ThreadStreamMapper;
+import com.wequan.bu.repository.model.LikeRecord;
 import com.wequan.bu.repository.model.ThreadStream;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.ThreadStreamService;
@@ -12,10 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author ChrisChen
@@ -27,6 +28,8 @@ public class ThreadStreamServiceImpl extends AbstractService<ThreadStream> imple
 
     @Autowired
     private ThreadStreamMapper threadStreamMapper;
+    @Autowired
+    private LikeRecordMapper likeRecordMapper;
 
     @PostConstruct
     public void postConstruct(){
@@ -36,29 +39,25 @@ public class ThreadStreamServiceImpl extends AbstractService<ThreadStream> imple
     @Override
     public List<ThreadStream> getUserReplies(Integer userId, Integer pageNum, Integer pageSize) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
-        List<ThreadStream> threadStreams = threadStreamMapper.selectByUserId(userId, rowBounds);
-        return threadStreams.stream().sorted(Comparator.comparing(ThreadStream::getCreateTime).reversed()).collect(Collectors.toList());
+        return threadStreamMapper.selectByUserId(userId, rowBounds);
     }
 
     @Override
     public List<ThreadStream> getDirectThreadReplies(Integer threadId, Integer pageNum, Integer pageSize) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
-        List<ThreadStream> threadStreams = threadStreamMapper.selectDirectRepliesById(threadId, rowBounds);
-        return threadStreams.stream().sorted(Comparator.comparing(ThreadStream::getCreateTime).reversed()).collect(Collectors.toList());
+        return threadStreamMapper.selectDirectRepliesById(threadId, rowBounds);
     }
 
     @Override
     public List<ThreadStream> getIndirectThreadReplies(Integer threadId, Integer pageNum, Integer pageSize) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
-        List<ThreadStream> threadStreams = threadStreamMapper.selectIndirectRepliesById(threadId, rowBounds);
-        return threadStreams.stream().sorted(Comparator.comparing(ThreadStream::getCreateTime).reversed()).collect(Collectors.toList());
+        return threadStreamMapper.selectIndirectRepliesById(threadId, rowBounds);
     }
 
     @Override
     public List<ThreadStream> getThreadReplyIndirectReplies(Integer threadId, Integer directReplyId, Integer pageNum, Integer pageSize) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
-        List<ThreadStream> threadStreams = threadStreamMapper.selectIndirectRepliesForDirectReply(threadId, directReplyId, rowBounds);
-        return threadStreams.stream().sorted(Comparator.comparing(ThreadStream::getCreateTime).reversed()).collect(Collectors.toList());
+        return threadStreamMapper.selectIndirectRepliesForDirectReply(threadId, directReplyId, rowBounds);
     }
 
     @Override
@@ -74,6 +73,10 @@ public class ThreadStreamServiceImpl extends AbstractService<ThreadStream> imple
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void likeThreadReply(Integer threadId, Integer replyId, Integer userId) {
+        Integer replyCreateBy = threadStreamMapper.selectCreateByById(replyId);
+        LikeRecord likeRecord = LikeRecord.builder().userId(userId).resourceType((short) WeQuanResources.THREAD_REPLY.getResourceType())
+                .resourceId(replyId).resourceBelongUserId(replyCreateBy).createTime(new Date()).build();
+        likeRecordMapper.insertSelective(likeRecord);
         threadStreamMapper.likeThreadReply(threadId, replyId, userId);
     }
 
@@ -86,14 +89,12 @@ public class ThreadStreamServiceImpl extends AbstractService<ThreadStream> imple
     @Override
     public List<ThreadStream> getLabelThreadReplies(Integer label, Integer pageNum, Integer pageSize) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
-        List<ThreadStream> threadStreams = threadStreamMapper.selectLabelThreadReply(label, rowBounds);
-        return threadStreams.stream().sorted(Comparator.comparing(ThreadStream::getCreateTime).reversed()).collect(Collectors.toList());
+        return threadStreamMapper.selectLabelThreadReply(label, rowBounds);
     }
 
     @Override
     public List<ThreadStream> getUserThreadReplies(Integer userId, Integer pageNum, Integer pageSize) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
-        List<ThreadStream> threadStreams = threadStreamMapper.selectThreadReplyByUserId(userId, rowBounds);
-        return threadStreams;
+        return threadStreamMapper.selectThreadReplyByUserId(userId, rowBounds);
     }
 }

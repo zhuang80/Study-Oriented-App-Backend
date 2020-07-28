@@ -59,6 +59,7 @@
     from ${schema}.wq_thread_stream ts
     inner join ${schema}.wq_thread t on t.id = ts.thread_id
     where ts.user_id = #{userId}
+    order by ts.create_time desc
   </select>
 
   <select id="selectDirectRepliesById" parameterType="java.lang.Integer" resultMap="ResultMapWithBriefInfo">
@@ -69,6 +70,7 @@
     inner join ${schema}.wq_user_profile u on ts.user_id = u.id
     left join ${schema}.wq_thread_resource tr on (ts.id = tr.belong_id and tr.type = 2)
     where ts.thread_id = #{threadId,jdbcType=INTEGER} and ts.to_stream_id is null
+    order by ts.create_time desc
   </select>
 
   <select id="selectIndirectRepliesById" parameterType="java.lang.Integer" resultMap="ResultMapWithBriefInfo">
@@ -77,6 +79,7 @@
     inner join ${schema}.wq_user_profile u on ts.user_id = u.id
     left join ${schema}.wq_thread_resource tr on (ts.id = tr.belong_id and tr.type = 2)
     where ts.thread_id = #{threadId,jdbcType=INTEGER} and ts.to_stream_id is not null
+    order by ts.create_time desc
   </select>
 
   <select id="selectIndirectRepliesForDirectReply" resultMap="ResultMapWithBriefInfo">
@@ -85,6 +88,7 @@
     inner join ${schema}.wq_user_profile u on ts.user_id = u.id
     left join ${schema}.wq_thread_resource tr on (ts.id = tr.belong_id and tr.type = 2)
     where ts.thread_id = #{threadId,jdbcType=INTEGER} and ts.to_stream_id = #{directReplyId,jdbcType=INTEGER}
+    order by ts.create_time desc
   </select>
 
   <select id="selectLabelThreadReply" resultMap="ResultMapWithBriefInfo">
@@ -104,6 +108,7 @@
         a.likes > 0
       </when>
     </choose>
+    order by a.create_time desc
   </select>
 
   <select id="selectThreadReplyByUserId" resultMap="ResultMapWithThread">
@@ -117,6 +122,21 @@
     left join ${schema}.wq_thread_resource tr on (ts.id = tr.belong_id and tr.type = 2)
     inner join ${schema}.wq_thread t on t.id = ts.thread_id
     where t.create_by = #{userId}
+    order by ts.create_time desc
+  </select>
+
+  <select id="selectCreateByById" resultType="java.lang.Integer">
+    select user_id from ${schema}.wq_thread_stream where id = #{replyId}
+  </select>
+
+  <select id="selectByIds" resultMap="ResultMapWithBriefInfo">
+    select
+      ts.*,
+      u.user_name as u_user_name, u.school_id as u_school_id, u.first_name as u_first_name, u.last_name as u_last_name,
+      u.avatar_url as u_avatar_url, u.avatar_url_in_provider as u_avatar_url_in_provider, u.id as u_id
+    from ${schema}.wq_thread_stream ts
+    inner join ${schema}.wq_user_profile u on ts.user_id = u.id
+    where ts.id in (${ids})
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
