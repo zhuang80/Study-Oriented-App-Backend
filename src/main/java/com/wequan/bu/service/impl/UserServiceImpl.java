@@ -276,4 +276,16 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
         return likeRecordBriefInfoList;
     }
 
+    @Override
+    public List<UserFollowBriefInfo> getOtherUserFollowing(Integer currentUserId, Integer otherUserId, Integer pageNum, Integer pageSize) {
+        RowBounds rowBounds = new RowBounds(pageNum, pageSize);
+        return userFollowMapper.selectFollowingByOtherUserId(currentUserId, otherUserId, rowBounds);
+    }
+
+    @Override
+    public List<UserFollowBriefInfo> getOtherUserFollower(Integer currentUserId, Integer otherUserId, Integer pageNum, Integer pageSize) {
+        RowBounds rowBounds = new RowBounds(pageNum, pageSize);
+        return userFollowMapper.selectFollowerByOtherUserId(currentUserId, otherUserId, rowBounds);
+    }
+
 }

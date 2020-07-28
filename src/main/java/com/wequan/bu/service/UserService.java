@@ -149,4 +149,24 @@ public interface UserService extends Service<User> {
      * @return
      */
     List<LikeRecordBriefInfo> getUserLikedResources(Integer userId, Integer pageNum, Integer pageSize);
+
+    /**
+     * 获取其他用户所关注的用户
+     * @param currentUserId 用户id
+     * @param otherUserId 用户id
+     * @param pageNum pageNum
+     * @param pageSize pageSize
+     * @return 其他用户所关注的用户列表
+     */
+    List<UserFollowBriefInfo> getOtherUserFollowing(Integer currentUserId, Integer otherUserId, Integer pageNum, Integer pageSize);
+
+    /**
+     * 获取其他用户粉丝
+     * @param currentUserId 用户id
+     * @param otherUserId 用户id
+     * @param pageNum pageNum
+     * @param pageSize pageSize
+     * @return 其他用户粉丝列表
+     */
+    List<UserFollowBriefInfo> getOtherUserFollower(Integer currentUserId, Integer otherUserId, Integer pageNum, Integer pageSize);
 }
