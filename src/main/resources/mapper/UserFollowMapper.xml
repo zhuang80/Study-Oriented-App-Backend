@@ -50,6 +50,33 @@
     left join ${schema}.wq_user_follow t1 on (t1.user_id = t.follow_id and t1.follow_id = t.user_id)
     where t.follow_id = #{userId}
   </select>
+  <select id="selectFollowingByOtherUserId" resultMap="ResultMapForUserFollowBriefInfo">
+    select
+      t.follow_id user_id,
+      u.user_name,
+      u.first_name,
+      u.last_name,
+      u.avatar_url,
+      u.avatar_url_in_provider,
+      (select count(1) > 0 from ${schema}.wq_user_follow f where f.user_id = #{currentUserId} and f.follow_id = t.follow_id) as mutual
+    from ${schema}.wq_user_follow t
+    inner join ${schema}.wq_user_profile u on u.id = t.follow_id
+    where t.user_id = #{otherUserId}
+  </select>
+
+  <select id="selectFollowerByOtherUserId" resultMap="ResultMapForUserFollowBriefInfo">
+    select
+      t.user_id,
+      u.user_name,
+      u.first_name,
+      u.last_name,
+      u.avatar_url,
+      u.avatar_url_in_provider,
+      (select count(1) > 0 from ${schema}.wq_user_follow f where f.user_id = t.user_id and f.follow_id = #{currentUserId}) as mutual
+    from ${schema}.wq_user_follow t
+    inner join ${schema}.wq_user_profile u on u.id = t.user_id
+    where t.follow_id = #{otherUserId}
+  </select>
 
   <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.UserFollow">
     insert into ${schema}.wq_user_follow

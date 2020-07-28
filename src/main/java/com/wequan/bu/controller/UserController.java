@@ -8,6 +8,7 @@ import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.exception.NotImplementedException;
 import com.wequan.bu.repository.model.*;
 import com.wequan.bu.repository.model.extend.*;
+import com.wequan.bu.security.CurrentUser;
 import com.wequan.bu.service.*;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -403,8 +404,9 @@ public class UserController {
     )
     public Result<List<UserFollowBriefInfo>> getUserFollowing(@PathVariable("id") Integer userId,
                                                               @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<UserFollowBriefInfo> result = null;
+                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize,
+                                                              @CurrentUser Integer currentUserId) {
+        List<UserFollowBriefInfo> userFollowBriefInfoList = null;
         if (userId <= 0) {
             return ResultGenerator.fail(messageHandler.getMessage("40098"));
         }
@@ -414,16 +416,21 @@ public class UserController {
         if (Objects.isNull(pageSize)) {
             pageSize = 0;
         }
-        result = userService.getUserFollowing(userId, pageNum, pageSize);
-        return ResultGenerator.success(result);
+        if (userId.compareTo(currentUserId) == 0) {
+            userFollowBriefInfoList = userService.getUserFollowing(userId, pageNum, pageSize);
+        } else {
+            userFollowBriefInfoList = userService.getOtherUserFollowing(currentUserId, userId, pageNum, pageSize);
+        }
+        return ResultGenerator.success(userFollowBriefInfoList);
     }
 
     @GetMapping("/user/{id}/followers")
     @ApiOperation(value = "a list of followers", notes = "返回被关注用户列表")
     public Result<List<UserFollowBriefInfo>> getUserFollowers(@PathVariable("id") Integer userId,
                                                               @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<UserFollowBriefInfo> result = null;
+                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize,
+                                                              @CurrentUser Integer currentUserId) {
+        List<UserFollowBriefInfo> userFollowBriefInfoList = null;
         if (userId <= 0) {
             return ResultGenerator.fail(messageHandler.getMessage("40098"));
         }
@@ -433,8 +440,12 @@ public class UserController {
         if (Objects.isNull(pageSize)) {
             pageSize = 0;
         }
-        result = userService.getUserFollower(userId, pageNum, pageSize);
-        return ResultGenerator.success(result);
+        if (userId.compareTo(currentUserId) == 0) {
+            userFollowBriefInfoList = userService.getUserFollower(userId, pageNum, pageSize);
+        } else {
+            userFollowBriefInfoList = userService.getOtherUserFollower(currentUserId, userId, pageNum, pageSize);
+        }
+        return ResultGenerator.success(userFollowBriefInfoList);
     }
 
     @GetMapping("/user/{id}/professor/reviews")
