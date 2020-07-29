@@ -85,11 +85,12 @@ public class UserController {
     }
 
     @GetMapping("/user/{id}/appointments")
-    @ApiOperation(value = "a list of user’s appointment", notes = "返回用户与Tutor的appointment列表")
+    @ApiOperation(value = "a list of user’s appointment", notes = "返回用户与Tutor的appointment列表, status 参数可以用来筛选, 0 为代付款,4为已付款,1为已结束,2已退款")
     @ApiResponses(
             @ApiResponse(code = 200, message = "a list of appointments (name, if tutor, appointment id, scheduled time) sorted by incoming time")
     )
     public Result<List<AppointmentBriefInfo>> getAppointments(@PathVariable("id") Integer userId,
+                                                              @RequestParam(value = "status", required = false) Short status,
                                                               @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                               @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         List<AppointmentBriefInfo> appointments;
@@ -102,7 +103,7 @@ public class UserController {
         if (Objects.isNull(pageSize)) {
             pageSize = 0;
         }
-        appointments = appointmentService.getUserAppointments(userId, pageNum, pageSize);
+        appointments = appointmentService.getUserAppointments(userId, pageNum, pageSize, status);
         return ResultGenerator.success(appointments);
     }
 

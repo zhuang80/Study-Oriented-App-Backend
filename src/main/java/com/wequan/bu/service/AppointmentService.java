@@ -11,14 +11,14 @@ import java.util.List;
  */
 public interface AppointmentService extends Service<Appointment> {
 
-    public List<Appointment> findByTutorId(Integer tutorId);
+    public List<Appointment> findByTutorId(Integer tutorId, Short status, Integer pageNum, Integer pageSize);
 
     /**
      * 根据用户id获取AppointmentBriefInfo列表
      * @param userId 用户id
      * @return AppointmentBriefInfo列表
      */
-    List<AppointmentBriefInfo> getUserAppointments(Integer userId, Integer pageNum, Integer pageSize);
+    List<AppointmentBriefInfo> getUserAppointments(Integer userId, Integer pageNum, Integer pageSize, Short status);
 
     public void makeAppointment(Appointment appointment);
 

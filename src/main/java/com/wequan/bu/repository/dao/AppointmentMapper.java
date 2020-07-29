@@ -14,7 +14,7 @@ import java.util.List;
 @Mapper
 public interface AppointmentMapper extends GeneralMapper<Appointment> {
 
-    public List<Appointment> selectByTutorId(@Param("tutor_id") Integer tutorId);
+    public List<Appointment> selectByTutorId(@Param("tutor_id") Integer tutorId, @Param("status") Short status);
 
     /**
      * 根据用户id获取AppointmentBriefInfo列表
@@ -22,7 +22,7 @@ public interface AppointmentMapper extends GeneralMapper<Appointment> {
      * @param userId 用户id
      * @return AppointmentBriefInfo列表
      */
-    List<AppointmentBriefInfo> selectByUserId(Integer userId, RowBounds rowBounds);
+    List<AppointmentBriefInfo> selectByUserId(Integer userId, RowBounds rowBounds, @Param("status") Short status);
 
     public void deleteByTransactionId(@Param("transaction_id") String transactionId);
 

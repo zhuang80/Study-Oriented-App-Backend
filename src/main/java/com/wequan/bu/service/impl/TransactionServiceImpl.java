@@ -274,7 +274,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 
 
     @Override
-    public List<Transaction> findByUserId(Integer userId, Integer pageNum, Integer pageSize) {
+    public List<Transaction> findByUserId(Integer userId, Short status, Integer pageNum, Integer pageSize) {
         if(pageNum == null || pageNum <= 0 ) {
             pageNum = 1;
         }
@@ -282,7 +282,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
             pageSize = 10;
         }
         PageHelper.startPage(pageNum, pageSize);
-        return transactionMapper.selectByUserId(userId);
+        return transactionMapper.selectByUserId(userId, status);
     }
 
     @Override
