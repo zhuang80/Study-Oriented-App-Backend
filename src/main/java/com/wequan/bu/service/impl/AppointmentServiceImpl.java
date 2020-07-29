@@ -49,14 +49,17 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
     }
 
     @Override
-    public List<Appointment> findByTutorId(Integer tutorId) {
-        return appointmentMapper.selectByTutorId(tutorId);
+    public List<Appointment> findByTutorId(Integer tutorId, Short status, Integer pageNum, Integer pageSize) {
+        if(pageNum != null && pageSize != null) {
+            PageHelper.startPage(pageNum, pageSize);
+        }
+        return appointmentMapper.selectByTutorId(tutorId, status);
     }
 
     @Override
-    public List<AppointmentBriefInfo> getUserAppointments(Integer userId, Integer pageNum, Integer pageSize) {
+    public List<AppointmentBriefInfo> getUserAppointments(Integer userId, Integer pageNum, Integer pageSize, Short status) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
-        return appointmentMapper.selectByUserId(userId, rowBounds);
+        return appointmentMapper.selectByUserId(userId, rowBounds, status);
     }
 
     @Override

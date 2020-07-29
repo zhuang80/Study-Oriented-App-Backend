@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class TutorViewHistory {
     private Long id;
     private Integer userId;
+    private User user;
     private Integer tutorId;
     private LocalDateTime viewTime;
 }
