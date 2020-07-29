@@ -33,7 +33,7 @@ public interface TransactionService extends Service<Transaction> {
 
     public void addRefundTransactionRecord(Charge charge);
 
-    public List<Transaction> findByUserId(Integer userId, Integer pageNum, Integer pageSize);
+    public List<Transaction> findByUserId(Integer userId, Short status, Integer pageNum, Integer pageSize);
 
     public void refundApply(RefundApplication refundApplication);
 

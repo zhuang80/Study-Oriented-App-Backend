@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wequan.bu.repository.dao.TutorViewHistoryMapper">
+    <resultMap id="TutorViewHistoryResultMap" type="com.wequan.bu.repository.model.TutorViewHistory">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="tutor_id" jdbcType="INTEGER" property="tutorId" />
+        <result column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="view_time" jdbcType="TIMESTAMP" property="viewTime" />
+        <association property="user"
+                     column="user_id"
+                     select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey" />
+    </resultMap>
 
-
-    <select id="selectByTutorId" resultType="com.wequan.bu.repository.model.TutorViewHistory">
+    <select id="selectByTutorId" resultMap="TutorViewHistoryResultMap">
         SELECT *
         FROM ${schema}.wq_tutor_view_history tvh
         WHERE tvh.tutor_id = #{tutor_id}
