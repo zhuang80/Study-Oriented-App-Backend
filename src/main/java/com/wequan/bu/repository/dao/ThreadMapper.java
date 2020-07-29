@@ -128,4 +128,11 @@ public interface ThreadMapper extends GeneralMapper<Thread>{
      * @return 标签帖子列表
      */
     List<Thread> selectLabelThreads(@Param("label") Integer label, RowBounds rowBounds);
+
+    /**
+     * 获取创建帖子用户id
+     * @param threadId 帖子id
+     * @return 创建帖子用户id
+     */
+    Integer selectCreateByById(Integer threadId);
 }
