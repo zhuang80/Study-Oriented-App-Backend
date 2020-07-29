@@ -12,7 +12,18 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class AppointmentBriefInfo extends Appointment {
 
-    private String tutorName;
-    private String userName;
+    private UserBriefInfo userBriefInfo;
+    private TutorBasicInfo tutorBasicInfo;
 
+}
+
+@Data
+class TutorBasicInfo {
+    Integer id;
+    String userName;
+    String firstName;
+    String lastName;
+    Short schoolId;
+    String avatarUrl;
+    String avatarUrlInProvider;
 }
