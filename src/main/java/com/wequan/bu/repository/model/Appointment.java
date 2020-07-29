@@ -3,13 +3,13 @@ package com.wequan.bu.repository.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
  * Database Table Remarks:
  *   辅导信息表
  * This class corresponds to the database table bu.wq_appointment
+ * @author ChrisChen
  */
 @Data
 public class Appointment {

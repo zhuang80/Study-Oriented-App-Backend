@@ -14,7 +14,7 @@ import java.util.List;
 public interface ThreadStreamMapper extends GeneralMapper<ThreadStream> {
 
     /**
-     * 获取用户回复帖子列表
+     * 获取用户回帖列表
      * @param userId 用户id
      * @param rowBounds 分页
      * @return 用户回复帖子列表
@@ -68,5 +68,20 @@ public interface ThreadStreamMapper extends GeneralMapper<ThreadStream> {
      * @param rowBounds 分页
      * @return 回帖列表
      */
-    List<ThreadStream> selectLabelThreadStreams(@Param("label") Integer label, RowBounds rowBounds);
+    List<ThreadStream> selectLabelThreadReply(@Param("label") Integer label, RowBounds rowBounds);
+
+    /**
+     * 针对用户已发布帖子的回帖列表
+     * @param userId 用户id
+     * @param rowBounds 分页
+     * @return 回帖列表
+     */
+    List<ThreadStream> selectThreadReplyByUserId(@Param("userId") Integer userId, RowBounds rowBounds);
+
+    /**
+     * 获取回帖创建用户id
+     * @param replyId 回帖id
+     * @return 回帖创建用户id
+     */
+    Integer selectCreateByById(Integer replyId);
 }

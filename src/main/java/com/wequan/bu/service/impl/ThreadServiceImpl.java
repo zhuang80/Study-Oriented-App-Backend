@@ -1,11 +1,13 @@
 package com.wequan.bu.service.impl;
 
+import com.wequan.bu.config.WeQuanResources;
 import com.wequan.bu.controller.vo.ThreadVo;
+import com.wequan.bu.repository.dao.LikeRecordMapper;
 import com.wequan.bu.repository.dao.ReportRecordMapper;
 import com.wequan.bu.repository.dao.ThreadMapper;
+import com.wequan.bu.repository.model.LikeRecord;
 import com.wequan.bu.repository.model.ReportRecord;
 import com.wequan.bu.repository.model.Thread;
-import com.wequan.bu.repository.model.ThreadStream;
 import com.wequan.bu.repository.model.extend.ThreadStats;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.ThreadService;
@@ -19,7 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,6 +38,8 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     private ThreadMapper threadMapper;
     @Autowired
     private ReportRecordMapper reportRecordMapper;
+    @Autowired
+    private LikeRecordMapper likeRecordMapper;
 
     @PostConstruct
     public void postConstruct(){
@@ -67,13 +72,16 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     @Override
     public List<Thread> findByOtherSchoolId(Integer schoolId, Integer pageNum, Integer pageSize) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
-        List<Thread> threads = threadMapper.selectBySchoolId(schoolId, rowBounds);
-        return threads.stream().sorted(Comparator.comparing(Thread::getCreateTime)).collect(Collectors.toList());
+        return threadMapper.selectBySchoolId(schoolId, rowBounds);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void likeThread(Integer threadId, Integer userId) {
+        Integer threadCreateBy = threadMapper.selectCreateByById(threadId);
+        LikeRecord likeRecord = LikeRecord.builder().userId(userId).resourceType((short)WeQuanResources.THREAD.getResourceType())
+                .resourceId(threadId).resourceBelongUserId(threadCreateBy).createTime(new Date()).build();
+        likeRecordMapper.insertSelective(likeRecord);
         threadMapper.likeThread(threadId, userId);
     }
 
@@ -103,8 +111,7 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     @Override
     public List<Thread> getUserFollowingThreads(Integer userId, Integer pageNum, Integer pageSize){
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
-        List<Thread> threads = threadMapper.selectByUserFollowing(userId, rowBounds);
-        return threads.stream().sorted(Comparator.comparing(Thread::getCreateTime).reversed()).collect(Collectors.toList());
+        return threadMapper.selectByUserFollowing(userId, rowBounds);
     }
 
     @Override
@@ -155,8 +162,7 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     @Override
     public List<Thread> getLabelThreads(Integer label, Integer pageNum, Integer pageSize) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
-        List<Thread> threads = threadMapper.selectLabelThreads(label, rowBounds);
-        return threads.stream().sorted(Comparator.comparing(Thread::getCreateTime).reversed()).collect(Collectors.toList());
+        return threadMapper.selectLabelThreads(label, rowBounds);
     }
 
 }
