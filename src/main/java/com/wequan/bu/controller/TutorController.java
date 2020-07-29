@@ -10,6 +10,7 @@ import com.wequan.bu.repository.model.Appointment;
 import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.repository.model.TutorViewHistory;
 import com.wequan.bu.repository.model.extend.TutorRateInfo;
+import com.wequan.bu.security.CurrentUser;
 import com.wequan.bu.service.AppointmentService;
 import com.wequan.bu.service.TutorReviewService;
 import com.wequan.bu.service.TutorService;
@@ -54,17 +55,17 @@ public class TutorController {
             @ApiImplicitParam(name = "userId", value = "当前用户的id, 若当前用户非tutor本人，便会增加tutor profile的被浏览的历史记录")
     })
     public Result<Tutor> getTutor(@PathVariable("id") Integer tutorId,
-                                  @RequestParam(value="userId", required=false) Integer userId) {
+                                  @CurrentUser Integer currentUserId) {
         if( tutorId < 0 ){
             String message = messageHandler.getFailResponseMessage("40008");
             return ResultGenerator.fail(message);
         }
-        if(userId != null && userId < 0){
+        if(currentUserId != null && currentUserId < 0){
             String message = messageHandler.getFailResponseMessage("40008");
             return ResultGenerator.fail(message);
         }
         Tutor tutor = tutorService.findById(tutorId);
-        tutorService.logTutorViewHistory(tutor, userId);
+        tutorService.logTutorViewHistory(tutor, currentUserId);
         return ResultGenerator.success(tutor);
     }
 
