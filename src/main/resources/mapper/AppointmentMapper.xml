@@ -41,10 +41,39 @@
     where id = #{id,jdbcType=INTEGER}
   </select>
 
-  <select id="selectByTutorId" resultType="com.wequan.bu.repository.model.Appointment">
-    SELECT *
-    FROM ${schema}.wq_appointment
-    WHERE tutor_id = #{tutor_id, jdbcType=INTEGER}
+
+  <select id="selectByTutorId" resultMap="ResultMapWithBriefInfo">
+    select
+    a.id, a.tutor_id, a.user_id, a.create_time, a.update_time, a.status, a.brief_description, a.start_time,
+    a.end_time, a.subject_id, a.topic_id, a.title, a.fee, a.transaction_id,
+    u.user_name as u_user_name, u.school_id as u_school_id, u.first_name as u_first_name, u.last_name as u_last_name,
+    u.avatar_url as u_avatar_url, u.avatar_url_in_provider as u_avatar_url_in_provider, u.id as u_id,
+    v.*
+    from ${schema}.wq_appointment a
+    inner join ${schema}.wq_user_profile u on u.id = a.user_id
+    inner join (
+    select
+    t1.id t_id, u1.user_name t_user_name, u1.first_name t_first_name, u1.last_name t_last_name,
+    u1.school_id t_school_id, u1.avatar_url t_avatar_url, u1.avatar_url_in_provider t_avatar_url_in_provider
+    from ${schema}.wq_tutor_profile t1
+    inner join ${schema}.wq_user_profile u1 on t1.user_id = u1.id
+    ) v on v.t_id = a.tutor_id
+    where a.user_id = #{tutor_id} and a.status &lt;&gt; -1
+    <if test="status != null">
+      <if test="status == 0">
+        AND a.status = 0
+      </if>
+      <if test="status == 4">
+        AND a.status = 4
+      </if>
+      <if test="status == 1">
+        AND a.status = 1
+      </if>
+      <if test="status == 2">
+        AND a.status IN (2,3)
+      </if>
+    </if>
+    order by a.create_time desc
   </select>
 
   <select id="selectByUserId" resultMap="ResultMapWithBriefInfo">
@@ -64,6 +93,20 @@
       inner join ${schema}.wq_user_profile u1 on t1.user_id = u1.id
     ) v on v.t_id = a.tutor_id
     where a.user_id = #{userId} and a.status &lt;&gt; -1
+    <if test="status != null">
+      <if test="status == 0">
+        AND a.status = 0
+      </if>
+      <if test="status == 4">
+        AND a.status = 4
+      </if>
+      <if test="status == 1">
+        AND a.status = 1
+      </if>
+      <if test="status == 2">
+        AND a.status IN (2,3)
+      </if>
+    </if>
     order by a.create_time desc
   </select>
 

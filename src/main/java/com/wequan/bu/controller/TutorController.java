@@ -133,12 +133,15 @@ public class TutorController {
 
     @GetMapping("/tutor/{id}/appointments")
     @ApiOperation(value = "a list of tutor’s appointment", notes = "返回Tutor与用户的appointment列表")
-    public Result<List<Appointment>> getAppointments(@PathVariable("id") Integer tutorId) {
+    public Result<List<Appointment>> getAppointments(@PathVariable("id") Integer tutorId,
+                                                     @RequestParam(value = "status", required = false) Short status,
+                                                     @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                     @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         if(tutorId < 0){
             String message = messageHandler.getFailResponseMessage("40008");
             return ResultGenerator.fail(message);
         }
-        List<Appointment> result = appointmentService.findByTutorId(tutorId);
+        List<Appointment> result = appointmentService.findByTutorId(tutorId, status, pageNum, pageSize);
         return ResultGenerator.success(result);
     }
 
