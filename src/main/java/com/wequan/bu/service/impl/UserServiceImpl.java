@@ -1,14 +1,10 @@
 package com.wequan.bu.service.impl;
 
 import com.wequan.bu.controller.vo.UserVo;
-import com.wequan.bu.repository.dao.AppointmentReviewMapper;
-import com.wequan.bu.repository.dao.UserFollowMapper;
-import com.wequan.bu.repository.dao.UserMapper;
-import com.wequan.bu.repository.dao.UserSubjectMapper;
-import com.wequan.bu.repository.model.AppointmentReview;
-import com.wequan.bu.repository.model.User;
-import com.wequan.bu.repository.model.UserFollow;
-import com.wequan.bu.repository.model.UserSubject;
+import com.wequan.bu.repository.dao.*;
+import com.wequan.bu.repository.model.Thread;
+import com.wequan.bu.repository.model.*;
+import com.wequan.bu.repository.model.extend.LikeRecordBriefInfo;
 import com.wequan.bu.repository.model.extend.TutorBriefInfo;
 import com.wequan.bu.repository.model.extend.UserFollowBriefInfo;
 import com.wequan.bu.repository.model.extend.UserStats;
@@ -26,6 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 public class UserServiceImpl extends AbstractService<User> implements UserService {
 
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+    private static final ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Autowired
     private UserMapper userMapper;
@@ -47,6 +48,12 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
     private AppointmentReviewMapper appointmentReviewMapper;
     @Autowired
     private AwsEmailService emailService;
+    @Autowired
+    private LikeRecordMapper likeRecordMapper;
+    @Autowired
+    private ThreadMapper threadMapper;
+    @Autowired
+    private ThreadStreamMapper threadStreamMapper;
 
     @PostConstruct
     public void postConstruct() {
@@ -190,5 +197,95 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
         return userMapper.selectByEmail(email);
     }
 
+    @Override
+    public List<LikeRecordBriefInfo> getUserLikedResources(Integer userId, Integer pageNum, Integer pageSize) {
+        RowBounds rowBounds = new RowBounds(pageNum, pageSize);
+        List<LikeRecordBriefInfo> likeRecordBriefInfoList = likeRecordMapper.selectByResourceBelongId(userId, rowBounds);
+        Map<Short, Map<Integer, List<LikeRecordBriefInfo>>> mapMap = new HashMap<>();
+        for (LikeRecordBriefInfo info : likeRecordBriefInfoList) {
+            Short resourceType = info.getResourceType();
+            Integer resourceId = info.getResourceId();
+            if (mapMap.containsKey(resourceType)) {
+                Map<Integer, List<LikeRecordBriefInfo>> listMap = mapMap.get(resourceType);
+                if (listMap.containsKey(resourceId)) {
+                    listMap.get(resourceId).add(info);
+                } else {
+                    List<LikeRecordBriefInfo> likeRecordBriefInfoArrayList = new ArrayList<>();
+                    likeRecordBriefInfoArrayList.add(info);
+                    listMap.put(resourceId, likeRecordBriefInfoArrayList);
+                }
+            } else {
+                Map<Integer, List<LikeRecordBriefInfo>> listMap = new HashMap<>();
+                List<LikeRecordBriefInfo> likeRecordBriefInfoArrayList = new ArrayList<>();
+                likeRecordBriefInfoArrayList.add(info);
+                listMap.put(resourceId, likeRecordBriefInfoArrayList);
+                mapMap.put(resourceType, listMap);
+            }
+        }
+
+        FutureTask<List<Thread>> threadFutureTask = null;
+        FutureTask<List<ThreadStream>> threadStreamFutureTask = null;
+        for (Map.Entry<Short, Map<Integer, List<LikeRecordBriefInfo>>> mapEntry : mapMap.entrySet()) {
+            int type = (int)mapEntry.getKey();
+            switch (type) {
+                //thread
+                case 4:
+                    final String threadIds = mapEntry.getValue().keySet().stream().map(String::valueOf).collect(Collectors.joining(","));
+                    Callable<List<Thread>> threadCallable = () -> threadMapper.selectByIds(threadIds);
+                    threadFutureTask = new FutureTask<>(threadCallable);
+                    break;
+                //thread reply
+                case 8:
+                    final String threadStreamIds = mapEntry.getValue().keySet().stream().map(String::valueOf).collect(Collectors.joining(","));
+                    Callable<List<ThreadStream>> threadStreamCallable = () -> threadStreamMapper.selectByIds(threadStreamIds);
+                    threadStreamFutureTask = new FutureTask<>(threadStreamCallable);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        try {
+            List<Thread> threads = null;
+            List<ThreadStream> threadStreams = null;
+            if (threadFutureTask != null) {
+                executorService.submit(threadFutureTask);
+                threads = threadFutureTask.get();
+            }
+            if (threadStreamFutureTask != null) {
+                executorService.submit(threadStreamFutureTask);
+                threadStreams = threadStreamFutureTask.get();
+            }
+            if (threads != null) {
+                for (Thread thread : threads) {
+                    Integer threadId = thread.getId();
+                    List<LikeRecordBriefInfo> recordBriefInfoList = mapMap.get((short) 4).get(threadId);
+                    recordBriefInfoList.forEach(e -> e.setResource(thread));
+                }
+            }
+            if (threadStreams != null) {
+                for (ThreadStream threadStream : threadStreams) {
+                    Integer threadStreamId = threadStream.getId();
+                    List<LikeRecordBriefInfo> recordBriefInfoList = mapMap.get((short) 8).get(threadStreamId);
+                    recordBriefInfoList.forEach(e -> e.setResource(threadStream));
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return likeRecordBriefInfoList;
+    }
+
+    @Override
+    public List<UserFollowBriefInfo> getOtherUserFollowing(Integer currentUserId, Integer otherUserId, Integer pageNum, Integer pageSize) {
+        RowBounds rowBounds = new RowBounds(pageNum, pageSize);
+        return userFollowMapper.selectFollowingByOtherUserId(currentUserId, otherUserId, rowBounds);
+    }
+
+    @Override
+    public List<UserFollowBriefInfo> getOtherUserFollower(Integer currentUserId, Integer otherUserId, Integer pageNum, Integer pageSize) {
+        RowBounds rowBounds = new RowBounds(pageNum, pageSize);
+        return userFollowMapper.selectFollowerByOtherUserId(currentUserId, otherUserId, rowBounds);
+    }
 
 }
