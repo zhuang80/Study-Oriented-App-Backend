@@ -32,14 +32,16 @@ public class TransactionController {
     private MessageHandler messageHandler;
 
     @GetMapping("/user/{id}/transactions")
+    @ApiOperation(value = "get transactions for user", notes ="用户取回交易信息,可以设置status, 0 表示代付款， 1表示已付款，2表示已退款")
     public Result<List<Transaction>> getUserTransactions(@PathVariable("id") Integer userId,
+                                                         @RequestParam(value = "status", required = false) Short status,
                                                          @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                          @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         if( userId < 0 ){
             String message = messageHandler.getFailResponseMessage("40008");
             return ResultGenerator.fail(message);
         }
-        List<Transaction> transactions = transactionService.findByUserId(userId, pageNum, pageSize);
+        List<Transaction> transactions = transactionService.findByUserId(userId, status, pageNum, pageSize);
         return ResultGenerator.success(transactions);
     }
 
