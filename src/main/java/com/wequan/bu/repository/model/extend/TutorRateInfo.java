@@ -1,6 +1,5 @@
 package com.wequan.bu.repository.model.extend;
 
-import com.wequan.bu.repository.model.School;
 import com.wequan.bu.repository.model.Subject;
 import com.wequan.bu.repository.model.Topic;
 import com.wequan.bu.repository.model.Tutor;

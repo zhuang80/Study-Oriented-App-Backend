@@ -10,13 +10,13 @@ import java.util.List;
 public interface ThreadStreamService extends Service<ThreadStream> {
 
     /**
-     * 获取用户回复帖子列表
+     * 获取用户回帖列表
      * @param userId 用户id
      * @param pageNum pageNum
      * @param pageSize pageSize
      * @return 用户回复帖子列表
      */
-    List<ThreadStream> getUserThreadReplies(Integer userId, Integer pageNum, Integer pageSize);
+    List<ThreadStream> getUserReplies(Integer userId, Integer pageNum, Integer pageSize);
 
     /**
      * 获取帖子的直接回复列表
@@ -72,7 +72,19 @@ public interface ThreadStreamService extends Service<ThreadStream> {
     /**
      * 按标签获取回帖列表
      * @param label 标签
+     * @param pageNum pageNum
+     * @param pageSize pageSize
      * @return 帖子列表
      */
     List<ThreadStream> getLabelThreadReplies(Integer label, Integer pageNum, Integer pageSize);
+
+    /**
+     * 针对用户已发布帖子的回帖列表
+     * @param userId 用户id
+     * @param pageNum pageNum
+     * @param pageSize pageSize
+     * @return 用户已发布帖子的回帖列表
+     */
+    List<ThreadStream> getUserThreadReplies(Integer userId, Integer pageNum, Integer pageSize);
+
 }

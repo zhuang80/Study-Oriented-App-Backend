@@ -8,6 +8,7 @@ import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.exception.NotImplementedException;
 import com.wequan.bu.repository.model.*;
 import com.wequan.bu.repository.model.extend.*;
+import com.wequan.bu.security.CurrentUser;
 import com.wequan.bu.service.*;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -208,7 +209,7 @@ public class UserController {
     }
 
     @GetMapping("/user/{id}/threads")
-    @ApiOperation(value = "a list of user’s threads", notes = "返回用户的thread列表")
+    @ApiOperation(value = "a list of user’s threads", notes = "返回用户发布的帖子列表")
     @ApiResponses(
             @ApiResponse(code = 200, message = "a list of thread card (title, thread id, user name, user id, tag, created time, first 100 words, \n" +
                     "first 3 photos, # of likes, # of dislikes, # of views, school id, study points reward, status) sorted by created time")
@@ -230,8 +231,26 @@ public class UserController {
         return ResultGenerator.success(threads);
     }
 
+    @GetMapping("/user/{id}/thread_replies")
+    @ApiOperation(value = "a list of user's thread with reply ", notes = "返回针对用户已发布帖子的回帖列表")
+    public Result getUserThreadReplies(@PathVariable("id") Integer userId,
+                                       @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                       @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        List<ThreadStream> threadStreams = threadStreamService.getUserThreadReplies(userId, pageNum, pageSize);
+        return ResultGenerator.success(threadStreams);
+    }
+
     @GetMapping("/user/{id}/replies")
-    @ApiOperation(value = "a list of user’s replies", notes = "返回用户的帖子回复列表")
+    @ApiOperation(value = "a list of user’s replies", notes = "返回用户发布的对帖子的回帖列表")
     public Result<List<ThreadStream>> getThreadReplies(@PathVariable("id") Integer userId,
                                                        @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                        @RequestParam(value = "pageSize", required = false) Integer pageSize) {
@@ -245,8 +264,26 @@ public class UserController {
         if (Objects.isNull(pageSize)) {
             pageSize = 0;
         }
-        threadReplies = threadStreamService.getUserThreadReplies(userId, pageNum, pageSize);
+        threadReplies = threadStreamService.getUserReplies(userId, pageNum, pageSize);
         return ResultGenerator.success(threadReplies);
+    }
+
+    @GetMapping("/user/{id}/liked")
+    @ApiOperation(value = "a list of user’s resource liked by others", notes = "返回用户资源被点赞的列表，按照资源创建时间排序")
+    public Result<List<LikeRecordBriefInfo>> getUserLikedResources(@PathVariable("id") Integer userId,
+                                                          @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                          @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        if (userId <= 0) {
+            return ResultGenerator.fail(messageHandler.getMessage("40098"));
+        }
+        if (Objects.isNull(pageNum)) {
+            pageNum = 1;
+        }
+        if (Objects.isNull(pageSize)) {
+            pageSize = 0;
+        }
+        List<LikeRecordBriefInfo> likeRecords = userService.getUserLikedResources(userId, pageNum, pageSize);
+        return ResultGenerator.success(likeRecords);
     }
 
     @GetMapping("/user/{id}/favorites")
@@ -367,8 +404,9 @@ public class UserController {
     )
     public Result<List<UserFollowBriefInfo>> getUserFollowing(@PathVariable("id") Integer userId,
                                                               @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<UserFollowBriefInfo> result = null;
+                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize,
+                                                              @CurrentUser Integer currentUserId) {
+        List<UserFollowBriefInfo> userFollowBriefInfoList = null;
         if (userId <= 0) {
             return ResultGenerator.fail(messageHandler.getMessage("40098"));
         }
@@ -378,16 +416,21 @@ public class UserController {
         if (Objects.isNull(pageSize)) {
             pageSize = 0;
         }
-        result = userService.getUserFollowing(userId, pageNum, pageSize);
-        return ResultGenerator.success(result);
+        if (userId.compareTo(currentUserId) == 0) {
+            userFollowBriefInfoList = userService.getUserFollowing(userId, pageNum, pageSize);
+        } else {
+            userFollowBriefInfoList = userService.getOtherUserFollowing(currentUserId, userId, pageNum, pageSize);
+        }
+        return ResultGenerator.success(userFollowBriefInfoList);
     }
 
     @GetMapping("/user/{id}/followers")
     @ApiOperation(value = "a list of followers", notes = "返回被关注用户列表")
     public Result<List<UserFollowBriefInfo>> getUserFollowers(@PathVariable("id") Integer userId,
                                                               @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        List<UserFollowBriefInfo> result = null;
+                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize,
+                                                              @CurrentUser Integer currentUserId) {
+        List<UserFollowBriefInfo> userFollowBriefInfoList = null;
         if (userId <= 0) {
             return ResultGenerator.fail(messageHandler.getMessage("40098"));
         }
@@ -397,8 +440,12 @@ public class UserController {
         if (Objects.isNull(pageSize)) {
             pageSize = 0;
         }
-        result = userService.getUserFollower(userId, pageNum, pageSize);
-        return ResultGenerator.success(result);
+        if (userId.compareTo(currentUserId) == 0) {
+            userFollowBriefInfoList = userService.getUserFollower(userId, pageNum, pageSize);
+        } else {
+            userFollowBriefInfoList = userService.getOtherUserFollower(currentUserId, userId, pageNum, pageSize);
+        }
+        return ResultGenerator.success(userFollowBriefInfoList);
     }
 
     @GetMapping("/user/{id}/professor/reviews")
