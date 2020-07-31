@@ -58,7 +58,7 @@
     from ${schema}.wq_tutor_profile t1
     inner join ${schema}.wq_user_profile u1 on t1.user_id = u1.id
     ) v on v.t_id = a.tutor_id
-    where a.user_id = #{tutor_id} and a.status &lt;&gt; -1
+    where a.tutor_id = #{tutor_id} and a.status &lt;&gt; -1
     <if test="status != null">
       <if test="status == 0">
         AND a.status = 0
