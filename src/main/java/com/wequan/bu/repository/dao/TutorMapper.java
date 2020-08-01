@@ -2,6 +2,7 @@ package com.wequan.bu.repository.dao;
 
 import com.wequan.bu.repository.model.Topic;
 import com.wequan.bu.repository.model.Tutor;
+import com.wequan.bu.repository.model.TutorStripe;
 import com.wequan.bu.repository.model.extend.TutorBriefInfo;
 import com.wequan.bu.repository.model.extend.TutorRateInfo;
 import org.apache.ibatis.annotations.Mapper;
@@ -32,4 +33,6 @@ public interface TutorMapper extends GeneralMapper<Tutor> {
     Tutor selectByUserId(@Param("user_id") Integer userId);
 
     List<Topic> selectTopicsByTutorId(@Param("tutor_id") Integer tutorId);
+
+    TutorStripe selectTutorStripeAccountByTutorId(@Param("tutor_id") Integer tutorId);
 }

@@ -1,9 +1,6 @@
 package com.wequan.bu.service;
 
-import com.wequan.bu.repository.model.OnlineEvent;
-import com.wequan.bu.repository.model.Tutor;
-import com.wequan.bu.repository.model.TutorApplication;
-import com.wequan.bu.repository.model.TutorViewHistory;
+import com.wequan.bu.repository.model.*;
 import com.wequan.bu.repository.model.extend.TutorBriefInfo;
 import com.wequan.bu.repository.model.extend.TutorRateInfo;
 
@@ -39,5 +36,7 @@ public interface TutorService extends Service<Tutor> {
     public void logTutorViewHistory(Tutor tutor, Integer userId);
 
     public Tutor findByUserId(Integer userId);
+
+    public TutorStripe findStripeAccountByTutorId(Integer tutorId);
 
 }

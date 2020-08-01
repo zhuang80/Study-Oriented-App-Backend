@@ -282,8 +282,23 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
             pageSize = 10;
         }
         PageHelper.startPage(pageNum, pageSize);
-        return transactionMapper.selectByUserId(userId, status);
+        return transactionMapper.selectByPayFromUserId(userId, status);
     }
+
+    @Override
+    public List<Transaction> findByTutorId(Integer tutorId, Short status, Integer pageNum, Integer pageSize) throws Exception {
+        if(pageNum == null || pageNum <= 0 ) {
+            pageNum = 1;
+        }
+        if(pageSize == null || pageSize <= 0){
+            pageSize = 10;
+        }
+        PageHelper.startPage(pageNum, pageSize);
+        Tutor tutor = tutorMapper.selectByPrimaryKey(tutorId);
+        if(tutor == null) throw new Exception("No such Tutor");
+        return transactionMapper.selectByPayToUserId(tutor.getUserId(), status);
+    }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -358,6 +373,11 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         transaction.setTransferId(transferId);
         transaction.setThirdPartyTransactionId(paymentIntentId);
         transactionMapper.updateByThirdPartyTransactionId(transaction);
+    }
+
+    @Override
+    public Transaction findTransactionByToTransactionId(String id) {
+        return transactionMapper.selectRefundTransactionByToTransactionId(id);
     }
 
 

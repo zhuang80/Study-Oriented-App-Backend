@@ -155,10 +155,29 @@
         WHERE third_party_transaction_id = #{third_party_transaction_id, jdbcType=VARCHAR}
     </select>
 
-    <select id="selectByUserId" resultType="com.wequan.bu.controller.vo.Transaction">
+    <select id="selectByPayFromUserId" resultType="com.wequan.bu.controller.vo.Transaction">
         SELECT *
         FROM ${schema}.wq_transaction
         WHERE pay_from = #{user_id}
+        <if test="status != null" >
+
+            <if test="status == 0">
+                AND status IN (0)
+            </if>
+            <if test="status == 1">
+                AND status IN (1,2)
+            </if>
+            <if test="status == 2">
+                AND status IN (4,5)
+            </if>
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectByPayToUserId" resultType="com.wequan.bu.controller.vo.Transaction">
+        SELECT *
+        FROM ${schema}.wq_transaction
+        WHERE pay_to = #{user_id}
         <if test="status != null" >
 
             <if test="status == 0">

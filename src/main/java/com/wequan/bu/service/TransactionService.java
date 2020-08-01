@@ -35,6 +35,8 @@ public interface TransactionService extends Service<Transaction> {
 
     public List<Transaction> findByUserId(Integer userId, Short status, Integer pageNum, Integer pageSize);
 
+    public List<Transaction> findByTutorId(Integer tutorId, Short status, Integer pageNum, Integer pageSize) throws Exception;
+
     public void refundApply(RefundApplication refundApplication);
 
     public List<Transaction> findAll(Integer pageNum, Integer pageSize);
@@ -48,5 +50,7 @@ public interface TransactionService extends Service<Transaction> {
     public Transaction findByThirdPartyTransactionId(String paymentIntentId);
 
     public void updateTransferIdByThirdPartyTransactionId(String paymentIntentId, String transferId);
+
+    public Transaction findTransactionByToTransactionId(String id);
 
 }

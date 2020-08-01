@@ -242,4 +242,10 @@
             ) as id
         )
     </select>
+
+    <select id="selectTutorStripeAccountByTutorId" resultType="com.wequan.bu.repository.model.TutorStripe">
+        SELECT *
+        FROM ${schema}.wq_tutor_stripe
+        WHERE tutor_id = #{tutor_id}
+    </select>
 </mapper>
