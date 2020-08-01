@@ -1,14 +1,11 @@
 package com.wequan.bu.controller;
 
 import com.wequan.bu.config.handler.MessageHandler;
-import com.wequan.bu.repository.model.OnlineEvent;
+import com.wequan.bu.repository.model.*;
 import com.wequan.bu.controller.vo.SubjectGroup;
 import com.wequan.bu.controller.vo.TutorReview;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
-import com.wequan.bu.repository.model.Appointment;
-import com.wequan.bu.repository.model.Tutor;
-import com.wequan.bu.repository.model.TutorViewHistory;
 import com.wequan.bu.repository.model.extend.TutorRateInfo;
 import com.wequan.bu.security.CurrentUser;
 import com.wequan.bu.service.AppointmentService;
@@ -194,5 +191,16 @@ public class TutorController {
         }
         List<TutorViewHistory> tutorViewHistories = tutorService.findViewHistoryByTutorId(tutorId, pageNum, pageSize);
         return ResultGenerator.success(tutorViewHistories);
+    }
+
+    @GetMapping("/tutor/{id}/stripe_account")
+    @ApiOperation(value = "tutor stripe account", notes = "返回Tutor的stripe账号")
+    public Result<TutorStripe> getTutorStripeAccount(@PathVariable("id") Integer tutorId) {
+        if( tutorId < 0 ){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
+        TutorStripe tutorStripe = tutorService.findStripeAccountByTutorId(tutorId);
+        return ResultGenerator.success(tutorStripe);
     }
 }
