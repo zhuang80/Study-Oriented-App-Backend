@@ -1,5 +1,8 @@
 package com.wequan.bu.controller;
 
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Account;
 import com.wequan.bu.config.handler.MessageHandler;
 import com.wequan.bu.repository.model.*;
 import com.wequan.bu.controller.vo.SubjectGroup;
@@ -9,6 +12,7 @@ import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.extend.TutorRateInfo;
 import com.wequan.bu.security.CurrentUser;
 import com.wequan.bu.service.AppointmentService;
+import com.wequan.bu.service.StripeService;
 import com.wequan.bu.service.TutorReviewService;
 import com.wequan.bu.service.TutorService;
 import com.wequan.bu.util.GroupTool;
@@ -45,6 +49,8 @@ public class TutorController {
     @Autowired
     private AppointmentService appointmentService;
 
+    @Autowired
+    private StripeService stripeService;
 
     @GetMapping("/tutor/{id}")
     @ApiOperation(value = "Get tutor info", notes = "返回Tutor详情")
@@ -200,7 +206,27 @@ public class TutorController {
             String message = messageHandler.getFailResponseMessage("40008");
             return ResultGenerator.fail(message);
         }
-        TutorStripe tutorStripe = tutorService.findStripeAccountByTutorId(tutorId);
-        return ResultGenerator.success(tutorStripe);
+        try{
+            TutorStripe tutorStripe = stripeService.retrieveAccount(tutorId);
+            return ResultGenerator.success(tutorStripe);
+        }catch(StripeException e) {
+            return ResultGenerator.fail(e.getMessage());
+        }
     }
+
+    @GetMapping("/tutor/{id}/login_link")
+    @ApiOperation(value = "get login link to access Stripe dashboard", notes = "返回一个login link来访问Stripe dashboard")
+    public Result<String> getLoginLink(@PathVariable("id") Integer tutorId) {
+        if( tutorId < 0 ){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
+        try{
+           String url = stripeService.createLoginLink(tutorId);
+            return ResultGenerator.success(url);
+        }catch(StripeException e) {
+            return ResultGenerator.fail(e.getMessage());
+        }
+    }
+
 }
