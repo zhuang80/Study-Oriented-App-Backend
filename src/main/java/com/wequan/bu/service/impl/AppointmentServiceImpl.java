@@ -71,6 +71,11 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
         appointment.setTransactionId(null);
 
         appointmentMapper.insertSelective(appointment);
+        try{
+            stripeService.createPaymentIntent(appointment.getId());
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
