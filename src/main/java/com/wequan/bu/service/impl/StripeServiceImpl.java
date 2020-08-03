@@ -6,11 +6,9 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.*;
 import com.stripe.model.oauth.TokenResponse;
 import com.stripe.net.OAuth;
+import com.stripe.net.RequestOptions;
 import com.stripe.net.Webhook;
-import com.stripe.param.PaymentIntentCreateParams;
-import com.stripe.param.PaymentIntentUpdateParams;
-import com.stripe.param.RefundCreateParams;
-import com.stripe.param.TransferCreateParams;
+import com.stripe.param.*;
 import com.wequan.bu.controller.vo.Transaction;
 import com.wequan.bu.repository.dao.AppointmentMapper;
 import com.wequan.bu.repository.dao.TutorStripeMapper;
@@ -360,6 +358,23 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
                 handleTransferCreated(event);
             }
         }
+    }
+
+    @Override
+    public TutorStripe retrieveAccount(int tutorId) throws StripeException {
+        TutorStripe tutorStripe = tutorStripeMapper.selectByTutorId(tutorId);
+        Account account = Account.retrieve(tutorStripe.getStripeAccount());
+        tutorStripe.setEmail(account.getEmail());
+        tutorStripe.setType(account.getType());
+        return tutorStripe;
+    }
+
+    @Override
+    public String createLoginLink(int tutorId) throws StripeException {
+        TutorStripe tutorStripe = tutorStripeMapper.selectByTutorId(tutorId);
+        LoginLinkCreateOnAccountParams params = LoginLinkCreateOnAccountParams.builder().build();
+        LoginLink loginLink = LoginLink.createOnAccount(tutorStripe.getStripeAccount(), params, null);
+        return loginLink.getUrl();
     }
 
     @Transactional(rollbackFor = Exception.class)

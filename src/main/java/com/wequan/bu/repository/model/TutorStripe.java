@@ -13,4 +13,6 @@ public class TutorStripe {
     private Integer tutorId;
     private String stripeAccount;
     private LocalDateTime createTime;
+    private String email;
+    private String type;
 }

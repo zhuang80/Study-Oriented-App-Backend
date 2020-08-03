@@ -1,6 +1,7 @@
 package com.wequan.bu.service;
 
 import com.stripe.exception.StripeException;
+import com.stripe.model.Account;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.Refund;
 import com.stripe.model.WebhookEndpoint;
@@ -51,4 +52,14 @@ public interface StripeService extends Service<TutorStripe> {
     public String getUrl(String state);
 
     public void handleTransfer(String sigHeader, String payload) throws Exception;
+
+    /**
+     * retrieve stripe connected account
+     * @param tutorId
+     * @return
+     * @throws StripeException
+     */
+    public TutorStripe retrieveAccount(int tutorId) throws StripeException;
+
+    public String createLoginLink(int tutorId) throws StripeException;
 }
