@@ -32,7 +32,7 @@ public class TransactionController {
     private MessageHandler messageHandler;
 
     @GetMapping("/user/{id}/transactions")
-    @ApiOperation(value = "get transactions for user", notes ="用户取回交易信息,可以设置status, 0 表示代付款， 1表示已付款，2表示已退款")
+    @ApiOperation(value = "get transactions for user", notes ="用户取回交易信息,用户为付款方，可以设置status, 0 表示代付款， 1表示已付款，2表示已退款")
     public Result<List<Transaction>> getUserTransactions(@PathVariable("id") Integer userId,
                                                          @RequestParam(value = "status", required = false) Short status,
                                                          @RequestParam(value = "pageNum", required = false) Integer pageNum,
@@ -43,6 +43,24 @@ public class TransactionController {
         }
         List<Transaction> transactions = transactionService.findByUserId(userId, status, pageNum, pageSize);
         return ResultGenerator.success(transactions);
+    }
+
+    @GetMapping("/tutor/{id}/transactions")
+    @ApiOperation(value = "get transactions for tutor", notes ="Tutor取回交易信息,Tutor为收款方，可以设置status, 0 表示代付款， 1表示已付款，2表示已退款")
+    public Result<List<Transaction>> getTutorTransactions(@PathVariable("id") Integer tutorId,
+                                                         @RequestParam(value = "status", required = false) Short status,
+                                                         @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                         @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        if( tutorId < 0 ){
+            String message = messageHandler.getFailResponseMessage("40008");
+            return ResultGenerator.fail(message);
+        }
+        try{
+            List<Transaction> transactions = transactionService.findByTutorId(tutorId, status, pageNum, pageSize);
+            return ResultGenerator.success(transactions);
+        }catch (Exception e) {
+            return ResultGenerator.fail(e.getMessage());
+        }
     }
 
     @PostMapping("/user/{id}/transaction/{transaction_id}/cancel")
@@ -83,5 +101,11 @@ public class TransactionController {
     public Result<List<Transaction>> getAllTransactions( @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                          @RequestParam(value = "pageSize", required = false) Integer pageSize){
         return ResultGenerator.success(transactionService.findAll(pageNum, pageSize));
+    }
+
+    @GetMapping("/transaction/{id}/refund_record")
+    @ApiOperation(value ="return refund record of transaction", notes = "返回某交易的退款信息")
+    public Result<Transaction> getRefundRecord(@PathVariable("id") String id){
+        return ResultGenerator.success(transactionService.findTransactionByToTransactionId(id));
     }
 }

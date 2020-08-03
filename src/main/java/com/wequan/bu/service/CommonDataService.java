@@ -38,4 +38,17 @@ public interface CommonDataService {
      * @return degree列表
      */
     List<Degree> getDegreeData();
+
+    /**
+     * 获取cancellation policy 列表
+     * @return cancellation policy列表
+     */
+    List<CancellationPolicy> getCancellationPolicyData();
+
+    /**
+     * 获取late policy列表
+     * @return late policy列表
+     */
+    List<LatePolicy> getLatePolicyData();
+
 }
