@@ -17,4 +17,9 @@
     )
   </select>
 
+  <select id="selectAll" resultType="com.wequan.bu.repository.model.CancellationPolicy">
+    SELECT *
+    FROM ${schema}.wq_cancellation_policy
+  </select>
+
 </mapper>

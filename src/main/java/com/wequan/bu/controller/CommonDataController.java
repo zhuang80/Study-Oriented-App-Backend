@@ -63,4 +63,20 @@ public class CommonDataController {
         return ResultGenerator.success(degreeData);
     }
 
+    @GetMapping("/cancellation_policy")
+    @ApiOperation(value = "a list of cancellation policy", notes = "返回cancellation policy")
+    public Result<List<CancellationPolicy>> getCancellationPolicy(){
+        List<CancellationPolicy> data = commonDataService.getCancellationPolicyData();
+        return ResultGenerator.success(data);
+    }
+
+    @GetMapping("/late_policy")
+    @ApiOperation(value = "a list of late policy", notes = "返回late policy")
+    public Result<List<LatePolicy>> getLatePolicy(){
+        List<LatePolicy> data = commonDataService.getLatePolicyData();
+        return ResultGenerator.success(data);
+    }
+
+
+
 }

@@ -37,6 +37,11 @@ public class CommonDataServiceImpl implements CommonDataService {
     @Autowired
     private DegreeMapper degreeMapper;
 
+    @Autowired
+    private CancellationPolicyMapper cancellationPolicyMapper;
+    @Autowired
+    private LatePolicyMapper latePolicyMapper;
+
     private Lock lock = new ReentrantLock();
 
     @Override
@@ -143,5 +148,15 @@ public class CommonDataServiceImpl implements CommonDataService {
         }
         return degrees;
 
+    }
+
+    @Override
+    public List<CancellationPolicy> getCancellationPolicyData() {
+        return cancellationPolicyMapper.selectAll();
+    }
+
+    @Override
+    public List<LatePolicy> getLatePolicyData() {
+        return latePolicyMapper.selectAll();
     }
 }
