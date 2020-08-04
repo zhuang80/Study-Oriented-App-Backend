@@ -7,6 +7,7 @@ import com.stripe.model.WebhookEndpoint;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.Appointment;
+import com.wequan.bu.security.CurrentUser;
 import com.wequan.bu.service.StripeService;
 import com.wequan.bu.util.TransactionType;
 import io.swagger.annotations.Api;
@@ -169,5 +170,15 @@ public class ChargeController {
         } catch (Exception e) {
             return ResultGenerator.fail(e.getMessage());
         }
+    }
+
+    @GetMapping("/client_secret/study_point")
+    @ApiOperation(value = "return client secret for study point transaction", notes = "用户购买study point, user id 通过token解析")
+    public Result<String> getClientSecretForStudyPoint(@CurrentUser Integer currentUserId,
+                                                       @RequestParam("amount") Integer amount) {
+        try{
+            PaymentIntent paymentIntent = stripeService.createPaymentIntentForStudyPointTopUp(currentUserId, amount);
+        }catch (StripeException e){}
+
     }
 }

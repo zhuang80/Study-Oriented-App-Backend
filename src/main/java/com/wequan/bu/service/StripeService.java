@@ -62,4 +62,8 @@ public interface StripeService extends Service<TutorStripe> {
     public TutorStripe retrieveAccount(int tutorId) throws StripeException;
 
     public String createLoginLink(int tutorId) throws StripeException;
+
+    public PaymentIntent createPaymentIntentFromTransaction(Transaction transaction) throws StripeException;
+
+    public PaymentIntent createPaymentIntentForStudyPointTopUp(Integer userId, Integer amount) throws StripeException;
 }

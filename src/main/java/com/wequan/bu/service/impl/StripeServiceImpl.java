@@ -88,6 +88,9 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
    @Autowired
    private TutorService tutorService;
 
+   @Autowired
+   private StudyPointService studyPointService;
+
     @PostConstruct
     public void postConstruct(){
         Stripe.apiKey = secretKey;
@@ -171,6 +174,29 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
     }
 
     @Override
+    public PaymentIntent createPaymentIntentFromTransaction(Transaction transaction) throws StripeException {
+       Map<String, String> metadata = new HashMap<>();
+       metadata.put("transaction_id", transaction.getId());
+       metadata.put("type", String.valueOf(TransactionType.STUDY_POINT.getValue()));
+
+       PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                .setAmount((long)(int) transaction.getPayAmount())
+                .setCurrency("usd")
+                .addPaymentMethodType("card")
+                .putAllMetadata(metadata)
+                .build();
+
+       PaymentIntent paymentIntent = PaymentIntent.create(params);
+       return paymentIntent;
+    }
+
+    @Override
+    public PaymentIntent createPaymentIntentForStudyPointTopUp(Integer userId, Integer amount) throws StripeException {
+        Transaction transaction = transactionService.createStudyPointTransaction(userId, amount);
+        return createPaymentIntentFromTransaction(transaction);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void handlePaymentIntent(String sigHeader, String webhookEndpoint) throws Exception {
         Event event = null;
@@ -221,6 +247,12 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
             onlineEventService.saveOrUpdateOnlineEventMember(onlineEventId, userId, (short) 1);
 
             onlineEventService.addTransferQuartzJobAndTrigger(paymentIntent);
+        }
+        //add study point history, update user profile
+        if(TransactionType.STUDY_POINT.getValue() == type) {
+            String transactionId = metadata.get("transaction_id");
+            Transaction transaction = transactionService.findById(transactionId);
+            studyPointService.
         }
     }
 
@@ -376,6 +408,8 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
         LoginLink loginLink = LoginLink.createOnAccount(tutorStripe.getStripeAccount(), params, null);
         return loginLink.getUrl();
     }
+
+
 
     @Transactional(rollbackFor = Exception.class)
     private void handleTransferCreated(Event event) throws Exception {
