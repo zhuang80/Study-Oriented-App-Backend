@@ -252,7 +252,7 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
         if(TransactionType.STUDY_POINT.getValue() == type) {
             String transactionId = metadata.get("transaction_id");
             Transaction transaction = transactionService.findById(transactionId);
-            studyPointService.
+            studyPointService.addStudyPointHistoryAndUpdateUserProfile(transaction);
         }
     }
 

@@ -399,6 +399,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     @Override
     public Transaction createStudyPointTransaction(Integer userId, Integer amount) throws StripeException {
         Transaction transaction = new Transaction();
+        transaction.setId(UUID.randomUUID().toString());
         transaction.setType((short) TransactionType.STUDY_POINT.getValue());
         transaction.setPayFrom(userId);
         //user id 0 representing the admin
