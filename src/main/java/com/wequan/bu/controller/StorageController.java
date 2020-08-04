@@ -69,7 +69,7 @@ public class StorageController {
                 key = key.substring(1);
             }
         } else {
-            key = UUID.randomUUID() + "-" + fileName;
+            key = UUID.randomUUID() + "." + fileName;
         }
         String s3Key = (storageKey + "/").concat(WeQuanConstants.S3_USER_PATH).concat(userId + "/")
                 .concat(DATE_TIME_FORMATTER.format(LocalDate.now()) + "/").concat(key);

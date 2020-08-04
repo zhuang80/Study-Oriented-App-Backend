@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wequan.bu.repository.dao.TransactionMapper">
-    <insert id="insertSelective" parameterType="com.wequan.bu.controller.vo.Transaction">
+    <insert id="insertSelective" parameterType="com.wequan.bu.controller.vo.Transaction"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO ${schema}.wq_transaction
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -86,6 +87,52 @@
             </if>
         </trim>
     </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.controller.vo.Transaction">
+        UPDATE ${schema}.wq_transaction t
+        <set>
+            <if test="id != null">
+                id = #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=SMALLINT},
+            </if>
+            <if test="payFrom != null">
+                pay_from = #{payFrom,jdbcType=INTEGER},
+            </if>
+            <if test="payTo != null">
+                pay_to = #{payTo,jdbcType=INTEGER},
+            </if>
+            <if test="payAmount != null">
+                pay_amount = #{payAmount,jdbcType=INTEGER},
+            </if>
+            <if test="paymentMethod != null">
+                payment_method = #{paymentMethod,jdbcType=SMALLINT},
+            </if>
+            <if test="thirdPartyTransactionId != null">
+                third_party_transaction_id = #{thirdPartyTransactionId,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=SMALLINT},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="toTransactionId != null">
+                to_transaction_id = #{toTransactionId,jdbcType=VARCHAR},
+            </if>
+            <if test="applicationFeeAmount != null">
+                application_fee_amount = #{applicationFeeAmount, jdbcType=INTEGER},
+            </if>
+            <if test="transferId != null">
+                transfer_id = #{transferId, jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE t.id = #{id, jdbcType=VARCHAR}
+    </update>
 
     <update id="updateByThirdPartyTransactionId" parameterType="com.wequan.bu.controller.vo.Transaction">
         UPDATE ${schema}.wq_transaction t
