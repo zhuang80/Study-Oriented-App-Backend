@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wequan.bu.repository.dao.TransactionMapper">
-    <insert id="insertSelective" parameterType="com.wequan.bu.controller.vo.Transaction"
-            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    <insert id="insertSelective" parameterType="com.wequan.bu.controller.vo.Transaction">
         INSERT INTO ${schema}.wq_transaction
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">

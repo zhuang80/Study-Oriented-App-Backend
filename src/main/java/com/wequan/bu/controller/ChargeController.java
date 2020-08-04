@@ -178,7 +178,9 @@ public class ChargeController {
                                                        @RequestParam("amount") Integer amount) {
         try{
             PaymentIntent paymentIntent = stripeService.createPaymentIntentForStudyPointTopUp(currentUserId, amount);
-        }catch (StripeException e){}
-
+            return ResultGenerator.success(paymentIntent.getClientSecret());
+        }catch (StripeException e){
+            return ResultGenerator.fail(e.getMessage());
+        }
     }
 }
