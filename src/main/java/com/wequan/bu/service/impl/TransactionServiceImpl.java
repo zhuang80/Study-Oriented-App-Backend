@@ -94,6 +94,18 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         onlineEventService.saveOnlineEventTransaction(onlineEventTransaction);
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public void updateStudyPointTransaction(PaymentIntent paymentIntent) {
+        Map<String, String> metadata = paymentIntent.getMetadata();
+        String transactionId = metadata.get("transaction_id");
+
+        Transaction transaction = new Transaction();
+        transaction.setId(transactionId);
+        transaction.setThirdPartyTransactionId(paymentIntent.getId());
+        transaction.setStatus(getStatus(paymentIntent.getStatus()));
+        transactionMapper.updateByPrimaryKeySelective(transaction);
+    }
+
     /**
      * create and save transaction after payment_intent.created webhook is triggered
      * @param paymentIntent
@@ -110,6 +122,10 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 
         if(TransactionType.APPOINTMENT.getValue() == type){
             saveAppointmentTransaction(paymentIntent);
+        }
+
+        if(TransactionType.STUDY_POINT.getValue() == type) {
+            updateStudyPointTransaction(paymentIntent);
         }
     }
 
@@ -378,6 +394,22 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     @Override
     public Transaction findTransactionByToTransactionId(String id) {
         return transactionMapper.selectRefundTransactionByToTransactionId(id);
+    }
+
+    @Override
+    public Transaction createStudyPointTransaction(Integer userId, Integer amount) throws StripeException {
+        Transaction transaction = new Transaction();
+        transaction.setId(UUID.randomUUID().toString());
+        transaction.setType((short) TransactionType.STUDY_POINT.getValue());
+        transaction.setPayFrom(userId);
+        //user id 0 representing the admin
+        transaction.setPayTo(0);
+        transaction.setPayAmount(amount);
+        transaction.setPaymentMethod(PaymentMethod.CARD.getValue());
+        transaction.setCreateTime(LocalDateTime.now());
+
+        transactionMapper.insertSelective(transaction);
+        return transaction;
     }
 
 
