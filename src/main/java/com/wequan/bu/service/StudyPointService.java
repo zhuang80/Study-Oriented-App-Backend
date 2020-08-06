@@ -1,5 +1,6 @@
 package com.wequan.bu.service;
 
+import com.wequan.bu.controller.vo.Transaction;
 import com.wequan.bu.repository.model.StudyPointHistory;
 
 import java.util.List;
@@ -23,4 +24,6 @@ public interface StudyPointService extends Service<StudyPointHistory> {
      * @param studyPoint 学习积分
      */
     void addStudyPoint(StudyPointHistory studyPoint);
+
+    void addStudyPointHistoryAndUpdateUserProfile(Transaction transaction);
 }

@@ -53,4 +53,6 @@ public interface TransactionService extends Service<Transaction> {
 
     public Transaction findTransactionByToTransactionId(String id);
 
+    public Transaction createStudyPointTransaction(Integer userId, Integer amount) throws StripeException;
+
 }
