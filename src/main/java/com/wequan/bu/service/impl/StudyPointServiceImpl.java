@@ -8,8 +8,6 @@ import com.wequan.bu.repository.model.User;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.StudyPointService;
 import com.wequan.bu.service.TransactionService;
-import com.wequan.bu.util.PaymentMethod;
-import com.wequan.bu.util.TransactionType;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -46,7 +43,7 @@ public class StudyPointServiceImpl extends AbstractService<StudyPointHistory> im
     @Override
     public List<StudyPointHistory> getUserStudyPointTransactions(Integer userId, Integer pageNum, Integer pageSize) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
-        return studyPointHistoryMapper.selectByUserId(userId);
+        return studyPointHistoryMapper.selectByUserId(userId, rowBounds);
     }
 
     @Override
