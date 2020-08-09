@@ -9,4 +9,9 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface UserSubjectMapper extends GeneralMapper<UserSubject>{
 
+    /**
+     * 根据用户id删除subjects
+     * @param userId 用户id
+     */
+    void deleteByUserId(Integer userId);
 }
