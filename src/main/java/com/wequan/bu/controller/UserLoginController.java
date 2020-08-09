@@ -156,10 +156,11 @@ public class UserLoginController {
                     (accessToken.getExpiryDate().getTime() - System.currentTimeMillis()) / 1000);
             redisUtil.set(WeQuanConstants.REFRESH_TOKEN_PREFIX_IN_REDIS + accessToken.getSubject(), refreshToken.getToken(),
                     (refreshToken.getExpiryDate().getTime() - System.currentTimeMillis()) / 1000);
-            Map<String, String> tokens = new HashMap<>(2);
-            tokens.put("access_token", accessToken.getToken());
-            tokens.put("refresh_token", refreshToken.getToken());
-            return ResultGenerator.success(tokens);
+            Map<String, Object> tokenInfo = new HashMap<>(3);
+            tokenInfo.put("access_token", accessToken.getToken());
+            tokenInfo.put("refresh_token", refreshToken.getToken());
+            tokenInfo.put("user_id", Integer.parseInt(accessToken.getSubject()));
+            return ResultGenerator.success(tokenInfo);
         }
     }
 

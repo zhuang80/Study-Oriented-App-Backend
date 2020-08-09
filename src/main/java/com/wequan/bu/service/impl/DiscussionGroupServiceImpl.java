@@ -6,6 +6,8 @@ import com.wequan.bu.repository.dao.DiscussionGroupMapper;
 import com.wequan.bu.repository.model.DiscussionGroup;
 import com.wequan.bu.repository.model.DiscussionGroupMember;
 import com.wequan.bu.repository.model.User;
+import com.wequan.bu.repository.model.extend.DiscussionGroupBriefInfo;
+import com.wequan.bu.repository.model.extend.DiscussionGroupMemberInfo;
 import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.DiscussionGroupService;
 import com.wequan.bu.service.UserService;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author ChrisChen
@@ -232,6 +235,17 @@ public class DiscussionGroupServiceImpl extends AbstractService<DiscussionGroup>
             memberIdsWrappers.add(wrapper);
         }
         return memberIdsWrappers;
+    }
+
+    @Override
+    public DiscussionGroup findDetailById(Integer id) {
+        DiscussionGroupBriefInfo discussionGroupBriefInfo = discussionGroupMapper.selectDetailById(id);
+        List<DiscussionGroupMemberInfo> groupMembers = discussionGroupBriefInfo.getGroupMembers();
+        if (groupMembers != null && groupMembers.size() > 0) {
+            List<DiscussionGroupMemberInfo> sortedGroupMembers = groupMembers.stream().sorted(Comparator.comparing(DiscussionGroupMember::getActionTime).reversed()).collect(Collectors.toList());
+            discussionGroupBriefInfo.setGroupMembers(sortedGroupMembers);
+        }
+        return discussionGroupBriefInfo;
     }
 
     @Override

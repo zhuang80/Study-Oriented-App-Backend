@@ -58,4 +58,11 @@ public interface DiscussionGroupService extends Service<DiscussionGroup> {
     void updateLogo(Integer id, String logoUrl) throws Exception;
 
     List<DiscussionGroupMemberIdsWrapper> findMemberIdsForAllDiscussionGroup();
+
+    /**
+     * 获取讨论组详细信息
+     * @param id 讨论组id
+     * @return 讨论组详细信息，包括成员列表
+     */
+    DiscussionGroup findDetailById(Integer id);
 }
