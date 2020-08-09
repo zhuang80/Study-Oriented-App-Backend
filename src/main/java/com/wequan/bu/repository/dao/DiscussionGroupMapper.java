@@ -2,6 +2,7 @@ package com.wequan.bu.repository.dao;
 
 import com.wequan.bu.repository.model.DiscussionGroup;
 import com.wequan.bu.repository.model.DiscussionGroupMember;
+import com.wequan.bu.repository.model.extend.DiscussionGroupBriefInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
@@ -45,4 +46,11 @@ public interface DiscussionGroupMapper extends GeneralMapper<DiscussionGroup> {
     void updateCurrentHeadcountByPrimaryKey(@Param("id") Integer id);
 
     List<DiscussionGroupMember> selectDiscussionGroupMembers();
+
+    /**
+     * 讨论组详情
+     * @param id 讨论组id
+     * @return 讨论组详情
+     */
+    DiscussionGroupBriefInfo selectDetailById(Integer id);
 }

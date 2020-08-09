@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -55,13 +54,13 @@ public class DiscussionGroupController {
     }
 
     @GetMapping("/discussion_group/{id}")
-    @ApiOperation(value = "Discussion group detail", notes = "返回discussion group详情")
+    @ApiOperation(value = "Discussion group detail", notes = "返回discussion group详情，包括成员列表")
     public Result<DiscussionGroup> getDiscussionGroup(@PathVariable("id") Integer id) {
-        if(id < 0){
+        if (id < 0) {
             String message = messageHandler.getFailResponseMessage("40008");
             return ResultGenerator.fail(message);
         }
-        DiscussionGroup discussionGroup = discussionGroupService.findById(id);
+        DiscussionGroup discussionGroup = discussionGroupService.findDetailById(id);
         return ResultGenerator.success(discussionGroup);
     }
 
