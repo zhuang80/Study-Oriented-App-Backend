@@ -8,6 +8,7 @@ import java.util.Date;
  * Database Table Remarks:
  *   讨论组成员表
  * This class corresponds to the database table bu.wq_discussion_group_member
+ * @author ChrisChen
  */
 @Data
 public class DiscussionGroupMember {

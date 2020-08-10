@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.DiscussionGroupMemberMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.DiscussionGroupMember">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="discussion_group_id" jdbcType="INTEGER" property="discussionGroupId" />
+    <result column="member_id" jdbcType="INTEGER" property="memberId" />
+    <result column="action_time" jdbcType="TIMESTAMP" property="actionTime" />
+    <result column="action" jdbcType="SMALLINT" property="action" />
+  </resultMap>
+
+  <resultMap id="ResultMapWithMemberInfo" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.DiscussionGroupMemberInfo">
+    <association property="memberInfo" columnPrefix="m_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithBriefInfo" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, discussion_group_id, member_id, action_time, action
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ${schema}.wq_discussion_group_member
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ${schema}.wq_discussion_group_member
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.wequan.bu.repository.model.DiscussionGroupMember" useGeneratedKeys="true">
+    insert into ${schema}.wq_discussion_group_member
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="discussionGroupId != null">
+        discussion_group_id,
+      </if>
+      <if test="memberId != null">
+        member_id,
+      </if>
+      <if test="actionTime != null">
+        action_time,
+      </if>
+      <if test="action != null">
+        action,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="discussionGroupId != null">
+        #{discussionGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="memberId != null">
+        #{memberId,jdbcType=INTEGER},
+      </if>
+      <if test="actionTime != null">
+        #{actionTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="action != null">
+        #{action,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.DiscussionGroupMember">
+    update ${schema}.wq_discussion_group_member
+    <set>
+      <if test="discussionGroupId != null">
+        discussion_group_id = #{discussionGroupId,jdbcType=INTEGER},
+      </if>
+      <if test="memberId != null">
+        member_id = #{memberId,jdbcType=INTEGER},
+      </if>
+      <if test="actionTime != null">
+        action_time = #{actionTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="action != null">
+        action = #{action,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+</mapper>

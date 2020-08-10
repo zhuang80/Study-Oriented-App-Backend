@@ -3,7 +3,6 @@ package com.wequan.bu.repository.model;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * Database Table Remarks:
@@ -104,16 +103,7 @@ public class DiscussionGroup {
      */
     private String logo;
 
-    /**
-     *
-     */
     private String image;
-
-    private String createByName;
-
-    private String groupManagerName;
-
-    private String tagName;
 
     private Integer currentHeadcount;
 

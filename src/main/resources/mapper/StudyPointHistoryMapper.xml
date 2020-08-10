@@ -27,6 +27,7 @@
     <include refid="Base_Column_List" />
     from ${schema}.wq_study_point_history
     where user_id = #{userId,jdbcType=INTEGER}
+    order by action_time desc
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">

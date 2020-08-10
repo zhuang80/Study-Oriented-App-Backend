@@ -25,6 +25,11 @@
       and subject_id = #{subjectId,jdbcType=INTEGER}
   </delete>
 
+  <delete id="deleteByUserId">
+    delete from ${schema}.wq_user_subject
+    where user_id = #{userId,jdbcType=INTEGER}
+  </delete>
+
   <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.UserSubject">
     insert into ${schema}.wq_user_subject
     <trim prefix="(" suffix=")" suffixOverrides=",">

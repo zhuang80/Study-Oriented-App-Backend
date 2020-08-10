@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -163,6 +164,14 @@ public class ThreadServiceImpl extends AbstractService<Thread> implements Thread
     public List<Thread> getLabelThreads(Integer label, Integer pageNum, Integer pageSize) {
         RowBounds rowBounds = new RowBounds(pageNum, pageSize);
         return threadMapper.selectLabelThreads(label, rowBounds);
+    }
+
+    @Override
+    public List<Thread> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition) {
+        List<Thread> threads = null;
+        threads = threadMapper.selectByConditions(whereCondition, orderCondition,
+                new RowBounds(pageCondition.get("pageNo"), pageCondition.get("pageSize")));
+        return threads;
     }
 
 }
