@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wequan.bu.repository.dao.FavoriteTutorInquiryMapper">
+  <resultMap id="BaseResultMap" type="com.wequan.bu.repository.model.FavoriteTutorInquiry">
+    <id column="user_id" jdbcType="INTEGER" property="userId" />
+    <id column="tutor_inquiry_id" jdbcType="INTEGER" property="tutorInquiryId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    user_id, tutor_inquiry_id, create_time
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ${schema}.wq_favorite_tutor_inquiry
+    where user_id = #{userId,jdbcType=INTEGER}
+      and tutor_inquiry_id = #{tutorInquiryId,jdbcType=INTEGER}
+  </select>
+
+  <select id="checkFavorite" resultType="java.lang.Boolean">
+    select count(1) > 0
+    from ${schema}.wq_favorite_tutor_inquiry
+    where user_id = #{userId} and tutor_inquiry_id = #{tutorInquiryId}
+  </select>
+
+  <select id="selectByUserId" resultType="com.wequan.bu.repository.model.extend.FavoriteTutorInquiryBriefInfo">
+
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from ${schema}.wq_favorite_tutor_inquiry
+    where user_id = #{userId,jdbcType=INTEGER}
+      and tutor_inquiry_id = #{tutorInquiryId,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insertSelective" parameterType="com.wequan.bu.repository.model.FavoriteTutorInquiry">
+    insert into ${schema}.wq_favorite_tutor_inquiry
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="tutorInquiryId != null">
+        tutor_inquiry_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="tutorInquiryId != null">
+        #{tutorInquiryId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.FavoriteTutorInquiry">
+    update ${schema}.wq_favorite_tutor_inquiry
+    <set>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where user_id = #{userId,jdbcType=INTEGER}
+      and tutor_inquiry_id = #{tutorInquiryId,jdbcType=INTEGER}
+  </update>
+
+</mapper>

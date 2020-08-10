@@ -12,7 +12,9 @@ public enum FavoriteCategory {
      */
     TUTOR(1, FavoriteTutorService.class),
     THREAD(4, FavoriteThreadService .class),
-    THREAD_REPLY(8, FavoriteThreadStreamService.class);
+    THREAD_REPLY(8, FavoriteThreadStreamService.class),
+    DISCUSSION_GROUP(9, FavoriteDiscussionGroupService.class),
+    TUTOR_INQUIRY(10, FavoriteTutorInquiryService.class);
 
     int category;
     Class<? extends Service> favoriteService;
