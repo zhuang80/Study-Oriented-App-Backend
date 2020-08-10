@@ -61,7 +61,7 @@
     </trim>
   </insert>
 
-  <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.mbg.WqDiscussionGroupMember">
+  <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.DiscussionGroupMember">
     update ${schema}.wq_discussion_group_member
     <set>
       <if test="discussionGroupId != null">
