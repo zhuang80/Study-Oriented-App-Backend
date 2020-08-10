@@ -6,6 +6,7 @@ import com.wequan.bu.repository.model.extend.ThreadStats;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -156,4 +157,12 @@ public interface ThreadService extends Service<Thread> {
      */
     List<Thread> getLabelThreads(Integer label, Integer pageNum, Integer pageSize);
 
+    /**
+     * 按搜索条件搜索帖子
+     * @param whereCondition where
+     * @param orderCondition order by
+     * @param pageCondition page
+     * @return 帖子列表
+     */
+    List<Thread> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition);
 }
