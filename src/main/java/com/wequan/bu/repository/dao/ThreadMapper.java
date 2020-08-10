@@ -135,4 +135,13 @@ public interface ThreadMapper extends GeneralMapper<Thread>{
      * @return 创建帖子用户id
      */
     Integer selectCreateByById(Integer threadId);
+
+    /**
+     * 按条件获取thread列表
+     * @param whereCondition where
+     * @param orderCondition order by
+     * @param rowBounds 分页
+     * @return thread列表
+     */
+    List<Thread> selectByConditions(@Param("where") String whereCondition, @Param("orderBy") String orderCondition, RowBounds rowBounds);
 }

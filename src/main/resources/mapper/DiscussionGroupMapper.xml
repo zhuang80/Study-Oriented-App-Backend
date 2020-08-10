@@ -16,37 +16,52 @@
     <result column="belong_school_id" jdbcType="SMALLINT" property="belongSchoolId" />
     <result column="guid" jdbcType="VARCHAR" property="guid" />
     <result column="tag_id" jdbcType="SMALLINT" property="tagId" />
-    <result column="create_by_name" jdbcType="VARCHAR" property="createByName" />
-    <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
+    <result column="logo" jdbcType="VARCHAR" property="logo" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
     <result column="current_headcount" jdbcType="INTEGER" property="currentHeadcount" />
   </resultMap>
 
-  <resultMap id="ResultMapWithBLOBs" extends="BaseResultMap" type="com.wequan.bu.repository.model.DiscussionGroup">
-    <result column="logo" jdbcType="VARCHAR" property="logo" />
-    <result column="image" jdbcType="VARCHAR" property="image" />
+  <resultMap id="ResultMapWithUserInfo" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.DiscussionGroupBriefInfo">
+    <association property="createByUser" columnPrefix="cu_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithBriefInfo" />
+    <association property="groupManagerInfo" columnPrefix="gm_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithBriefInfo" />
+  </resultMap>
+
+  <resultMap id="ResultMapWithUserMemberInfo" extends="ResultMapWithUserInfo" type="com.wequan.bu.repository.model.extend.DiscussionGroupBriefInfo">
+    <collection property="groupMembers" columnPrefix="ms_" resultMap="com.wequan.bu.repository.dao.DiscussionGroupMemberMapper.ResultMapWithMemberInfo" />
   </resultMap>
 
   <sql id="Base_Column_List">
     id, name, create_by, brief_description, create_time, update_time, status, group_message, 
-    group_manager_id, group_capacity, visible, belong_school_id, guid, tag_id, current_headcount
+    group_manager_id, group_capacity, visible, belong_school_id, guid, tag_id, logo, image, current_headcount
   </sql>
 
-  <sql id="Blob_Column_List">
-    logo, image
+  <sql id="Base_User_Columns">
+    u.user_name as cu_user_name, u.school_id as cu_school_id, u.first_name as cu_first_name, u.last_name as cu_last_name,
+    u.avatar_url as cu_avatar_url, u.avatar_url_in_provider as cu_avatar_url_in_provider, u.id as cu_id
   </sql>
 
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
-    select 
-    <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
+  <sql id="Base_Group_Manager_Columns">
+    g.user_name as gm_user_name, g.school_id as gm_school_id, g.first_name as gm_first_name, g.last_name as gm_last_name,
+    g.avatar_url as gm_avatar_url, g.avatar_url_in_provider as gm_avatar_url_in_provider, g.id as gm_id
+  </sql>
+
+  <sql id="Base_Group_Member_Columns">
+    dgm.id as ms_id, dgm.discussion_group_id as ms_discussion_group_id, dgm.member_id as ms_member_id, dgm.action ms_action, dgm.action_time ms_action_time,
+    m.user_name as ms_m_user_name, m.school_id as ms_m_school_id, m.first_name as ms_m_first_name, m.last_name as ms_m_last_name,
+    m.avatar_url as ms_m_avatar_url, m.avatar_url_in_provider as ms_m_avatar_url_in_provider, m.id as ms_m_id
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
     from ${schema}.wq_discussion_group
     where id = #{id,jdbcType=INTEGER}
   </select>
 
-  <select id="selectByUserId" resultMap="ResultMapWithBLOBs">
+  <select id="selectByUserId" resultMap="ResultMapWithUserInfo">
     select
-      t.*, u.user_name as create_by_name, ts.name as tag_name
+      t.*,
+      <include refid="Base_User_Columns" />,
+      <include refid="Base_Group_Manager_Columns"/>
     from (
       select dg.*
       from ${schema}.wq_discussion_group dg
@@ -58,10 +73,10 @@
       )
     ) t
     inner join ${schema}.wq_user_profile u on t.create_by = u.id
-    inner join ${schema}.wq_tags ts on t.tag_id = ts.id
+    left join ${schema}.wq_user_profile g on t.group_manager_id = g.id
   </select>
 
-  <select id="selectByConditions" resultMap="ResultMapWithBLOBs">
+  <select id="selectByConditions" resultMap="ResultMapWithUserInfo">
     select *
     from ${schema}.wq_discussion_group_info
     <if test="where != null and where != ''">
@@ -245,13 +260,13 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-  <select id="selectAll" resultMap="ResultMapWithBLOBs">
+  <select id="selectAll" resultMap="BaseResultMap">
     SELECT *
     FROM ${schema}.wq_discussion_group
     ORDER BY create_time DESC
   </select>
 
-  <select id="selectBySchoolId" resultMap="ResultMapWithBLOBs">
+  <select id="selectBySchoolId" resultMap="BaseResultMap">
     SELECT *
     FROM ${schema}.wq_discussion_group
     WHERE belong_school_id = #{school_id, jdbcType=INTEGER}
@@ -268,6 +283,14 @@
     SELECT *
     FROM ${schema}.wq_discussion_group_member
     WHERE action = 1
+  </select>
+
+  <select id="selectDetailById" resultMap="ResultMapWithUserMemberInfo">
+    select dg.*, <include refid="Base_Group_Member_Columns"/>
+    from ${schema}.wq_discussion_group_info dg
+    left join ${schema}.wq_discussion_group_member dgm on dgm.discussion_group_id = dg.id
+    inner join ${schema}.wq_user_profile m on m.id = dgm.member_id
+    where dg.id = #{id} and dgm.action = 1
   </select>
 
   <update id="updateCurrentHeadcountByPrimaryKey" parameterType="java.lang.Integer">

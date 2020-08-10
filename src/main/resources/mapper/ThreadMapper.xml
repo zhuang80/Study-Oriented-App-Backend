@@ -200,6 +200,17 @@
     where t.id in (${ids})
   </select>
 
+  <select id="selectByConditions" resultMap="ResultMapWithStats">
+    select *
+    from ${schema}.wq_thread_info
+    <if test="where != null and where != ''">
+      where ${where}
+    </if>
+    <if test="orderBy != null and orderBy != ''">
+      order by ${orderBy}
+    </if>
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from ${schema}.wq_thread
     where id = #{id,jdbcType=INTEGER}

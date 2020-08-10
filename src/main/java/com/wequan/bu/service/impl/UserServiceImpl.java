@@ -144,6 +144,7 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
         if (StringUtils.isNotBlank(subjectIds)) {
             String[] sIds = subjectIds.split(",");
             List<UserSubject> userSubjects = Stream.of(sIds).map(sId -> new UserSubject(userId, Integer.valueOf(sId), new Date())).collect(Collectors.toList());
+            userSubjectMapper.deleteByUserId(userId);
             userSubjectMapper.insertList(userSubjects);
         }
     }
