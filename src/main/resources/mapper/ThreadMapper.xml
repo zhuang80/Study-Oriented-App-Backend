@@ -372,11 +372,15 @@
     values(#{userId,jdbcType=INTEGER},#{resourceType,jdbcType=SMALLINT},#{resourceId,jdbcType=INTEGER},#{reportTime,jdbcType=TIMESTAMP},#{reason,jdbcType=VARCHAR})
   </insert>
 
-  <insert id="addUserInterestedSubjects">
-    insert into ${schema}.wq_thread_user_selected_subjects
-    (user_id, subject_ids)
-    values(#{userId,jdbcType=INTEGER}, #{subjectIds,jdbcType=VARCHAR})
-  </insert>
+  <update id="addUserInterestedSubjects">
+    update ${schema}.wq_thread_user_selected_subjects
+    <set>
+      <if test="subjectIds != null">
+        subject_ids = #{subjectIds, jdbcType=VARCHAR}
+      </if>
+    </set>
+    where user_id = #{userId, jdbcType=INTEGER}
+  </update>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.Thread">
     update ${schema}.wq_thread
@@ -454,5 +458,4 @@
     set dislikes = dislikes+1
     where thread_id = #{threadId, jdbcType=INTEGER} and id = #{replyId, jdbcType=INTEGER}
   </update>
-
 </mapper>
