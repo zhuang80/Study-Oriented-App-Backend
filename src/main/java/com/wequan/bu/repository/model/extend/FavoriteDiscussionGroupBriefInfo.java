@@ -11,4 +11,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class FavoriteDiscussionGroupBriefInfo extends FavoriteDiscussionGroup {
 
+    private UserBriefInfo userInfo;
+    private DiscussionGroupBriefInfo discussionGroupInfo;
+
 }
