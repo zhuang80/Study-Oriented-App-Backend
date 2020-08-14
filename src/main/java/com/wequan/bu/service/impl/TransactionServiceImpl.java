@@ -321,6 +321,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
     public void refundApply(RefundApplication refundApplication) {
         String transactionId = refundApplication.getTransactionId();
         Appointment appointment = appointmentService.findByTransactionId(transactionId);
+        Transaction transaction = transactionMapper.selectByPrimaryKey(transactionId);
         AppointmentChangeRecord record = new AppointmentChangeRecord();
 
         record.setAppointmentId(appointment.getId());
@@ -328,7 +329,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         record.setIsTutor(false);
         record.setChangeType(ChangeType.AFTER_APPOINTMENT.getValue());
         record.setChangeReason(refundApplication.getRefundReason());
-        record.setRefundAmount(appointment.getFee());
+        record.setRefundAmount(transaction.getPayAmount() - transaction.getApplicationFeeAmount());
         record.setCreateTime(LocalDateTime.now());
         record.setAdminAction(AdminAction.PEDNING.getValue());
         record.setTransactionId(transactionId);
