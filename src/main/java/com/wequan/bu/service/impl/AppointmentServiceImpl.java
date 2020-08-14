@@ -2,6 +2,8 @@ package com.wequan.bu.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.wequan.bu.controller.vo.Transaction;
+import com.wequan.bu.quartz.UpdateAppointmentStatusJob;
+import com.wequan.bu.quartz.UpdateStatusJob;
 import com.wequan.bu.repository.dao.AppointmentMapper;
 import com.wequan.bu.repository.dao.TransactionMapper;
 import com.wequan.bu.repository.dao.TutorMapper;
@@ -15,6 +17,7 @@ import com.wequan.bu.util.AppointmentStatus;
 import com.wequan.bu.util.TransactionStatus;
 import org.apache.ibatis.session.RowBounds;
 import org.checkerframework.checker.units.qual.A;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +45,9 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
 
     @Autowired
     private StripeService stripeService;
+
+    @Autowired
+    private Scheduler scheduler;
 
     @PostConstruct
     public void postConstruct() {
@@ -75,6 +81,46 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
             stripeService.createPaymentIntent(appointment.getId());
         }catch (Exception e) {
             System.out.println(e.getMessage());
+        }
+
+        try {
+            addStatusUpdationQuartzJobAndTrigger(appointment, appointment.getEndTime(), AppointmentStatus.COMPLETED.getValue());
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void addStatusUpdationQuartzJobAndTrigger(Appointment appointment, LocalDateTime time, Short status) throws Exception {
+        //set up a job detail
+        System.out.println("=====================> set up appointment status jog");
+        JobDetail startJobDetail = JobBuilder.newJob(UpdateAppointmentStatusJob.class)
+                .withIdentity(appointment.getId().toString(),
+                        status == AppointmentStatus.COMPLETED.getValue() ?  "appointment_end" : "appointment_start")
+                .usingJobData("time", time.toString())
+                .usingJobData("status", String.valueOf(status))
+                .usingJobData("id", appointment.getId())
+                .build();
+        //set a cron expression
+        String startCron = String.format("%d %d %d %d %d ? %d",
+                time.getSecond(),
+                time.getMinute(),
+                time.getHour(),
+                time.getDayOfMonth(),
+                time.getMonth().getValue(),
+                time.getYear());
+        //set up a trigger
+        CronTrigger startCronTrigger = TriggerBuilder.newTrigger()
+                .withIdentity(appointment.getId().toString(), status == 1? "appointment_end" : "appointment_start" )
+                .withSchedule(CronScheduleBuilder.cronSchedule(startCron))
+                .build();
+
+        //add job and trigger in scheduler
+        try{
+            scheduler.scheduleJob(startJobDetail, startCronTrigger);
+        }catch (SchedulerException e){
+            e.printStackTrace();
+            throw new Exception("Fail to set up status updating quartz job.");
         }
     }
 
@@ -130,6 +176,14 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
         appointment.setTransactionId(transaction.getId());
         appointment.setUpdateTime(LocalDateTime.now());
         appointmentMapper.updateByTransactionIdSelective(appointment);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateStatus(Integer appointmentId, Short status) {
+        Appointment appointment = appointmentMapper.selectByPrimaryKey(appointmentId);
+        appointment.setStatus(status);
+        appointmentMapper.updateByPrimaryKeySelective(appointment);
     }
 
     @Override

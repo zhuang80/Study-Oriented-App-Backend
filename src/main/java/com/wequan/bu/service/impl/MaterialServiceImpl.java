@@ -1,5 +1,6 @@
 package com.wequan.bu.service.impl;
 
+import com.wequan.bu.controller.AppointmentController;
 import com.wequan.bu.controller.vo.UploadFileWrapper;
 import com.wequan.bu.repository.dao.MaterialMapper;
 import com.wequan.bu.repository.dao.TutorApplicationSupportMaterialMapper;
@@ -11,6 +12,8 @@ import com.wequan.bu.service.StorageService;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -47,7 +50,7 @@ public class MaterialServiceImpl extends AbstractService<Material> implements Ma
         this.setMapper(materialMapper);
     }
 
-
+    private static final Logger log = LoggerFactory.getLogger(AppointmentController.class);
     /**
      * store the files send from the client on local storage
      * @param files the files send from the client
@@ -106,6 +109,14 @@ public class MaterialServiceImpl extends AbstractService<Material> implements Ma
         return temps[0].substring(0,index) + "." +temps[1];
     }
 
+    public String getFileName(String path) {
+        log.info("===========================> path name: "+ path);
+        int index = path.lastIndexOf('\\');
+        String name = path.substring(index + 1);
+        log.info("=========================> file name: " + name);
+        return name;
+    }
+
     /**
      * convert PDF file to Image, it is an async method
      * @param files a list of files of pdf MIME type
@@ -155,9 +166,9 @@ public class MaterialServiceImpl extends AbstractService<Material> implements Ma
                 TutorApplicationSupportMaterial material = new TutorApplicationSupportMaterial();
                 material.setFileName(getOriginalName(file.getName()));
 
-                key = path + file.getName();
+                key = path + getFileName(file.getName());
                 //try to upload file to S3 bucket
-                System.out.println("===========================S3 key"+key);
+                log.info("===========================S3 key"+key);
                 if(storageService.uploadFile(key, file)){
                     material.setType(filesWrapper.getType());
                     material.setStorePath(key);
@@ -176,9 +187,9 @@ public class MaterialServiceImpl extends AbstractService<Material> implements Ma
             }finally {
                 if(file != null){
                     if(file.delete()){
-                        System.out.println(file.getName() + " deleted successfully!");
+                        log.info(file.getName() + " deleted successfully!");
                     }else{
-                        System.out.println("fail to delete file" + file.getName());
+                        log.info("fail to delete file" + file.getName());
                     }
                 }
             }
