@@ -8,4 +8,14 @@
             (#{item.tutorId}, #{item.subjectId}, #{item.createTime})
         </foreach>
     </insert>
+
+    <insert id="upsertList" parameterType="com.wequan.bu.repository.model.TutorSubject">
+        INSERT INTO ${schema}.wq_tutor_subject
+        VALUES
+        <foreach item="item" collection="list" separator=",">
+            (#{item.tutorId}, #{item.subjectId}, #{item.createTime})
+        </foreach>
+        ON CONFLICT ON CONSTRAINT tutor_subject_pk_id
+        DO NOTHING
+    </insert>
 </mapper>
