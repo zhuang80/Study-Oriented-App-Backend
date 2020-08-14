@@ -193,8 +193,8 @@ public class UserController {
     @GetMapping("/user/{id}/tutor_inquiries")
     @ApiOperation(value = "a list of user’s tutor inquiry", notes = "返回用户的tutor inquiry列表")
     public Result<List<TutorInquiry>> getTutorInquiries(@PathVariable("id") Integer userId,
-                                                          @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                                          @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+                                                        @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                        @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         List<TutorInquiry> tutorInquiries = null;
         if (userId <= 0) {
             return ResultGenerator.fail(messageHandler.getMessage("40098"));
