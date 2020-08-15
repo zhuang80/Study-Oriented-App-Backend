@@ -7,6 +7,11 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
 
+  <resultMap id="ResultMapWithBriefInfo" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.FavoriteTutorInquiryBriefInfo">
+    <association property="userInfo" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithBriefInfo"/>
+    <association property="tutorInquiryInfo" columnPrefix="ti_" resultMap="com.wequan.bu.repository.dao.TutorInquiryMapper.ResultMapUsingInSearch"/>
+  </resultMap>
+
   <sql id="Base_Column_List">
     user_id, tutor_inquiry_id, create_time
   </sql>
@@ -25,8 +30,22 @@
     where user_id = #{userId} and tutor_inquiry_id = #{tutorInquiryId}
   </select>
 
-  <select id="selectByUserId" resultType="com.wequan.bu.repository.model.extend.FavoriteTutorInquiryBriefInfo">
-
+  <select id="selectByUserId" resultMap="ResultMapWithBriefInfo">
+    select
+      fti.*,
+      u.id AS u_id, u.user_name AS u_user_name, u.school_id AS u_school_id, u.first_name AS u_first_name,
+      u.last_name AS u_last_name, u.avatar_url AS u_avatar_url, u.avatar_url_in_provider AS u_avatar_url_in_provider,
+      ti.id as ti_id, ti.brief_description ti_brief_description, ti.online ti_online, ti.create_time ti_create_time,
+      ti.update_time ti_update_time, ti.status ti_status, ti.request_start_time ti_request_start_time, ti.request_end_time ti_request_end_time,
+      ti.acceptable_pay_rate ti_acceptable_pay_rate, ti.subject_id as ti_s_id, s.name as ti_s_name,
+      up.id AS ti_u_id, up.user_name AS ti_u_user_name, up.school_id AS ti_u_school_id, up.first_name AS ti_u_first_name,
+      up.last_name AS ti_u_last_name, up.avatar_url AS ti_u_avatar_url, up.avatar_url_in_provider AS ti_u_avatar_url_in_provider
+    from ${schema}.wq_favorite_tutor_inquiry fti
+    inner join ${schema}.wq_user_profile u on u.id = fti.user_id
+    inner join ${schema}.wq_tutor_inquiry ti on ti.id = fti.tutor_inquiry_id
+    left join ${schema}.wq_subjects s on s.id = ti.subject_id
+    left join ${schema}.wq_user_profile up on up.id = ti.create_by
+    where fti.user_id = #{userId}
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="map">
@@ -59,6 +78,8 @@
         #{createTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
+    on conflict on constraint "favorite_tutor_inquiry_pk_id"
+    do nothing
   </insert>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.FavoriteTutorInquiry">
