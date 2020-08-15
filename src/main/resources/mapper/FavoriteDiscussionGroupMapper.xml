@@ -7,6 +7,11 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
 
+  <resultMap id="ResultMapWithBriefInfo" extends="BaseResultMap" type="com.wequan.bu.repository.model.extend.FavoriteDiscussionGroupBriefInfo">
+    <association property="userInfo" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithBriefInfo"/>
+    <association property="discussionGroupInfo" columnPrefix="dg_" resultMap="com.wequan.bu.repository.dao.DiscussionGroupMapper.BaseResultMap"/>
+  </resultMap>
+
   <sql id="Base_Column_List">
     user_id, discussion_group_id, create_time
   </sql>
@@ -25,8 +30,20 @@
     where user_id = #{userId} and discussion_group_id = #{discussionGroupId}
   </select>
 
-  <select id="selectByUserId" resultType="com.wequan.bu.repository.model.extend.FavoriteDiscussionGroupBriefInfo">
-
+  <select id="selectByUserId" resultMap="ResultMapWithBriefInfo">
+    select
+      fdg.*,
+      up.id AS u_id, up.user_name AS u_user_name, up.school_id AS u_school_id, up.first_name AS u_first_name,
+      up.last_name AS u_last_name, up.avatar_url AS u_avatar_url, up.avatar_url_in_provider AS u_avatar_url_in_provider,
+      dg.id as dg_id, dg.name as dg_name, dg.create_by as dg_create_by, dg.brief_description as dg_brief_description,
+      dg.create_time as dg_create_time, dg.update_time as dg_update_time, dg.status as dg_status, dg.group_message as dg_group_message,
+      dg.group_manager_id as dg_group_manager_id, dg.group_capacity as dg_group_capacity, dg.visible as dg_visible,
+      dg.belong_school_id as dg_belong_school_id, dg.guid as dg_guid, dg.tag_id as dg_tag_id, dg.logo as dg_logo,
+      dg.image as dg_image, dg.current_headcount as dg_current_headcount
+    from ${schema}.wq_favorite_discussion_group fdg
+    inner join ${schema}.wq_user_profile up on up.id = fdg.user_id
+    inner join ${schema}.wq_discussion_group dg on dg.id = fdg.discussion_group_id
+    where fdg.user_id = #{userId}
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="map">
@@ -59,6 +76,8 @@
         #{createTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
+    on conflict on constraint "favorite_discussion_group_pk_id"
+    do nothing
   </insert>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.repository.model.FavoriteDiscussionGroup">
