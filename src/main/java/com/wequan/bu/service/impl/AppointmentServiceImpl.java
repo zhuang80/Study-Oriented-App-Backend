@@ -14,6 +14,7 @@ import com.wequan.bu.service.AbstractService;
 import com.wequan.bu.service.AppointmentService;
 import com.wequan.bu.service.StripeService;
 import com.wequan.bu.util.AppointmentStatus;
+import com.wequan.bu.util.TimeConvertTool;
 import com.wequan.bu.util.TransactionStatus;
 import org.apache.ibatis.session.RowBounds;
 import org.checkerframework.checker.units.qual.A;
@@ -23,9 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.List;
 
 /**
@@ -84,19 +83,20 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
         }
 
         try {
-            addStatusUpdationQuartzJobAndTrigger(appointment, appointment.getEndTime(), AppointmentStatus.COMPLETED.getValue());
+            ZonedDateTime time = TimeConvertTool.convertToSystemZonedDateTime(appointment.getStartTime(), ZoneId.of(appointment.getTimeZone()));
+            addStatusUpdationQuartzJobAndTrigger(appointment, time, AppointmentStatus.IN_PROGRESS.getValue());
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void addStatusUpdationQuartzJobAndTrigger(Appointment appointment, LocalDateTime time, Short status) throws Exception {
+    public void addStatusUpdationQuartzJobAndTrigger(Appointment appointment, ZonedDateTime time, Short status) throws Exception {
         //set up a job detail
-        System.out.println("=====================> set up appointment status jog");
+        System.out.println("=====================> set up appointment status job");
         JobDetail startJobDetail = JobBuilder.newJob(UpdateAppointmentStatusJob.class)
                 .withIdentity(appointment.getId().toString(),
-                        status == AppointmentStatus.COMPLETED.getValue() ?  "appointment_end" : "appointment_start")
+                        status == AppointmentStatus.IN_PROGRESS.getValue() ?  "appointment_start" : "appointment_end")
                 .usingJobData("time", time.toString())
                 .usingJobData("status", String.valueOf(status))
                 .usingJobData("id", appointment.getId())
@@ -111,7 +111,7 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
                 time.getYear());
         //set up a trigger
         CronTrigger startCronTrigger = TriggerBuilder.newTrigger()
-                .withIdentity(appointment.getId().toString(), status == 1? "appointment_end" : "appointment_start" )
+                .withIdentity(appointment.getId().toString(), status == AppointmentStatus.IN_PROGRESS.getValue() ? "appointment_start" : "appointment_end" )
                 .withSchedule(CronScheduleBuilder.cronSchedule(startCron))
                 .build();
 
