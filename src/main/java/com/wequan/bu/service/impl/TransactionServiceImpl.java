@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -154,7 +156,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void cancelTransactionByUser(Integer userId, String transactionId) throws Exception {
+    public void cancelTransactionByUser(String transactionId) throws Exception {
         Transaction transaction = transactionMapper.selectByPrimaryKey(transactionId);
         Integer refundAmount = 0;
 
@@ -174,13 +176,18 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 
     public void cancelAppointmentTypeTransactionByUser(Transaction transaction) throws Exception {
         Integer refundAmount = 0;
+        //the transaction is not paid
         if(TransactionStatus.REQUIRES_PAYMENT_METHOD.getValue() == transaction.getStatus()){
             stripeService.cancelPaymentIntent(transaction.getThirdPartyTransactionId());
-        }else if(TransactionStatus.SUCCEEDED.getValue() == transaction.getStatus()){
+        }
+        //the transaction is paid
+        if(TransactionStatus.SUCCEEDED.getValue() == transaction.getStatus()){
             Appointment appointment = appointmentService.findByTransactionId(transaction.getId());
 
             //check if the start time of appointment is after current time
-            if(appointment.getStartTime().isAfter(LocalDateTime.now())){
+            ZonedDateTime time = TimeConvertTool.convertToSystemZonedDateTime(appointment.getStartTime(),
+                    ZoneId.of(appointment.getTimeZone()));
+            if(time.isAfter(ZonedDateTime.now())){
                 //refund part of fee
                 refundAmount = calculateRefundAmount(transaction.getId());
 
@@ -335,6 +342,8 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
         record.setTransactionId(transactionId);
 
         appointmentChangeRecordService.save(record);
+        //update appointment status
+        appointmentService.updateStatus(appointment.getId(), AppointmentStatus.PROCESSING_REFUND.getValue());
     }
 
     @Override

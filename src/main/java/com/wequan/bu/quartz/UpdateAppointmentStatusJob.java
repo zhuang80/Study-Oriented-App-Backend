@@ -46,6 +46,13 @@ public class UpdateAppointmentStatusJob extends QuartzJobBean {
                 log.info("The appointment is not paid. Update to CANCELLED");
             }
         }
+        //auto confirm job is triggered
+        if(nextStatus == AppointmentStatus.COMPLETED.getValue()) {
+            if(appointment.getStatus() == AppointmentStatus.IN_PROGRESS.getValue()) {
+                appointmentService.updateStatus(id, AppointmentStatus.COMPLETED.getValue());
+                log.info("The appointment is completed. Update to COMPLETED");
+            }
+        }
 
         log.info("Update Appointment Status Job is triggered.-----------"+ LocalDateTime.now().toString());
         log.info(trigger.getKey().toString());

@@ -20,6 +20,7 @@ import org.apache.ibatis.session.RowBounds;
 import org.checkerframework.checker.units.qual.A;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +48,9 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
 
     @Autowired
     private Scheduler scheduler;
+
+    @Value("${AUTO_CONFIRM_DAYS}")
+    private Integer autoConfirmDays;
 
     @PostConstruct
     public void postConstruct() {
@@ -83,8 +87,18 @@ public class AppointmentServiceImpl extends AbstractService<Appointment> impleme
         }
 
         try {
-            ZonedDateTime time = TimeConvertTool.convertToSystemZonedDateTime(appointment.getStartTime(), ZoneId.of(appointment.getTimeZone()));
-            addStatusUpdationQuartzJobAndTrigger(appointment, time, AppointmentStatus.IN_PROGRESS.getValue());
+            //set up appointment start job
+            ZonedDateTime startTime = TimeConvertTool.convertToSystemZonedDateTime(appointment.getStartTime(),
+                    ZoneId.of(appointment.getTimeZone()));
+            addStatusUpdationQuartzJobAndTrigger(appointment, startTime, AppointmentStatus.IN_PROGRESS.getValue());
+
+            //set up appointment end job
+
+            ZonedDateTime endTime = TimeConvertTool.convertToSystemZonedDateTime(appointment.getEndTime(),
+                    ZoneId.of(appointment.getTimeZone()));
+            addStatusUpdationQuartzJobAndTrigger(appointment, endTime.plusDays(autoConfirmDays), AppointmentStatus.COMPLETED.getValue());
+
+
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
