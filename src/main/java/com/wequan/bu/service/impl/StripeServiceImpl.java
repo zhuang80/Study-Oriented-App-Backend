@@ -263,7 +263,7 @@ public class StripeServiceImpl extends AbstractService<TutorStripe> implements S
 
         if(TransactionType.APPOINTMENT.getValue() == type){
             transactionService.updateStatus(paymentIntent.getId(), TransactionStatus.CANCELED);
-            appointmentService.updateStatus(paymentIntent.getId(), AppointmentStatus.CANCELED);
+            appointmentService.updateStatus(paymentIntent.getId(), AppointmentStatus.CANCELLED);
         }
         if(TransactionType.PUBLIC_CLASS.getValue() == type){
             transactionService.updateStatus(paymentIntent.getId(), TransactionStatus.CANCELED);
