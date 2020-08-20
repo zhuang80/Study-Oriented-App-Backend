@@ -39,5 +39,12 @@ public interface UserFollowMapper extends GeneralMapper<UserFollow> {
      */
     List<UserFollowBriefInfo> selectFollowingByOtherUserId(@Param("currentUserId") Integer currentUserId, @Param("otherUserId") Integer otherUserId, RowBounds rowBounds);
 
+    /**
+     * 获取其他用户的粉丝列表
+     * @param currentUserId 用户id
+     * @param otherUserId 用户id
+     * @param rowBounds 分页
+     * @return 其他用户的粉丝列表
+     */
     List<UserFollowBriefInfo> selectFollowerByOtherUserId(@Param("currentUserId") Integer currentUserId, @Param("otherUserId") Integer otherUserId, RowBounds rowBounds);
 }
