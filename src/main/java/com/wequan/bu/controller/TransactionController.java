@@ -68,7 +68,7 @@ public class TransactionController {
     public Result deleteTransactionyByUser(@PathVariable("id") Integer id,
                                     @PathVariable("transaction_id") String transactionId) throws StripeException {
         try {
-            transactionService.cancelTransactionByUser(id, transactionId);
+            transactionService.cancelTransactionByUser(transactionId);
         }catch (Exception e){
             return ResultGenerator.fail(e.getMessage());
         }
