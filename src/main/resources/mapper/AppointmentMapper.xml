@@ -66,14 +66,14 @@
       <if test="status == 0">
         AND a.status = 0
       </if>
-      <if test="status == 4">
-        AND a.status = 4
-      </if>
       <if test="status == 1">
-        AND a.status = 1
+        AND a.status IN (1,2)
       </if>
       <if test="status == 2">
-        AND a.status IN (2,3)
+        AND a.status IN (3,4)
+      </if>
+      <if test="status == 3">
+        AND a.status IN (-1,-2,-3)
       </if>
     </if>
     order by a.create_time desc
@@ -100,14 +100,14 @@
       <if test="status == 0">
         AND a.status = 0
       </if>
-      <if test="status == 4">
-        AND a.status = 4
-      </if>
       <if test="status == 1">
-        AND a.status = 1
+        AND a.status IN (1,2)
       </if>
       <if test="status == 2">
-        AND a.status IN (2,3)
+        AND a.status IN (3,4)
+      </if>
+      <if test="status == 3">
+        AND a.status IN (-1,-2,-3)
       </if>
     </if>
     order by a.create_time desc

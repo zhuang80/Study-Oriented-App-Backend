@@ -5,10 +5,12 @@ import com.wequan.bu.controller.vo.TutorReview;
 import com.wequan.bu.controller.vo.result.Result;
 import com.wequan.bu.controller.vo.result.ResultGenerator;
 import com.wequan.bu.repository.model.Appointment;
+import com.wequan.bu.repository.model.Tutor;
 import com.wequan.bu.security.CurrentUser;
 import com.wequan.bu.service.AppointmentService;
 import com.wequan.bu.service.TransactionService;
 import com.wequan.bu.service.TutorReviewService;
+import com.wequan.bu.service.TutorService;
 import com.wequan.bu.util.AppointmentStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,6 +43,9 @@ public class AppointmentController {
 
     @Autowired
     private TutorReviewService tutorReviewService;
+
+    @Autowired
+    private TutorService tutorService;
 
     @GetMapping("/appointments")
     @ApiOperation(value = "Available appointment", notes = "返回appointment列表，按临近时间倒序")
@@ -76,7 +81,7 @@ public class AppointmentController {
         return ResultGenerator.success();
     }
 
-    @PostMapping("/appointment/{appointment_id}/cancel")
+    @PostMapping("/user/{id}/appointment/{appointment_id}/cancel")
     @ApiOperation(value = "cancel appointment", notes = "用户在付款前，可以任意取消订单，若付款后，在辅导开始前，取消订单，返还部分金额, 如果离辅导开始后，需要提交退款申请")
     public Result cancelAppointment(@CurrentUser Integer currentUserId,
                                     @PathVariable("appointment_id") Integer appointmentId) {
@@ -102,7 +107,7 @@ public class AppointmentController {
         }
     }
 
-    @PostMapping("/appointment/{appointment_id}/refund_apply")
+    @PostMapping("/user/{id}/appointment/{appointment_id}/refund_apply")
     @ApiOperation(value = "apply refund appointment", notes = "用户在付款前，可以任意取消订单，若付款后，在辅导开始前，取消订单，返还部分金额, 如果离辅导开始后，需要提交退款申请")
     public Result refundAppointment(@CurrentUser Integer currentUserId,
                                     @PathVariable("appointment_id") Integer appointmentId,
@@ -124,6 +129,36 @@ public class AppointmentController {
         }catch (Exception e){
             return ResultGenerator.fail(e.getMessage());
         }
+    }
+
+    @PostMapping("/tutor/{id}/appointment/{appointment_id}/cancel")
+    @ApiOperation(value = "cancel transaction", notes = "在用户付款前，tutor可以任意取消订单，如果付款后，tutor取消订单，需要退还全款")
+    public Result cancelAppointmentByTutor(@PathVariable("id") Integer id,
+                                           @CurrentUser Integer currentUserId,
+                                           @PathVariable("appointment_id") Integer appointmentId){
+        Appointment appointment = appointmentService.findById(appointmentId);
+        if(appointment == null) {
+            return ResultGenerator.fail("No Such Appointment.");
+        }
+        Tutor tutor = tutorService.findByUserId(currentUserId);
+
+        log.info("The uer id: "+ currentUserId + "   " + tutor.getUserId());
+        if(!appointment.getTutorId().equals(tutor.getId())) {
+            return ResultGenerator.fail("You are not authorized to do that.");
+        }
+        try {
+            if(appointment.getStatus() == AppointmentStatus.DEFAULT.getValue()
+                    || appointment.getStatus() == AppointmentStatus.PAID.getValue()
+                    || appointment.getStatus() == AppointmentStatus.IN_PROGRESS.getValue()){
+                transactionService.cancelTransactionByTutor(tutor.getId(), appointment.getTransactionId());
+                return ResultGenerator.success();
+            }
+            return ResultGenerator.fail("The operation is not supported");
+
+        }catch (Exception e){
+            return ResultGenerator.fail(e.getMessage());
+        }
+
     }
 
     @PutMapping("/appointment/{appointment_id}/confirm")
