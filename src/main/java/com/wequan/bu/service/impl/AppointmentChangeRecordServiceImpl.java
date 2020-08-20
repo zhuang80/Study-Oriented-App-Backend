@@ -7,6 +7,7 @@ import com.wequan.bu.repository.model.Appointment;
 import com.wequan.bu.repository.model.AppointmentChangeRecord;
 import com.wequan.bu.service.*;
 import com.wequan.bu.util.AdminAction;
+import com.wequan.bu.util.AppointmentStatus;
 import com.wequan.bu.util.ChangeType;
 import com.wequan.bu.util.TransactionStatus;
 import org.checkerframework.checker.units.qual.A;
@@ -109,6 +110,7 @@ public class AppointmentChangeRecordServiceImpl extends AbstractService<Appointm
         stripeService.createRefund(record.getTransactionId(), record.getRefundAmount());
 
         appointmentChangeRecordMapper.updateByPrimaryKeySelective(record);
+        appointmentService.updateStatus(record.getAppointmentId(), AppointmentStatus.REFUNDED.getValue());
     }
 
     @Override
@@ -120,5 +122,6 @@ public class AppointmentChangeRecordServiceImpl extends AbstractService<Appointm
         record.setUpdateTime(LocalDateTime.now());
 
         appointmentChangeRecordMapper.updateByPrimaryKeySelective(record);
+        appointmentService.updateStatus(record.getAppointmentId(), AppointmentStatus.COMPLETED.getValue());
     }
 }
