@@ -32,6 +32,7 @@
         <result column="request_start_time" jdbcType="TIMESTAMP" property="requestStartTime" />
         <result column="request_end_time" jdbcType="TIMESTAMP" property="requestEndTime" />
         <result column="acceptable_pay_rate" jdbcType="REAL" property="acceptablePayRate" />
+        <association property="createBy" columnPrefix="u_" resultMap="com.wequan.bu.repository.dao.UserMapper.ResultMapWithBriefInfo"/>
         <association property="subject" columnPrefix="s_" resultMap="com.wequan.bu.repository.dao.SubjectsMapper.ResultMapWithBriefInfo" />
         <collection property="topicList" columnPrefix="t_" resultMap="com.wequan.bu.repository.dao.TopicMapper.ResultMapWithBriefInfo" />
     </resultMap>
@@ -114,14 +115,17 @@
     <select id="selectByUserId" resultMap="ResultMapWithSubjectTopics">
         select
             ti.*,
+            u.user_name as u_user_name, u.school_id as u_school_id, u.first_name as u_first_name, u.last_name as u_last_name,
+            u.avatar_url as u_avatar_url, u.avatar_url_in_provider as u_avatar_url_in_provider, u.id as u_id,
             s.id s_id,
             s.name s_name,
             t.id t_id,
             t.name t_name
         from ${schema}.wq_tutor_inquiry ti
+        inner join ${schema}.wq_user_profile u on u.id = ti.create_by
         inner join ${schema}.wq_subjects s on s.id = ti.subject_id
-        inner join ${schema}.wq_tutor_inquiry_topic tit on ti.id = tit.tutor_inquiry_id
-        inner join ${schema}.wq_topic t on tit.topic_id = t.id
+        left join ${schema}.wq_tutor_inquiry_topic tit on ti.id = tit.tutor_inquiry_id
+        left join ${schema}.wq_topic t on tit.topic_id = t.id
         where ti.create_by = #{userId}
     </select>
 
