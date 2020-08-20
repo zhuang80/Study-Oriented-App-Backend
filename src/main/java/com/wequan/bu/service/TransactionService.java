@@ -23,7 +23,7 @@ public interface TransactionService extends Service<Transaction> {
 
     public void delete(PaymentIntent paymentIntent);
 
-    public void cancelTransactionByUser(Integer userId, String transactionId) throws Exception;
+    public void cancelTransactionByUser(String transactionId) throws Exception;
 
     public void cancelTransactionByTutor(Integer tutorId, String transactionId) throws  Exception;
 

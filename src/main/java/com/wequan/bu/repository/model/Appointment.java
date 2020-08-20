@@ -101,4 +101,10 @@ public class Appointment {
      */
     private String transactionId;
 
+    private String timeZone;
+
+    private String teachingMethod;
+
+    private String teachingDescription;
+
 }
