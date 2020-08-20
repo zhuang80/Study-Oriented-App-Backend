@@ -13,6 +13,7 @@
   <resultMap id="ResultMapWithBriefInfo" type="com.wequan.bu.repository.model.extend.SubjectBriefInfo">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
+    <collection property="topicList" columnPrefix="tc_" resultMap="com.wequan.bu.repository.dao.TopicMapper.ResultMapWithBriefInfo"/>
   </resultMap>
 
   <sql id="Base_Column_List">
