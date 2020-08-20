@@ -193,8 +193,8 @@ public class UserController {
     @GetMapping("/user/{id}/tutor_inquiries")
     @ApiOperation(value = "a list of user’s tutor inquiry", notes = "返回用户的tutor inquiry列表")
     public Result<List<TutorInquiry>> getTutorInquiries(@PathVariable("id") Integer userId,
-                                                          @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                                                          @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+                                                        @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                                        @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         List<TutorInquiry> tutorInquiries = null;
         if (userId <= 0) {
             return ResultGenerator.fail(messageHandler.getMessage("40098"));
@@ -293,7 +293,8 @@ public class UserController {
             "material (title, if unlock, material type, upload date, # of likes, # of views)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "categoryId", value = "1 -> tutor; 2 -> course; 3 -> material;" +
-                    " 4 -> thread; 5 -> professor; 6 -> activity; 7 -> public class; 8 -> thread reply")
+                    " 4 -> thread; 5 -> professor; 6 -> activity; 7 -> public class; 8 -> thread reply;" +
+                    " 9 -> discussion group; 10 -> tutor inquiry")
     })
     public Result getFavorites(@PathVariable("id") Integer userId,
                                @RequestParam("categoryId") Integer categoryId,
@@ -321,7 +322,8 @@ public class UserController {
     @ApiOperation(value = "favorite or not", notes = "按类别和favoriteId返回用户是否已收藏")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "categoryId", value = "1 -> tutor; 2 -> course; 3 -> material;" +
-                    " 4 -> thread; 5 -> professor; 6 -> activity; 7 -> public class; 8 -> thread reply"),
+                    " 4 -> thread; 5 -> professor; 6 -> activity; 7 -> public class; 8 -> thread reply;" +
+                    " 9 -> discussion group; 10 -> tutor inquiry"),
             @ApiImplicitParam(name = "favoriteId", value = "收藏资源的id")
     })
     public Result<Boolean> checkFavorite(@PathVariable("id") Integer userId,
@@ -343,7 +345,8 @@ public class UserController {
     @ApiOperation(value = "favorite/unfavorite tutor/course/material/thread/professor", notes = "返回用户按类别收藏/取消收藏成功与否")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "categoryId", value = "1 -> tutor; 2 -> course; 3 -> material;" +
-                    " 4 -> thread; 5 -> professor; 6 -> activity; 7 -> public class; 8 -> thread reply"),
+                    " 4 -> thread; 5 -> professor; 6 -> activity; 7 -> public class; 8 -> thread reply;" +
+                    " 9 -> discussion group; 10 -> tutor inquiry"),
             @ApiImplicitParam(name = "favoriteId", value = "收藏资源的id"),
             @ApiImplicitParam(name = "action", value = "1 -> 收藏；-1 -> 取消收藏")
     })
