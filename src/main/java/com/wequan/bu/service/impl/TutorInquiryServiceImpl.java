@@ -86,6 +86,9 @@ public class TutorInquiryServiceImpl extends AbstractService<TutorInquiry> imple
         TutorInquiryVo inquiryVo = new TutorInquiryVo();
         inquiryVo.setId(id);
         inquiryVo.setStatus((short) -1);
+        inquiryVo.setCreateBy(tutorInquiry.getCreateBy().getId());
+        inquiryVo.setSubjectId(tutorInquiry.getSubject().getId());
+        inquiryVo.setOnline(tutorInquiry.getOnline());
 
         tutorInquiryMapper.updateByPrimaryKeySelective(inquiryVo);
     }

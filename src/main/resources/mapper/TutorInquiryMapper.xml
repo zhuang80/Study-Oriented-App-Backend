@@ -143,7 +143,7 @@
     <insert id="save" parameterType="com.wequan.bu.controller.vo.TutorInquiryVo"
             useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         INSERT INTO ${schema}.wq_tutor_inquiry(create_by, subject_id, brief_description, online, create_time, update_time, status, request_start_time, request_end_time, acceptable_pay_rate)
-        VALUES(#{createBy}, #{subjectId}, #{briefDescription}, #{online}, #{createTime}, #{updateTime}, #{status}, #{requestStartTime}, #{requestEndTime}, #{acceptPayRate})
+        VALUES(#{createBy}, #{subjectId}, #{briefDescription}, #{online}, #{createTime}, #{updateTime}, #{status}, #{requestStartTime}, #{requestEndTime}, #{acceptablePayRate})
     </insert>
 
     <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.controller.vo.TutorInquiryVo">
@@ -177,7 +177,7 @@
                 request_end_time = #{requestEndTime,jdbcType=TIMESTAMP},
             </if>
             <if test="acceptablePayRate != null">
-                acceptable_pay_rate = #{acceptablePayRate,jdbcType=REAL},
+                acceptable_pay_rate = #{acceptablePayRate,jdbcType=INTEGER},
             </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
