@@ -48,7 +48,7 @@
   <select id="selectByTutorId" resultMap="ResultMapWithBriefInfo">
     select
     a.id, a.tutor_id, a.user_id, a.create_time, a.update_time, a.status, a.brief_description, a.start_time,
-    a.end_time, a.subject_id, a.topic_id, a.title, a.fee, a.transaction_id,
+    a.end_time, a.subject_id, a.topic_id, a.title, a.fee, a.transaction_id, a.time_zone, a.teaching_method, a.teaching_description,
     u.user_name as u_user_name, u.school_id as u_school_id, u.first_name as u_first_name, u.last_name as u_last_name,
     u.avatar_url as u_avatar_url, u.avatar_url_in_provider as u_avatar_url_in_provider, u.id as u_id,
     v.*
@@ -82,7 +82,7 @@
   <select id="selectByUserId" resultMap="ResultMapWithBriefInfo">
     select
       a.id, a.tutor_id, a.user_id, a.create_time, a.update_time, a.status, a.brief_description, a.start_time,
-      a.end_time, a.subject_id, a.topic_id, a.title, a.fee, a.transaction_id,
+      a.end_time, a.subject_id, a.topic_id, a.title, a.fee, a.transaction_id, a.time_zone, a.teaching_method, a.teaching_description,
       u.user_name as u_user_name, u.school_id as u_school_id, u.first_name as u_first_name, u.last_name as u_last_name,
       u.avatar_url as u_avatar_url, u.avatar_url_in_provider as u_avatar_url_in_provider, u.id as u_id,
       v.*
