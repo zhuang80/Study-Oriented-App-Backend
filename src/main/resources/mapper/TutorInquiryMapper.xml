@@ -140,8 +140,54 @@
         </if>
     </select>
 
-    <insert id="save" parameterType="com.wequan.bu.controller.vo.TutorInquiryVo">
+    <insert id="save" parameterType="com.wequan.bu.controller.vo.TutorInquiryVo"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         INSERT INTO ${schema}.wq_tutor_inquiry(create_by, subject_id, brief_description, online, create_time, update_time, status, request_start_time, request_end_time, acceptable_pay_rate)
         VALUES(#{createBy}, #{subjectId}, #{briefDescription}, #{online}, #{createTime}, #{updateTime}, #{status}, #{requestStartTime}, #{requestEndTime}, #{acceptPayRate})
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.wequan.bu.controller.vo.TutorInquiryVo">
+        update ${schema}.wq_tutor_inquiry
+        <set>
+            <if test="createBy != null">
+                create_by = #{createBy,jdbcType=INTEGER},
+            </if>
+            <if test="subjectId != null">
+                subject_id = #{subjectId,jdbcType=INTEGER},
+            </if>
+            <if test="briefDescription != null">
+                brief_description = #{briefDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="online != null">
+                online = #{online,jdbcType=BIT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=SMALLINT},
+            </if>
+            <if test="requestStartTime != null">
+                request_start_time = #{requestStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="requestEndTime != null">
+                request_end_time = #{requestEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="acceptablePayRate != null">
+                acceptable_pay_rate = #{acceptablePayRate,jdbcType=REAL},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <insert id="saveInquiryTopics">
+        INSERT INTO ${schema}.wq_tutor_inquiry_topic(tutor_inquiry_id, topic_id)
+        VALUES
+        <foreach item="item" collection="topic_ids" separator=",">
+            (#{tutor_inquiry_id}, #{item})
+        </foreach>
     </insert>
 </mapper>
