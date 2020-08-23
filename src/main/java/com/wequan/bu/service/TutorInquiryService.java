@@ -33,4 +33,6 @@ public interface TutorInquiryService extends Service<TutorInquiry> {
      * @return Tutor inquiry列表
      */
     List<TutorInquiryBriefInfo> search(String whereCondition, String orderCondition, Map<String, Integer> pageCondition);
+
+    void logicDeleteById(Integer id);
 }
