@@ -17,7 +17,7 @@ public class TutorInquiryVo extends BaseVo {
     private short status;
     private Date requestStartTime;
     private Date requestEndTime;
-    private double acceptPayRate;
+    private Integer acceptablePayRate;
 
     private List<Integer> topicIds;
 }

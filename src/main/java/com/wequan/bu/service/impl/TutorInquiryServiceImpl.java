@@ -62,6 +62,7 @@ public class TutorInquiryServiceImpl extends AbstractService<TutorInquiry> imple
     public void save(TutorInquiryVo tutorInquiry) {
         tutorInquiry.setCreateTime(new Date());
         tutorInquiryMapper.save(tutorInquiry);
+        tutorInquiryMapper.saveInquiryTopics(tutorInquiry.getId(), tutorInquiry.getTopicIds());
     }
 
     @Override
@@ -76,5 +77,19 @@ public class TutorInquiryServiceImpl extends AbstractService<TutorInquiry> imple
         tutorInquiries = tutorInquiryMapper.selectByConditions(whereCondition, orderCondition,
                 new RowBounds(pageCondition.get("pageNo"), pageCondition.get("pageSize")));
         return tutorInquiries;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void logicDeleteById(Integer id) {
+        TutorInquiry tutorInquiry = tutorInquiryMapper.selectByPrimaryKey(id);
+        TutorInquiryVo inquiryVo = new TutorInquiryVo();
+        inquiryVo.setId(id);
+        inquiryVo.setStatus((short) -1);
+        inquiryVo.setCreateBy(tutorInquiry.getCreateBy().getId());
+        inquiryVo.setSubjectId(tutorInquiry.getSubject().getId());
+        inquiryVo.setOnline(tutorInquiry.getOnline());
+
+        tutorInquiryMapper.updateByPrimaryKeySelective(inquiryVo);
     }
 }

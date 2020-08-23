@@ -10,6 +10,7 @@ import com.wequan.bu.repository.model.Subject;
 import com.wequan.bu.repository.model.Topic;
 import com.wequan.bu.repository.model.TutorInquiry;
 import com.wequan.bu.repository.model.User;
+import com.wequan.bu.security.CurrentUser;
 import com.wequan.bu.service.TutorInquiryService;
 import com.wequan.bu.util.TutorInquiryTool;
 import io.swagger.annotations.Api;
@@ -76,4 +77,20 @@ public class TutorInquiryController {
         tutorInquiryService.save(tutorInquiry);
         return ResultGenerator.success();
     }
+
+    @DeleteMapping("/tutor_inquiry/{id}")
+    @ResponseBody
+    @ApiOperation(value="delete tutor inquiry", notes = "删除tutor inquiry,返回删除成功与否")
+    public Result deleteTutorInquiry(@CurrentUser Integer currentUserId,
+                                     @PathVariable("id") Integer id) {
+        TutorInquiry tutorInquiry = tutorInquiryService.findById(id);
+
+        if(!tutorInquiry.getCreateBy().getId().equals(currentUserId)) {
+            return ResultGenerator.fail("You are not authorized.");
+        }
+
+        tutorInquiryService.logicDeleteById(id);
+        return ResultGenerator.success();
+    }
+
 }
