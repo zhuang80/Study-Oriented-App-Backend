@@ -19,6 +19,8 @@ public interface TutorInquiryMapper extends GeneralMapper<TutorInquiry> {
 
     void save(TutorInquiryVo tutorInquiry);
 
+    void updateByPrimaryKeySelective(TutorInquiryVo tutorInquiry);
+
     List<TutorInquiry> selectPartPerSubject(@Param("limit") Integer limit);
 
     List<Topic> selectTopic();
@@ -39,4 +41,6 @@ public interface TutorInquiryMapper extends GeneralMapper<TutorInquiry> {
      * @return tutor inquiries列表
      */
     List<TutorInquiryBriefInfo> selectByConditions(@Param("where") String whereCondition, @Param("orderBy") String orderCondition, RowBounds rowBounds);
+
+    void saveInquiryTopics(@Param("tutor_inquiry_id") Integer id, @Param("topic_ids") List<Integer> topicIds);
 }
