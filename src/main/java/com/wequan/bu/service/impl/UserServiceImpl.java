@@ -68,8 +68,8 @@ public class UserServiceImpl extends AbstractService<User> implements UserServic
 
     @Override
     public boolean checkUerNameRegistered(String userName) {
-        // to do if need
-        return false;
+        User user = userMapper.selectByUserName(userName);
+        return user != null;
     }
 
     @Override

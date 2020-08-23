@@ -37,7 +37,7 @@ public class AwsEmailService {
 
     private static final String DEFAULT_EMAIL_SENDER = "bingo.tech.20@gmail.com";
     private static final long TOKEN_EXPIRATION_IN_MSC = 1800000;
-    private static final String EMAIL_CONFIRM_BASE_URL = "https://127.0.0.1/api/user/e-confirm?token=";
+    private static final String EMAIL_CONFIRM_BASE_URL = "http://ec2-107-21-15-243.compute-1.amazonaws.com:8080/api/user/e-confirm?token=";
 
     @Value("${aws.ses.access-key-id}")
     private String accessKeyId;
