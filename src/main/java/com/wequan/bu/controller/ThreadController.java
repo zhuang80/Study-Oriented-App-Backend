@@ -8,6 +8,7 @@ import com.wequan.bu.event.ViewEvent;
 import com.wequan.bu.repository.model.Thread;
 import com.wequan.bu.repository.model.ThreadResource;
 import com.wequan.bu.repository.model.ThreadStream;
+import com.wequan.bu.repository.model.extend.UserBriefInfo;
 import com.wequan.bu.security.CurrentUser;
 import com.wequan.bu.service.ThreadResourceService;
 import com.wequan.bu.service.ThreadService;
@@ -150,7 +151,7 @@ public class ThreadController {
         if (Objects.isNull(pageSize)) {
             pageSize = 0;
         }
-        List<ThreadStream> result = threadStreamService.getIndirectThreadReplies(threadId, pageNum,pageSize);;
+        List<ThreadStream> result = threadStreamService.getIndirectThreadReplies(threadId, pageNum,pageSize);
         return ResultGenerator.success(result);
     }
 
@@ -172,8 +173,14 @@ public class ThreadController {
         if (Objects.isNull(pageSize)) {
             pageSize = 0;
         }
-        List<ThreadStream> result = threadStreamService.getThreadReplyIndirectReplies(threadId, directReplyId, pageNum, pageSize);;
+        List<ThreadStream> result = threadStreamService.getThreadReplyIndirectReplies(threadId, directReplyId, pageNum, pageSize);
         return ResultGenerator.success(result);
+    }
+
+    @GetMapping("/thread/{id}/viewed_history")
+    @ApiOperation(value = "thread viewed history", notes = "返回查看帖子的用户列表")
+    public Result<List<UserBriefInfo>> getThreadViewedHistory(@PathVariable("id") Integer threadId) {
+        return null;
     }
 
     @PostMapping("/thread")
