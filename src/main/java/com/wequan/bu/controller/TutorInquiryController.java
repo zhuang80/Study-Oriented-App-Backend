@@ -40,11 +40,11 @@ public class TutorInquiryController {
 
     @GetMapping("/tutor_inquiries")
     @JSON(type = User.class, include = {"id", "userName", "firstName", "lastName", "schoolId", "avatarUrl", "avatarUrlInProvider"})
-    @JSON(type = TutorInquiry.class, filter = "subject")
+   // @JSON(type = TutorInquiry.class, filter = "subject")
     @JSON(type = Subject.class, filter = {"createBy","createTime"})
     @JSON(type = Topic.class, include = {"id", "name", "subjectId"})
     @ApiOperation(value = "a list of tutor inquiry", notes = "返回Tutor inquiry列表")
-    public Result<List<TutorInquiryGroup>> getTutorInquiries(@RequestParam(value = "subjectId", required = false) Integer subjectId,
+    public Result<List<TutorInquiry>> getTutorInquiries(@RequestParam(value = "subjectId", required = false) Integer subjectId,
                                                              @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                                              @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         if(subjectId != null && subjectId < 0 ){
@@ -52,8 +52,8 @@ public class TutorInquiryController {
             return ResultGenerator.fail(message);
         }
         List<TutorInquiry> tutorInquiryList = tutorInquiryService.findBySubject(subjectId, pageNum, pageSize);
-        List<TutorInquiryGroup> tutorInquiryGroupList = TutorInquiryTool.groupTutorInquiryBySubject(tutorInquiryList);
-        return ResultGenerator.success(tutorInquiryGroupList);
+        //List<TutorInquiryGroup> tutorInquiryGroupList = TutorInquiryTool.groupTutorInquiryBySubject(tutorInquiryList);
+        return ResultGenerator.success(tutorInquiryList);
     }
 
     @GetMapping("/tutor_inquiry/{id}")

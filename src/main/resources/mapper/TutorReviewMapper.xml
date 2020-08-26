@@ -11,7 +11,7 @@
         <result column="tutor_id" jdbcType="INTEGER" property="tutorId" />
         <association property="createBy"
                      column="create_by"
-                     select="com.wequan.bu.repository.dao.UserMapper.selectByPrimaryKey" />
+                     select="com.wequan.bu.repository.dao.UserMapper.selectById" />
         <collection property="tagList"
                     column="id"
                     ofType="com.wequan.bu.repository.model.Tag"
